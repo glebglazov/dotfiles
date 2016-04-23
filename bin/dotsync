@@ -1,0 +1,21 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+sync() {
+    echo "Beginning to load files"
+
+    cd $DIR
+    git pull origin master:master
+    ./install
+
+    echo "Successfully ended"
+}
+
+case "$1" in
+    sync)
+        sync && exit 0
+        ;;
+    *)
+    exit 1
+esac
