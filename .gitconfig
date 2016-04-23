@@ -1,0 +1,5 @@
+[user]
+	email = glazov.gleb@gmail.com
+	name = Gleb Glazov
+[push]
+	default = current
