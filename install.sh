@@ -8,8 +8,9 @@ install_dotfiles () {
     for src in $(find "$DIR/" -maxdepth 2 -name '*.src')
     do
         dst="$HOME/$(basename "${src%.*}")"
-        rm "$dst"
-        ln -s "$src" "$dst"
+        if [ ! -L "$dst" ]; then
+            ln -s "$src" "$dst"
+        fi
     done
 }
 
