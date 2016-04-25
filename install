@@ -6,8 +6,18 @@ install_dotfiles () {
     for src in $(find "$DIR/" -maxdepth 2 -name '*.src')
     do
         dst="$HOME/$(basename "${src%.*}")"
-        if [ ! -L "$dst" ]; then
+
+        if [ ! -f "$dst" ]; then
+            echo "Creating $dst file"
             ln -s "$src" "$dst"
+        elif [ -L "$dst" ] ; then
+            if [ "`readlink $dst`" -ef "$src" ]; then
+                echo "$dst is already there"
+            else
+                echo "$dst points not to current .src file, solve the problem and come back"
+            fi
+        else
+            echo "File $dst already exists, solve the problem and come back"
         fi
     done
 }
