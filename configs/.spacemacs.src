@@ -40,6 +40,7 @@ values."
      (auto-completion :variables auto-completion-enable-help-tooltip t)
      emacs-lisp
      (git :variables git-magit-status-fullscreen t)
+     html
      (ruby :variables ruby-enable-enh-ruby-mode t)
      ruby-on-rails
      shell
