@@ -7,7 +7,7 @@ install_dotfiles () {
     do
         dst="$HOME/$(basename "${src%.*}")"
 
-        if [ ! -f "$dst" ]; then
+        if [ ! -e "$dst" ]; then
             echo "Creating $dst file"
             ln -s "$src" "$dst"
         elif [ -L "$dst" ] ; then
