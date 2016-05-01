@@ -44,7 +44,8 @@ values."
      org
      (ruby :variables ruby-enable-enh-ruby-mode t)
      ruby-on-rails
-     shell
+     (shell :variables shell-default-shell 'eshell)
+     unimpaired
      version-control
    )
    ;; List of additional packages that will be installed without being
@@ -270,9 +271,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (add-hook 'term-mode-hook
-    (lambda () (define-key evil-insert-state-local-map (kbd "C-r") 'term-send-raw))
-  )
+  dotspacemacs-line-numbers 'relative
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
