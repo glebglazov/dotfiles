@@ -18,6 +18,7 @@ values."
      (git :variables git-magit-status-fullscreen t)
      html
      org
+     ranger
      (ruby :variables ruby-enable-enh-ruby-mode t)
      ruby-on-rails
      (shell :variables shell-default-shell 'eshell)
