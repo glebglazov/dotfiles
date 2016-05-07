@@ -11,6 +11,7 @@
      (auto-completion :variables auto-completion-enable-help-tooltip t)
      emacs-lisp
      (git :variables git-magit-status-fullscreen t)
+     gtags
      html
      org
      ranger
