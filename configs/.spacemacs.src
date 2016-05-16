@@ -14,6 +14,7 @@
      (git :variables git-magit-status-fullscreen t)
      gtags
      html
+     javascript
      org
      ranger
      ruby
