@@ -101,4 +101,6 @@
   (define-key global-map (kbd "C-j") #'evil-window-down)
   (define-key global-map (kbd "C-k") #'evil-window-up)
   (define-key global-map (kbd "C-l") #'evil-window-right)
+
+  (custom-set-variables '(css-indent-offset 2))
 )
