@@ -14,8 +14,7 @@
   amend     = commit --amend
 [core]
   excludesfile = ~/.gitignore
-# ~/.subl is just link to "/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
-  editor       = subl -w
+  editor       = emacsclient -t
   autocrlf     = input
   whitespace   = space-before-tab, trailing-space
 [help]
