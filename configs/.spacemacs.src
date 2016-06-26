@@ -9,6 +9,7 @@
    dotspacemacs-configuration-layers
    '(
      (auto-completion :variables auto-completion-enable-help-tooltip t)
+     elixir
      emacs-lisp
      games
      (git :variables git-magit-status-fullscreen t)
