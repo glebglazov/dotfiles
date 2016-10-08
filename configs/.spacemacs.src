@@ -104,4 +104,6 @@
   (define-key global-map (kbd "C-l") #'evil-window-right)
 
   (custom-set-variables '(css-indent-offset 2))
+
+  (linum-relative-global-mode)
 )
