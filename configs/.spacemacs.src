@@ -103,7 +103,17 @@
   (define-key global-map (kbd "C-k") #'evil-window-up)
   (define-key global-map (kbd "C-l") #'evil-window-right)
 
+  ;; Change CSS lines indentation to 2 spaces
   (custom-set-variables '(css-indent-offset 2))
 
+  ;; Turn on relative to current line numbers
   (linum-relative-global-mode)
+
+  ;; Enable caching to provide smooth experience
+  ;; when working with large codebases
+  (setq projectile-enable-caching t)
+
+  ;; Needs thesilversearcher to be installed
+  (spacemacs/set-leader-keys
+    "/" 'helm-projectile-ag)
 )
