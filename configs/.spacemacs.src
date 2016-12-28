@@ -8,13 +8,20 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
+     typescript
+     erlang
+     vimscript
+     markdown
+     yaml
      (auto-completion :variables auto-completion-enable-help-tooltip t)
      elixir
      emacs-lisp
      games
      (git :variables git-magit-status-fullscreen t)
+     go
      gtags
      html
+     java
      javascript
      org
      ranger
@@ -22,7 +29,6 @@
      ruby-on-rails
      rust
      (shell :variables shell-default-shell 'eshell)
-     unimpaired
      version-control
    )
    dotspacemacs-additional-packages '()
@@ -105,6 +111,7 @@
 
   ;; Change CSS lines indentation to 2 spaces
   (custom-set-variables '(css-indent-offset 2))
+  (custom-set-variables '(js-indent-level 2))
 
   ;; Turn on relative to current line numbers
   (linum-relative-global-mode)
@@ -116,4 +123,6 @@
   ;; Needs thesilversearcher to be installed
   (spacemacs/set-leader-keys
     "/" 'helm-projectile-ag)
+
+  (setq dotspacemacs-mode-line-unicode-symbols nil)
 )
