@@ -8,14 +8,10 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
-     typescript
-     erlang
-     vimscript
-     markdown
-     yaml
      (auto-completion :variables auto-completion-enable-help-tooltip t)
      elixir
      emacs-lisp
+     erlang
      games
      (git :variables git-magit-status-fullscreen t)
      go
@@ -23,13 +19,16 @@
      html
      java
      javascript
+     markdown
      org
      ranger
      ruby
      ruby-on-rails
      rust
      (shell :variables shell-default-shell 'eshell)
+     sql
      version-control
+     yaml
    )
    dotspacemacs-additional-packages '()
    dotspacemacs-excluded-packages '()
@@ -46,13 +45,15 @@
    dotspacemacs-startup-lists '(projects recents)
    dotspacemacs-startup-recent-list-size 5
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(monokai
+   dotspacemacs-themes '(
+                         monokai
                          spacemacs-dark
                          spacemacs-light
                          solarized-light
                          solarized-dark
                          leuven
-                         zenburn)
+                         zenburn
+                         )
    dotspacemacs-colorize-cursor-according-to-state t
    dotspacemacs-default-font '("Source Code Pro"
                                :size 13
