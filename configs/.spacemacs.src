@@ -22,6 +22,7 @@
      markdown
      org
      ranger
+     react
      ruby
      ruby-on-rails
      rust
@@ -31,7 +32,7 @@
      yaml
    )
    dotspacemacs-additional-packages '()
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(helm-projectile)
    dotspacemacs-delete-orphan-packages t))
 
 (defun dotspacemacs/init ()
@@ -117,13 +118,56 @@
   ;; Turn on relative to current line numbers
   (linum-relative-global-mode)
 
+  (setq dotspacemacs-mode-line-unicode-symbols nil)
+
   ;; Enable caching to provide smooth experience
   ;; when working with large codebases
-  (setq projectile-enable-caching t)
+  ;; (setq projectile-enable-caching t)
 
-  ;; Needs thesilversearcher to be installed
-  (spacemacs/set-leader-keys
-    "/" 'helm-projectile-ag)
-
-  (setq dotspacemacs-mode-line-unicode-symbols nil)
+  (setq helm-ag-base-command "ag -U --nocolor --nogroup --ignore=log/ --ignore=node_modules/")
 )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(css-indent-offset 2)
+   '(js-indent-level 2)
+   '(safe-local-variable-values
+     (quote
+      ((projectile-project-root . "~/Application/heart_of_vegas")
+       (projectile-enable-caching . t)
+       (projectile-indexing-method quote native)))))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(css-indent-offset 2)
+ '(js-indent-level 2)
+ '(safe-local-variable-values
+   (quote
+    ((print
+      (quote abc))
+     (projectile-enable-caching . t)
+     (projectile-indexing-method quote native)
+     (elixir-enable-compilation-checking . t)
+     (elixir-enable-compilation-checking)))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
