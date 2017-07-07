@@ -21,7 +21,10 @@
      javascript
      markdown
      org
-     osx
+     (osx :variables osx-command-as 'control
+                     osx-option-as 'super
+                     osx-right-option-as 'meta
+                     osx-control-as 'hyper)
      ranger
      react
      ruby
