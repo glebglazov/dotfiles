@@ -52,8 +52,8 @@
    dotspacemacs-startup-recent-list-size 5
    dotspacemacs-scratch-mode 'text-mode
    dotspacemacs-themes '(
-                         monokai
                          spacemacs-dark
+                         monokai
                          spacemacs-light
                          solarized-light
                          solarized-dark
