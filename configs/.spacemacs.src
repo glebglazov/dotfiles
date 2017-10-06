@@ -23,9 +23,9 @@
      markdown
      org
      (osx :variables osx-command-as 'control
+                     osx-control-as 'hyper
                      osx-option-as 'super
-                     osx-right-option-as 'meta
-                     osx-control-as 'hyper)
+                     osx-right-option-as 'meta)
      ranger
      react
      ruby
