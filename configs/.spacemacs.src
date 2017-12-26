@@ -10,6 +10,7 @@
    '(
      (auto-completion :variables auto-completion-enable-help-tooltip t)
      elixir
+     ess
      emacs-lisp
      erlang
      games
