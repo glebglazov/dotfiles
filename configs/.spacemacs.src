@@ -26,6 +26,7 @@
                      osx-control-as 'hyper
                      osx-option-as 'super
                      osx-right-option-as 'meta)
+     pdf-tools
      ranger
      react
      ruby
