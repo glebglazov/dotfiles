@@ -133,12 +133,8 @@
   (linum-relative-global-mode)
 
   (setq dotspacemacs-mode-line-unicode-symbols nil)
-
-  ;; Enable caching to provide smooth experience
-  ;; when working with large codebases
-  ;; (setq projectile-enable-caching t)
-
   (setq helm-ag-base-command "ag -U --nocolor --nogroup --ignore=log/ --ignore=node_modules/")
+
   (add-hook 'twittering-icon-mode
             (lambda () (
                         (define-key twittering-mode-map (kbd "S-TAB") #'twittering-goto-previous-status))
