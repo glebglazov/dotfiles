@@ -39,11 +39,13 @@
      twitter
      version-control
      yaml
-   )
-   dotspacemacs-additional-packages '()
+     )
+
    dotspacemacs-additional-packages '(
                                       applescript-mode
+                                      silkworm-theme
                                       )
+
    dotspacemacs-excluded-packages '(helm-projectile)
    dotspacemacs-delete-orphan-packages t))
 
