@@ -113,10 +113,8 @@
    dotspacemacs-whitespace-cleanup 'trailing
    ))
 
-(defun dotspacemacs/user-init ()
-  (load-file "~/.emacs.d/_custom_deps/dash.el")
-  (load-file "~/.emacs.d/_custom_deps/autothemer.el")
-)
+(defun dotspacemacs/user-init ())
+
 
 (defun dotspacemacs/user-config ()
   ;; Vim-like window switch
