@@ -33,12 +33,16 @@
      ruby-on-rails
      rust
      (shell :variables shell-default-shell 'eshell)
+     shell-scripts
      sql
      twitter
      version-control
      yaml
    )
    dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      applescript-mode
+                                      )
    dotspacemacs-excluded-packages '(helm-projectile)
    dotspacemacs-delete-orphan-packages t))
 
