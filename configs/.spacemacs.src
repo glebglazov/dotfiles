@@ -141,6 +141,4 @@
   ;; Enable caching to provide smooth experience
   ;; when working with large codebases
   (setq projectile-enable-caching t)
-
-  (setq helm-ag-base-command "ag -U --nocolor --nogroup --ignore=log/ --ignore=node_modules/ --ignore=tmp/")
 )
