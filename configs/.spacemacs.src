@@ -105,7 +105,7 @@
    dotspacemacs-show-transient-state-color-guide t
    dotspacemacs-mode-line-unicode-symbols t
    dotspacemacs-smooth-scrolling nil
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
    dotspacemacs-smartparens-strict-mode nil
    dotspacemacs-smart-closing-parenthesis nil
    dotspacemacs-highlight-delimiters 'all
@@ -129,8 +129,6 @@
   (custom-set-variables '(css-indent-offset 2))
   (custom-set-variables '(js-indent-level 2))
 
-  ;; Turn on relative to current line numbers
-  (linum-relative-global-mode)
 
   (setq dotspacemacs-mode-line-unicode-symbols nil)
 
