@@ -49,8 +49,6 @@
                                       silkworm-theme
                                       dash-at-point
                                       )
-
-   dotspacemacs-excluded-packages '(helm-projectile)
    dotspacemacs-delete-orphan-packages t))
 
 (defun dotspacemacs/init ()
