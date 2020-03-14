@@ -27,13 +27,11 @@
                                        javascript
                                        markdown
                                        nginx
-                                       nlinum
                                        org
                                        (osx :variables osx-command-as 'control
                                                        osx-control-as 'hyper
                                                        osx-option-as 'super
                                                        osx-right-option-as 'meta)
-                                       pdf-tools
                                        ranger
                                        react
                                        (ruby :variables ruby-enable-enh-ruby-mode t)
