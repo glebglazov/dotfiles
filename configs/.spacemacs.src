@@ -143,10 +143,6 @@
   (setq projectile-enable-caching t)
 
   (setq helm-ag-base-command "ag -U --nocolor --nogroup --ignore=log/ --ignore=node_modules/ --ignore=tmp/")
-  (add-hook 'twittering-icon-mode
-            (lambda () (
-                        (define-key twittering-mode-map (kbd "S-TAB") #'twittering-goto-previous-status))
-              ))
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
