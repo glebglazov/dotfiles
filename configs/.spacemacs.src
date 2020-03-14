@@ -6,44 +6,50 @@
    dotspacemacs-enable-lazy-installation 'unused
    dotspacemacs-ask-for-lazy-installation t
    dotspacemacs-configuration-layer-path '()
-   dotspacemacs-configuration-layers
-   '(
-     (auto-completion :variables auto-completion-enable-help-tooltip t)
-     elixir
-     ess
-     emacs-lisp
-     erlang
-     games
-     (git :variables git-magit-status-fullscreen t)
-     github ;; It's needed to add github.auth-token in .gitconfig
-     go
-     gtags
-     html
-     java
-     javascript
-     markdown
-     org
-     (osx :variables osx-command-as 'control
-                     osx-control-as 'hyper
-                     osx-option-as 'super
-                     osx-right-option-as 'meta)
-     pdf-tools
-     ranger
-     react
-     ruby
-     ruby-on-rails
-     rust
-     (shell :variables shell-default-shell 'eshell)
-     shell-scripts
-     sql
-     twitter
-     version-control
-     yaml
-     )
-
+   dotspacemacs-configuration-layers '(
+                                       d
+                                       vimscript
+                                       typescript
+                                       python
+                                       graphviz
+                                       (auto-completion :variables auto-completion-enable-help-tooltip t)
+                                       elixir
+                                       ess
+                                       emacs-lisp
+                                       erlang
+                                       games
+                                       (git :variables git-magit-status-fullscreen t)
+                                       github ;; It's needed to add github.auth-token in .gitconfig
+                                       go
+                                       gtags
+                                       html
+                                       java
+                                       javascript
+                                       markdown
+                                       nginx
+                                       nlinum
+                                       org
+                                       (osx :variables osx-command-as 'control
+                                                       osx-control-as 'hyper
+                                                       osx-option-as 'super
+                                                       osx-right-option-as 'meta)
+                                       pdf-tools
+                                       ranger
+                                       react
+                                       (ruby :variables ruby-enable-enh-ruby-mode t)
+                                       ruby-on-rails
+                                       rust
+                                       (shell :variables shell-default-shell 'eshell)
+                                       shell-scripts
+                                       sql
+                                       twitter
+                                       version-control
+                                       yaml
+                                       )
    dotspacemacs-additional-packages '(
                                       applescript-mode
                                       silkworm-theme
+                                      dash-at-point
                                       )
 
    dotspacemacs-excluded-packages '(helm-projectile)
