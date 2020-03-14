@@ -129,6 +129,10 @@
   (custom-set-variables '(css-indent-offset 2))
   (custom-set-variables '(js-indent-level 2))
 
+  ;; Use mac command key as control modifier
+  (setq mac-command-modifier 'control)
+  ;; And control key as super respectively
+  (setq mac-control-modifier 'super)
 
   (setq dotspacemacs-mode-line-unicode-symbols nil)
 
