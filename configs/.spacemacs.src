@@ -130,7 +130,7 @@
   (custom-set-variables '(js-indent-level 2))
 
   ;; Turn on relative to current line numbers
-  (linum-relative-global-mode)
+  (spacemacs/toggle-relative-line-numbers-on)
 
   (setq dotspacemacs-mode-line-unicode-symbols nil)
 
