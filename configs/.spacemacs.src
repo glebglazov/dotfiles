@@ -136,6 +136,9 @@
   ;; And control key as super respectively
   (setq mac-control-modifier 'super)
 
+  ;; Turn on relative to current line numbers
+  (spacemacs/toggle-relative-line-numbers-on)
+
   (setq dotspacemacs-mode-line-unicode-symbols nil)
 
   ;; Enable caching to provide smooth experience
