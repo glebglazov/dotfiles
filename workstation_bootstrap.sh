@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Install some basic packages
-apt-get install -y software-properties-common ripgrep git mosh tmux
+apt-get install -y software-properties-common ripgrep git mosh tmux docker
 apt-get update
 
 # Install tmux
