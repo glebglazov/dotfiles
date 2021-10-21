@@ -1,0 +1,1 @@
+alias "tmux-attach-or-create-main-session=tmux new-session -A -s main"
