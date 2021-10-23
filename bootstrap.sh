@@ -11,7 +11,7 @@ append_text_to_file_if_not_exists() {
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 
 # Install some basic packages
-apt-get install -y software-properties-common ripgrep git mosh tmux docker
+apt-get install -y software-properties-common ripgrep git mosh tmux docker.io
 apt-get update
 
 # Install tmux
