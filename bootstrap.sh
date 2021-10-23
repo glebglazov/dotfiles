@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-
 append_text_to_file_if_not_exists() {
   file_path=$1
   text=$2
   
   (cat $file_path | grep "$text") || echo "$text" >> $file_path
 }
+
+# Install ohmybash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 
 # Install some basic packages
 apt-get install -y software-properties-common ripgrep git mosh tmux docker
