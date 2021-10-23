@@ -55,3 +55,10 @@ rm -rf chruby-0.3.9 chruby-0.3.9.tar.gz
 append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/chruby.sh"
 append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/auto.sh"
 . $HOME/.my-profile
+
+# Install emacs + doom
+add-apt-repository -y ppa:kelleyk/emacs
+apt-get update
+apt-get install -y emacs27
+
+git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d && ~/.emacs.d/bin/doom install || echo '.emacs.d already exists'
