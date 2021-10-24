@@ -7,19 +7,39 @@ append_text_to_file_if_not_exists() {
   (cat $file_path | grep "$text") || echo "$text" >> $file_path
 }
 
+# Install some basic packages
+apt-get update
+apt-get install -y \
+  software-properties-common \
+  ripgrep \
+  git \
+  mosh \
+  tmux \
+  docker.io \
+  make \
+  wget \
+  curl
+apt-get update
+
 # Install ohmybash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 
-# Install some basic packages
-apt-get install -y software-properties-common ripgrep git mosh tmux docker.io
-apt-get update
+# Install NeoVim
+nvim_binary_path=/usr/bin/vim
+curl https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage -L -o $nvim_binary_path
+chmod a+x $nvim_binary_path
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+nvim_config_dir=$HOME/.config/nvim
+mkdir -p $nvim_config_dir
+ln -sf $(pwd)/init.vim $nvim_config_dir/init.vim
 
 # Install tmux
 apt-get install tmux
 
 # Configure bash a bit
 source_dot_my_profile_text=". $HOME/.my-profile"
-cp .my-profile $HOME/.my-profile
+ln -sf $(pwd)/.my-profile $HOME/.my-profile
 append_text_to_file_if_not_exists $HOME/.bashrc $source_dot_my_profile_text
 . $HOME/.bashrc
 
@@ -55,10 +75,3 @@ rm -rf chruby-0.3.9 chruby-0.3.9.tar.gz
 append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/chruby.sh"
 append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/auto.sh"
 . $HOME/.my-profile
-
-# Install emacs + doom
-add-apt-repository -y ppa:kelleyk/emacs
-apt-get update
-apt-get install -y emacs27
-
-git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d && ~/.emacs.d/bin/doom install || echo '.emacs.d already exists'
