@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 append_text_to_file_if_not_exists() {
-  file_path=$1
-  text=$2
+  file_path="$1"
+  text="$2"
   
-  (cat $file_path | grep "$text") || echo "$text" >> $file_path
+  grep -q "$text" $file_path || echo "$text" >> $file_path
 }
 
 # Install some basic packages
@@ -71,7 +71,3 @@ cd chruby-0.3.9
 make install
 cd ..
 rm -rf chruby-0.3.9 chruby-0.3.9.tar.gz
-
-append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/chruby.sh"
-append_text_to_file_if_not_exists $HOME/.my-profile "source /usr/local/share/chruby/auto.sh"
-. $HOME/.my-profile
