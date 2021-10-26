@@ -7,6 +7,11 @@ append_text_to_file_if_not_exists() {
   grep -q "$text" $file_path || echo "$text" >> $file_path
 }
 
+# Add NodeJS PPA
+curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
 # Install some basic packages
 apt-get update
 apt-get install -y \
@@ -16,9 +21,15 @@ apt-get install -y \
   mosh \
   tmux \
   docker.io \
+  docker-compose \
   make \
   wget \
-  curl
+  curl \
+  libmysqlclient-dev \
+  mysql-client \
+  pkg-config \
+  nodejs \
+  yarn
 apt-get update
 
 # Install ohmybash
@@ -38,9 +49,9 @@ ln -sf $(pwd)/init.vim $nvim_config_dir/init.vim
 apt-get install tmux
 
 # Configure bash a bit
-source_dot_my_profile_text=". $HOME/.my-profile"
+source_dot_my_profile_text=". .my-profile"
 ln -sf $(pwd)/.my-profile $HOME/.my-profile
-append_text_to_file_if_not_exists $HOME/.bashrc $source_dot_my_profile_text
+append_text_to_file_if_not_exists $HOME/.bashrc "$source_dot_my_profile_text"
 . $HOME/.bashrc
 
 # Setup iptables
@@ -71,3 +82,4 @@ cd chruby-0.3.9
 make install
 cd ..
 rm -rf chruby-0.3.9 chruby-0.3.9.tar.gz
+
