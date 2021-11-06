@@ -29,6 +29,7 @@ curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
 apt-get update
 apt-get install -y \
   software-properties-common \
+  fzf \
   ripgrep \
   git \
   mosh \
