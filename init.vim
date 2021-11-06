@@ -11,3 +11,9 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 call plug#end()
+ 
+map <Space> <Leader>
+nnoremap <Leader>s :w<CR>
+nnoremap <Leader>g :G<CR>
+nnoremap <Leader>f :GFiles<CR>
+nnoremap <Leader>/ :Rg<CR>
