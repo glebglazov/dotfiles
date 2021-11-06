@@ -7,6 +7,19 @@ append_text_to_file_if_not_exists() {
   grep -q "$text" $file_path || echo "$text" >> $file_path
 }
 
+idempotent_iptables_prepend() {
+  iptables -D INPUT $1
+  iptables -I INPUT 1 $1
+
+  iptables -D DOCKER-USER $1
+  iptables -I DOCKER-USER 1 $1
+}
+
+only_localhost_iptables_prepend() {
+  idempotent_iptables_prepend "-p tcp --dport $1 -j DROP"
+  idempotent_iptables_prepend "-p tcp -s localhost --dport $1 -j ACCEPT"
+}
+
 # Add NodeJS PPA
 curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
 	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
@@ -57,6 +70,10 @@ append_text_to_file_if_not_exists $HOME/.bashrc "$source_dot_my_profile_text"
 # Setup iptables
 iptables_rule="INPUT -p udp --dport 60000:61000 -j ACCEPT"
 iptables -C $iptables_rule || sudo iptables -A $iptables_rule
+
+only_localhost_iptables_prepend 3306
+only_localhost_iptables_prepend 6379
+only_localhost_iptables_prepend 11211
 
 iptables_config_dir="/etc/iptables"
 mkdir -p $iptables_config_dir
