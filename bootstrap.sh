@@ -55,7 +55,7 @@ curl https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage -L 
 chmod a+x $nvim_binary_path
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-nvim_config_dir=$HOME/.config/nvim
+nvim_config_dir=~/.config/nvim
 mkdir -p $nvim_config_dir
 ln -sf $(pwd)/init.vim $nvim_config_dir/init.vim
 
@@ -64,9 +64,9 @@ apt-get install tmux
 
 # Configure bash a bit
 source_dot_my_profile_text=". .my-profile"
-ln -sf $(pwd)/.my-profile $HOME/.my-profile
-append_text_to_file_if_not_exists $HOME/.bashrc "$source_dot_my_profile_text"
-. $HOME/.bashrc
+ln -sf $(pwd)/.my-profile ~/.my-profile
+append_text_to_file_if_not_exists ~/.bashrc "$source_dot_my_profile_text"
+. ~/.bashrc
 
 # Setup iptables
 iptables_rule="INPUT -p udp --dport 60000:61000 -j ACCEPT"
