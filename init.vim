@@ -17,3 +17,4 @@ nnoremap <Leader>s :w<CR>
 nnoremap <Leader>g :G<CR>
 nnoremap <Leader>f :GFiles<CR>
 nnoremap <Leader>/ :Rg<CR>
+nnoremap <Leader>t :NERDTreeToggle<CR>
