@@ -41,6 +41,7 @@ let g:maplocalleader=","
 
 " Top-level bindings
 nnoremap <silent> <leader>/ :Rg<CR>
+nnoremap <silent> <leader><tab> :b#<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
@@ -59,10 +60,10 @@ nnoremap <silent> <leader>ar :NERDTreeToggle<CR>
 
 " Window bindings
 nnoremap <silent> <leader>ws :sp<CR>
-nnoremap <silent> <leader>wd :bd<CR>
-"nnoremap <silent> <leader>wS :sp | :wincmd j<CR>
+nnoremap <silent> <leader>wd :hide<CR>
+nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
 nnoremap <silent> <leader>wv :vsp<CR>
-"nnoremap <silent> <leader>wV :vsp|:wincmd l<CR>
+nnoremap <silent> <leader>wV :vsp <bar> :wincmd l<CR>
 nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
 nnoremap <silent> <leader>wk :wincmd k<CR>
