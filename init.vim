@@ -17,6 +17,8 @@ Plug 'prettier/vim-prettier', {
 			\ 'do': 'yarn install',
 			\ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html', 'ruby'] }
 
+Plug 'vim-airline/vim-airline'
+
 call plug#end()
 
 " Add relative numbers to lines
