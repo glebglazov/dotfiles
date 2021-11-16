@@ -60,6 +60,8 @@ nnoremap <silent> <leader>gg :G<CR>
 
 " Project bindings
 nnoremap <silent> <leader>pf :GFiles<CR>
+nnoremap <silent> <leader>ppgs :cd ~/Dev/game_server<CR>
+nnoremap <silent> <leader>ppws :cd ~/Dev/workstation_setup<CR>
 
 " Applications bindings
 nnoremap <silent> <leader>ar :NERDTreeToggle<CR>
