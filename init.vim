@@ -28,6 +28,8 @@ set background=dark
 " Add relative numbers to lines
 set relativenumber
 
+" In order for "e" in normal mode to jump onto _ as well
+set iskeyword-=_
 
 " Remove highlighting in normal mode
 nnoremap <silent> <esc> :noh<cr>
