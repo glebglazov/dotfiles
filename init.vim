@@ -101,3 +101,10 @@ augroup my_javascript_filetype
   autocmd FileType javascript setlocal expandtab tabstop=2 shiftwidth=2
 augroup END
 " }}}
+
+" Fugitive FileType settings {{{
+augroup my_fugitive_filetype
+  autocmd!
+  autocmd FileType fugitive :nmap <tab> =
+augroup END
+" }}}
