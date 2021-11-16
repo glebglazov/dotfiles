@@ -66,6 +66,8 @@ nnoremap <silent> <leader>fs :w<CR>
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gb :TigBlame<CR>
 nnoremap <silent> <leader>gl :TigOpenProjectRootDir<CR>
+nnoremap <silent> <leader>gp :G push origin HEAD<CR>
+nnoremap <silent> <leader>gpf :G push --force origin HEAD<CR>
 
 " Project bindings
 nnoremap <silent> <leader>pf :GFiles<CR>
