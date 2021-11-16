@@ -64,7 +64,7 @@ nnoremap <silent> <leader>ppgs :cd ~/Dev/game_server<CR>
 nnoremap <silent> <leader>ppws :cd ~/Dev/workstation_setup<CR>
 
 " Applications bindings
-nnoremap <silent> <leader>ar :NERDTreeToggle<CR>
+nnoremap <silent> <leader>ar :NERDTreeToggle %<CR>
 
 " Window bindings
 nnoremap <silent> <leader>ws :sp<CR>
