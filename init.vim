@@ -17,6 +17,7 @@ Plug 'prettier/vim-prettier', {
 			\ 'do': 'yarn install',
 			\ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html', 'ruby'] }
 
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 
 call plug#end()
