@@ -28,8 +28,6 @@ set background=dark
 " Add relative numbers to lines
 set relativenumber
 
-" Uppercase from insert modes
-inoremap <leader>tu <esc>bviwUi
 
 " Remove highlighting in normal mode
 nnoremap <silent> <esc> :noh<cr>
