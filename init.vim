@@ -9,9 +9,9 @@ Plug 'tpope/vim-fugitive'
 
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'tpope/vim-rails'
-
-Plug 'yuezk/vim-js'
+Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
 Plug 'prettier/vim-prettier', {
       \ 'do': 'yarn install',
@@ -95,9 +95,9 @@ augroup my_ruby_filetype
 augroup END
 " }}} 
 
-" React FileType settings {{{
-augroup my_react_filetype
+" Javascript FileType settings {{{
+augroup my_javascript_filetype
   autocmd!
-  autocmd FileType javascriptreact setlocal expandtab tabstop=2 shiftwidth=2
+  autocmd FileType javascript setlocal expandtab tabstop=2 shiftwidth=2
 augroup END
 " }}}
