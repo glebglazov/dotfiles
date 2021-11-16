@@ -14,8 +14,8 @@ Plug 'yuezk/vim-js'
 Plug 'maxmellon/vim-jsx-pretty'
 
 Plug 'prettier/vim-prettier', {
-			\ 'do': 'yarn install',
-			\ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html', 'ruby'] }
+      \ 'do': 'yarn install',
+      \ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html', 'ruby'] }
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
@@ -87,18 +87,17 @@ augroup END
 
 " Ruby FileType settings {{{
 augroup my_ruby_filetype
-	autocmd!
-	autocmd FileType ruby :onoremap a i(
-	autocmd FileType ruby :onoremap b /end<cr>
-	autocmd FileType ruby :onoremap cm :<c-u>execute "normal! ?def .*\r:nohlsearch\rf lvg_"<CR>
-	autocmd FileType ruby :onoremap nm :<c-u>execute "normal! /def .*\r:nohlsearch\rf lvg_"<CR>
+  autocmd!
+  autocmd FileType ruby :onoremap a i(
+  autocmd FileType ruby :onoremap b /end<cr>
+  autocmd FileType ruby :onoremap cm :<c-u>execute "normal! ?def .*\r:nohlsearch\rf lvg_"<CR>
+  autocmd FileType ruby :onoremap nm :<c-u>execute "normal! /def .*\r:nohlsearch\rf lvg_"<CR>
 augroup END
 " }}} 
 
 " React FileType settings {{{
 augroup my_react_filetype
-	autocmd!
-	autocmd FileType javascriptreact setlocal expandtab tabstop=2 shiftwidth=2
+  autocmd!
+  autocmd FileType javascriptreact setlocal expandtab tabstop=2 shiftwidth=2
 augroup END
 " }}}
-"
