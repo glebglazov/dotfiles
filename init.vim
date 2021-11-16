@@ -31,8 +31,17 @@ set relativenumber
 " In order for "e" in normal mode to jump onto _ as well
 set iskeyword-=_
 
-" Remove highlighting in normal mode
+let g:mapleader="\<space>"
+let g:maplocalleader=","
+
+" Global mappings setup {{{
+
+inoremap jk <esc>
+inoremap <esc> <nop>
+
+" Top-level bindings
 nnoremap <silent> <esc> :noh<cr>
+
 nnoremap <silent> H ^
 nnoremap <silent> J <c-d>
 nnoremap <silent> K <c-u>
@@ -40,13 +49,8 @@ nnoremap <silent> <c-d> <nop>
 nnoremap <silent> <c-u> <nop>
 nnoremap <silent> L $
 
-let g:mapleader="\<space>"
-let g:maplocalleader=","
-
-" Global mappings setup {{{
-
-" Top-level bindings
 nnoremap <silent> <leader>/ :Rg<CR>
+
 nnoremap <silent> <leader><tab> :b#<CR>
 nnoremap <silent> [b :bp<CR>
 nnoremap <silent> ]b :bn<CR>
