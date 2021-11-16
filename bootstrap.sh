@@ -32,6 +32,7 @@ apt-get install -y \
   fzf \
   ripgrep \
   git \
+  tig \
   mosh \
   tmux \
   docker.io \

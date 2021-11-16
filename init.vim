@@ -6,6 +6,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
+Plug 'iberianpig/tig-explorer.vim'
 
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'tpope/vim-rails'
