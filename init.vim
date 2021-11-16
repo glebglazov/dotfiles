@@ -48,6 +48,8 @@ let g:maplocalleader=","
 " Top-level bindings
 nnoremap <silent> <leader>/ :Rg<CR>
 nnoremap <silent> <leader><tab> :b#<CR>
+nnoremap <silent> [b :bp<CR>
+nnoremap <silent> ]b :bn<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
