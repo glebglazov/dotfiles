@@ -22,6 +22,10 @@ Plug 'vim-airline/vim-airline'
 
 call plug#end()
 
+colorscheme gruvbox
+set background=dark
+let g:gruvbox_contrast_dark = 'hard'
+
 " Add relative numbers to lines
 set relativenumber
 
