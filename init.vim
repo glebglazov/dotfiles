@@ -64,6 +64,8 @@ nnoremap <silent> <leader>fs :w<CR>
 
 " Git bindings
 nnoremap <silent> <leader>gg :G<CR>
+nnoremap <silent> <leader>gb :TigBlame<CR>
+nnoremap <silent> <leader>gl :TigOpenProjectRootDir<CR>
 
 " Project bindings
 nnoremap <silent> <leader>pf :GFiles<CR>
