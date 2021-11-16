@@ -74,8 +74,8 @@ nnoremap <silent> <leader>wl :wincmd l<CR>
 
 " Vim FileType settings {{{
 augroup my_vim_filetype 
-	autocmd!
-	autocmd! FileType vim setlocal foldmethod=marker
+  autocmd!
+  autocmd! FileType vim setlocal foldmethod=marker expandtab tabstop=2 shiftwidth=2
 augroup END
 " }}}
 
@@ -89,3 +89,10 @@ augroup my_ruby_filetype
 augroup END
 " }}} 
 
+" React FileType settings {{{
+augroup my_react_filetype
+	autocmd!
+	autocmd FileType javascriptreact setlocal expandtab tabstop=2 shiftwidth=2
+augroup END
+" }}}
+"
