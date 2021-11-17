@@ -76,8 +76,9 @@ nnoremap <silent> <leader>gpf :G push --force origin HEAD<CR>
 
 " Project bindings {{{
 nnoremap <silent> <leader>pf :GFiles<CR>
-nnoremap <silent> <leader>ppgs :cd ~/Dev/game_server<CR>
-nnoremap <silent> <leader>ppws :cd ~/Dev/workstation_setup<CR>
+nnoremap <silent> <leader>pgs :cd ~/Dev/game_server<CR>
+nnoremap <silent> <leader>pws :cd ~/Dev/workstation_setup<CR>
+nnoremap <silent> <leader>pat :cd ~/Dev/aws_terraform<CR>
 " }}}
 
 " Applications bindings {{{
