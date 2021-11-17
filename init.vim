@@ -60,7 +60,7 @@ nnoremap <leader>sv :so $MYVIMRC<CR>
 " }}}
 
 " Files bindings {{{
-nnoremap <silent> <leader>fs :w<CR>
+nnoremap <silent> <leader>fs :up<CR>
 " }}}
 
 " Git bindings {{{
