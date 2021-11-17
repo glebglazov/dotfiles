@@ -56,7 +56,7 @@ nnoremap <silent> [b :bp<CR>
 nnoremap <silent> ]b :bn<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
+nnoremap <leader>sv :so $MYVIMRC<CR>
 " }}}
 
 " Files bindings {{{
