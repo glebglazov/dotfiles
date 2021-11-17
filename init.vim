@@ -42,6 +42,9 @@ inoremap jk <esc>
 " Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
 
+nnoremap ; :
+vnoremap ; :
+
 nnoremap <silent> H ^
 nnoremap <silent> J <c-d>
 nnoremap <silent> K <c-u>
