@@ -39,6 +39,10 @@ let g:maplocalleader=","
 inoremap jk <esc>
 " }}}
 
+" Visual mode bindings {{{
+vnoremap <leader>/ y:Rg<space><c-r>"<cr>
+" }}}
+
 " Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
 
