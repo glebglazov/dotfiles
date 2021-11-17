@@ -37,7 +37,6 @@ let g:maplocalleader=","
 
 " Insert mode bindings {{{
 inoremap jk <esc>
-inoremap <esc> <nop>
 " }}}
 
 " Top-level bindings {{{
