@@ -69,8 +69,8 @@ nnoremap <silent> <leader>fs :up<CR>
 " Git bindings {{{
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gbl :TigBlame<CR>
-nnoremap <silent> <leader>gb :G checkout<space>
-nnoremap <silent> <leader>gbc :G checkout -b<space>
+nnoremap <silent> <leader>gc :G checkout<space>
+nnoremap <silent> <leader>gcb :G checkout -b<space>
 nnoremap <silent> <leader>gt :TigOpenProjectRootDir<CR>
 nnoremap <silent> <leader>gl :G log<CR>
 nnoremap <silent> <leader>gp :G push origin HEAD<CR>
