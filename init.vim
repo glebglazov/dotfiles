@@ -35,12 +35,12 @@ set iskeyword-=_
 let g:mapleader="\<space>"
 let g:maplocalleader=","
 
-" Global mappings setup {{{
-
+" Insert mode bindings {{{
 inoremap jk <esc>
 inoremap <esc> <nop>
+" }}}
 
-" Top-level bindings
+" Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
 
 nnoremap <silent> H ^
@@ -58,26 +58,31 @@ nnoremap <silent> ]b :bn<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
+" }}}
 
-" Files bindings
+" Files bindings {{{
 nnoremap <silent> <leader>fs :w<CR>
+" }}}
 
-" Git bindings
+" Git bindings {{{
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gb :TigBlame<CR>
 nnoremap <silent> <leader>gl :G log<CR>
 nnoremap <silent> <leader>gp :G push origin HEAD<CR>
 nnoremap <silent> <leader>gpf :G push --force origin HEAD<CR>
+" }}}
 
-" Project bindings
+" Project bindings {{{
 nnoremap <silent> <leader>pf :GFiles<CR>
 nnoremap <silent> <leader>ppgs :cd ~/Dev/game_server<CR>
 nnoremap <silent> <leader>ppws :cd ~/Dev/workstation_setup<CR>
+" }}}
 
-" Applications bindings
+" Applications bindings {{{
 nnoremap <silent> <leader>ar :NERDTreeToggle %<CR>
+" }}}
 
-" Window bindings
+" Window bindings {{{
 nnoremap <silent> <leader>ws :sp<CR>
 nnoremap <silent> <leader>wd :hide<CR>
 nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
