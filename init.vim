@@ -107,6 +107,13 @@ nnoremap <silent> <leader>wk :wincmd k<CR>
 nnoremap <silent> <leader>wl :wincmd l<CR>
 " }}}
 
+" General autogroup settings {{{
+augroup my_general_group 
+  autocmd!
+  autocmd! BufWritePre * :%s/\s\+$//e
+augroup END
+" }}}
+
 " Vim FileType settings {{{
 augroup my_vim_filetype 
   autocmd!
