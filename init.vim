@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'christoomey/vim-system-copy'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
