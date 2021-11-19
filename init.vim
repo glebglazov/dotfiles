@@ -43,6 +43,7 @@ inoremap jk <esc>
 
 " Visual mode bindings {{{
 vnoremap <leader>/ y:Rg<space><c-r>"<cr>
+vnoremap # y/<c-r>"<cr>
 " }}}
 
 " Top-level bindings {{{
