@@ -108,14 +108,14 @@ nnoremap <silent> <leader>wl :wincmd l<CR>
 " }}}
 
 " General autogroup settings {{{
-augroup my_general_group 
+augroup my_general_group
   autocmd!
   autocmd! BufWritePre * :%s/\s\+$//e
 augroup END
 " }}}
 
 " Vim FileType settings {{{
-augroup my_vim_filetype 
+augroup my_vim_filetype
   autocmd!
   autocmd! FileType vim setlocal foldmethod=marker expandtab tabstop=2 shiftwidth=2
 augroup END
@@ -131,7 +131,7 @@ augroup my_ruby_filetype
   autocmd FileType ruby :onoremap nm :<c-u>execute "normal! /def .*\r:nohlsearch\rf lvg_"<CR>
   autocmd FileType ruby :iabbrev bpr binding.pry
 augroup END
-" }}} 
+" }}}
 
 " Javascript FileType settings {{{
 augroup my_javascript_filetype
