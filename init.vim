@@ -28,8 +28,8 @@ call plug#end()
 colorscheme gruvbox
 set background=dark
 
-" Add relative numbers to lines
-set relativenumber
+" Enable hybrid line numbers
+set number relativenumber
 
 " In order for "e" in normal mode to jump onto _ as well
 set iskeyword-=_
