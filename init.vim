@@ -73,12 +73,15 @@ nnoremap <silent> <leader>fs :up<CR>
 " Git bindings {{{
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gbl :TigBlame<CR>
-nnoremap <silent> <leader>gc :G checkout<space>
-nnoremap <silent> <leader>gcb :G checkout -b<space>
+nnoremap <leader>gcp :G cherry-pick<space>
+nnoremap <leader>grs :G reset --soft<space>
+nnoremap <leader>grh :G reset --hard<space>
+nnoremap <leader>gco :G checkout<space>
+nnoremap <leader>gcb :G checkout -b<space>
 nnoremap <silent> <leader>gt :TigOpenProjectRootDir<CR>
 nnoremap <silent> <leader>gl :G log<CR>
-nnoremap <silent> <leader>gp :G push origin HEAD<CR>
-nnoremap <silent> <leader>gpf :G push --force origin HEAD<CR>
+nnoremap <leader>gpo :G push origin HEAD<CR>
+nnoremap <leader>gpf :G push --force origin HEAD<CR>
 " }}}
 
 " Project bindings {{{
