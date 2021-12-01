@@ -74,6 +74,9 @@ nnoremap <silent> <leader>fs :up<CR>
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gbl :TigBlame<CR>
 nnoremap <leader>gcp :G cherry-pick<space>
+nnoremap <leader>grb :G rebase<space>
+nnoremap <leader>gra :G rebase --abort<CR>
+nnoremap <leader>grc :G rebase --continue<CR>
 nnoremap <leader>grs :G reset --soft<space>
 nnoremap <leader>grh :G reset --hard<space>
 nnoremap <leader>gco :G checkout<space>
