@@ -96,6 +96,7 @@ nnoremap <silent> <leader>pat :cd ~/Dev/aws_terraform<CR>
 
 " Applications bindings {{{
 nnoremap <silent> <leader>ar :NERDTreeToggle %<CR>
+nnoremap <silent> <leader>af :NERDTreeFocus<CR>
 " }}}
 
 " Window bindings {{{
@@ -104,6 +105,7 @@ nnoremap <silent> <leader>wd :hide<CR>
 nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
 nnoremap <silent> <leader>wv :vsp<CR>
 nnoremap <silent> <leader>wV :vsp <bar> :wincmd l<CR>
+nnoremap <silent> <leader>wp :wincmd p<CR>
 nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
 nnoremap <silent> <leader>wk :wincmd k<CR>
