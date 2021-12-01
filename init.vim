@@ -98,7 +98,16 @@ nnoremap <silent> <leader>pat :cd ~/Dev/aws_terraform<CR>
 " }}}
 
 " Applications bindings {{{
-nnoremap <silent> <leader>ar :NERDTreeToggle %<CR>
+function MyNERDTreeOpenHere()
+  if exists("g:NERDTree") && g:NERDTree.IsOpen()
+    execute "NERDTreeToggle"
+    execute "NERDTreeToggle %"
+  else
+    execute "NERDTreeToggle %"
+  endif
+endfunction
+
+nnoremap <silent> <leader>ar :call MyNERDTreeOpenHere()<CR>
 nnoremap <silent> <leader>af :NERDTreeFocus<CR>
 " }}}
 
