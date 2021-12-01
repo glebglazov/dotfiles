@@ -76,6 +76,7 @@ nnoremap <silent> <leader>fs :up<CR>
 " Git bindings {{{
 nnoremap <silent> <leader>gg :G<CR>
 nnoremap <silent> <leader>gbl :TigBlame<CR>
+nnoremap <leader>gfo :G fetch origin<CR>
 nnoremap <leader>gcp :G cherry-pick<space>
 nnoremap <leader>grb :G rebase<space>
 nnoremap <leader>gra :G rebase --abort<CR>
@@ -86,6 +87,7 @@ nnoremap <leader>gco :G checkout<space>
 nnoremap <leader>gcb :G checkout -b<space>
 nnoremap <silent> <leader>gt :TigOpenProjectRootDir<CR>
 nnoremap <silent> <leader>gl :G log<CR>
+nnoremap <leader>gpl :G pull<CR>
 nnoremap <leader>gpo :G push origin HEAD<CR>
 nnoremap <leader>gpf :G push --force origin HEAD<CR>
 " }}}
