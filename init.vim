@@ -31,6 +31,9 @@ set background=dark
 " Enable hybrid line numbers
 set number relativenumber
 
+" Allow to hide buffers which have changes
+set hidden
+
 " In order for "e" in normal mode to jump onto _ as well
 set iskeyword-=_
 
