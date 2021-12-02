@@ -115,11 +115,28 @@ nnoremap <silent> <leader>af :NERDTreeFocus<CR>
 " }}}
 
 " Window bindings {{{
+function! MaximizeToggle()
+  if exists("s:maximize_session")
+    exec "source " . s:maximize_session
+    call delete(s:maximize_session)
+    unlet s:maximize_session
+    let &hidden=s:maximize_hidden_save
+    unlet s:maximize_hidden_save
+  else
+    let s:maximize_hidden_save = &hidden
+    let s:maximize_session = tempname()
+    set hidden
+    exec "mksession! " . s:maximize_session
+    only
+  endif
+endfunction
+
 nnoremap <silent> <leader>ws :sp<CR>
 nnoremap <silent> <leader>wd :hide<CR>
 nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
 nnoremap <silent> <leader>wv :vsp<CR>
 nnoremap <silent> <leader>wV :vsp <bar> :wincmd l<CR>
+nnoremap <silent> <leader>wm :call MaximizeToggle()<CR>
 nnoremap <silent> <leader>wp :wincmd p<CR>
 nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
