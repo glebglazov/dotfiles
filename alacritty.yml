@@ -1,2 +1,6 @@
 font:
   size: 15
+
+key_bindings:
+  - { key: Right, mods: Alt, chars: "\x1BF" }
+  - { key: Left,  mods: Alt, chars: "\x1BB" }
