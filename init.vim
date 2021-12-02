@@ -79,6 +79,7 @@ nnoremap <silent> <leader>gbl :TigBlame<CR>
 nnoremap <leader>gfo :G fetch origin<CR>
 nnoremap <leader>gcp :G cherry-pick<space>
 nnoremap <leader>grb :G rebase<space>
+nnoremap <leader>gri :G rebase --interactive<space>
 nnoremap <leader>gra :G rebase --abort<CR>
 nnoremap <leader>grc :G rebase --continue<CR>
 nnoremap <leader>grs :G reset --soft<space>
@@ -86,7 +87,7 @@ nnoremap <leader>grh :G reset --hard<space>
 nnoremap <leader>gco :G checkout<space>
 nnoremap <leader>gcb :G checkout -b<space>
 nnoremap <silent> <leader>gt :TigOpenProjectRootDir<CR>
-nnoremap <silent> <leader>gl :G log<CR>
+nnoremap <leader>glg :Gclog<space>
 nnoremap <leader>gpl :G pull<CR>
 nnoremap <leader>gpo :G push origin HEAD<CR>
 nnoremap <leader>gpf :G push --force origin HEAD<CR>
