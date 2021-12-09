@@ -337,6 +337,9 @@ tmux_conf_copy_to_os_clipboard=false
 #set -g status-keys vi
 #set -g mode-keys vi
 
+bind-key -T copy-mode-vi K send -X page-up
+bind-key -T copy-mode-vi J send -X page-down
+
 # replace C-b by C-a instead of using both prefixes
 # set -gu prefix2
 # unbind C-a
