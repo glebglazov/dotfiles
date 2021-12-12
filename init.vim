@@ -75,7 +75,7 @@ nnoremap <silent> <leader>fs :up<CR>
 
 " Git bindings {{{
 nnoremap <silent> <leader>gg :G<CR>
-nnoremap <silent> <leader>gbl :TigBlame<CR>
+nnoremap <silent> <leader>gbl :G blame<CR>
 nnoremap <leader>gfo :G fetch origin<CR>
 nnoremap <leader>gcp :G cherry-pick<space>
 nnoremap <leader>grb :G rebase<space>
