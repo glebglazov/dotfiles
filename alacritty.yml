@@ -22,7 +22,7 @@ key_bindings:
   - { key: Up, mods: Command|Shift, chars: "\x02\x1b\x5b\x41" }
   - { key: Right, mods: Command|Shift, chars: "\x02\x1b\x5b\x43" }
   # Layouts
-  - { key: I, mods: Command|Shift, chars: "\x02\x49" }
+  - { key: I, mods: Command|Shift, chars: "\x02\x69" }
   # Rename the current tmux window
   - { key: Comma, mods: Command, chars: "\x02\x2c" }
   # Select window 1-9

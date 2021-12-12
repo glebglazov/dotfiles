@@ -337,7 +337,7 @@ tmux_conf_copy_to_os_clipboard=false
 #set -g status-keys vi
 #set -g mode-keys vi
 
-bind I source-file ~/.tmux/layouts/ide.layout
+bind i source-file ~/.tmux/layouts/ide.layout
 
 bind-key Left resize-pane -L 2
 bind-key Up resize-pane -U 2
