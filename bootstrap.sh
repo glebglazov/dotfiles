@@ -51,7 +51,7 @@ apt-get update
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 
 # Install NeoVim
-nvim_binary_path=/usr/bin/vim
+nvim_binary_path=/usr/bin/nvim
 curl https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage -L -o $nvim_binary_path
 chmod a+x $nvim_binary_path
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
@@ -60,12 +60,13 @@ nvim_config_dir=~/.config/nvim
 mkdir -p $nvim_config_dir
 ln -sf $(pwd)/init.vim $nvim_config_dir/init.vim
 
-# Install tmux
-apt-get install tmux
+# Configure tmux
+cd
+git clone https://github.com/gpakosz/.tmux.git
+ln -sf .tmux/.tmux.conf
 
 # Configure bash a bit
-source_dot_my_profile_text=". .my-profile"
-ln -sf $(pwd)/.my-profile ~/.my-profile
+source_dot_my_profile_text=". ~/.my-profile"
 append_text_to_file_if_not_exists ~/.bashrc "$source_dot_my_profile_text"
 . ~/.bashrc
 
