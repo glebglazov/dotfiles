@@ -1,0 +1,6 @@
+send 'nvim .' ENTER
+split-window -vp15 -c "#{pane_current_path}"
+split-window -vp60 -c "#{pane_current_path}"
+split-window -hp66 -c "#{pane_current_path}"
+split-window -hp50 -c "#{pane_current_path}"
+select-pane -t 3

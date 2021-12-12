@@ -3,10 +3,10 @@ font:
 
 key_bindings:
   # Movement in terminal bindings
-  - { key: Back,  mods: Super,   chars: "\x15"                    }
-  - { key: Left,  mods: Alt,     chars: "\x1bb"                   }
-  - { key: Right, mods: Alt,     chars: "\x1bf"                   }
-  - { key: Left,  mods: Command, chars: "\x1bOH", mode: AppCursor }
+  - { key: Back, mods: Command, chars: "\x15" }
+  - { key: Left, mods: Alt, chars: "\x1bb" }
+  - { key: Right, mods: Alt, chars: "\x1bf" }
+  - { key: Left, mods: Command, chars: "\x1bOH", mode: AppCursor }
   - { key: Right, mods: Command, chars: "\x1bOF", mode: AppCursor }
   # Panes movement/resize
   - { key: H, mods: Command, chars: "\x02\x68" }
@@ -17,6 +17,12 @@ key_bindings:
   - { key: J, mods: Command|Shift, chars: "\x02\x4a" }
   - { key: K, mods: Command|Shift, chars: "\x02\x4b" }
   - { key: L, mods: Command|Shift, chars: "\x02\x4c" }
+  - { key: Left, mods: Command|Shift, chars: "\x02\x1b\x5b\x44" }
+  - { key: Down, mods: Command|Shift, chars: "\x02\x1b\x5b\x42" }
+  - { key: Up, mods: Command|Shift, chars: "\x02\x1b\x5b\x41" }
+  - { key: Right, mods: Command|Shift, chars: "\x02\x1b\x5b\x43" }
+  # Layouts
+  - { key: I, mods: Command|Shift, chars: "\x02\x49" }
   # Rename the current tmux window
   - { key: Comma, mods: Command, chars: "\x02\x2c" }
   # Select window 1-9
