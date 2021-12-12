@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export EDITOR=nvim
+
 alias "tmux-attach-or-create-main-session=tmux new-session -A -s main"
 source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
