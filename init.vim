@@ -96,7 +96,7 @@ nnoremap <leader>gpf :G push --force origin HEAD<CR>
 " Project bindings {{{
 nnoremap <silent> <leader>pp :cd ~/Dev/
 nnoremap <silent> <leader>pf :GFiles<CR>
-nnoremap <silent> <leader>psg :cd ~/Dev/game_server<CR>
+nnoremap <silent> <leader>pgs :cd ~/Dev/game_server<CR>
 " }}}
 
 " Applications bindings {{{
