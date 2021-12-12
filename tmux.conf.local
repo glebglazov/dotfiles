@@ -333,9 +333,8 @@ tmux_conf_copy_to_os_clipboard=false
 #set -g mouse on
 
 # force Vi mode
-#   really you should export VISUAL or EDITOR environment variable, see manual
-#set -g status-keys vi
-#set -g mode-keys vi
+set -g status-keys vi
+set -g mode-keys vi
 
 bind i source-file ~/.tmux/layouts/ide.layout
 
