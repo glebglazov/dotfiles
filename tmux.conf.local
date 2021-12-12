@@ -339,15 +339,15 @@ tmux_conf_copy_to_os_clipboard=false
 
 bind i source-file ~/.tmux/layouts/ide.layout
 
-bind-key Left resize-pane -L 2
-bind-key Up resize-pane -U 2
-bind-key Down resize-pane -D 2
-bind-key Right resize-pane -R 2
+bind-key -r Left resize-pane -L 2
+bind-key -r Up resize-pane -U 2
+bind-key -r Down resize-pane -D 2
+bind-key -r Right resize-pane -R 2
 
-bind-key H select-pane -L \; resize-pane -Z
-bind-key J select-pane -D \; resize-pane -Z
-bind-key K select-pane -U \; resize-pane -Z
-bind-key L select-pane -R \; resize-pane -Z
+bind-key -r H select-pane -L \; resize-pane -Z
+bind-key -r J select-pane -D \; resize-pane -Z
+bind-key -r K select-pane -U \; resize-pane -Z
+bind-key -r L select-pane -R \; resize-pane -Z
 
 bind-key -T copy-mode-vi K send -X page-up
 bind-key -T copy-mode-vi J send -X page-down
