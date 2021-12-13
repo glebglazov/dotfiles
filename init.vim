@@ -18,7 +18,7 @@ Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
 Plug 'prettier/vim-prettier', {
       \ 'do': 'yarn install',
-      \ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html', 'ruby'] }
+      \ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html'] }
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
