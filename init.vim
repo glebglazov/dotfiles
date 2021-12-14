@@ -91,6 +91,7 @@ nnoremap <leader>glg :Gclog<space>
 nnoremap <leader>gpl :G pull<CR>
 nnoremap <leader>gpo :G push origin HEAD<CR>
 nnoremap <leader>gpf :G push --force origin HEAD<CR>
+nnoremap <leader>gps :G push origin HEAD:
 " }}}
 
 " Project bindings {{{
