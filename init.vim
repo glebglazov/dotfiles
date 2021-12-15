@@ -95,6 +95,10 @@ nnoremap <leader>gps :G push origin HEAD:
 " }}}
 
 " Project bindings {{{
+
+" Prevent vim-prettier to mess with project bindings
+noremap <leader>p <nop>
+
 nnoremap <leader>pp :cd ~/Dev/
 nnoremap <silent> <leader>pf :GFiles<CR>
 nnoremap <silent> <leader>pgs :cd ~/Dev/game_server<CR>
