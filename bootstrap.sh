@@ -3,7 +3,7 @@
 append_text_to_file_if_not_exists() {
   file_path="$1"
   text="$2"
-  
+
   grep -q "$text" $file_path || echo "$text" >> $file_path
 }
 
@@ -44,7 +44,8 @@ apt-get install -y \
   mysql-client \
   pkg-config \
   nodejs \
-  yarn
+  yarn \
+  xsel
 apt-get update
 
 # Install ohmybash
