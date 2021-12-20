@@ -1,6 +1,8 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'preservim/vimux'
 Plug 'christoomey/vim-system-copy'
+
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -67,6 +69,9 @@ nnoremap <silent> ]b :bn<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <leader>sv :so $MYVIMRC<CR>
+
+nnoremap <leader>vp :VimuxPromptCommand<CR>
+nnoremap <leader>vl :VimuxRunLastCommand<CR>
 " }}}
 
 " Files bindings {{{
