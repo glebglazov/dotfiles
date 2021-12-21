@@ -1,6 +1,7 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'preservim/vimux'
+Plug 'jgdavey/vim-turbux'
 Plug 'christoomey/vim-system-copy'
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
