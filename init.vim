@@ -60,8 +60,8 @@ nnoremap <silent> K <c-u>
 vnoremap <silent> J <c-d>
 vnoremap <silent> K <c-u>
 
-nnoremap <silent> lm J
-vnoremap <silent> lm J
+nnoremap <silent> tm J
+vnoremap <silent> tm J
 
 nnoremap <silent> <leader>/ :Rg<CR>
 
