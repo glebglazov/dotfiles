@@ -43,24 +43,25 @@ set iskeyword-=_
 let g:mapleader="\<space>"
 let g:maplocalleader=","
 
-" Insert mode bindings {{{
-inoremap jk <esc>
-" }}}
-
-" Visual mode bindings {{{
-vnoremap <leader>/ y:Rg<space><c-r>"<cr>
-vnoremap # y/<c-r>"<cr>
-" }}}
-
 " Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
+inoremap jk <esc>
+
+vnoremap <leader>/ y:Rg<space><c-r>"<cr>
+vnoremap # y/<c-r>"<cr>
 
 nnoremap <silent> H ^
+nnoremap <silent> L $
+vnoremap <silent> H ^
+vnoremap <silent> L $
+
 nnoremap <silent> J <c-d>
 nnoremap <silent> K <c-u>
-nnoremap <silent> <c-d> <nop>
-nnoremap <silent> <c-u> <nop>
-nnoremap <silent> L $
+vnoremap <silent> J <c-d>
+vnoremap <silent> K <c-u>
+
+nnoremap <silent> lm J
+vnoremap <silent> lm J
 
 nnoremap <silent> <leader>/ :Rg<CR>
 
