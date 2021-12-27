@@ -78,6 +78,19 @@ nnoremap <leader>vl :VimuxRunLastCommand<CR>
 
 " Files bindings {{{
 nnoremap <silent> <leader>fs :up<CR>
+
+function MyNERDTreeOpenHere()
+  if exists("g:NERDTree") && g:NERDTree.IsOpen()
+    execute "NERDTreeToggle"
+    execute "NERDTreeToggle %"
+  else
+    execute "NERDTreeToggle %"
+  endif
+endfunction
+
+nnoremap <silent> <leader>fl :call MyNERDTreeOpenHere()<CR>
+nnoremap <silent> <leader>ff :NERDTreeFocus<CR>
+nnoremap <silent> <leader>fc :NERDTreeClose<CR>
 " }}}
 
 " Git bindings {{{
@@ -109,20 +122,6 @@ noremap <leader>p <nop>
 nnoremap <leader>pp :cd ~/Dev/
 nnoremap <silent> <leader>pf :GFiles<CR>
 nnoremap <silent> <leader>pgs :cd ~/Dev/game_server<CR>
-" }}}
-
-" Applications bindings {{{
-function MyNERDTreeOpenHere()
-  if exists("g:NERDTree") && g:NERDTree.IsOpen()
-    execute "NERDTreeToggle"
-    execute "NERDTreeToggle %"
-  else
-    execute "NERDTreeToggle %"
-  endif
-endfunction
-
-nnoremap <silent> <leader>ar :call MyNERDTreeOpenHere()<CR>
-nnoremap <silent> <leader>af :NERDTreeFocus<CR>
 " }}}
 
 " Window bindings {{{
