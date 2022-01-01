@@ -11,7 +11,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
-Plug 'iberianpig/tig-explorer.vim'
 
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'tpope/vim-rails'
@@ -106,7 +105,6 @@ nnoremap <leader>grs :G reset --soft<space>
 nnoremap <leader>grh :G reset --hard<space>
 nnoremap <leader>gco :G checkout<space>
 nnoremap <leader>gcb :G checkout -b<space>
-nnoremap <silent> <leader>gt :TigOpenProjectRootDir<CR>
 nnoremap <leader>glg :Gclog<space>
 nnoremap <leader>gpl :G pull<CR>
 nnoremap <leader>gpo :G push origin HEAD<CR>
