@@ -25,6 +25,7 @@ Plug 'prettier/vim-prettier', {
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
+Plug 'easymotion/vim-easymotion'
 
 call plug#end()
 
@@ -74,6 +75,9 @@ nnoremap <leader>sv :so $MYVIMRC<CR>
 
 nnoremap <leader>vp :VimuxPromptCommand<CR>
 nnoremap <leader>vl :VimuxRunLastCommand<CR>
+
+nmap s <Plug>(easymotion-overwin-f2)
+vmap s <Plug>(easymotion-s)
 " }}}
 
 " Files bindings {{{
