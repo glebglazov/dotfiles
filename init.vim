@@ -12,6 +12,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
 
+Plug 'hashivim/vim-terraform'
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'tpope/vim-rails'
 Plug 'pangloss/vim-javascript'
