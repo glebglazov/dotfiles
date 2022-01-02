@@ -61,9 +61,6 @@ nnoremap <silent> K <c-u>
 vnoremap <silent> J <c-d>
 vnoremap <silent> K <c-u>
 
-nnoremap <silent> tm J
-vnoremap <silent> tm J
-
 nnoremap <silent> <leader>/ :Rg<CR>
 
 nnoremap <silent> <leader><tab> :b#<CR>
@@ -78,6 +75,11 @@ nnoremap <leader>vl :VimuxRunLastCommand<CR>
 
 nmap s <Plug>(easymotion-overwin-f2)
 vmap s <Plug>(easymotion-s)
+" }}}
+
+" Text bindings {{{
+nnoremap <silent> tm J
+vnoremap <silent> tm J
 " }}}
 
 " Files bindings {{{
