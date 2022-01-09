@@ -18,6 +18,7 @@ Plug 'tpope/vim-rails'
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+Plug 'slim-template/vim-slim.git'
 
 Plug 'prettier/vim-prettier', {
       \ 'do': 'yarn install',
