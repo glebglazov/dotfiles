@@ -81,9 +81,13 @@ nmap s <Plug>(easymotion-overwin-f2)
 vmap s <Plug>(easymotion-s)
 " }}}
 
-" Text bindings {{{
+" Text/Tab bindings {{{
 nnoremap <silent> tm J
 vnoremap <silent> tm J
+
+nnoremap <leader>tn :tabnext<CR>
+nnoremap <leader>tp :tabprev<CR>
+nnoremap <leader>tt :tabnew<CR>
 " }}}
 
 " Files bindings {{{
@@ -128,9 +132,8 @@ nnoremap <leader>gpp :G push origin HEAD:
 " Prevent vim-prettier to mess with project bindings
 noremap <leader>p <nop>
 
-nnoremap <leader>pp :cd ~/Dev/
+nnoremap <leader>pp :tcd ~/Dev/
 nnoremap <silent> <leader>pf :GFiles<CR>
-nnoremap <silent> <leader>pgs :cd ~/Dev/game_server<CR>
 " }}}
 
 " Window bindings {{{
