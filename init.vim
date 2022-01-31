@@ -13,12 +13,12 @@ Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 
 Plug 'hashivim/vim-terraform'
-Plug 'fatih/vim-go', { 'tag': '*' }
+Plug 'fatih/vim-go', { 'branch': 'master' }
 Plug 'tpope/vim-rails'
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
-Plug 'slim-template/vim-slim.git'
+Plug 'slim-template/vim-slim'
 
 Plug 'prettier/vim-prettier', {
       \ 'do': 'yarn install',
