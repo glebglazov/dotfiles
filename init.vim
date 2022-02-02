@@ -34,6 +34,8 @@ Plug 'vim-voom/VOoM'
 
 call plug#end()
 
+let g:go_doc_keywordprg_enabled=0
+
 colorscheme gruvbox
 set background=dark
 
