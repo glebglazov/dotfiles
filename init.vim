@@ -202,6 +202,13 @@ augroup my_javascript_filetype
 augroup END
 " }}}
 
+" Golang FileType settings {{{
+augroup my_golang_filetype
+  autocmd!
+  autocmd FileType go :set tabstop=4
+  autocmd FileType go :set shiftwidth=4
+" }}}
+
 " Fugitive FileType settings {{{
 augroup my_fugitive_filetype
   autocmd!
