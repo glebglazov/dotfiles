@@ -80,8 +80,8 @@ nnoremap <leader>sv :so $MYVIMRC<CR>
 nnoremap <leader>vp :VimuxPromptCommand<CR>
 nnoremap <leader>vl :VimuxRunLastCommand<CR>
 
-nmap s <Plug>(easymotion-overwin-f2)
-vmap s <Plug>(easymotion-s)
+nmap <leader>s <Plug>(easymotion-overwin-f2)
+vmap <leader>s <Plug>(easymotion-s)
 " }}}
 
 " Text/Tab bindings {{{
