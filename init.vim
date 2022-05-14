@@ -5,9 +5,10 @@ Plug 'jgdavey/vim-turbux'
 Plug 'christoomey/vim-system-copy'
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpared'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
@@ -85,8 +86,6 @@ vnoremap <silent> K <c-u>
 nnoremap <silent> <leader>/ :Rg<CR>
 
 nnoremap <silent> <leader><tab> :b#<CR>
-nnoremap <silent> [b :bp<CR>
-nnoremap <silent> ]b :bn<CR>
 
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <leader>sv :so $MYVIMRC<CR>
