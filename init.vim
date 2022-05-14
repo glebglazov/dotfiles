@@ -180,6 +180,8 @@ nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
 nnoremap <silent> <leader>wk :wincmd k<CR>
 nnoremap <silent> <leader>wl :wincmd l<CR>
+
+autocmd VimResized * :execute "normal! \<C-w>="
 " }}}
 
 " General autogroup settings {{{
