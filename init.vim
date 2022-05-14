@@ -166,6 +166,12 @@ function! MaximizeToggle()
   endif
 endfunction
 
+nnoremap <silent> <leader>w= <C-w>=<CR>
+nnoremap <silent> <leader>w+ <C-w>+<CR>
+nnoremap <silent> <leader>w- <C-w>-<CR>
+nnoremap <silent> <leader>w> <C-w>><CR>
+nnoremap <silent> <leader>w< <C-w><<CR>
+
 nnoremap <silent> <leader>ws :sp<CR>
 nnoremap <silent> <leader>wd :hide<CR>
 nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
