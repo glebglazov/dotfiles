@@ -5,6 +5,7 @@ Plug 'jgdavey/vim-turbux'
 Plug 'christoomey/vim-system-copy'
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
