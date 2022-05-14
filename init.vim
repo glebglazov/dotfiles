@@ -49,6 +49,18 @@ set hidden
 let g:mapleader="\<space>"
 let g:maplocalleader=","
 
+" System copy plugin setup {{{
+nmap zc <Plug>SystemCopy
+nmap zyy <Plug>SystemCopyLine
+nmap zp <Plug>SystemPaste
+
+xmap zc <Plug>SystemCopy
+xmap zv <Plug>SystemPaste
+
+autocmd VimEnter * xunmap cv
+autocmd VimEnter * xunmap cp
+" }}}
+
 " Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
 inoremap jk <esc>
