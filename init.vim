@@ -14,6 +14,7 @@ Plug 'tpope/vim-fugitive'
 
 Plug 'hashivim/vim-terraform'
 Plug 'fatih/vim-go', { 'branch': 'master' }
+Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-rails'
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
