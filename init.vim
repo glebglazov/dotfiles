@@ -106,8 +106,6 @@ vmap <leader>s <Plug>(easymotion-s)
 nnoremap <silent> tm J
 vnoremap <silent> tm J
 
-nnoremap <leader>tn :tabnext<CR>
-nnoremap <leader>tp :tabprev<CR>
 nnoremap <leader>tt :tabnew<CR>
 " }}}
 
