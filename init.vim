@@ -204,8 +204,6 @@ augroup END
 " Ruby FileType settings {{{
 augroup my_ruby_filetype
   autocmd!
-  autocmd FileType ruby :onoremap a i(
-  autocmd FileType ruby :onoremap b /end<cr>
   autocmd FileType ruby :nnoremap <leader>rt :!rubocop -a %<cr>
   autocmd FileType ruby :onoremap cm :<c-u>execute "normal! ?def .*\r:nohlsearch\rf lvg_"<CR>
   autocmd FileType ruby :onoremap nm :<c-u>execute "normal! /def .*\r:nohlsearch\rf lvg_"<CR>
