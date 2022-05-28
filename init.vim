@@ -205,8 +205,6 @@ augroup END
 augroup my_ruby_filetype
   autocmd!
   autocmd FileType ruby :nnoremap <leader>rt :!rubocop -a %<cr>
-  autocmd FileType ruby :onoremap cm :<c-u>execute "normal! ?def .*\r:nohlsearch\rf lvg_"<CR>
-  autocmd FileType ruby :onoremap nm :<c-u>execute "normal! /def .*\r:nohlsearch\rf lvg_"<CR>
   autocmd FileType ruby :iabbrev bpr binding.pry
 augroup END
 " }}}
