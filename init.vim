@@ -23,17 +23,9 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'slim-template/vim-slim'
 
-Plug 'prettier/vim-prettier', {
-      \ 'do': 'yarn install',
-      \ 'for': ['javascript', 'css', 'scss', 'jsx', 'json', 'html'] }
-
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'easymotion/vim-easymotion'
-
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
-Plug 'vim-voom/VOoM'
 
 call plug#end()
 
@@ -228,51 +220,4 @@ augroup my_fugitive_filetype
   autocmd!
   autocmd FileType fugitive :nmap <tab> =
 augroup END
-" }}}
-
-" Focus function {{{
-let g:limelight_conceal_ctermfg = 'gray'
-let g:limelight_conceal_guifg = 'DarkGray'
-
-let g:focused = 0
-function! Focus()
-  let g:focused = 1 - g:focused
-
-  if g:focused == 1
-    let b:coc_suggest_disable = 1
-    :Goyo 120
-    :Limelight
-    :exe "normal \<C-w>\<C-w>"
-
-    set noshowmode
-
-    :nmap j jzz
-    :nmap k kzz
-    :nmap G Gzz
-    :nmap J Jzz
-    :vmap J Jzz
-    :nmap K Kzz
-    :vmap K Kzz
-
-    :silent !tmux set status off
-  else
-    let b:coc_suggest_disable = 0
-    :Goyo!
-    :Limelight!
-
-    set showmode
-
-    :unmap j
-    :unmap k
-    :unmap G
-    :nnoremap <silent> J <c-d>
-    :nnoremap <silent> K <c-u>
-    :vnoremap <silent> J <c-d>
-    :vnoremap <silent> K <c-u>
-
-    :silent !tmux set status on
-  endif
-endfunction
-
-command Focus call Focus()
 " }}}
