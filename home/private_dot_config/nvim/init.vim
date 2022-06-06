@@ -22,6 +22,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'slim-template/vim-slim'
+Plug 'cespare/vim-toml'
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
