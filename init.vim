@@ -196,8 +196,14 @@ augroup END
 " Ruby FileType settings {{{
 augroup my_ruby_filetype
   autocmd!
-  autocmd FileType ruby :nnoremap <leader>rt :!rubocop -a %<cr>
   autocmd FileType ruby :iabbrev bpr binding.pry
+  " autocmd FileType ruby :nnoremap <leader>rt :!rubocop -a %<cr>
+  " autocmd FileType ruby :inoremap \cl class<space><cr><cr>end<esc>kkA
+  " autocmd FileType ruby :inoremap \de def<space><cr><cr>end<esc>kkA
+  " autocmd FileType ruby :inoremap \ie if<space><cr><cr>else<cr><cr>end<esc>4kA
+  " autocmd FileType ruby :inoremap \if if<space><cr><cr>end<esc>kkA
+  " autocmd FileType ruby :inoremap \d\| <space>do<space>\|\|<cr><cr>end<esc>kk$ha
+  " autocmd FileType ruby :inoremap \ea each\do
 augroup END
 " }}}
 
