@@ -1,0 +1,7 @@
+{{ - if (eq .chezmoi.os "linux") -}}
+#!/bin/sh
+
+set -eufo pipefail
+
+sudo snap install ripgrep fzf
+{{ - end -}}
