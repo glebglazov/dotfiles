@@ -225,6 +225,6 @@ augroup my_golang_filetype
 " Fugitive FileType settings {{{
 augroup my_fugitive_filetype
   autocmd!
-  autocmd FileType fugitive :nmap <tab> =
+  autocmd FileType fugitive :nmap <buffer> <tab> =
 augroup END
 " }}}
