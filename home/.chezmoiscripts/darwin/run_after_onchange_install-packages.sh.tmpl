@@ -1,13 +1,8 @@
 {{- if (eq .chezmoi.os "darwin") -}}
-
-{{ $brews := list
-	"ripgrep"
-	"fzf"
--}}
-
 #!/bin/bash
 
 set -eufo pipefail
 
-brew install {{ $brews | join " " }}
+# Brewfile hash: {{ include "Brewfile" | sha256sum }}
+brew bundle
 {{- end -}}
