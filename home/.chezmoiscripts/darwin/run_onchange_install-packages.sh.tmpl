@@ -1,8 +1,13 @@
 {{- if (eq .chezmoi.os "darwin") -}}
 
+{{ $brews := list
+	"ripgrep"
+	"fzf"
+-}}
+
 #!/bin/bash
 
 set -eufo pipefail
 
-brew install ripgrep fzf
+brew install {{ $brews | join " " }}
 {{- end -}}

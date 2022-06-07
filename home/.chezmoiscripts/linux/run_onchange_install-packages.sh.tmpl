@@ -1,7 +1,36 @@
 {{- if (eq .chezmoi.os "linux") -}}
+
+{{ $packages := list
+  "software-properties-common"
+  "fzf"
+  "ripgrep"
+  "git"
+  "tig"
+  "mosh"
+  "tmux"
+  "docker.io"
+  "docker-compose"
+  "make"
+  "wget"
+  "curl"
+  "libmysqlclient-dev"
+  "mysql-client"
+  "pkg-config"
+  "nodejs"
+  "yarn"
+  "xsel"
+-}}
+
 #!/bin/sh
 
-set -eufo pipefail
+set -euf
 
-sudo snap install ripgrep fzf
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{ 	$sudo = "" -}}
+{{ end -}}
+
+{{ $sudo }}apt-get update
+{{ $sudo }}apt-get install {{ $packages | join " " }}
+
 {{- end -}}
