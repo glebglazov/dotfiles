@@ -31,6 +31,6 @@ set -euf
 {{ end -}}
 
 {{ $sudo }}apt-get update
-{{ $sudo }}apt-get install {{ $packages | join " " }}
+{{ $sudo }}apt-get install -y {{ $packages | join " " }}
 
 {{- end -}}
