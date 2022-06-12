@@ -39,7 +39,9 @@ set -euf
 {{ $sudo }}apt-get update
 {{ $sudo }}apt-get install -y {{ $packages | join " " }}
 
-{{ $sudo }}snap install --classic {{ $snaps | join " " }}
+{{ range $snaps }}
+{{ $sudo }}snap install --classic {{ . }}
+{{ end }}
 
 chsh -s $(which zsh)
 
