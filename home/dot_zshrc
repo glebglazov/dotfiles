@@ -109,6 +109,10 @@ function unlock_bw {
 	source $file
 }
 
+function get_bw_password {
+	bw list items --search $1 | jq -r '.[].login.password'
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
 [ -f ~/.bw_sessions ] && source ~/.bw_sessions
