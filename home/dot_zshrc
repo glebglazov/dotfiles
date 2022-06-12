@@ -102,6 +102,14 @@ source $ZSH/oh-my-zsh.sh
 
 export EDITOR="nvim"
 
+function unlock_bw {
+	file="~/.bw_sessions"
+
+	touch $file
+	bw unlock | grep export | awk '{print substr($0, 3, length($0) - 1)}' >> $file
+	source $file
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
 [ -f ~/.bw_sessions ] && source ~/.bw_sessions
