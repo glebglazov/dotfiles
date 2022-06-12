@@ -19,7 +19,12 @@
   "nodejs"
   "yarn"
   "xsel"
+  "zsh"
 -}}
+
+{{ $snaps := list
+   "nvim"
+}}
 
 #!/bin/sh
 
@@ -32,5 +37,9 @@ set -euf
 
 {{ $sudo }}apt-get update
 {{ $sudo }}apt-get install -y {{ $packages | join " " }}
+
+{{ $sudo }}snap install --classic {{ $snaps | join " " }}
+
+chsh -s $(which zsh)
 
 {{- end -}}
