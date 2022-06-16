@@ -102,6 +102,7 @@ source $ZSH/oh-my-zsh.sh
 
 export EDITOR="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CONFIG_DIRS="$HOME/.local/share"
 
 function unlock_bw {
 	file="~/.bw_sessions"
