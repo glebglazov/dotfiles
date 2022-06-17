@@ -104,15 +104,19 @@ export EDITOR="nvim"
 export PATH="$PATH:$HOME/.local/bin"
 export XDG_CONFIG_HOME="$HOME/.config"
 
-function unlock_bw {
+function bw_unlock {
 	file="~/.bw_sessions"
 
 	bw unlock | grep export | awk '{print substr($0, 3, length($0) - 1)}' >> $file
 	source $file
 }
 
-function get_bw_password {
+function bw_password {
 	bw list items --search $1 | jq -r '.[].login.password'
+}
+
+function bw_custom_field {
+	bw list items --search $1 | jq -r ".[].fields | map(select(.name | contains(\"$2\"))) | .[].value"
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
