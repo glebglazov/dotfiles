@@ -414,9 +414,9 @@ tmux_conf_uninstall_plugins_on_reload=true
 
 # -- load OS-specific config files
 
-if-shell 'uname | grep -q Darwin' \
-    'source-file ~/.tmux.conf.osx' \
-    'if-shell "uname | grep -q CYGWIN" "source-file ~/.tmux.conf.cygwin" "source-file ~/.tmux.conf.linux"'
+{{- if (eq .chezmoi.os "darwin") }}
+set-option -g repeat-time 0
+{{ end -}}
 
 # -- custom variables ----------------------------------------------------------
 
