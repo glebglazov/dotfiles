@@ -105,9 +105,10 @@ export PATH="$PATH:$HOME/.local/bin"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 function bw_unlock {
-	file="~/.bw_sessions"
+	file="$HOME/.bw_sessions"
 
-	bw unlock | grep export | awk '{print substr($0, 3, length($0) - 1)}' >> $file
+	key=$(bw unlock --raw)
+	echo "export BW_SESSION=$key" >> $file
 	source $file
 }
 
