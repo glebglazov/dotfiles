@@ -14,15 +14,8 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
 
-Plug 'hashivim/vim-terraform'
-Plug 'fatih/vim-go', { 'branch': 'master' }
-Plug 'vim-ruby/vim-ruby'
+Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-rails'
-Plug 'pangloss/vim-javascript'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
-Plug 'slim-template/vim-slim'
-Plug 'cespare/vim-toml'
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
