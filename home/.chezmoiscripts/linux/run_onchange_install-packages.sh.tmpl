@@ -1,4 +1,4 @@
-{{- if (eq .chezmoi.os "linux") -}}
+{{ if (eq .chezmoi.os "linux") -}}
 
 {{ $packages := list
   "software-properties-common"
@@ -21,6 +21,7 @@
   "xsel"
   "zsh"
   "jq"
+  "keychain"
 -}}
 
 {{ $snaps := list
@@ -45,5 +46,4 @@ set -euf
 {{ end }}
 
 chsh -s $(which zsh)
-
-{{- end -}}
+{{ end -}}
