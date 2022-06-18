@@ -120,6 +120,10 @@ function bw_custom_field {
 	bw list items --search $1 | jq -r ".[].fields | map(select(.name | contains(\"$2\"))) | .[].value"
 }
 
+{{ if (eq .chezmoi.os "linux") -}}
+eval `keychain -q --agents ssh --eval gglazov_main`
+{{ end -}}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
 [ -f ~/.bw_sessions ] && source ~/.bw_sessions
