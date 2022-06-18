@@ -1,0 +1,78 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+
+{{ $taps := list
+  "hashicorp/tap"
+  "homebrew/bundle"
+  "homebrew/cask"
+  "homebrew/cask-fonts"
+  "homebrew/core"
+  "homebrew/services"
+  "reviewdog/tap"
+-}}
+
+{{ $casks := list
+  "alacritty"
+  "font-source-code-pro"
+  "google-chrome"
+-}}
+
+{{ $brews := list
+  "gdbm"
+  "gh"
+  "libyaml"
+  "readline"
+  "python@3.10"
+  "ansible"
+  "apr-util"
+  "automake"
+  "coreutils"
+  "unixodbc"
+  "asdf"
+  "python@3.9"
+  "awscli"
+  "bison"
+  "node"
+  "bitwarden-cli"
+  "libffi"
+  "unbound"
+  "gnutls"
+  "cask"
+  "chruby"
+  "cmake"
+  "fd"
+  "fonttools"
+  "fzf"
+  "htop"
+  "openjdk"
+  "jmeter"
+  "jq"
+  "krb5"
+  "libfido2"
+  "md5deep"
+  "mosh"
+  "mysql"
+  "neovim"
+  "node@16"
+  "postgresql"
+  "rbspy"
+  "redis"
+  "ripgrep"
+  "ruby-install"
+  "subversion"
+  "terraform"
+  "tig"
+  "tmux"
+  "wget"
+  "keychain"
+  "reviewdog/tap/reviewdog"
+-}}
+
+#!/bin/bash
+
+{{ range $taps }}
+brew tap {{ . }}
+{{ end  }}
+brew install --cask {{ $casks | join " " }}
+brew install {{ $brews | join " " }}
+
+{{ end -}}
