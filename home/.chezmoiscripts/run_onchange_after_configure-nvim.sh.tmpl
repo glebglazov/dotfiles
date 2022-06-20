@@ -3,4 +3,4 @@
 set -eufo pipefail
 
 # init.vim hash: {{ include "private_dot_config/nvim/init.vim" | sha256sum }}
-nvim -u $HOME/.config/nvim/init.vim -c PlugInstall -c PlugClean! -c qa
+nvim -c PlugInstall -c PlugClean! -c qa
