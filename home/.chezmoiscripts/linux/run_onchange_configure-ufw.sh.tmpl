@@ -1,6 +1,8 @@
 {{ if (eq .chezmoi.os "linux") -}}
 
-#!/bin/sh
+#!/bin/bash
+
+set -eufo pipefail
 
 ufw allow 22
 ufw allow 80

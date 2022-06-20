@@ -29,9 +29,9 @@
    "nvim"
 -}}
 
-#!/bin/sh
+#!/bin/bash
 
-set -euf
+set -eufo pipefail
 
 {{ $sudo := "sudo " -}}
 {{ if eq .chezmoi.username "root" -}}
