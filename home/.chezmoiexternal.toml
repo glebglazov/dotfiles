@@ -7,7 +7,6 @@
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
 	refreshPeriod = "168h"
 [".oh-my-zsh"]
-	type = "archive"
-	url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
-	stripComponents = 1
+	type = "git-repo"
+	url = "https://github.com/ohmyzsh/ohmyzsh"
 	refreshPeriod = "168h"
