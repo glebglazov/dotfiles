@@ -1,4 +1,6 @@
 [default]
 region = us-east-1
+[profile tds]
+region = us-east-1
 [profile personal]
 region = eu-central-1
