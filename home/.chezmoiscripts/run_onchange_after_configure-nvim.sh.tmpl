@@ -2,5 +2,8 @@
 
 set -eufo pipefail
 
+export XDG_CONFIG_DIRS=$HOME/.local/share
+export XDG_CONFIG_HOME=$HOME/.config
+
 # init.vim hash: {{ include "private_dot_config/nvim/init.vim" | sha256sum }}
 nvim -c PlugInstall -c PlugClean! -c qa
