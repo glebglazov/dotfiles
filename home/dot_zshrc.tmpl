@@ -122,6 +122,10 @@ function find_pid_by_port {
 	lsof -i tcp:$pid | tail -1 | awk '{print $2}'
 }
 
+function bw_secrets {
+	source ~/.bw_secrets
+}
+
 {{ if (eq .chezmoi.os "linux") -}}
 eval `keychain -q --agents ssh --eval gglazov_main`
 {{ end -}}
