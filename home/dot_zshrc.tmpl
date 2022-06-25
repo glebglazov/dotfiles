@@ -126,9 +126,7 @@ function bw_secrets {
 	source ~/.bw_secrets
 }
 
-{{ if (eq .chezmoi.os "linux") -}}
 eval `keychain -q --agents ssh --eval gglazov_main`
-{{ end -}}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
