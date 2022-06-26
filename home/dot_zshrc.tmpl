@@ -126,7 +126,9 @@ function bw_secrets {
 	source ~/.bw_secrets
 }
 
-eval `keychain -q --agents ssh --eval gglazov_main`
+function ssh_agent {
+	eval `keychain -q --agents ssh --eval gglazov_main`
+}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
