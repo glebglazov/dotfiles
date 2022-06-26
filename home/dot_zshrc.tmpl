@@ -130,6 +130,8 @@ function ssh_agent {
 	eval `keychain -q --agents ssh --inherit any --eval gglazov_main`
 }
 
+eval "$(direnv hook zsh)"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
 [ -f ~/.bw_sessions ] && source ~/.bw_sessions
