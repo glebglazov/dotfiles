@@ -127,7 +127,7 @@ function mount_secrets {
 }
 
 function ssh_agent {
-	eval `keychain -q --agents ssh --eval gglazov_main`
+	eval `keychain -q --agents ssh --inherit any --eval gglazov_main`
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
