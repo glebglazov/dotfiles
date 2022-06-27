@@ -1,0 +1,13 @@
+{{- $ssh_accessible := false -}}
+{{- $workstation := false -}}
+
+{{- if eq .chezmoi.hostname "workbench" -}}
+{{-   $ssh_accessible = true -}}
+{{-   $workstation = true -}}
+{{- else -}}
+{{-   $workstation = true -}}
+{{- end -}}
+
+[data]
+ssh_accessible = {{ $ssh_accessible }}
+workstation = {{ $workstation }}

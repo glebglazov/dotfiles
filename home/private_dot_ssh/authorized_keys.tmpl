@@ -1,3 +1,5 @@
-{{ range gitHubKeys "glebglazov" -}}
-{{   .Key }}
-{{ end -}}
+{{- if .ssh_accessible -}}
+{{   range gitHubKeys "glebglazov" -}}
+{{     .Key }}
+{{   end -}}
+{{- end -}}
