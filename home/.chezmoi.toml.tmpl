@@ -1,8 +1,7 @@
 {{- $workstation := false -}}
 {{- $bastion := false -}}
 
-{{- if eq .chezmoi.hostname "workbench" -}}
-{{-   $workstation = true -}}
+{{- if eq .chezmoi.hostname "bastion" -}}
 {{-   $bastion = true -}}
 {{- else -}}
 {{-   $workstation = true -}}
