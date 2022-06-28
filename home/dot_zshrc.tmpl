@@ -122,10 +122,10 @@ function mount_secrets {
 function ssh_agent {
   {{- $keys := list }}
 	{{- if .bastion }}
-  {{-   $keys = concat (list "bastion") }}
+  {{-   $keys = concat $keys (list "bastion") }}
 	{{- end }}
 	{{- if .workstation }}
-  {{-   $keys = concat (list "gglazov_main") }}
+  {{-   $keys = concat $keys (list "gglazov_main") }}
 	{{- end }}
   {{- if not (eq (len $keys) 0) }}
 	eval `keychain -q --agents ssh --inherit any --eval {{ $keys | join " " }}`
