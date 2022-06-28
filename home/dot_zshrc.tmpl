@@ -120,7 +120,16 @@ function mount_secrets {
 }
 
 function ssh_agent {
-	eval `keychain -q --agents ssh --inherit any --eval gglazov_main`
+  {{- $keys := list }}
+	{{- if .bastion }}
+  {{-   $keys = concat (list "bastion") }}
+	{{- end }}
+	{{- if .workstation }}
+  {{-   $keys = concat (list "gglazov_main") }}
+	{{- end }}
+  {{- if not (eq (len $keys) 0) }}
+	eval `keychain -q --agents ssh --inherit any --eval {{ $keys | join " " }}`
+	{{- end }}
 }
 
 eval "$(direnv hook zsh)"
