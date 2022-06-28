@@ -133,7 +133,7 @@ function ssh_agent {
 }
 
 {{ if .bastion -}}
-function connect_to_workstation {
+function goto_workstation {
 	ip=$1
 
 	ssh_agent && ssh root@$ip
