@@ -132,6 +132,14 @@ function ssh_agent {
 	{{- end }}
 }
 
+{{ if .bastion -}}
+function connect_to_workstation {
+	ip=$1
+
+	ssh_agent && ssh root@$ip
+}
+{{ end -}}
+
 eval "$(direnv hook zsh)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
