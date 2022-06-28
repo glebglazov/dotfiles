@@ -1,4 +1,4 @@
-{{- if .ssh_accessible -}}
+{{- if .bastion -}}
 {{   range gitHubKeys "glebglazov" -}}
 {{     .Key }}
 {{   end -}}
