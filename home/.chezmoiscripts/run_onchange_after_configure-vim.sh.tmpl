@@ -2,8 +2,5 @@
 
 set -eufo pipefail
 
-# init.vim hash: {{ include "private_dot_config/nvim/init.vim" | sha256sum }}
-zsh -c "nvim -c PlugInstall -c PlugClean! -c qa"
-
 # .vimrc hash: {{ include "dot_vimrc" | sha256sum }}
 zsh -c "vim -c PlugInstall -c PlugClean! -c qa"
