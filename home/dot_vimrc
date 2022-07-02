@@ -30,6 +30,8 @@ set background=dark
 
 " Highlight search patterns
 set hlsearch
+" Start highlighting while typing
+set incsearch
 " Enable hybrid line numbers
 set number relativenumber
 " Allow to hide buffers which have changes
