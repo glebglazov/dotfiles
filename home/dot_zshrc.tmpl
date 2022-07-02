@@ -141,6 +141,7 @@ function goto_workstation {
 {{ end -}}
 
 eval "$(direnv hook zsh)"
+ssh_agent
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
