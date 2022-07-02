@@ -52,7 +52,7 @@ let NERDTreeShowHidden=1
 " System copy plugin setup {{{
 nmap zc <Plug>SystemCopy
 nmap zyy <Plug>SystemCopyLine
-nmap zp <Plug>SystemPaste
+nmap zv <Plug>SystemPaste
 
 xmap zc <Plug>SystemCopy
 xmap zv <Plug>SystemPaste
