@@ -3,6 +3,7 @@
 {{ $packages := list
   "fzf"
   "ripgrep"
+  "vim"
   "git"
   "tig"
   "mosh"
@@ -30,9 +31,7 @@
        "libmysqlclient-dev") -}}
 {{ end -}}
 
-{{ $snaps := list
-   "nvim"
--}}
+{{ $snaps := list -}}
 
 #!/bin/bash
 
