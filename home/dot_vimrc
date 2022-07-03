@@ -3,6 +3,7 @@ call plug#begin('~/.local/share/vim/plugged')
 Plug 'preservim/vimux'
 Plug 'jgdavey/vim-turbux'
 Plug 'christoomey/vim-system-copy'
+Plug 'roxma/vim-tmux-clipboard'
 
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-commentary'
