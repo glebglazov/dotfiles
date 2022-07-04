@@ -59,7 +59,6 @@ set -eufo pipefail
 chsh -s $(which zsh)
 
 npm install --global yarn
-if [ ! -f "$HOME/.config/Bitwarden\ CLI" ]; then
-  ln -s "$HOME/snap/bw/current/.config/Bitwarden\ CLI" "$HOME/.config/Bitwarden\ CLI"
-fi
+
+ln -sf "$HOME/snap/bw/current/.config/Bitwarden\ CLI" "$HOME/.config/Bitwarden\ CLI"
 {{ end -}}
