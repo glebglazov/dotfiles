@@ -132,14 +132,6 @@ function ssh_agent {
 	{{- end }}
 }
 
-{{ if .bastion -}}
-function goto_workstation {
-	ip=$1
-
-	ssh_agent && ssh root@$ip
-}
-{{ end -}}
-
 eval "$(direnv hook zsh)"
 ssh_agent
 
