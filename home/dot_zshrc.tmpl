@@ -119,21 +119,17 @@ function mount_secrets {
 	source ~/.secrets_env
 }
 
-function ssh_agent {
-  {{- $keys := list }}
-	{{- if .bastion }}
-  {{-   $keys = concat $keys (list "bastion") }}
+function configure_agents {
+  {{- if not (eq (len .ssh_keys) 0) }}
+	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
 	{{- end }}
-	{{- if .workstation }}
-  {{-   $keys = concat $keys (list "gglazov_main" "gglazov_deprecated") }}
-	{{- end }}
-  {{- if not (eq (len $keys) 0) }}
-	eval `keychain -q --agents ssh --inherit any --eval {{ $keys | join " " }}`
+  {{- if not (eq (len .gpg_keys) 0) }}
+	eval `keychain -q --agents gpg --inherit any --eval {{ .gpg_keys | join " " }}`
 	{{- end }}
 }
 
 eval "$(direnv hook zsh)"
-ssh_agent
+configure_agents
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile

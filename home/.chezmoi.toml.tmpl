@@ -1,5 +1,7 @@
 {{- $workstation := false -}}
 {{- $bastion := false -}}
+{{- $sshKeys := list -}}
+{{- $gpgKeys := list -}}
 
 {{- if eq .chezmoi.hostname "bastion" -}}
 {{-   $bastion = true -}}
@@ -7,6 +9,24 @@
 {{-   $workstation = true -}}
 {{- end -}}
 
+{{- $sshKeys := list }}
+{{- if $bastion }}
+{{-   $sshKeys = concat $sshKeys (list "bastion") }}
+{{- end }}
+{{- if $workstation }}
+{{-   $sshKeys = concat $sshKeys (list "gglazov_main" "gglazov_deprecated") }}
+{{- end }}
+
 [data]
 bastion = {{ $bastion }}
 workstation = {{ $workstation }}
+ssh_keys = [
+{{- range $sshKeys }}
+{{  . | quote }},
+{{- end }}
+]
+gpg_keys = [
+{{- range $gpgKeys }}
+{{  . | quote }},
+{{- end }}
+]
