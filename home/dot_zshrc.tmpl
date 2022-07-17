@@ -179,7 +179,7 @@ function configure_agents {
 	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
 	{{- end }}
   {{- if not (eq .gpg_key_object_id "") }}
-	eval `keychain -q --agents gpg --inherit any {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}`
+	eval `keychain -q --agents gpg --inherit any --eval {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}`
 	{{- end }}
 }
 
