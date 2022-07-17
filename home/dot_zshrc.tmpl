@@ -93,7 +93,7 @@ source $ZSH/oh-my-zsh.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-function bwu {
+function bwug {
 	file="$HOME/.bw_sessions"
 
 	key=$(bw unlock --raw)
@@ -101,23 +101,33 @@ function bwu {
 	source $file
 }
 
+function bwul {
+	export "BW_SESSION=$(bw unlock --raw)"
+}
+
 function _bw {
   zparseopts -D -- \
-    nl=no_lock -no-lock=no_lock
+    nl=no_lock -no-lock=no_lock \
+    g=global -global=global
 
 	bw --nointeraction --quiet sync
 	if [[ ! "$?" -eq "0" ]]; then
-		bwu
+		[[ -z "$global" ]] && bwul || bwug
+
 		bw --nointeraction --quiet sync
 	fi
 
 	eval "$@"
 
 	if [[ ! -z "$no_lock" ]]; then
-		>&2 echo "WARNING: You are not locking Bitwarden!"
+		echo "WARNING: You are not locking Bitwarden!" >&2
 	else
 		bw --quiet lock
 	fi
+}
+
+function bwnl {
+	_bw -nl -- $@
 }
 
 function _cm {
@@ -141,6 +151,10 @@ function cmu {
 function cmdi {
 	_cm diff $1
 }
+
+alias cmanl="cma f"
+alias cmunl="cmu f"
+alias cmdinl="cmdi f"
 
 function get_password {
 	bw list items --search $1 | jq -r '.[].login.password'
