@@ -3,4 +3,6 @@
   name = Gleb Glazov
 {{- if not (eq .gpg_key_object_id "") }}
   signinkey = {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}
+[commit]
+  gpgsign = true
 {{- end }}
