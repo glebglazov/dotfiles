@@ -20,13 +20,5 @@
 [data]
 bastion = {{ $bastion }}
 workstation = {{ $workstation }}
-ssh_keys = [
-{{- range $sshKeys }}
-{{  . | quote }},
-{{- end }}
-]
-gpg_keys = [
-{{- range $gpgKeys }}
-{{  . | quote }},
-{{- end }}
-]
+ssh_keys = [ {{ $sshKeys | quoteList | join ", " }} ]
+gpg_keys = [ {{ $gpgKeys | quoteList | join ", " }} ]
