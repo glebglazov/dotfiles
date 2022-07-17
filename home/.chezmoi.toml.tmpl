@@ -1,12 +1,22 @@
 {{- $workstation := false -}}
 {{- $bastion := false -}}
 {{- $sshKeys := list -}}
-{{- $gpgKeys := list -}}
+{{- $gpgKeyObjectId := "" -}}
 
-{{- if eq .chezmoi.hostname "bastion" -}}
+{{- $hostname := .chezmoi.hostname -}}
+
+{{- if eq $hostname "bastion" -}}
 {{-   $bastion = true -}}
 {{- else -}}
 {{-   $workstation = true -}}
+{{- end -}}
+
+{{- if eq $hostname "Glebs-MacBook-Pro" -}}
+{{-   $gpgKeyObjectId = "bfc307b3-415b-47da-9928-aed50091ed1e" }}
+{{- else if eq $hostname "bastion" -}}
+{{-   $gpgKeyObjectId = "" }}
+{{- else if eq $hostname "workstation" -}}
+{{-   $gpgKeyObjectId = "" }}
 {{- end -}}
 
 {{- $sshKeys := list }}
@@ -17,8 +27,14 @@
 {{-   $sshKeys = concat $sshKeys (list "gglazov_main" "gglazov_deprecated") }}
 {{- end }}
 
+{{- if eq .chezmoi.hostname "bastion" -}}
+{{-   $bastion = true -}}
+{{- else -}}
+{{-   $workstation = true -}}
+{{- end -}}
+
 [data]
 bastion = {{ $bastion }}
 workstation = {{ $workstation }}
 ssh_keys = [ {{ $sshKeys | quoteList | join ", " }} ]
-gpg_keys = [ {{ $gpgKeys | quoteList | join ", " }} ]
+gpg_key_object_id = {{ $gpgKeyObjectId | quote }}

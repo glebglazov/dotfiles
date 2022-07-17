@@ -123,9 +123,7 @@ function configure_agents {
   {{- if not (eq (len .ssh_keys) 0) }}
 	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
 	{{- end }}
-  {{- if not (eq (len .gpg_keys) 0) }}
-	eval `keychain -q --agents gpg --inherit any --eval {{ .gpg_keys | join " " }}`
-	{{- end }}
+	eval `keychain -q --agents gpg --inherit any`
 }
 
 eval "$(direnv hook zsh)"

@@ -1,0 +1,20 @@
+{{ if not (eq .gpg_key_object_id "") -}}
+
+#!/bin/bash
+
+{{ $gpg_key := (bitwardenFields "item" .gpg_key_object_id).private.value }}
+
+tempfile=$(mktemp)
+cleanup() {
+	rm "$tempfile"
+}
+trap cleanup EXIT
+
+# GPG key hash: {{ $gpg_key | sha256sum }}
+cat <<KEY > $tempfile
+{{ $gpg_key }}
+KEY
+
+cat $tempfile | base64 -d | gpg --import
+
+{{ end -}}
