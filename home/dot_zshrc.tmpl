@@ -178,11 +178,17 @@ function configure_agents {
   {{- if not (eq (len .ssh_keys) 0) }}
 	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
 	{{- end }}
-	eval `keychain -q --agents gpg --inherit any`
+  {{- if not (eq .gpg_key_object_id "") }}
+	eval `keychain -q --agents gpg --inherit any {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}`
+	{{- end }}
 }
 
 eval "$(direnv hook zsh)"
 configure_agents
+
+{{ if (eq .chezmoi.os "linux") -}}
+export GPG_TTY=$(tty)
+{{ end -}}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile

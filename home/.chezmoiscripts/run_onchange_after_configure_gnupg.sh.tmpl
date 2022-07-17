@@ -15,6 +15,10 @@ cat <<KEY > $tempfile
 {{ $gpg_key }}
 KEY
 
+{{ if (eq .chezmoi.os "linux") -}}
+export GPG_TTY=$(tty)
+{{ end -}}
+
 cat $tempfile | base64 -d | gpg --import
 
 {{ end -}}
