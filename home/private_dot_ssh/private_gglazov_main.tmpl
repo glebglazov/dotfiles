@@ -1,3 +1,3 @@
-{{ if .workstation -}}
+{{ if .include_personal_ssh_keys -}}
 {{   (bitwardenFields "item" "a50ca963-0a1f-442c-afd9-aed401084758").private.value | b64dec }}
 {{ end -}}
