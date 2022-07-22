@@ -190,6 +190,8 @@ configure_agents
 export GPG_TTY=$(tty)
 {{ end -}}
 
+ulimit -n 10240
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.my_profile ] && source ~/.my_profile
 [ -f ~/.bw_sessions ] && source ~/.bw_sessions
