@@ -15,8 +15,10 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-fugitive'
 
-Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-rails'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'sheerun/vim-polyglot'
+let g:polyglot_disabled = ['go']
 
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
