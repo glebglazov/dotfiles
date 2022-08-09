@@ -2,6 +2,21 @@ font:
   size: 15
 
 key_bindings:
+  # How to add custom keybindings (based on https://arslan.io/2018/02/05/gpu-accelerated-terminal-alacritty/):
+  #
+  # 1. Use xxd command
+  #   $ xxd -psd
+  #     ^Fv
+  #     06760a^C
+  #
+  #   06 -> ctrl-f
+  #   76 -> v
+  #   0a -> return
+  #   ^C -> ctrl-c
+  #
+  # 2. Add a keybinding to alacritty:
+  #   - { key: D, mods: Command, chars: "\x06\x76"  }
+
   # Movement in terminal bindings
   - { key: Back, mods: Command, chars: "\x15" }
   - { key: Left, mods: Alt, chars: "\x1bb" }
@@ -21,6 +36,11 @@ key_bindings:
   - { key: Down, mods: Command|Shift, chars: "\x02\x1b\x5b\x42" }
   - { key: Up, mods: Command|Shift, chars: "\x02\x1b\x5b\x41" }
   - { key: Right, mods: Command|Shift, chars: "\x02\x1b\x5b\x43" }
+  # Windows movement
+  - { key: LBracket, mods: Command|Shift, chars: "\x02\x08" }
+  - { key: RBracket, mods: Command|Shift, chars: "\x02\x0c" }
+  - { key: LBracket, mods: Command, chars: "\x02\x5b" }
+  - { key: RBracket, mods: Command, chars: "\x02\x5d" }
   # Layouts
   - { key: I, mods: Command|Shift, chars: "\x02\x69" }
   # Rename the current tmux window
@@ -35,10 +55,6 @@ key_bindings:
   - { key: Key7, mods: Command, chars: "\x02\x37" }
   - { key: Key8, mods: Command, chars: "\x02\x38" }
   - { key: Key9, mods: Command, chars: "\x02\x39" }
-  # Change to the previous tmux window
-  - { key: LBracket, mods: Command|Shift, chars: "\x02\x70" }
-  # Change to the next tmux window
-  - { key: RBracket, mods: Command|Shift, chars: "\x02\x6e" }
   # Split the current pane into two, left and right
   - { key: D, mods: Command, chars: "\x02\x25" }
   # Split the current pane into two, top and bottom
@@ -53,5 +69,5 @@ key_bindings:
   - { key: W, mods: Command, chars: "\x02\x78" }
   # Toggle the zoom state of the current tmux pane
   - { key: Z, mods: Command, chars: "\x02\x7a" }
-  # Enable scroll mode
-  - { key: S, mods: Command, chars: "\x02\x5b" }
+  # Enable copy mode
+  - { key: S, mods: Command, chars: "\x02\x0d" }
