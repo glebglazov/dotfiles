@@ -355,6 +355,11 @@ bind-key -r J select-pane -D
 bind-key -r K select-pane -U
 bind-key -r L select-pane -R
 
+bind-key -r [ prev
+bind-key -r ] next
+bind-key -r \{ swap-window -t -1 \; prev
+bind-key -r \} swap-window -t +1 \; next
+
 bind-key -T copy-mode-vi K send -X page-up
 bind-key -T copy-mode-vi J send -X page-down
 
