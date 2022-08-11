@@ -184,11 +184,11 @@ function configure_agents {
 }
 
 eval "$(direnv hook zsh)"
-configure_agents
 
 {{ if (eq .chezmoi.os "linux") -}}
-export GPG_TTY=$(tty)
+export GPG_TTY=$TTY
 {{ end -}}
+configure_agents
 
 ulimit -n 10240
 
