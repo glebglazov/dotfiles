@@ -67,7 +67,6 @@ autocmd VimEnter * xunmap cp
 
 " Top-level bindings {{{
 nnoremap <silent> <esc> :noh<cr>
-inoremap jk <esc>
 
 vnoremap <leader>/ y:Rg<space><c-r>"<cr>
 vnoremap # y/<c-r>"<cr>
