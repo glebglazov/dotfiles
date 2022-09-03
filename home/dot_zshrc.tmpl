@@ -1,3 +1,13 @@
+function configure_agents {
+  {{- if not (eq (len .ssh_keys) 0) }}
+	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
+	{{- end }}
+  {{- if not (eq .gpg_key_object_id "") }}
+	eval `keychain -q --agents gpg --inherit any --eval {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}`
+	{{- end }}
+}
+configure_agents
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -174,21 +184,11 @@ function mount_secrets {
 	source ~/.secrets_env
 }
 
-function configure_agents {
-  {{- if not (eq (len .ssh_keys) 0) }}
-	eval `keychain -q --agents ssh --inherit any --eval {{ .ssh_keys | join " " }}`
-	{{- end }}
-  {{- if not (eq .gpg_key_object_id "") }}
-	eval `keychain -q --agents gpg --inherit any --eval {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}`
-	{{- end }}
-}
-
 eval "$(direnv hook zsh)"
 
 {{ if (eq .chezmoi.os "linux") -}}
 export GPG_TTY=$TTY
 {{ end -}}
-configure_agents
 
 ulimit -n 10240
 
