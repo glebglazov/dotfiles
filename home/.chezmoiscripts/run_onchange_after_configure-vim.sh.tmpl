@@ -4,3 +4,4 @@ set -eufo pipefail
 
 # .vimrc hash: {{ include "dot_vimrc" | sha256sum }}
 zsh -c "vim -c PlugInstall -c PlugClean! -c qa"
+zsh -c "nvim -c PlugInstall -c PlugClean! -c qa"
