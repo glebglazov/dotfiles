@@ -150,6 +150,7 @@ nnoremap <leader>pp :tcd ~/Dev/
 nnoremap <silent> <leader>pf :GFiles<CR>
 " }}}
 
+" Window bindings {{{
 nnoremap <silent> <leader>ws :sp<CR>
 nnoremap <silent> <leader>wd :hide<CR>
 nnoremap <silent> <leader>wS :sp <bar> :wincmd j<CR>
