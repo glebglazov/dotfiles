@@ -1,13 +1,10 @@
 {{ if (eq .chezmoi.os "linux") -}}
 
-{{ $ppa_repos := list
-  "ppa:jonathonf/vim"
--}}
+{{ $ppa_repos := list -}}
 
 {{ $packages := list
   "fzf"
   "ripgrep"
-  "vim"
   "git"
   "tig"
   "mosh"
