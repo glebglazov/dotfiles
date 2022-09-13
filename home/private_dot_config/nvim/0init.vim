@@ -32,8 +32,7 @@ let g:go_doc_keywordprg_enabled=0
 
 " Set gruvbox colorscheme
 autocmd VimEnter * ++nested colorscheme gruvbox
-" Set dark background
-set background=dark
+
 " Highlight search patterns
 set hlsearch
 " Start highlighting while typing
