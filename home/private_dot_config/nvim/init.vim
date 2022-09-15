@@ -5,6 +5,8 @@ Plug 'jgdavey/vim-turbux'
 Plug 'christoomey/vim-system-copy'
 Plug 'roxma/vim-tmux-clipboard'
 
+Plug 'dense-analysis/ale'
+
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
