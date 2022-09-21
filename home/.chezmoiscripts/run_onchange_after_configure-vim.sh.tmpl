@@ -2,5 +2,5 @@
 
 set -eufo pipefail
 
-# init.vim hash: {{ include "private_dot_config/nvim/init.vim" | sha256sum }}
-zsh -c "nvim -c PlugInstall -c PlugClean! -c qa"
+# glebglazov/plugins.lua hash: {{ include "private_dot_config/nvim/lua/glebglazov/plugins.lua" | sha256sum }}
+zsh -c "nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
