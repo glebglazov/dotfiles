@@ -16,9 +16,6 @@ nnoremap('<LEADER>Y', '"+yg_')
 nnoremap('<LEADER>y', '"+y')
 nnoremap('<LEADER>yy', '"+yy')
 
-nnoremap('tm', 'J', { silent = true })
-vnoremap('tm', 'J', { silent = true })
-
 -------------------------------------------------
 -- H => ^, L => $
 -------------------------------------------------
@@ -34,6 +31,12 @@ nnoremap('J', '<C-D>', { silent = true })
 vnoremap('J', '<C-D>', { silent = true })
 nnoremap('K', '<C-U>', { silent = true })
 vnoremap('K', '<C-U>', { silent = true })
+
+-------------------------------------------------
+-- Restoring merging of lines
+-------------------------------------------------
+nnoremap('tm', 'J', { silent = true })
+vnoremap('tm', 'J', { silent = true })
 
 -------------------------------------------------
 -- Window
