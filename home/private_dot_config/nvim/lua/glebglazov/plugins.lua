@@ -22,9 +22,6 @@ return require('packer').startup(function(use)
     'kyazdani42/nvim-tree.lua',
     tag = 'nightly',
     config = function()
-      vim.g.loaded = 1
-      vim.g.loaded_netrwPlugin = 1
-
       require('nvim-tree').setup({
         renderer = {
           icons = {
@@ -70,13 +67,7 @@ return require('packer').startup(function(use)
     end
   }
 
-  use {
-    'gruvbox-community/gruvbox' ,
-    config = function ()
-      vim.o.background = 'dark'
-      vim.cmd([[colorscheme gruvbox]])
-    end
-  }
+  use { 'gruvbox-community/gruvbox' }
 
   use {
     'declancm/windex.nvim',
