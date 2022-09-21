@@ -67,7 +67,7 @@ nnoremap('<leader>grh', ':!git reset --hard<SPACE>')
 nnoremap('<leader>gco', ':!git checkout<SPACE>')
 nnoremap('<leader>gcb', ':!git checkout -b<SPACE>')
 nnoremap('<leader>gpl', ':!git pull<CR>')
-nnoremap('<leader>gpo', ':!git pull origin HEAD<CR>')
+nnoremap('<leader>gpo', ':!git push origin HEAD<CR>')
 nnoremap('<leader>gpf', ':!git push --force origin HEAD<CR>')
 nnoremap('<leader>gpp', ':!git push origin HEAD:')
 

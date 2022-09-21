@@ -8,7 +8,6 @@ autocmd({ 'BufWritePre' }, {
 	command = '%s/\\s\\+$//e',
 })
 
-
 RubyGroup = augroup('Ruby', {})
 autocmd({ 'BufRead', 'BufNewFile' }, {
 	group = RubyGroup,
