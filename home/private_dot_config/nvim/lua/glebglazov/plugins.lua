@@ -21,6 +21,7 @@ return require('packer').startup(function(use)
   use { 'preservim/nerdtree' }
 
   use { 'tpope/vim-fugitive' }
+  use { 'tpope/vim-unimpaired' }
 
   use {
     'nvim-telescope/telescope.nvim',
