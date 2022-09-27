@@ -54,32 +54,43 @@ nnoremap('<LEADER>wl', '<CMD>wincmd l<CR>', { silent = true })
 -------------------------------------------------
 -- Git
 -------------------------------------------------
-local neogit = require('neogit')
 nnoremap('<LEADER>gg', function ()
-    neogit.open()
+  vim.cmd('G')
 end)
-nnoremap('<LEADER>ga', '<CMD>!git fetch --all<CR>')
-nnoremap('<leader>gfo', ':!git fetch origin<CR>')
-nnoremap('<leader>gcp', ':!git cherry-pick<SPACE>')
-nnoremap('<leader>grb', ':!git rebase<SPACE>')
-nnoremap('<leader>gri', ':!git rebase --interactive<SPACE>')
-nnoremap('<leader>gra', ':!git rebase --abort<CR>')
-nnoremap('<leader>grc', ':!git rebase --continue<CR>')
-nnoremap('<leader>grs', ':!git reset --soft<SPACE>')
-nnoremap('<leader>grh', ':!git reset --hard<SPACE>')
-nnoremap('<leader>gco', ':!git checkout<SPACE>')
-nnoremap('<leader>gcb', ':!git checkout -b<SPACE>')
-nnoremap('<leader>gpl', ':!git pull<CR>')
-nnoremap('<leader>gpo', ':!git push origin HEAD<CR>')
-nnoremap('<leader>gpf', ':!git push --force origin HEAD<CR>')
-nnoremap('<leader>gpp', ':!git push origin HEAD:')
+nnoremap('<LEADER>ga', '<CMD>G fetch --all<CR>')
+nnoremap('<leader>gfo', ':G fetch origin<CR>')
+nnoremap('<leader>gcp', ':G cherry-pick<SPACE>')
+nnoremap('<leader>grb', ':G rebase<SPACE>')
+nnoremap('<leader>gri', ':G rebase --interactive<SPACE>')
+nnoremap('<leader>gra', ':G rebase --abort<CR>')
+nnoremap('<leader>grc', ':G rebase --continue<CR>')
+nnoremap('<leader>grs', ':G reset --soft<SPACE>')
+nnoremap('<leader>grh', ':G reset --hard<SPACE>')
+nnoremap('<leader>gco', ':G checkout<SPACE>')
+nnoremap('<leader>gcb', ':G checkout -b<SPACE>')
+nnoremap('<leader>gpl', ':G pull<CR>')
+nnoremap('<leader>gpo', ':G push origin HEAD<CR>')
+nnoremap('<leader>gpf', ':G push --force origin HEAD<CR>')
+nnoremap('<leader>gpp', ':G push origin HEAD:')
 
 -------------------------------------------------
 -- Files
 -------------------------------------------------
+vim.cmd([[
+function! MyNERDTreeOpenHere()
+  if exists("g:NERDTree") && g:NERDTree.IsOpen()
+    execute "NERDTreeToggle"
+    execute "NERDTreeToggle %"
+  else
+    execute "NERDTreeToggle %"
+  endif
+endfunction
+]])
+
 nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
-nnoremap('<LEADER>fl', '<CMD>NvimTreeFocus<CR>')
-nnoremap('<LEADER>fc', '<CMD>NvimTreeClose<CR>')
+nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
+nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
+nnoremap('<LEADER>fc', '<CMD>NERDTreeClose<CR>', { silent = true })
 nnoremap('<LEADER>/', "<CMD>lua require('telescope.builtin').live_grep()<CR>", { silent = true })
 vnoremap('<LEADER>/', "<CMD>'<,'>lua require('telescope.builtin').grep_string()<CR>")
 
@@ -88,5 +99,5 @@ vnoremap('<LEADER>/', "<CMD>'<,'>lua require('telescope.builtin').grep_string()<
 -------------------------------------------------
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
 nnoremap('<LEADER>pf', function()
-    require('telescope.builtin').find_files()
+  require('telescope.builtin').find_files()
 end)

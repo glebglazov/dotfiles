@@ -9,22 +9,29 @@ autocmd({ 'BufWritePre' }, {
 })
 
 RubyGroup = augroup('Ruby', {})
-autocmd({ 'BufRead', 'BufNewFile' }, {
+autocmd({ 'FileType' }, {
 	group = RubyGroup,
-	pattern = { '*.rb', 'Gemfile', 'Rakefile' },
+	pattern = 'ruby',
 	command = 'setlocal expandtab tabstop=2 shiftwidth=2',
 })
 
 JsGroup = augroup('JS', {})
-autocmd({ 'BufRead', 'BufNewFile' }, {
+autocmd({ 'FileType' }, {
 	group = JsGroup,
-	pattern = { '*.js' ,'*.jsx' },
+	pattern = 'javascript',
 	command = 'setlocal expandtab tabstop=2 shiftwidth=2',
 })
 
 LuaGroup = augroup('Lua', {})
-autocmd({ 'BufRead', 'BufNewFile' }, {
+autocmd({ 'FileType' }, {
 	group = LuaGroup,
-	pattern = '*.lua',
+	pattern = 'lua',
 	command = 'setlocal expandtab tabstop=2 shiftwidth=2',
+})
+
+FugitiveGroup = augroup('Fugitive', {})
+autocmd({ 'FileType' }, {
+	group = FugitiveGroup,
+	pattern = 'fugitive',
+	command = 'nmap <buffer> <tab> =',
 })

@@ -1,49 +1,26 @@
 return require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'
+  use { 'wbthomason/packer.nvim' }
 
-  use({
+  use {
     'kylechui/nvim-surround',
     tag = "*",
     config = function()
       require('nvim-surround').setup({ })
     end
-  })
-  use({
+  }
+  use {
     'terrortylor/nvim-comment',
     config = function()
       require('nvim_comment').setup({ })
     end
-  })
+  }
 
   use { 'MunifTanjim/nui.nvim' }
   use { 'nvim-lua/plenary.nvim' }
 
-  use {
-    'kyazdani42/nvim-tree.lua',
-    tag = 'nightly',
-    config = function()
-      require('nvim-tree').setup({
-        renderer = {
-          icons = {
-            show = {
-              file = false,
-              folder = false,
-              folder_arrow = false,
-              git = false,
-            }
-          }
-        }
-      })
-    end
-  }
+  use { 'preservim/nerdtree' }
 
-  use {
-    'TimUntersberger/neogit',
-    requires = 'nvim-lua/plenary.nvim',
-    config = function()
-      require('neogit').setup({ })
-    end
-  }
+  use { 'tpope/vim-fugitive' }
 
   use {
     'nvim-telescope/telescope.nvim',
