@@ -80,6 +80,8 @@ nnoremap('<LEADER>gpp', ':G push origin HEAD:')
 -- Files
 -------------------------------------------------
 vim.cmd([[
+let NERDTreeShowHidden=1
+
 function! MyNERDTreeOpenHere()
   if exists("g:NERDTree") && g:NERDTree.IsOpen()
     execute "NERDTreeToggle"
