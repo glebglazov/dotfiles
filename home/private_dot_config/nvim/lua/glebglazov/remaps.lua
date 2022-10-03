@@ -96,8 +96,14 @@ nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
 nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
 nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
 nnoremap('<LEADER>fc', '<CMD>NERDTreeClose<CR>', { silent = true })
-nnoremap('<LEADER>/', "<CMD>lua require('telescope.builtin').live_grep()<CR>", { silent = true })
-vnoremap('<LEADER>/', "<CMD>'<,'>lua require('telescope.builtin').grep_string()<CR>")
+
+-------------------------------------------------
+-- Files (Telescope)
+-------------------------------------------------
+local telescope = require('telescope.builtin')
+nnoremap('<LEADER>bb', function() telescope.buffers() end, { silent = true })
+nnoremap('<LEADER>/', function() telescope.live_grep() end, { silent = true })
+vnoremap('<LEADER>/', function() telescope.grep_string() end, { silent = true })
 
 -------------------------------------------------
 -- Project
