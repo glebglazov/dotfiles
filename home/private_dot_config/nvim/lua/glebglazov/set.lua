@@ -15,3 +15,5 @@ vim.g.loaded_netrwPlugin = 1
 
 vim.o.background = 'dark'
 vim.cmd([[colorscheme gruvbox]])
+
+vim.opt.iskeyword:remove('_')
