@@ -22,6 +22,13 @@ autocmd({ 'FileType' }, {
 	command = 'setlocal expandtab tabstop=2 shiftwidth=2',
 })
 
+ReactGroup = augroup('React', {})
+autocmd({ 'FileType' }, {
+	group = JsGroup,
+	pattern = 'javascriptreact',
+	command = 'setlocal expandtab tabstop=2 shiftwidth=2',
+})
+
 LuaGroup = augroup('Lua', {})
 autocmd({ 'FileType' }, {
 	group = LuaGroup,
