@@ -1,5 +1,6 @@
-local nnoremap = require('glebglazov.keymaps').nnoremap
-local vnoremap = require('glebglazov.keymaps').vnoremap
+local nnoremap  = require('glebglazov.keymaps').nnoremap
+local vnoremap  = require('glebglazov.keymaps').vnoremap
+local telescope = require('telescope.builtin')
 
 -------------------------------------------------
 -- General
@@ -77,7 +78,7 @@ nnoremap('<LEADER>gpf', ':G push --force origin HEAD<CR>')
 nnoremap('<LEADER>gpp', ':G push origin HEAD:')
 
 -------------------------------------------------
--- Files
+-- Files / Projects
 -------------------------------------------------
 vim.cmd([[
 let NERDTreeShowHidden=1
@@ -97,18 +98,9 @@ nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
 nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
 nnoremap('<LEADER>fc', '<CMD>NERDTreeClose<CR>', { silent = true })
 
--------------------------------------------------
--- Files (Telescope)
--------------------------------------------------
-local telescope = require('telescope.builtin')
 nnoremap('<LEADER>bb', function() telescope.buffers() end, { silent = true })
 nnoremap('<LEADER>/', function() telescope.live_grep() end, { silent = true })
 vnoremap('<LEADER>/', function() telescope.grep_string() end, { silent = true })
 
--------------------------------------------------
--- Project
--------------------------------------------------
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
-nnoremap('<LEADER>pf', function()
-  require('telescope.builtin').find_files()
-end)
+nnoremap('<LEADER>pf', function() telescope.find_files({ hidden = true }) end)
