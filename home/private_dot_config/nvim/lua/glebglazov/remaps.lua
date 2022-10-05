@@ -103,4 +103,10 @@ nnoremap('<LEADER>/', function() telescope.live_grep() end, { silent = true })
 vnoremap('<LEADER>/', function() telescope.grep_string() end, { silent = true })
 
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
-nnoremap('<LEADER>pf', function() telescope.find_files({ hidden = true }) end)
+nnoremap('<LEADER>pf', function()
+  telescope.find_files({
+    hidden = true,
+
+    file_ignore_patterns = { "^./.git/", "^node_modules/" },
+  })
+end)
