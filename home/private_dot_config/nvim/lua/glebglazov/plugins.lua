@@ -1,20 +1,6 @@
 return require('packer').startup(function(use)
   use { 'wbthomason/packer.nvim' }
 
-  use {
-    'kylechui/nvim-surround',
-    tag = "*",
-    config = function()
-      require('nvim-surround').setup({ })
-    end
-  }
-  use {
-    'terrortylor/nvim-comment',
-    config = function()
-      require('nvim_comment').setup({ })
-    end
-  }
-
   use { 'MunifTanjim/nui.nvim' }
   use { 'nvim-lua/plenary.nvim' }
 
@@ -32,6 +18,27 @@ return require('packer').startup(function(use)
 
   use { 'w0rp/ale' }
   use {
+    'kylechui/nvim-surround',
+    tag = "*",
+    config = function()
+      require('nvim-surround').setup({ })
+    end
+  }
+  use {
+    'terrortylor/nvim-comment',
+    config = function()
+      require('nvim_comment').setup({ })
+    end
+  }
+  use {
+    'windwp/nvim-autopairs',
+    config = function()
+      require('nvim-autopairs').setup({ })
+    end
+  }
+  use { 'windwp/nvim-ts-autotag' }
+  use { 'RRethy/nvim-treesitter-endwise' }
+  use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
     config = function()
@@ -45,6 +52,14 @@ return require('packer').startup(function(use)
         indent = {
           enable = true,
         },
+
+        autotag = {
+          enable = true,
+        },
+
+        endwise = {
+          enable = true,
+        }
       })
     end
   }
