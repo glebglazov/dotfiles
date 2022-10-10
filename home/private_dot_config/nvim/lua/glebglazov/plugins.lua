@@ -41,6 +41,10 @@ return require('packer').startup(function(use)
         highlight = {
           enable = true,
         },
+
+        indent = {
+          enable = true,
+        },
       })
     end
   }
