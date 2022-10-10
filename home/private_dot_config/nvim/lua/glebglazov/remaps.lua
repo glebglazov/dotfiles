@@ -58,7 +58,6 @@ nnoremap('<LEADER>wl', '<CMD>wincmd l<CR>', { silent = true })
 nnoremap('<LEADER>gg', function ()
   vim.cmd('G')
 end)
-nnoremap('<LEADER>ga', '<CMD>G fetch --all<CR>')
 nnoremap('<LEADER>gfo', ':G fetch origin<CR>')
 nnoremap('<LEADER>gbl', ':G blame<CR>')
 nnoremap('<LEADER>glg', ':Gclog<CR>')
@@ -76,6 +75,7 @@ nnoremap('<LEADER>gpl', ':G pull<CR>')
 nnoremap('<LEADER>gpo', ':G push origin HEAD<CR>')
 nnoremap('<LEADER>gpf', ':G push --force origin HEAD<CR>')
 nnoremap('<LEADER>gpp', ':G push origin HEAD:')
+nnoremap('<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>')
 
 -------------------------------------------------
 -- Files / Projects
