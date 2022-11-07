@@ -93,6 +93,10 @@ function! MyNERDTreeOpenHere()
 endfunction
 ]])
 
+vim.cmd([[
+  command AC :execute "e " . eval('rails#buffer().alternate()')
+]])
+
 nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
 nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
 nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
