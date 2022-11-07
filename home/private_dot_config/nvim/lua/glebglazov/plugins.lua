@@ -63,6 +63,7 @@ return require('packer').startup(function(use)
       })
     end
   }
+  use { 'tpope/vim-rails' }
 
   use { 'gruvbox-community/gruvbox' }
 
