@@ -62,6 +62,15 @@ nnoremap('<LEADER>gfo', ':G fetch origin<CR>')
 nnoremap('<LEADER>gbl', ':G blame<CR>')
 nnoremap('<LEADER>glg', ':Gclog<CR>')
 nnoremap('<LEADER>gcp', ':G cherry-pick<SPACE>')
+nnoremap('<LEADER>gcm', function ()
+  local output = vim.fn.system('git branch -l')
+
+  if string.find(output, 'master') then
+    vim.cmd('G checkout master')
+  else
+    vim.cmd('G checkout main')
+  end
+end)
 nnoremap('<LEADER>grb', ':G rebase<SPACE>')
 nnoremap('<LEADER>gri', ':G rebase --interactive<SPACE>')
 nnoremap('<LEADER>gra', ':G rebase --abort<CR>')
