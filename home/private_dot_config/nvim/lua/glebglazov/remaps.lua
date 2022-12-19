@@ -18,20 +18,20 @@ nnoremap('<LEADER>y', '"+y')
 nnoremap('<LEADER>yy', '"+yy')
 
 -------------------------------------------------
--- H => ^, L => $
+-- Navigation
 -------------------------------------------------
 nnoremap('H', '^', { silent = true })
 vnoremap('H', '^', { silent = true })
 nnoremap('L', '$', { silent = true })
 vnoremap('L', '$', { silent = true })
 
--------------------------------------------------
--- Half-page down/up to J/K
--------------------------------------------------
-nnoremap('J', '<C-D>', { silent = true })
-vnoremap('J', '<C-D>', { silent = true })
-nnoremap('K', '<C-U>', { silent = true })
-vnoremap('K', '<C-U>', { silent = true })
+nnoremap('J', '<C-D>zz', { silent = true })
+vnoremap('J', '<C-D>zz', { silent = true })
+nnoremap('K', '<C-U>zz', { silent = true })
+vnoremap('K', '<C-U>zz', { silent = true })
+
+nnoremap('n', 'nzzzv')
+nnoremap('N', 'Nzzzv')
 
 -------------------------------------------------
 -- Restoring merging of lines
