@@ -8,6 +8,7 @@ return require('packer').startup(function(use)
 
   use { 'tpope/vim-fugitive' }
   use { 'tpope/vim-unimpaired' }
+  use { 'mbbill/undotree' }
 
   use {
     'nvim-telescope/telescope.nvim',
