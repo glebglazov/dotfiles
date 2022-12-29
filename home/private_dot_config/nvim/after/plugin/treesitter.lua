@@ -15,5 +15,9 @@ require('nvim-treesitter.configs').setup({
 
   endwise = {
     enable = true,
+  },
+
+  playground = {
+    enable = true
   }
 })
