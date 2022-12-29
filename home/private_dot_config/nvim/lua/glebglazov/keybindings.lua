@@ -54,26 +54,11 @@ nnoremap('<LEADER>D', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
 -------------------------------------------------
 -- Files / Projects
 -------------------------------------------------
-vim.cmd([[
-let NERDTreeShowHidden=1
-
-function! MyNERDTreeOpenHere()
-  if exists("g:NERDTree") && g:NERDTree.IsOpen()
-    execute "NERDTreeToggle"
-    execute "NERDTreeToggle %"
-  else
-    execute "NERDTreeToggle %"
-  endif
-endfunction
-]])
 
 vim.cmd([[
   command AC :execute "e " . eval('rails#buffer().alternate()')
 ]])
 
 nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
-nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
-nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
-nnoremap('<LEADER>fc', '<CMD>NERDTreeClose<CR>', { silent = true })
 
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
