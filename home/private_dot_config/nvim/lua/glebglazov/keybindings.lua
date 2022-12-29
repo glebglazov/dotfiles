@@ -47,7 +47,7 @@ vnoremap('tm', 'J', { silent = true })
 -------------------------------------------------
 -- Window
 -------------------------------------------------
-nnoremap('<C-d>', '<CMD>hide<CR>', { silent = true })
+nnoremap('<LEADER>w', '<CMD>hide<CR>', { silent = true })
 nnoremap('<LEADER>d', '<CMD>vsp <BAR> :wincmd l<CR>', { silent = true })
 nnoremap('<LEADER>D', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
 
