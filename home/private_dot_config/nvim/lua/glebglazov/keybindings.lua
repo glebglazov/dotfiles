@@ -47,15 +47,9 @@ vnoremap('tm', 'J', { silent = true })
 -------------------------------------------------
 -- Window
 -------------------------------------------------
-nnoremap('<LEADER>ws', '<CMD>sp<CR>', { silent = true })
-nnoremap('<LEADER>wd', '<CMD>hide<CR>', { silent = true })
-nnoremap('<LEADER>wS', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
-nnoremap('<LEADER>wv', '<CMD>vsp<CR>', { silent = true })
-nnoremap('<LEADER>wV', '<CMD>vsp <BAR> :wincmd l<CR>', { silent = true })
-nnoremap('<LEADER>wh', '<CMD>wincmd h<CR>', { silent = true })
-nnoremap('<LEADER>wj', '<CMD>wincmd j<CR>', { silent = true })
-nnoremap('<LEADER>wk', '<CMD>wincmd k<CR>', { silent = true })
-nnoremap('<LEADER>wl', '<CMD>wincmd l<CR>', { silent = true })
+nnoremap('<C-d>', '<CMD>hide<CR>', { silent = true })
+nnoremap('<LEADER>d', '<CMD>vsp <BAR> :wincmd l<CR>', { silent = true })
+nnoremap('<LEADER>D', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
 
 -------------------------------------------------
 -- Git

@@ -7,6 +7,7 @@ return require('packer').startup(function(use)
   use { 'preservim/nerdtree' }
 
   use { 'tpope/vim-fugitive' }
+
   use { 'tpope/vim-unimpaired' }
   use { 'theprimeagen/harpoon' }
   use { 'mbbill/undotree' }
@@ -14,27 +15,6 @@ return require('packer').startup(function(use)
   use { 'nvim-telescope/telescope.nvim', tag = '0.1.0' }
 
   use { 'w0rp/ale' }
-  use {
-    'kylechui/nvim-surround',
-    tag = "*",
-    config = function()
-      require('nvim-surround').setup({ })
-    end
-  }
-  use {
-    'numToStr/Comment.nvim',
-    config = function()
-      require('Comment').setup({ })
-    end
-  }
-  use {
-    'windwp/nvim-autopairs',
-    config = function()
-      require('nvim-autopairs').setup({ })
-    end
-  }
-  use { 'windwp/nvim-ts-autotag' }
-
   use {
     'VonHeikemen/lsp-zero.nvim',
     requires = {
@@ -56,9 +36,28 @@ return require('packer').startup(function(use)
       {'rafamadriz/friendly-snippets'},
     }
   }
-
-  use { 'RRethy/nvim-treesitter-endwise' }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  use {
+    'kylechui/nvim-surround',
+    tag = "*",
+    config = function()
+      require('nvim-surround').setup({ })
+    end
+  }
+  use {
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup({ })
+    end
+  }
+  use {
+    'windwp/nvim-autopairs',
+    config = function()
+      require('nvim-autopairs').setup({ })
+    end
+  }
+  use { 'windwp/nvim-ts-autotag' }
+  use { 'RRethy/nvim-treesitter-endwise' }
   use { 'tpope/vim-rails' }
 
   use { 'gruvbox-community/gruvbox' }
