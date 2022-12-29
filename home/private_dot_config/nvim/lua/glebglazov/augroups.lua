@@ -8,6 +8,13 @@ autocmd({ 'BufWritePre' }, {
 	command = '%s/\\s\\+$//e',
 })
 
+ShellGroup = augroup('Shell', {})
+autocmd({ 'FileType' }, {
+	group = ShellGroup,
+	pattern = 'sh',
+	command = 'setlocal expandtab tabstop=4 shiftwidth=4',
+})
+
 RubyGroup = augroup('Ruby', {})
 autocmd({ 'FileType' }, {
 	group = RubyGroup,
