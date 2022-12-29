@@ -350,6 +350,7 @@ bind-key -r j select-pane -D \; resize-pane -Z
 bind-key -r k select-pane -U \; resize-pane -Z
 bind-key -r l select-pane -R \; resize-pane -Z
 
+bind-key -r P run-shell "tmux new-window ~/.local/bin/tmux-windowiser.sh"
 bind-key -r H select-pane -L
 bind-key -r J select-pane -D
 bind-key -r K select-pane -U
