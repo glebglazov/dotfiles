@@ -21,6 +21,8 @@ vim.opt.hidden = true
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.opt.scrolloff = 8
+
 vim.o.background = 'dark'
 vim.cmd([[colorscheme gruvbox]])
 
