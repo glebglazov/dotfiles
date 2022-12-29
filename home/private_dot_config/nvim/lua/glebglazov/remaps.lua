@@ -1,8 +1,6 @@
 local nnoremap  = require('glebglazov.keymaps').nnoremap
 local vnoremap  = require('glebglazov.keymaps').vnoremap
 local xnoremap  = require('glebglazov.keymaps').xnoremap
-local get_visual_selection =
-local telescope = require('telescope.builtin')
 
 -------------------------------------------------
 -- General
@@ -118,21 +116,4 @@ nnoremap('<LEADER>fl', '<CMD>call MyNERDTreeOpenHere()<CR>', { silent = true })
 nnoremap('<LEADER>ff', '<CMD>NERDTreeFocus<CR>', { silent = true })
 nnoremap('<LEADER>fc', '<CMD>NERDTreeClose<CR>', { silent = true })
 
-nnoremap('<LEADER>bb', function() telescope.buffers() end, { silent = true })
-nnoremap('<LEADER>/', function() telescope.live_grep() end, { silent = true })
-vnoremap('<LEADER>/', function()
-  vim.cmd('noau normal! "vy"')
-
-  telescope.grep_string({ search = "abc" })
-end,
-  { silent = true }
-)
-
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
-nnoremap('<LEADER>pf', function()
-  telescope.find_files({
-    hidden = true,
-
-    file_ignore_patterns = { "^./.git/", "^node_modules/" },
-  })
-end)
