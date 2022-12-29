@@ -8,12 +8,12 @@ return require('packer').startup(function(use)
 
   use { 'tpope/vim-fugitive' }
   use { 'tpope/vim-unimpaired' }
+  use { 'theprimeagen/harpoon' }
   use { 'mbbill/undotree' }
 
   use {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.0',
-    config = function() require('telescope').setup({ }) end,
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
@@ -62,31 +62,7 @@ return require('packer').startup(function(use)
   }
 
   use { 'RRethy/nvim-treesitter-endwise' }
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = ':TSUpdate',
-    config = function()
-      require('nvim-treesitter.configs').setup({
-        ensure_installed = 'all',
-
-        highlight = {
-          enable = true,
-        },
-
-        indent = {
-          enable = true,
-        },
-
-        autotag = {
-          enable = true,
-        },
-
-        endwise = {
-          enable = true,
-        }
-      })
-    end
-  }
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use { 'tpope/vim-rails' }
 
   use { 'gruvbox-community/gruvbox' }
