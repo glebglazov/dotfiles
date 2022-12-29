@@ -11,11 +11,7 @@ return require('packer').startup(function(use)
   use { 'theprimeagen/harpoon' }
   use { 'mbbill/undotree' }
 
-  use {
-    'nvim-telescope/telescope.nvim',
-    tag = '0.1.0',
-    requires = { {'nvim-lua/plenary.nvim'} }
-  }
+  use { 'nvim-telescope/telescope.nvim', tag = '0.1.0' }
 
   use { 'w0rp/ale' }
   use {
