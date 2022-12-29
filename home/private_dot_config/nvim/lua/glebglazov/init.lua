@@ -1,5 +1,4 @@
 require 'glebglazov.plugins'
 require 'glebglazov.set'
 require 'glebglazov.augroups'
-require 'glebglazov.lsp'
 require 'glebglazov.keybindings'
