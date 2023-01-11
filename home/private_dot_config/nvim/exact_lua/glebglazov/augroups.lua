@@ -1,11 +1,18 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-GeneralGroup = augroup('General', { })
+EOLSpacesGroup = augroup('EOLSpacesGroup', { })
 autocmd({ 'BufWritePre' }, {
-	group = GeneralGroup,
+	group = EOLSpacesGroup,
 	pattern = '*',
 	command = '%s/\\s\\+$//e',
+})
+
+EOFEmptyLinesGroup = augroup('EOFEmptyLinesGroup', { })
+autocmd({ 'BufWritePre' }, {
+	group = EOFEmptyLinesGroup,
+	pattern = '*',
+	command = '%s#\\($\\n\\s*\\)\\+\\%$##e',
 })
 
 FugitiveGroup = augroup('Fugitive', {})
