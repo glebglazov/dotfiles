@@ -1,6 +1,6 @@
-local nnoremap  = require('glebglazov.keymaps').nnoremap
-local vnoremap  = require('glebglazov.keymaps').vnoremap
-local xnoremap  = require('glebglazov.keymaps').xnoremap
+local nnoremap  = require('glebglazov.functions.remap').nnoremap
+local vnoremap  = require('glebglazov.functions.remap').vnoremap
+local xnoremap  = require('glebglazov.functions.remap').xnoremap
 
 -------------------------------------------------
 -- General

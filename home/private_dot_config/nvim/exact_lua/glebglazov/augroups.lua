@@ -8,13 +8,6 @@ autocmd({ 'BufWritePre' }, {
 	command = '%s/\\s\\+$//e',
 })
 
-ShellGroup = augroup('Shell', {})
-autocmd({ 'FileType' }, {
-	group = ShellGroup,
-	pattern = 'sh',
-	command = 'setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4',
-})
-
 FugitiveGroup = augroup('Fugitive', {})
 autocmd({ 'FileType' }, {
 	group = FugitiveGroup,
