@@ -38,6 +38,7 @@ return require('packer').startup(function(use)
   }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use { 'nvim-treesitter/playground' }
+  -- use { 'github/copilot.vim', run = ':Copilot setup' }
 
   use {
     'kylechui/nvim-surround',
