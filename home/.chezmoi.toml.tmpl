@@ -14,13 +14,7 @@
 {{-   $includePersonalSshKeys = true -}}
 {{- end -}}
 
-{{- if eq $hostname "Glebs-MacBook-Pro" -}}
-{{-   $gpgKeyObjectId = "bfc307b3-415b-47da-9928-aed50091ed1e" }}
-{{- else if eq $hostname "bastion" -}}
-{{-   $gpgKeyObjectId = "bfc307b3-415b-47da-9928-aed50091ed1e" }}
-{{- else if eq $hostname "workstation" -}}
-{{-   $gpgKeyObjectId = "bfc307b3-415b-47da-9928-aed50091ed1e" }}
-{{- end -}}
+{{- $gpgKeyObjectId = "[GPG Key] MacBook Pro" }}
 
 {{- if $bastion }}
 {{-   $sshKeys = concat $sshKeys (list "bastion") }}
