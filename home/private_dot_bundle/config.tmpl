@@ -1,0 +1,3 @@
+{{ $token := (bitwardenFields "item" "[Token] GitHub - glebglazov").token.value -}}
+---
+BUNDLE_HTTPS://RUBYGEMS__PKG__GITHUB__COM/TRIPLEDOTSTUDIOS/: "glebglazov:{{ $token }}"
