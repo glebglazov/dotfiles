@@ -2,7 +2,7 @@
 
 #!/bin/bash
 
-{{ $gpg_key := (bitwardenFields "item" .gpg_key_object_id).private.value }}
+{{ $gpg_key := printf "op://Private/%s/private" .gpg_key_object_id | onepasswordRead }}
 
 tempfile=$(mktemp)
 cleanup() {

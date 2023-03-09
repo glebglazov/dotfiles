@@ -2,7 +2,7 @@
   email = glazov.gleb@gmail.com
   name = Gleb Glazov
 {{- if not (eq .gpg_key_object_id "") }}
-  signinkey = {{ (bitwardenFields "item" .gpg_key_object_id).public.value }}
+  signinkey = {{ printf "op://Private/%s/public" .gpg_key_object_id | onepasswordRead }}
 [commit]
   gpgsign = true
 {{- end }}

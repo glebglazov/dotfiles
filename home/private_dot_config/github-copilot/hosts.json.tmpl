@@ -1,2 +1,2 @@
-{{ $token := (bitwardenFields "item" "[OAuth Token] GitHub - glebglazov").token.value -}}
+{{ $token := onepasswordRead "op://Private/OAuth Token - GitHub - glebglazov/token" -}}
 {"github.com":{"user":"glebglazov","oauth_token":"{{ $token }}"}}

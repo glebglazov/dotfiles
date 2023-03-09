@@ -4,5 +4,5 @@
 {{   end -}}
 {{- end -}}
 {{- if .workstation -}}
-{{   (bitwardenFields "item" "[SSH Key] Bastion").public.value }}
+{{   (onepasswordRead "op://Private/SSH Key - Bastion/public") }}
 {{- end }}
