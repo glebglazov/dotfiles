@@ -2,7 +2,6 @@
 {{- $bastion := false -}}
 {{- $sshKeys := list -}}
 {{- $includePersonalSshKeys := false -}}
-{{- $gpgKeyObjectId := "" -}}
 
 {{- $hostname := .chezmoi.hostname -}}
 
@@ -13,8 +12,6 @@
 {{-   $workstation = true -}}
 {{-   $includePersonalSshKeys = true -}}
 {{- end -}}
-
-{{- $gpgKeyObjectId = "qsciial53tdogehqabi6ramrae" }}
 
 {{- if $bastion }}
 {{-   $sshKeys = concat $sshKeys (list "bastion") }}
@@ -35,4 +32,3 @@ bastion = {{ $bastion }}
 workstation = {{ $workstation }}
 ssh_keys = [ {{ $sshKeys | quoteList | join ", " }} ]
 include_personal_ssh_keys = {{ $includePersonalSshKeys }}
-gpg_key_object_id = {{ $gpgKeyObjectId | quote }}
