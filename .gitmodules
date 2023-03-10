@@ -1,0 +1,3 @@
+[submodule "home/Dev"]
+	path = home/Dev
+	url = git@github.com:glebglazov/dotfiles-dev.git
