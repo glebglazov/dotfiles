@@ -1,0 +1,2 @@
+# Ignore directory with compiler packer
+.config/nvim/plugin
