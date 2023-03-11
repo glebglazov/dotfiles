@@ -2,19 +2,23 @@
 	type = "archive"
 	url = "https://github.com/wbthomason/packer.nvim/archive/master.tar.gz"
 	stripComponents = 1
+
 [".tmux.conf"]
 	type = "file"
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
 	refreshPeriod = "168h"
+
 [".oh-my-zsh"]
 	type = "git-repo"
 	url = "https://github.com/ohmyzsh/ohmyzsh"
 	refreshPeriod = "168h"
+
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
 	type = "archive"
 	url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
 	stripComponents = 1
 	refreshPeriod = "168h"
+
 [".oh-my-zsh/custom/themes/powerlevel10k"]
 	type = "archive"
 	url = "https://github.com/romkatv/powerlevel10k/archive/v1.16.1.tar.gz"
