@@ -1,6 +1,9 @@
 alias vim="nvim"
 alias ide="tmux-ide-layout"
 
+# All functions below are functions and not aliases just because of the fact
+# that this way we're not breaking original auto-completion
+
 function aws {
     op run -- command aws "$@"
 }
