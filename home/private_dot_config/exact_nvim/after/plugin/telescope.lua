@@ -14,6 +14,6 @@ vnoremap('<LEADER>/', function() telescope.grep_string({ search = get_visual_sel
 nnoremap('<LEADER>pf', function()
   telescope.find_files({
     hidden = true,
-    file_ignore_patterns = { "^./.git/", "^node_modules/" },
+    file_ignore_patterns = { "^.git/", "^node_modules/" },
   })
 end)
