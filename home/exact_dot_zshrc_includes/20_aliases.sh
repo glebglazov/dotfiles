@@ -1,8 +1,30 @@
 alias vim="nvim"
 alias ide="tmux-ide-layout"
 
-alias aws="op run -- aws"
-alias bundle="op run -- bundle"
-alias kubectl="op run -- kubectl"
-alias terraform="op run -- my_terraform"
-alias yarn="op run -- yarn"
+function aws {
+    op run -- command aws "$@"
+}
+
+function bundle {
+    op run -- command bundle "$@"
+}
+
+function yarn {
+    op run -- command yarn "$@"
+}
+
+function terraform {
+    for f in $(ls ~/.ssh/*.template); do
+        op inject -i $f -o ~/.ssh/$(basename $f .template)
+    done
+
+    op run -- command terraform "$@"
+
+    for f in $(ls ~/.ssh/*.template); do
+        rm ~/.ssh/$(basename $f .template)
+    done
+}
+
+function kubectl {
+    op run -- command kubectl "$@"
+}
