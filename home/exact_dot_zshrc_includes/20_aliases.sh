@@ -12,6 +12,10 @@ function bundle {
     op run -- command bundle "$@"
 }
 
+function gh {
+    op run -- command gh "$@"
+}
+
 function yarn {
     op run -- command yarn "$@"
 }
