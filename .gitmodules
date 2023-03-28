@@ -1,3 +1,3 @@
-[submodule "home/Dev"]
-	path = home/Dev
-	url = git@github.com:glebglazov/dotfiles-dev.git
+[submodule "home/literal_private"]
+	path = home/literal_private
+	url = git@github.com:glebglazov/dotfiles-private.git
