@@ -76,6 +76,8 @@
 
 #!/bin/bash
 
+brew update
+
 {{ range $taps }}
 brew tap {{ . }}
 {{ end  }}
