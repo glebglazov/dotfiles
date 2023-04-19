@@ -33,5 +33,5 @@ function terraform {
 }
 
 function kubectl {
-    op run -- command kubectl "$@"
+    op run --no-masking -- command kubectl "$@"
 }
