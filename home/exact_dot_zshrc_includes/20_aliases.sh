@@ -5,19 +5,19 @@ alias ide="tmux-ide-layout"
 # that this way we're not breaking original auto-completion
 
 function aws {
-    op run -- command aws "$@"
+    op run --no-masking -- command aws "$@"
 }
 
 function bundle {
-    op run -- command bundle "$@"
+    op run --no-masking -- command bundle "$@"
 }
 
 function gh {
-    op run -- command gh "$@"
+    op run --no-masking -- command gh "$@"
 }
 
 function yarn {
-    op run -- command yarn "$@"
+    op run --no-masking -- command yarn "$@"
 }
 
 function terraform {
@@ -25,7 +25,7 @@ function terraform {
         op inject -i $f -o ~/.ssh/$(basename $f .template)
     done
 
-    op run -- command terraform "$@"
+    op run --no-masking -- command terraform "$@"
 
     for f in $(ls ~/.ssh/*.template); do
         rm ~/.ssh/$(basename $f .template)
