@@ -1,23 +1,21 @@
-return require('packer').startup(function(use)
-  use { 'wbthomason/packer.nvim' }
+return {
+  { 'MunifTanjim/nui.nvim' },
+  { 'nvim-lua/plenary.nvim' },
 
-  use { 'MunifTanjim/nui.nvim' }
-  use { 'nvim-lua/plenary.nvim' }
+  { 'preservim/nerdtree' },
 
-  use { 'preservim/nerdtree' }
+  { 'tpope/vim-fugitive' },
 
-  use { 'tpope/vim-fugitive' }
+  { 'tpope/vim-unimpaired' },
+  { 'theprimeagen/harpoon' },
+  { 'mbbill/undotree' },
 
-  use { 'tpope/vim-unimpaired' }
-  use { 'theprimeagen/harpoon' }
-  use { 'mbbill/undotree' }
+  { 'nvim-telescope/telescope.nvim', tag = '0.1.0' },
 
-  use { 'nvim-telescope/telescope.nvim', tag = '0.1.0' }
-
-  use { 'w0rp/ale' }
-  use {
+  { 'w0rp/ale' },
+  {
     'VonHeikemen/lsp-zero.nvim',
-    requires = {
+    dependencies = {
       -- LSP Support
       {'neovim/nvim-lspconfig'},
       {'williamboman/mason.nvim'},
@@ -35,15 +33,15 @@ return require('packer').startup(function(use)
       {'L3MON4D3/LuaSnip'},
       {'rafamadriz/friendly-snippets'},
     }
-  }
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
-  use { 'nvim-treesitter/playground' }
+  },
+  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+  { 'nvim-treesitter/playground' },
 
-  use {
+  {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     event = "VimEnter",
-    config = function()
+    init = function()
       vim.defer_fn(function()
         require("copilot").setup({
           suggestion = { enabled = false },
@@ -51,42 +49,41 @@ return require('packer').startup(function(use)
         })
       end, 100)
     end,
-  }
-  use {
+  },
+  {
     "zbirenbaum/copilot-cmp",
-    after = { "copilot.lua" },
-    config = function ()
+    init = function ()
       require("copilot_cmp").setup()
     end
-  }
+  },
 
-  use {
+  {
     'kylechui/nvim-surround',
     tag = "*",
-    config = function()
+    init = function()
       require('nvim-surround').setup({ })
     end
-  }
-  use {
+  },
+  {
     'numToStr/Comment.nvim',
-    config = function()
+    init = function()
       require('Comment').setup({ })
     end
-  }
-  use {
+  },
+  {
     'windwp/nvim-autopairs',
-    config = function()
+    init = function()
       require('nvim-autopairs').setup({ })
     end
-  }
-  use { 'windwp/nvim-ts-autotag' }
-  use { 'RRethy/nvim-treesitter-endwise' }
-  use { 'tpope/vim-rails' }
+  },
+  { 'windwp/nvim-ts-autotag' },
+  { 'RRethy/nvim-treesitter-endwise' },
+  { 'tpope/vim-rails' },
 
-  use { 'gruvbox-community/gruvbox' }
+  { 'gruvbox-community/gruvbox' },
 
-  use {
+  {
     'declancm/windex.nvim',
-    config = function() require('windex').setup() end
-  }
-end)
+    init = function() require('windex').setup() end
+  },
+}

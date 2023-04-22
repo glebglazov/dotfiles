@@ -1,5 +1,2 @@
-# Ignore directory with compiler packer
-.config/nvim/plugin
-
 # Ignore known hosts
 .ssh/known_hosts

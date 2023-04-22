@@ -3,4 +3,4 @@
 set -eufo pipefail
 
 # glebglazov/plugins.lua hash: {{ include "private_dot_config/exact_nvim/lua/glebglazov/plugins.lua" | sha256sum }}
-zsh -c "nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
+zsh -c "nvim --headless -c 'autocmd User LazySync quitall' -c 'Lazy sync'"
