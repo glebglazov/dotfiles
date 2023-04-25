@@ -11,7 +11,7 @@ if [[ -z $selected ]]; then
 fi
 
 selected_name=$(basename "$selected")
-window_index=$(tmux list-windows  -F '#I #W' | awk "\$2 ~ /$selected_name/ { print \$1 }")
+window_index=$(tmux list-windows  -F '#I #W' | awk "\$2 ~ /$selected_name\$/ { print \$1 }")
 
 if [[ -z $window_index ]]; then
     tmux new-window -n $selected_name -c $selected
