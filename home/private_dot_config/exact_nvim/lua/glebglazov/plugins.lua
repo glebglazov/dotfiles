@@ -76,6 +76,7 @@ return {
   },
   {
     'zbirenbaum/copilot-cmp',
+    branch = 'formatting-fixes', -- TODO: remove when merged into master
     init = function ()
       require("copilot_cmp").setup()
     end

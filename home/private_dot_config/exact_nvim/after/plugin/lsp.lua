@@ -16,12 +16,7 @@ lsp.set_preferences({
 lsp.setup_nvim_cmp({
   sources = cmp_sources,
   mapping = lsp.defaults.cmp_mappings({
-    ['<CR>'] = cmp.mapping.confirm({
-      -- Documentation says this is important.
-      -- I don't know why.
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = false,
-    })
+    ['<CR>'] = cmp.mapping.confirm({ select = false })
   })
 })
 
