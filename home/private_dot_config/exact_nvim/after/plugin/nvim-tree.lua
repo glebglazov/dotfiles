@@ -1,6 +1,10 @@
 local nnoremap  = require('glebglazov.functions.remap').nnoremap
 
 require('nvim-tree').setup({
+  update_focused_file = {
+    enable = true,
+    update_root = true,
+  },
   renderer = {
     icons = {
       show = {
