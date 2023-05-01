@@ -1,6 +1,5 @@
 return {
   { 'MunifTanjim/nui.nvim' },
-  { 'nvim-lua/plenary.nvim' },
 
   {
     'nvim-tree/nvim-tree.lua',
@@ -25,7 +24,11 @@ return {
     end
   },
 
-  { 'nvim-telescope/telescope.nvim', tag = '0.1.0' },
+  {
+    'nvim-telescope/telescope.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    tag = '0.1.1'
+  },
 
   { 'w0rp/ale' },
   {
