@@ -83,7 +83,8 @@ return {
 
   {
     'kylechui/nvim-surround',
-    tag = "*",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
     init = function()
       require('nvim-surround').setup({ })
     end
