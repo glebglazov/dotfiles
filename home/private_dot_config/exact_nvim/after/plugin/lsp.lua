@@ -25,6 +25,14 @@ lsp.setup_nvim_cmp({
   })
 })
 
+configure.yamlls.setup({
+  settings = {
+    yaml = {
+      keyOrdering = false,
+    }
+  }
+})
+
 configure.ruby_ls.setup({
   on_attach = function(client, buffer)
     local diagnostic_handler = function ()
