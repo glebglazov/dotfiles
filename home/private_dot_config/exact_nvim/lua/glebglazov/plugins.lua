@@ -2,13 +2,28 @@ return {
   { 'MunifTanjim/nui.nvim' },
   { 'nvim-lua/plenary.nvim' },
 
-  { 'preservim/nerdtree' },
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    }
+  },
 
   { 'tpope/vim-fugitive' },
 
   { 'tpope/vim-unimpaired' },
   { 'theprimeagen/harpoon' },
   { 'mbbill/undotree' },
+  {
+    'rgroli/other.nvim',
+    init = function()
+      require('other-nvim').setup({
+        mappings = {
+          'rails'
+        }
+      })
+    end
+  },
 
   { 'nvim-telescope/telescope.nvim', tag = '0.1.0' },
 
@@ -38,7 +53,7 @@ return {
   { 'nvim-treesitter/playground' },
 
   {
-    "zbirenbaum/copilot.lua",
+    'zbirenbaum/copilot.lua',
     cmd = "Copilot",
     event = "VimEnter",
     init = function()
@@ -51,7 +66,7 @@ return {
     end,
   },
   {
-    "zbirenbaum/copilot-cmp",
+    'zbirenbaum/copilot-cmp',
     init = function ()
       require("copilot_cmp").setup()
     end
