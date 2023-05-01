@@ -11,6 +11,7 @@ lsp.set_preferences({
   set_lsp_keymaps = false,
   sign_icons = {}
 })
+
 lsp.setup_nvim_cmp({
   sources = cmp_sources,
   mapping = lsp.defaults.cmp_mappings({
@@ -22,6 +23,43 @@ lsp.setup_nvim_cmp({
     })
   })
 })
+
+require('lspconfig').ruby_ls.setup({
+  on_attach = function(client, buffer)
+    local diagnostic_handler = function ()
+      local params = vim.lsp.util.make_text_document_params(buffer)
+      client.request(
+        'textDocument/diagnostic',
+        {textDocument = params},
+        function(err, result)
+          if err then
+            local err_msg = string.format("ruby-lsp - diagnostics error - %s", vim.inspect(err))
+            vim.lsp.log.error(err_msg)
+          end
+          if not result then return end
+          vim.lsp.diagnostic.on_publish_diagnostics(
+            nil,
+            vim.tbl_extend('keep', params, { diagnostics = result.items }),
+            { client_id = client.id }
+          )
+        end
+      )
+    end
+
+    diagnostic_handler() -- to request diagnostics when attaching the client to the buffer
+    local ruby_group = vim.api.nvim_create_augroup('ruby_ls', {clear = false})
+
+    vim.api.nvim_create_autocmd(
+      {'BufEnter', 'BufWritePre', 'InsertLeave', 'TextChanged'},
+      {
+        buffer = buffer,
+        callback = diagnostic_handler,
+        group = ruby_group,
+      }
+    )
+  end
+});
+
 lsp.on_attach(function(client, bufnr)
   local opts = {buffer = bufnr, remap = false}
 
