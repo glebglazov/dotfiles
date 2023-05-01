@@ -4,8 +4,6 @@ return {
     priority = 1000
   },
 
-  { 'MunifTanjim/nui.nvim' },
-
   { 'nvim-tree/nvim-tree.lua' },
 
   { 'tpope/vim-fugitive' },
