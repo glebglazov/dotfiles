@@ -30,7 +30,14 @@ return {
     tag = '0.1.1'
   },
 
-  { 'w0rp/ale' },
+  {
+    'folke/trouble.nvim',
+    init = function ()
+      require('trouble').setup({
+        icons = false
+      })
+    end
+  },
   {
     'VonHeikemen/lsp-zero.nvim',
     dependencies = {
