@@ -96,6 +96,12 @@ return {
       require('Comment').setup({ })
     end
   },
+  {
+    'windwp/nvim-autopairs',
+    init = function()
+      require('nvim-autopairs').setup({ })
+    end
+  },
   { 'windwp/nvim-ts-autotag' },
   { 'RRethy/nvim-treesitter-endwise' },
 
