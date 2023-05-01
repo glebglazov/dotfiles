@@ -97,7 +97,6 @@ return {
   },
   { 'windwp/nvim-ts-autotag' },
   { 'RRethy/nvim-treesitter-endwise' },
-  { 'tpope/vim-rails' },
 
   {
     'declancm/windex.nvim',
