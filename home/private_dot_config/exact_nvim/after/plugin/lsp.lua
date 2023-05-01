@@ -2,6 +2,7 @@ local lsp = require('lsp-zero')
 local cmp = require('cmp')
 local telescope = require('telescope.builtin')
 local nnoremap  = require('glebglazov.functions.remap').nnoremap
+local configure = require('lspconfig')
 
 local cmp_sources = lsp.defaults.cmp_sources()
 table.insert(cmp_sources, { name = 'copilot' })
@@ -24,13 +25,13 @@ lsp.setup_nvim_cmp({
   })
 })
 
-require('lspconfig').ruby_ls.setup({
+configure.ruby_ls.setup({
   on_attach = function(client, buffer)
     local diagnostic_handler = function ()
       local params = vim.lsp.util.make_text_document_params(buffer)
       client.request(
         'textDocument/diagnostic',
-        {textDocument = params},
+        { textDocument = params } ,
         function(err, result)
           if err then
             local err_msg = string.format("ruby-lsp - diagnostics error - %s", vim.inspect(err))
@@ -47,10 +48,10 @@ require('lspconfig').ruby_ls.setup({
     end
 
     diagnostic_handler() -- to request diagnostics when attaching the client to the buffer
-    local ruby_group = vim.api.nvim_create_augroup('ruby_ls', {clear = false})
 
+    local ruby_group = vim.api.nvim_create_augroup('ruby_ls', {clear = false})
     vim.api.nvim_create_autocmd(
-      {'BufEnter', 'BufWritePre', 'InsertLeave', 'TextChanged'},
+      { 'BufEnter', 'BufWritePre', 'InsertLeave', 'TextChanged' },
       {
         buffer = buffer,
         callback = diagnostic_handler,
@@ -58,7 +59,17 @@ require('lspconfig').ruby_ls.setup({
       }
     )
   end
-});
+})
+
+configure.lua_ls.setup({
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { 'vim' }
+      },
+    }
+  }
+})
 
 lsp.on_attach(function(client, bufnr)
   local opts = {buffer = bufnr, remap = false}
