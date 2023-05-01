@@ -13,6 +13,10 @@ require('nvim-treesitter.configs').setup({
     enable = true,
   },
 
+  autopairs = {
+    enable = true,
+  },
+
   endwise = {
     enable = true,
   },
