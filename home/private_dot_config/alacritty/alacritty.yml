@@ -1,5 +1,26 @@
 font:
+  normal:
+    family: Hack Nerd Font Mono
+    style: Regular
+
+  bold:
+    family: Hack Nerd Font Mono
+    style: Bold
+
+  italic:
+    family: Hack Nerd Font Mono
+    style: Italic
+
   size: 15
+
+shell:
+  program: /usr/local/bin/tmux
+  args:
+    - new-session
+    - -A
+    - -D
+    - -s
+    - main
 
 key_bindings:
   # How to add custom keybindings (based on https://arslan.io/2018/02/05/gpu-accelerated-terminal-alacritty/):
