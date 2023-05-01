@@ -1,4 +1,9 @@
 return {
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000
+  },
+
   { 'MunifTanjim/nui.nvim' },
 
   { 'nvim-tree/nvim-tree.lua' },
@@ -99,8 +104,6 @@ return {
   { 'windwp/nvim-ts-autotag' },
   { 'RRethy/nvim-treesitter-endwise' },
   { 'tpope/vim-rails' },
-
-  { 'gruvbox-community/gruvbox' },
 
   {
     'declancm/windex.nvim',
