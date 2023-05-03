@@ -5,3 +5,6 @@
 --line-number
 --no-heading
 --sort=path
+{{ if .tds -}}
+--no-mmap
+{{ end -}}
