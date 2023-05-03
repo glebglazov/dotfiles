@@ -15,6 +15,11 @@ require('nvim-tree').setup({
         modified = false,
       }
     }
+  },
+  filters = {
+    custom = {
+      '^\\.git'
+    }
   }
 })
 
