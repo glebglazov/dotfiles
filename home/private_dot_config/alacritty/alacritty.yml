@@ -13,14 +13,14 @@ font:
 
   size: 15
 
-shell:
-  program: /usr/local/bin/tmux
-  args:
-    - new-session
-    - -A
-    - -D
-    - -s
-    - main
+# shell:
+#   program: /usr/local/bin/tmux
+#   args:
+#     - new-session
+#     - -A
+#     - -D
+#     - -s
+#     - main
 
 key_bindings:
   # How to add custom keybindings (based on https://arslan.io/2018/02/05/gpu-accelerated-terminal-alacritty/):
