@@ -16,4 +16,4 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = require('glebglazov.plugins')
-require("lazy").setup(plugins, opts)
+require('lazy').setup(plugins)
