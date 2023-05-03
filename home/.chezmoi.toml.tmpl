@@ -1,34 +1,9 @@
-{{- $workstation := false -}}
-{{- $bastion := false -}}
-{{- $sshKeys := list -}}
-{{- $includePersonalSshKeys := false -}}
+{{- $tds := false -}}
 
-{{- $hostname := .chezmoi.hostname -}}
-
-{{- if eq $hostname "bastion" -}}
-{{-   $bastion = true -}}
-{{-   $includePersonalSshKeys = true -}}
-{{- else -}}
-{{-   $workstation = true -}}
-{{-   $includePersonalSshKeys = true -}}
-{{- end -}}
-
-{{- if $bastion }}
-{{-   $sshKeys = concat $sshKeys (list "bastion") }}
-{{- end }}
-{{- if $includePersonalSshKeys }}
-{{-   $sshKeys = concat $sshKeys (list "gglazov_main" "gglazov_deprecated") }}
-{{- end }}
-
-{{- if eq .chezmoi.hostname "bastion" -}}
-{{-   $bastion = true -}}
-{{-   $workstation = true -}}
-{{- else -}}
-{{-   $workstation = true -}}
-{{- end -}}
+{{- $computerName := output "scutil" "--get" "ComputerName" | trim -}}
+{{ if (eq $computerName "macbook-tds") -}}
+  {{- $tds = true -}}
+{{ end -}}
 
 [data]
-bastion = {{ $bastion }}
-workstation = {{ $workstation }}
-ssh_keys = [ {{ $sshKeys | quoteList | join ", " }} ]
-include_personal_ssh_keys = {{ $includePersonalSshKeys }}
+tds = {{ $tds }}

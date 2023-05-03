@@ -21,16 +21,15 @@
   "1password-cli"
 -}}
 
-{{ if .workstation -}}
-{{   $packages = concat $packages (list
+{{ $packages = concat $packages (list
        "software-properties-common"
        "docker.io"
        "docker-compose"
        "mysql-client"
        "nodejs"
        "npm"
-       "libmysqlclient-dev") -}}
-{{ end -}}
+       "libmysqlclient-dev")
+-}}
 
 {{ $snaps := list "nvim" -}}
 

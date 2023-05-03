@@ -1,8 +1,1 @@
-{{- if .bastion -}}
-{{   range gitHubKeys "glebglazov" -}}
-{{     .Key }}
-{{   end -}}
-{{- end -}}
-{{- if .workstation -}}
-{{   (onepasswordRead "op://Private/jmy6isqm37yqmbwvlrtqjpvhcq/public") }}
-{{- end }}
+{{ onepasswordRead "op://Private/jmy6isqm37yqmbwvlrtqjpvhcq/public" }}
