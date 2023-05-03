@@ -1,5 +1,12 @@
 require('nvim-treesitter.configs').setup({
-  ensure_installed = 'all',
+  ensure_installed = {
+    'ruby',
+    'lua',
+    'vimdoc',
+    'vim',
+    'markdown',
+    'markdown_inline',
+  },
 
   highlight = {
     enable = true,
