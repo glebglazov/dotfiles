@@ -13,7 +13,7 @@ return {
   { 'mbbill/undotree' },
   {
     'rgroli/other.nvim',
-    init = function()
+    config = function()
       require('other-nvim').setup({
         mappings = {
           'rails'
@@ -31,7 +31,7 @@ return {
 
   {
     'folke/trouble.nvim',
-    init = function ()
+    config = function ()
       require('trouble').setup({
         icons = false
       })
@@ -65,7 +65,7 @@ return {
     'zbirenbaum/copilot.lua',
     cmd = "Copilot",
     event = "VimEnter",
-    init = function()
+    config = function()
       vim.defer_fn(function()
         require("copilot").setup({
           suggestion = { enabled = false },
@@ -77,36 +77,27 @@ return {
   {
     'zbirenbaum/copilot-cmp',
     branch = 'formatting-fixes', -- TODO: remove when merged into master
-    init = function ()
-      require("copilot_cmp").setup()
-    end
+    config = true
   },
 
   {
     'kylechui/nvim-surround',
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy",
-    init = function()
-      require('nvim-surround').setup({ })
-    end
+    event = "VeryLazy"
   },
   {
     'numToStr/Comment.nvim',
-    init = function()
-      require('Comment').setup({ })
-    end
+    config = true
   },
   {
     'windwp/nvim-autopairs',
-    init = function()
-      require('nvim-autopairs').setup({ })
-    end
+    config = true
   },
   { 'windwp/nvim-ts-autotag' },
   { 'RRethy/nvim-treesitter-endwise' },
 
   {
     'declancm/windex.nvim',
-    init = function() require('windex').setup() end
+    config = true
   },
 }
