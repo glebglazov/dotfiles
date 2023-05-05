@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+# goku config hash: {{ include "private_dot_config/karabiner.edn" | sha256sum }}
+echo "Running goku:"
+goku
