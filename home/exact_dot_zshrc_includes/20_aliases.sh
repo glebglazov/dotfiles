@@ -33,5 +33,5 @@ function terraform {
 }
 
 function kubectl {
-    op run --no-masking -- command kubectl "$@"
+    ([ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH; op run --no-masking -- command kubectl "$@")
 }
