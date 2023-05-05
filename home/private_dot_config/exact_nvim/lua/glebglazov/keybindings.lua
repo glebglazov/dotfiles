@@ -55,10 +55,5 @@ nnoremap('<LEADER>D', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
 -- Files / Projects
 -------------------------------------------------
 
-vim.cmd([[
-  command AC :execute "e " . eval('rails#buffer().alternate()')
-]])
-
 nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
-
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
