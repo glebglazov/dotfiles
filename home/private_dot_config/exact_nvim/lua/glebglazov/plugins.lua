@@ -63,11 +63,11 @@ return {
 
   {
     'zbirenbaum/copilot.lua',
-    cmd = "Copilot",
-    event = "VimEnter",
+    cmd = 'Copilot',
+    event = 'VimEnter',
     config = function()
       vim.defer_fn(function()
-        require("copilot").setup({
+        require('copilot').setup({
           suggestion = { enabled = false },
           panel = { enabled = false },
         })
@@ -82,8 +82,9 @@ return {
 
   {
     'kylechui/nvim-surround',
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy"
+    version = '*', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
+    config = true
   },
   {
     'numToStr/Comment.nvim',
