@@ -1,2 +1,24 @@
 {
+ :main
+ [
+  {
+   :des "Control/Option text traversal/editing swap"
+   :rules [
+    [:!Tdelete_or_backspace :!Odelete_or_backspace]
+    [:!Tup_arrow :!Oup_arrow]
+    [:!Tdown_arrow :!Odown_arrow]
+    [:!Tleft_arrow :!Oleft_arrow]
+    [:!Tright_arrow :!Oright_arrow]
+    [:!Wdelete_or_backspace :!Odelete_or_backspace]
+    [:!Wup_arrow :!Oup_arrow]
+    [:!Wdown_arrow :!Odown_arrow]
+    [:!Wleft_arrow :!Oleft_arrow]
+    [:!Wright_arrow :!Oright_arrow]
+    [:!Oup_arrow :!Tup_arrow]
+    [:!Odown_arrow :!Tdown_arrow]
+    [:!Oleft_arrow :!Tleft_arrow]
+    [:!Oright_arrow :!Tright_arrow]
+   ]
+  }
+ ]
 }
