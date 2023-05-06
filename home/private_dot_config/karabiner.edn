@@ -48,11 +48,13 @@
    :des "Window mode"
    :rules [
            :window_mode
-           [:h [:!CTOh]]
-           [:j [:!CTOj]]
-           [:k [:!CTOk]]
-           [:l [:!CTOl]]
-           [:m [:!CTOm]]
+           [:h [:!CTOh]]         ; Half-left window
+           [:j [:!CTOj]]         ; Half-bottom window
+           [:k [:!CTOk]]         ; Half-top window
+           [:l [:!CTOl]]         ; Half-right window
+           [:m [:!CTOm]]         ; Maximize window
+           [:n [:!Tf4]]          ; Focus next window
+           [:comma [:!CTOcomma]] ; Almost maximize
            ]
    }
   {
@@ -63,7 +65,7 @@
            [:j [:display_brightness_decrement]]
            [:i [:volume_increment]]
            [:k [:volume_decrement]]
-           [:backslash [:!CTq]]
+           [:backslash [:!CTq]] ; Lock computer
            ]
    }
   ]
