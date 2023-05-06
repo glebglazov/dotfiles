@@ -24,13 +24,14 @@
    ]
   }
   {
-   :des "Control/Option swap on Macbook Keyboard"
-   :devices {:tds-macbook-2019 [{:product_id 832 :vendor_id 1452}]}
+   :des "Control/Option swap on TDS Macbook Keyboard"
    :rules [
+    :tds-macbook
     [:##left_option :##left_control]
     [:##right_option :##right_control]
     [:##left_control :##left_option]
-   ]
-  }
- ]
-}
+    ]
+   }
+  ]
+  :devices {:tds-macbook [{:product_id 832 :vendor_id 1452}]}
+ }
