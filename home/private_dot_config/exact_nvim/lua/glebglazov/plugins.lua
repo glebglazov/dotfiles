@@ -58,8 +58,10 @@ return {
       {'rafamadriz/friendly-snippets'},
     }
   },
+
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
   { 'nvim-treesitter/playground' },
+  { 'vim-ruby/vim-ruby' },
 
   {
     'zbirenbaum/copilot.lua',
