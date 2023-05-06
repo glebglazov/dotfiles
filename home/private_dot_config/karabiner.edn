@@ -24,7 +24,7 @@
    ]
   }
   {
-   :des "Control/Option swap on TDS Macbook Keyboard"
+   :des "Macbook keyboard tweaks"
    :rules [
     :tds-macbook
     [:##left_option :##left_control]
@@ -32,6 +32,10 @@
     [:##left_control :##left_option]
     ]
    }
-  ]
-  :devices {:tds-macbook [{:product_id 832 :vendor_id 1452}]}
- }
+  {
+   :des "Esc as a Hyper when pressed with something else"
+   :rules [[:##escape :!QWEleft_shift nil {:alone :escape}]]
+  }
+ ]
+ :devices {:tds-macbook [{:product_id 832 :vendor_id 1452}]}
+}
