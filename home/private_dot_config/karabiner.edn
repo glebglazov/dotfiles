@@ -24,12 +24,13 @@
    ]
   }
   {
-   :des "Control/Option swap on TDS Macbook Keyboard"
+   :des "Control/Option swap on Macbook Keyboard"
    :rules [
     :tds-macbook
     [:##left_option :##left_control]
     [:##right_option :##right_control]
     [:##left_control :##left_option]
+    [:##caps_lock :##escape]
     ]
    }
   ]
