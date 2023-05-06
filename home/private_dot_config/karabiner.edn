@@ -2,8 +2,29 @@
 ;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
 
 {
+ :profiles { :Default { :default true :sim 50 :delay 500 :alone 500 :held 500 } }
+
+ :simlayers {
+             :window_mode { :key :w }
+             :system_mode { :key :s }
+             }
+
+ :devices {:tds_macbook [{:product_id 832 :vendor_id 1452}]}
+
+ :templates {
+             }
  :main
  [
+  {
+   :des "Control/Option swap on Macbook Keyboard"
+   :rules [
+           :tds_macbook
+           [:##left_option :##left_control]
+           [:##right_option :##right_control]
+           [:##left_control :##left_option]
+           [:##caps_lock :##escape]
+           ]
+   }
   {
    :des "Control/Option text traversal/editing swap"
    :rules [
@@ -24,15 +45,26 @@
            ]
    }
   {
-   :des "Control/Option swap on Macbook Keyboard"
+   :des "Window mode"
    :rules [
-           :tds-macbook
-           [:##left_option :##left_control]
-           [:##right_option :##right_control]
-           [:##left_control :##left_option]
-           [:##caps_lock :##escape]
+           :window_mode
+           [:h [:!CTOh]]
+           [:j [:!CTOj]]
+           [:k [:!CTOk]]
+           [:l [:!CTOl]]
+           [:m [:!CTOm]]
+           ]
+   }
+  {
+   :des "System mode"
+   :rules [
+           :system_mode
+           [:u [:display_brightness_increment]]
+           [:j [:display_brightness_decrement]]
+           [:i [:volume_increment]]
+           [:k [:volume_decrement]]
+           [:backslash [:!CTq]]
            ]
    }
   ]
- :devices {:tds-macbook [{:product_id 832 :vendor_id 1452}]}
  }
