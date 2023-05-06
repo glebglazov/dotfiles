@@ -1,0 +1,64 @@
+#!/usr/bin/env sh
+
+# necessary to load scripting-addition during startup on macOS Big Sur
+# *yabai --load-sa* is configured to run through sudo without a password
+# see https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#configure-scripting-addition for more info
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
+
+yabai -m space 1 --label web
+yabai -m space 2 --label code
+yabai -m space 3 --label slack
+yabai -m space 4 --label mail
+yabai -m space 5 --label zoom
+yabai -m space 6 --label obsidian
+yabai -m space 7 --label telegram_and_spotify
+yabai -m space 8 --label rest
+
+yabai -m rule --add app="^(Calculator|Calendar|System Settings|Archive Utility|CleanMyMac X|Finder)$" manage=off
+
+almost_maximized_stack_spaces=(telegram_and_spotify rest)
+for space in "${almost_maximized_stack_spaces[@]}"; do
+    yabai -m config --space $space               \
+        top_padding                 120          \
+        bottom_padding              120          \
+        left_padding                150          \
+        right_padding               150          \
+        window_gap                  0
+done
+
+yabai -m config                              \
+    external_bar                off:41:0     \
+    mouse_follows_focus         on           \
+    focus_follows_mouse         autoraise    \
+    window_placement            second_child \
+    window_topmost              off          \
+    window_shadow               off          \
+    window_animation_duration   0            \
+    window_opacity_duration     0            \
+    active_window_opacity       0            \
+    normal_window_opacity       0            \
+    window_opacity              off          \
+    insert_feedback_color       0xaad75f5f   \
+    active_window_border_color  0xBF775759   \
+    normal_window_border_color  0x7f353535   \
+    window_border_width         0            \
+    window_border_radius        0            \
+    window_border_blur          off          \
+    window_border_hidpi         off          \
+    window_border               off          \
+    split_ratio                 0            \
+    split_type                  auto         \
+    auto_balance                off          \
+    top_padding                 0            \
+    left_padding                0            \
+    right_padding               0            \
+    bottom_padding              0            \
+    window_gap                  0            \
+    layout                      stack        \
+    mouse_modifier              fn           \
+    mouse_action1               move         \
+    mouse_action2               resize       \
+    mouse_drop_action           swap
+
+echo "yabai configuration loaded..."

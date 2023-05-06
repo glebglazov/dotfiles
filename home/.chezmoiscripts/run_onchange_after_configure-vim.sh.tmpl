@@ -2,5 +2,6 @@
 
 set -eufo pipefail
 
-# glebglazov/plugins.lua hash: {{ include "private_dot_config/exact_nvim/lua/glebglazov/plugins.lua" | sha256sum }}
+# config hash: {{ include "private_dot_config/exact_nvim/lua/glebglazov/plugins.lua" | sha256sum }}
+echo "Installing NeoVim plugins..."
 zsh -c "nvim --headless -c 'autocmd User LazySync quitall' -c 'Lazy sync'"

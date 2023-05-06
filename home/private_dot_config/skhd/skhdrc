@@ -1,0 +1,2 @@
+ctrl - f4 : yabai -m window --focus stack.next || yabai -m window --focus stack.first
+ctrl - f5 : yabai -m window --focus stack.prev || yabai -m window --focus stack.last
