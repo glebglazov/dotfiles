@@ -1,3 +1,6 @@
+;; examples - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/examples.org
+;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
+
 {
  :main
  [
@@ -18,6 +21,15 @@
     [:!Odown_arrow :!Tdown_arrow]
     [:!Oleft_arrow :!Tleft_arrow]
     [:!Oright_arrow :!Tright_arrow]
+   ]
+  }
+  {
+   :des "Control/Option swap on Macbook Keyboard"
+   :devices {:tds-macbook-2019 [{:product_id 832 :vendor_id 1452}]}
+   :rules [
+    [:##left_option :##left_control]
+    [:##right_option :##right_control]
+    [:##left_control :##left_option]
    ]
   }
  ]
