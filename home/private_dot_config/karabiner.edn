@@ -15,6 +15,7 @@
  :simlayers {
              :window_mode { :key :w }
              :system_mode { :key :s }
+             ; :mouse_mode { :key :d }
              }
 
  :devices {:tds_macbook [{:product_id 832 :vendor_id 1452}]}
@@ -79,5 +80,13 @@
            [:backslash [:!CTq]] ; Lock computer
            ]
    }
+  ; {
+  ;  :des "Mouse mode"
+  ;  :rules [
+  ;          :mouse_mode
+  ;          [:j {:mkey {:vwheel 60}}]
+  ;          [:k {:mkey {:vwheel -60}}]
+  ;          ]
+  ;  }
   ]
  }
