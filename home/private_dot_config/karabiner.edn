@@ -2,7 +2,15 @@
 ;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
 
 {
- :profiles { :Default { :default true :sim 50 :delay 500 :alone 500 :held 500 } }
+ :profiles {
+            :Default {
+                      :default true
+                      :sim 30
+                      :delay 500
+                      :alone 500
+                      :held 500
+                      }
+            }
 
  :simlayers {
              :window_mode { :key :w }
