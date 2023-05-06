@@ -6,6 +6,7 @@ require('nvim-treesitter.configs').setup({
     'vim',
     'markdown',
     'markdown_inline',
+    'clojure',
   },
 
   highlight = {
