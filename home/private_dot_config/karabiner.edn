@@ -65,6 +65,7 @@
            [:j [:display_brightness_decrement]]
            [:i [:volume_increment]]
            [:k [:volume_decrement]]
+           [:p [:play_or_pause]]
            [:backslash [:!CTq]] ; Lock computer
            ]
    }
