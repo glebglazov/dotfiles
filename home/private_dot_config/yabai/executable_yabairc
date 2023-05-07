@@ -15,7 +15,7 @@ yabai -m space 6 --label obsidian
 yabai -m space 7 --label telegram_and_spotify
 yabai -m space 8 --label rest
 
-yabai -m rule --add app="^(Calculator|Calendar|System Settings|Archive Utility|CleanMyMac X|Finder)$" manage=off
+yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
 
 almost_maximized_stack_spaces=(telegram_and_spotify rest)
 for space in "${almost_maximized_stack_spaces[@]}"; do
