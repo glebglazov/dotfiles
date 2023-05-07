@@ -1,0 +1,4 @@
+[settings]
+trusted_config_paths = [
+  '/Users/glebglazov/private/Dev'
+]

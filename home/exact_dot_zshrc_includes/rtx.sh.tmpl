@@ -1,0 +1,5 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+rtx_binary_path=$(brew --prefix rtx)/bin/rtx
+eval "$($rtx_binary_path activate zsh)"
+{{ else -}}
+{{ end -}}
