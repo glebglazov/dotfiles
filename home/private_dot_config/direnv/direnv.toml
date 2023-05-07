@@ -2,4 +2,6 @@
 load_dotenv = true
 
 [whitelist]
-prefix = [ "/home/glebglazov/private/Dev", "/Users/glebglazov/private/Dev" ]
+prefix = [
+  '/Users/glebglazov/private/Dev'
+]
