@@ -5,7 +5,7 @@
  :profiles {
             :Default {
                       :default true
-                      :sim 30
+                      :sim 20
                       :delay 500
                       :alone 500
                       :held 500
@@ -36,14 +36,6 @@
              }
  :main
  [
-  {
-   :des "Swap ; with : by default when using English keyboard layout"
-   :rules [
-           :en
-           [:semicolon :!Ssemicolon]
-           [:!Ssemicolon :semicolon]
-           ]
-   }
   {
    :des "Control/Option swap on Macbook Keyboard"
    :rules [
@@ -106,6 +98,7 @@
            [:condi :format_mode :en]
            [:y [:!S8 :!S8]]
            [:u [:!S8]]
+           [:h [:!Ssemicolon]]
            ]
    }
   {
@@ -114,6 +107,7 @@
            [:condi :format_mode :ru]
            [:y [:!O8 :!O8]]
            [:u [:!O8]]
+           [:h [:!S5]]
            ]
    }
   ; {
