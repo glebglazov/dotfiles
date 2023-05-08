@@ -110,13 +110,5 @@
            [:h [:!S5]]
            ]
    }
-  ; {
-  ;  :des "Mouse mode"
-  ;  :rules [
-  ;          :mouse_mode
-  ;          [:j {:mkey {:vwheel 60}}]
-  ;          [:k {:mkey {:vwheel -60}}]
-  ;          ]
-  ;  }
   ]
  }
