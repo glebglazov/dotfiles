@@ -18,6 +18,18 @@
              :format_mode { :key :g }
              }
 
+ :input-sources { ;; define input-source, these data can be found in Karabiner EventViewer gui
+                 :en {
+                      :input_source_id "com.apple.keylayout.US"
+                      :language        "en"
+                      }
+                 :ru {
+                      :input_source_id "com.apple.keylayout.Russian"
+                      :language        "ru"
+                      }
+                 }
+
+
  :devices {:tds_macbook [{:product_id 832 :vendor_id 1452}]}
 
  :templates {
@@ -25,8 +37,9 @@
  :main
  [
   {
-   :des "Swap ; with : by default"
+   :des "Swap ; with : by default when using English keyboard layout"
    :rules [
+           :en
            [:semicolon :!Ssemicolon]
            [:!Ssemicolon :semicolon]
            ]
@@ -88,11 +101,19 @@
            ]
    }
   {
-   :des "Format mode"
+   :des "Format mode (en)"
    :rules [
-           :format_mode
+           [:condi :format_mode :en]
            [:y [:!S8 :!S8]]
            [:u [:!S8]]
+           ]
+   }
+  {
+   :des "Format mode (ru)"
+   :rules [
+           [:condi :format_mode :ru]
+           [:y [:!O8 :!O8]]
+           [:u [:!O8]]
            ]
    }
   ; {
