@@ -26,6 +26,13 @@
  :main
  [
   {
+   :des "Swap ; with : by default"
+   :rules [
+           [:semicolon :!Ssemicolon]
+           [:!Ssemicolon :semicolon]
+           ]
+   }
+  {
    :des "Control/Option swap on Macbook Keyboard"
    :rules [
            :tds_macbook
