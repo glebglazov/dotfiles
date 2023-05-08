@@ -15,8 +15,7 @@
  :simlayers {
              :window_mode { :key :w }
              :system_mode { :key :s }
-             :format_mode { :key :f }
-             ; :mouse_mode { :key :d }
+             :format_mode { :key :g }
              }
 
  :devices {:tds_macbook [{:product_id 832 :vendor_id 1452}]}
