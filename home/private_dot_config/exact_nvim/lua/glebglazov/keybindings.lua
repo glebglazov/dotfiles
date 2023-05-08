@@ -20,15 +20,10 @@ nnoremap('<LEADER>yy', '"+yy')
 -------------------------------------------------
 -- Navigation
 -------------------------------------------------
-nnoremap('H', '^', { silent = true })
-vnoremap('H', '^', { silent = true })
-nnoremap('L', '$', { silent = true })
-vnoremap('L', '$', { silent = true })
-
-nnoremap('J', '<C-D>zz', { silent = true })
-vnoremap('J', '<C-D>zz', { silent = true })
-nnoremap('K', '<C-U>zz', { silent = true })
-vnoremap('K', '<C-U>zz', { silent = true })
+nnoremap('<C-D>', '<C-D>zz', { silent = true })
+vnoremap('<C-D>', '<C-D>zz', { silent = true })
+nnoremap('<C-U>', '<C-U>zz', { silent = true })
+vnoremap('<C-U>', '<C-U>zz', { silent = true })
 
 nnoremap('n', 'nzzzv')
 nnoremap('N', 'Nzzzv')
@@ -37,12 +32,6 @@ nnoremap('N', 'Nzzzv')
 -- Paste without messing with register
 -------------------------------------------------
 xnoremap('<leader>p', "\"_dP")
-
--------------------------------------------------
--- Restoring merging of lines
--------------------------------------------------
-nnoremap('tm', 'J', { silent = true })
-vnoremap('tm', 'J', { silent = true })
 
 -------------------------------------------------
 -- Window
