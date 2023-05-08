@@ -15,6 +15,7 @@
  :simlayers {
              :window_mode { :key :w }
              :system_mode { :key :s }
+             :format_mode { :key :f }
              ; :mouse_mode { :key :d }
              }
 
@@ -78,6 +79,14 @@
            [:m [:mute]]
            [:p [:play_or_pause]]
            [:backslash [:!CTq]] ; Lock computer
+           ]
+   }
+  {
+   :des "Format mode"
+   :rules [
+           :format_mode
+           [:y [:!S8 :!S8]]
+           [:u [:!S8]]
            ]
    }
   ; {
