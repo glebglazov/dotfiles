@@ -21,15 +21,19 @@ function yarn {
 }
 
 function terraform {
-    for f in $(ls ~/.ssh/*.template); do
-        op inject -i $f -o ~/.ssh/$(basename $f .template)
-    done
+    if [ -v NEEDS_PERSISTED_KEYPAIRS ]
+        for f in $(ls ~/.ssh/*.template); do
+            op inject -i $f -o ~/.ssh/$(basename $f .template)
+        done
+    fi
 
     op run --no-masking -- command terraform "$@"
 
-    for f in $(ls ~/.ssh/*.template); do
-        rm ~/.ssh/$(basename $f .template)
-    done
+    if [ -v NEEDS_PERSISTED_KEYPAIRS ]
+        for f in $(ls ~/.ssh/*.template); do
+            rm ~/.ssh/$(basename $f .template)
+        done
+    fi
 }
 
 function kubectl {
