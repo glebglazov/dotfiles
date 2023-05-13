@@ -21,20 +21,24 @@ nnoremap('<LEADER>yy', '"+yy')
 -- Navigation
 -------------------------------------------------
 nnoremap('<C-D>', '<C-D>zz', { silent = true })
-vnoremap('<C-D>', '<C-D>zz', { silent = true })
 nnoremap('<C-U>', '<C-U>zz', { silent = true })
+vnoremap('<C-D>', '<C-D>zz', { silent = true })
 vnoremap('<C-U>', '<C-U>zz', { silent = true })
 
 nnoremap('H', '^')
 nnoremap('L', '$')
+vnoremap('H', '^')
+vnoremap('L', '$')
 
 nnoremap('j', 'jzz')
-vnoremap('j', 'jzz')
 nnoremap('k', 'kzz')
+vnoremap('j', 'jzz')
 vnoremap('k', 'kzz')
 
 nnoremap('n', 'nzzzv')
 nnoremap('N', 'Nzzzv')
+vnoremap('n', 'nzzzv')
+vnoremap('N', 'Nzzzv')
 
 -------------------------------------------------
 -- Paste without messing with register
