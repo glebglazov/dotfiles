@@ -1,19 +1,13 @@
-nnoremap <C-D> <C-D>zz
-nnoremap <C-U> <C-D>zz
-vnoremap <C-D> <C-D>zz
-vnoremap <C-U> <C-D>zz
+noremap H ^
+noremap L $
 
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L $
+"> not working yet :(
+noremap <C-d> <C-d>zz
+noremap <C-d> <C-d>zz
 
-nnoremap j jzz
-nnoremap k kzz
-vnoremap j jzz
-vnoremap k kzz
+noremap j jzz
+noremap k kzz
 
-nnoremap n nzzzv
-nnoremap N Nzzzv
-vnoremap n nzzzv
-vnoremap N Nzzzv
+noremap n nzzzv
+noremap N Nzzzv
+"< not working yet :(
