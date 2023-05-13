@@ -25,6 +25,9 @@ vnoremap('<C-D>', '<C-D>zz', { silent = true })
 nnoremap('<C-U>', '<C-U>zz', { silent = true })
 vnoremap('<C-U>', '<C-U>zz', { silent = true })
 
+nnoremap('H', '^')
+nnoremap('L', '$')
+
 nnoremap('j', 'jzz')
 vnoremap('j', 'jzz')
 nnoremap('k', 'kzz')
