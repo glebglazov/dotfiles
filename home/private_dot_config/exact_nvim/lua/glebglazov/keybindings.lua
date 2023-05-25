@@ -30,16 +30,6 @@ nnoremap('L', '$')
 vnoremap('H', '^')
 vnoremap('L', '$')
 
-nnoremap('j', 'jzz')
-nnoremap('k', 'kzz')
-vnoremap('j', 'jzz')
-vnoremap('k', 'kzz')
-
-nnoremap('n', 'nzzzv')
-nnoremap('N', 'Nzzzv')
-vnoremap('n', 'nzzzv')
-vnoremap('N', 'Nzzzv')
-
 -------------------------------------------------
 -- Paste without messing with register
 -------------------------------------------------
