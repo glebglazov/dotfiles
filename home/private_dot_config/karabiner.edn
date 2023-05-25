@@ -83,10 +83,10 @@
    :des "System mode"
    :rules [
            :system_mode
-           [:u [:volume_increment]]
+           [:k [:volume_increment]]
            [:j [:volume_decrement]]
            [:i [:display_brightness_increment]]
-           [:k [:display_brightness_decrement]]
+           [:u [:display_brightness_decrement]]
            [:m [:mute]]
            [:p [:play_or_pause]]
            [:backslash [:!CTq]] ; Lock computer
