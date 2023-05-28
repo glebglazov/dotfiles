@@ -2,6 +2,7 @@ require('nvim-treesitter.configs').setup({
   ensure_installed = {
     'ruby',
     'terraform',
+    'hcl',
     'lua',
     'vimdoc',
     'vim',
