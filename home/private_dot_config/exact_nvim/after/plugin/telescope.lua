@@ -9,7 +9,14 @@ local vnoremap  = require('glebglazov.functions.remap').vnoremap
 
 nnoremap('<LEADER>/', telescope.live_grep)
 nnoremap('<LEADER>?', telescope.resume)
-vnoremap('<LEADER>/', function() telescope.grep_string({ search = get_visual_selection() }) end, { silent = true })
+vnoremap('<LEADER>/',
+  function()
+    telescope.grep_string({
+      search = get_visual_selection()
+    })
+  end,
+  { silent = true }
+)
 
 nnoremap('<LEADER>fb', telescope.buffers)
 nnoremap('<LEADER>fh', telescope.help_tags)
