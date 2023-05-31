@@ -49,12 +49,15 @@
   {
    :des "Control/Option text traversal/editing swap"
    :rules [
+           ; Deletion
            [:!Tdelete_or_backspace :!Odelete_or_backspace]
+           [:!Wdelete_or_backspace :!Odelete_or_backspace]
+
+           ; Traversal
            [:!Tup_arrow :!Oup_arrow]
            [:!Tdown_arrow :!Odown_arrow]
            [:!Tleft_arrow :!Oleft_arrow]
            [:!Tright_arrow :!Oright_arrow]
-           [:!Wdelete_or_backspace :!Odelete_or_backspace]
            [:!Wup_arrow :!Oup_arrow]
            [:!Wdown_arrow :!Odown_arrow]
            [:!Wleft_arrow :!Oleft_arrow]
@@ -63,6 +66,16 @@
            [:!Odown_arrow :!Tdown_arrow]
            [:!Oleft_arrow :!Tleft_arrow]
            [:!Oright_arrow :!Tright_arrow]
+
+           ; Visual selection
+           [:!SOright_arrow :!STright_arrow]
+           [:!STright_arrow :!SOright_arrow]
+           [:!SOleft_arrow :!STleft_arrow]
+           [:!STleft_arrow :!SOleft_arrow]
+           [:!SOup_arrow :!STup_arrow]
+           [:!STup_arrow :!SOup_arrow]
+           [:!SOdown_arrow :!STdown_arrow]
+           [:!STdown_arrow :!SOdown_arrow]
            ]
    }
   {
