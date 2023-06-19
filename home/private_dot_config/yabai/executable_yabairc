@@ -15,6 +15,15 @@ yabai -m space 6 --label obsidian
 yabai -m space 7 --label telegram_and_spotify
 yabai -m space 8 --label rest
 
+yabai -m rule --add app="^Postman$" space=web
+yabai -m rule --add app="^Alacritty$" space=code
+yabai -m rule --add app="^Slack$" space=slack
+yabai -m rule --add app="^Mail$" space=mail
+yabai -m rule --add app="^Zoom$" space=zoom
+yabai -m rule --add app="^Obsidian$" space=obsidian
+yabai -m rule --add app="^Telegram$" space=telegram_and_spotify
+yabai -m rule --add app="^Spotify$" space=telegram_and_spotify
+
 yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
 yabai -m rule --add app="^Arc$" subrole='AXSystemDialog' manage=off mouse_follows_focus=off
 
