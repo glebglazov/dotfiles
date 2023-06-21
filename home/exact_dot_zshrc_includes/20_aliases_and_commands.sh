@@ -36,6 +36,20 @@ function terraform {
     fi
 }
 
+function __aws_envrc_path_cd {
+    [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
+}
+
 function kubectl {
-    ([ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH; op run --no-masking -- command kubectl "$@")
+    (__aws_envrc_path_cd; op run --no-masking -- command kubectl "$@")
+}
+
+function ecr-login {
+    (__aws_envrc_path_cd; aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 412041701469.dkr.ecr.us-east-1.amazonaws.com)
+}
+
+function pid-by-port {
+	pid=$1
+
+	lsof -i tcp:$pid | tail -1 | awk '{print $2}'
 }
