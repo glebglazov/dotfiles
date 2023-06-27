@@ -25,6 +25,7 @@ yabai -m rule --add app="^Telegram$" space=telegram_and_spotify
 yabai -m rule --add app="^Spotify$" space=telegram_and_spotify
 
 yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
+yabai -m rule --add app="^iStat Menus$" manage=off
 yabai -m rule --add app="^Arc$" subrole='AXSystemDialog' manage=off mouse_follows_focus=off
 
 almost_maximized_stack_spaces=(telegram_and_spotify rest)
