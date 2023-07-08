@@ -44,8 +44,17 @@ function kubectl {
     (__aws_envrc_path_cd; op run --no-masking -- command kubectl "$@")
 }
 
-function ecr-login {
+function docker-login-ecr {
     (__aws_envrc_path_cd; aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 412041701469.dkr.ecr.us-east-1.amazonaws.com)
+}
+
+function docker-login-ghcr {
+    op read op://Private/pj4ygw2cha76xlxbiqehnl4au4/token | docker login ghcr.io -u glebglazov --password-stdin
+}
+
+function docker-login {
+    docker-login-ecr
+    docker-login-ghcr
 }
 
 function pid-by-port {
