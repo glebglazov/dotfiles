@@ -23,6 +23,9 @@ yabai -m rule --add app="^zoom\.us$" space=zoom
 yabai -m rule --add app="^Obsidian$" space=obsidian
 yabai -m rule --add app="^Telegram$" space=telegram_and_spotify
 yabai -m rule --add app="^Spotify$" space=telegram_and_spotify
+yabai -m rule --add app="^WhatsApp$" space=rest
+yabai -m rule --add app="^Messages$" space=rest
+yabai -m rule --add app="^Skype$" space=rest
 
 yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
 yabai -m rule --add app="^iStat Menus$" manage=off
