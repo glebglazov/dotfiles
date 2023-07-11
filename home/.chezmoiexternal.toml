@@ -1,3 +1,12 @@
+[".local/bin/goku"]
+	type = "archive"
+  {{- if eq .chezmoi.arch "arm" }}
+	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku.zip"
+  {{- else }}
+	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
+  {{- end }}
+	refreshPeriod = "168h"
+
 [".tmux.conf"]
 	type = "file"
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
