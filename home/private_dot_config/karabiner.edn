@@ -30,16 +30,20 @@
                  }
 
 
- :devices {:tds_macbook [{:product_id 832 :vendor_id 1452}]}
+ :devices {
+           :built_in [
+                         {:is_built_in_keyboard true}
+                         ]
+           }
 
  :templates {
              }
  :main
  [
   {
-   :des "Control/Option swap on Macbook Keyboard"
+   :des "Control/Option swap on built-in keyboard"
    :rules [
-           :tds_macbook
+           :built_in
            [:##left_option :##left_control]
            [:##right_option :##right_control]
            [:##left_control :##left_option]
