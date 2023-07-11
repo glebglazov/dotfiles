@@ -85,6 +85,11 @@
   "bfg"
 -}}
 
+{{ $pin_list := list
+  "koekeishiya/formulae/yabai"
+  "koekeishiya/formulae/skhd"
+-}}
+
 #!/bin/bash
 
 brew update
@@ -94,5 +99,6 @@ brew tap {{ . }}
 {{ end  }}
 brew install --cask {{ $casks | join " " }}
 brew install {{ $brews | join " " }}
+brew pin {{ $pin_list | join " " }}
 
 {{ end -}}
