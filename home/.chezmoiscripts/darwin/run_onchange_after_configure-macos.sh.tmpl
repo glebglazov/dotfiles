@@ -1,0 +1,40 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+
+#!/bin/bash
+
+# https://github.com/mathiasbynens/dotfiles/blob/main/.macos
+
+set -eufo pipefail
+echo "Reconfiguring MacOS..."
+
+# Close any open System Preferences panes, to prevent them from overriding
+# settings we’re about to change
+osascript -e 'tell application "System Preferences" to quit'
+
+###############################################################################
+# Dock, Dashboard, and hot corners                                            #
+###############################################################################
+
+# Remove the auto-hiding Dock delay
+defaults write com.apple.dock autohide-delay -float 0
+# Remove the animation when hiding/showing the Dock
+defaults write com.apple.dock autohide-time-modifier -float 0
+# Automatically hide and show the Dock
+defaults write com.apple.dock autohide -bool true
+# Don’t show recent applications in Dock
+defaults write com.apple.dock show-recents -bool false
+# Don’t automatically rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+
+###############################################################################
+# Kill affected applications                                                  #
+###############################################################################
+
+for app in "Activity Monitor" \
+	"Dock"; do
+	killall "${app}" &> /dev/null || true
+done
+
+{{ end -}}
