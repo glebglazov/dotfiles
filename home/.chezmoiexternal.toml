@@ -9,6 +9,9 @@
   exact = true
   stripComponents = 1
   executable = true
+  [".local/bin/goku".filter]
+    command = "tar"
+    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
 
 [".tmux.conf"]
 	type = "file"
