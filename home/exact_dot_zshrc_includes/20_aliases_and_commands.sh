@@ -4,10 +4,6 @@ alias ide="tmux-ide-layout"
 # All functions below are functions and not aliases just because of the fact
 # that this way we're not breaking original auto-completion
 
-function aws {
-    op run --no-masking -- command aws "$@"
-}
-
 function bundle {
     op run --no-masking -- command bundle "$@"
 }
@@ -38,6 +34,10 @@ function terraform {
 
 function __aws_envrc_path_cd {
     [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
+}
+
+function aws {
+    (__aws_envrc_path_cd; op run --no-masking -- command aws "$@")
 }
 
 function kubectl {
