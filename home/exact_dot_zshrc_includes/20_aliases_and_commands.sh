@@ -57,6 +57,10 @@ function docker-login {
     docker-login-ghcr
 }
 
+function update-kubectl-context {
+    for c in $(aws eks list-clusters | jq -r '.clusters | .[]'); do aws eks update-kubeconfig --name $c; done
+}
+
 function pid-by-port {
 	pid=$1
 
