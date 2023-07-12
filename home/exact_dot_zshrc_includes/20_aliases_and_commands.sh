@@ -61,6 +61,15 @@ function update-kubectl-context {
     for c in $(aws eks list-clusters | jq -r '.clusters | .[]'); do aws eks update-kubeconfig --name $c; done
 }
 
+function git-clone-to-folder {
+    remote=$1
+    branch=${2:-master}
+
+    git init
+    git remote add origin "git@github.com:$remote"
+    git pull origin master
+}
+
 function pid-by-port {
 	pid=$1
 
