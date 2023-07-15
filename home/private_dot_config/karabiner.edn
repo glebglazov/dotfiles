@@ -19,14 +19,8 @@
              }
 
  :input-sources { ;; define input-source, these data can be found in Karabiner EventViewer gui
-                 :en {
-                      :input_source_id "com.apple.keylayout.US"
-                      :language        "en"
-                      }
-                 :ru {
-                      :input_source_id "com.apple.keylayout.Russian"
-                      :language        "ru"
-                      }
+                 :en { :language "en" }
+                 :ru { :language "ru" }
                  }
 
 
