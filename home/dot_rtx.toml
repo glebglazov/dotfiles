@@ -1,3 +1,6 @@
+[env]
+DOCKER_CONTEXT = 'orbstack'
+
 [tools]
 golang = '1.20.2'
 nodejs = '18.16.0'
