@@ -1,5 +1,5 @@
 [settings]
 trusted_config_paths = [
-  '/Users/glebglazov/private/Dev',
-  '/Users/glebglazov/.rtx.toml'
+  '~/private/Dev',
+  '~/.rtx.toml'
 ]
