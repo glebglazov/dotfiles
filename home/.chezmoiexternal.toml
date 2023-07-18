@@ -31,5 +31,5 @@
 
 [".oh-my-zsh/custom/themes/powerlevel10k"]
 	type = "archive"
-	url = "https://github.com/romkatv/powerlevel10k/archive/v1.17.0.tar.gz"
+	url = "https://github.com/romkatv/powerlevel10k/archive/v1.19.0.tar.gz"
 	stripComponents = 1
