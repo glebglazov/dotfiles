@@ -7,6 +7,14 @@ return {
   { 'nvim-tree/nvim-tree.lua' },
 
   { 'tpope/vim-fugitive' },
+  {
+    'kdheepak/lazygit.nvim',
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-telescope/telescope.nvim',
+      'nvim-lua/plenary.nvim'
+    },
+  },
 
   { 'tpope/vim-unimpaired' },
   { 'theprimeagen/harpoon' },
