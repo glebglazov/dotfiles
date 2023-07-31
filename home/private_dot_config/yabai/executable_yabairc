@@ -26,6 +26,7 @@ yabai -m space 6 --label obsidian
 yabai -m space 7 --label telegram_and_spotify
 yabai -m space 8 --label rest
 
+yabai -m rule --add app="^Arc$" space=web subrole='AXSystemDialog' manage=off mouse_follows_focus=off
 yabai -m rule --add app="^Postman$" space=web
 yabai -m rule --add app="^Alacritty$" space=code
 yabai -m rule --add app="^Slack$" space=slack
@@ -42,7 +43,6 @@ yabai -m rule --add app="^SNAP$" space=rest manage=off mouse_follows_focus=off
 
 yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
 yabai -m rule --add app="^iStat Menus$" manage=off
-yabai -m rule --add app="^Arc$" subrole='AXSystemDialog' manage=off mouse_follows_focus=off
 
 almost_maximized_stack_spaces=(telegram_and_spotify rest)
 for space in "${almost_maximized_stack_spaces[@]}"; do
