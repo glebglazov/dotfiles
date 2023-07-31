@@ -31,6 +31,7 @@ yabai -m rule --add app="^Postman$" space=web
 yabai -m rule --add app="^Alacritty$" space=code
 yabai -m rule --add app="^Slack$" space=slack
 yabai -m rule --add app="^Mail$" space=mail
+yabai -m rule --add app="^Morgen$" space=mail subrole='AXSystemDialog' manage=off mouse_follows_focus=off
 yabai -m rule --add app="^Spark Desktop$" space=mail
 yabai -m rule --add app="^zoom\.us$" space=zoom manage=off
 yabai -m rule --add app="^Obsidian$" space=obsidian
