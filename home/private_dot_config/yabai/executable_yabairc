@@ -42,7 +42,7 @@ yabai -m rule --add app="^Messages$" space=rest
 yabai -m rule --add app="^Skype$" space=rest
 yabai -m rule --add app="^SNAP$" space=rest manage=off mouse_follows_focus=off
 
-yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder)$" manage=off
+yabai -m rule --add app="^(Calculator|Calendar|System Settings|System Information|Archive Utility|CleanMyMac X|Finder|zoom\.us)$" manage=off
 yabai -m rule --add app="^iStat Menus$" manage=off
 
 almost_maximized_stack_spaces=(telegram_and_spotify rest)
