@@ -1,31 +1,31 @@
 local actions = require('telescope.actions')
 local telescope = require('telescope.builtin')
-
-local tab_mappings = {
-  ['<TAB>'] = actions.add_selection + actions.move_selection_next,
-  ['<S-TAB>'] = actions.remove_selection + actions.move_selection_previous,
-}
-
-require('telescope').setup({
-  defaults = {
-    mapping = {
-      i = tab_mappings,
-      n = tab_mappings
-    }
-  }
-})
-require('telescope').load_extension('fzf')
-require('telescope').load_extension('lazygit')
-
 local get_visual_selection = require('glebglazov.functions.get_visual_selection')
+local etable = require('glebglazov.functions.table')
 local nnoremap = require('glebglazov.functions.remap').nnoremap
 local vnoremap = require('glebglazov.functions.remap').vnoremap
+
+local i_n_mappings = etable.new({
+  ['<TAB>'] = actions.add_selection + actions.move_selection_next,
+  ['<S-TAB>'] = actions.remove_selection + actions.move_selection_previous,
+})
 
 local search_and_replace_mappings_fn = function(_, map)
   map({ 'n', 'i' }, '<CR>', actions.send_to_qflist + actions.open_qflist)
 
   return true
 end
+
+require('telescope').setup({
+  defaults = {
+    mappings = {
+      i = i_n_mappings,
+      n = i_n_mappings
+    }
+  }
+})
+require('telescope').load_extension('fzf')
+require('telescope').load_extension('lazygit')
 
 nnoremap('<LEADER>/', telescope.live_grep)
 nnoremap('<LEADER>?', telescope.resume)
