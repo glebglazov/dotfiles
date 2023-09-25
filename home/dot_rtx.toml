@@ -2,8 +2,8 @@
 DOCKER_CONTEXT = 'orbstack'
 
 [tools]
-golang = '1.20.2'
-nodejs = '18.16.0'
-bun    = '1.0.1'
-ruby   = '3.2.2'
+golang = '1.21.1'
+nodejs = '20.7.0'
+bun    = '1.0.3'
+ruby   = '3.3.0-preview2'
 yarn   = '1.22.19'
