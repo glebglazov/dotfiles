@@ -15,7 +15,6 @@ local execute_lua_snippet_fn = function(opts)
   return function()
     local content = content_fn()
     local command = string.format(lua_base_script, content)
-    print(command)
 
     vim.cmd(command)
   end
