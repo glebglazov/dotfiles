@@ -1,4 +1,4 @@
-function get_visual_selection()
+local function get_visual_selection()
   -- Yank current visual selection into the 'v' register
   --
   -- Note that this makes no effort to preserve this register
