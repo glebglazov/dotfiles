@@ -75,3 +75,9 @@ function pid-by-port {
 
 	lsof -i tcp:$pid | tail -1 | awk '{print $2}'
 }
+
+function r-edit-credentials {
+    env_name=$1
+
+    RAILS_MASTER_KEY="op://$OP_RAILS_MASTER_KEY_BASE/$env_name" op run -- rails credentials:edit --environment $env_name
+}
