@@ -1,11 +1,18 @@
 ctrl - f4 : yabai -m window --focus stack.next || yabai -m window --focus stack.first
 ctrl - f5 : yabai -m window --focus stack.prev || yabai -m window --focus stack.last
 
-cmd - 1: yabai -m space --focus web
-cmd - 2: yabai -m space --focus code
-cmd - 3: yabai -m space --focus slack
-cmd - 4: yabai -m space --focus mail
-cmd - 5: yabai -m space --focus zoom
-cmd - 6: yabai -m space --focus obsidian
-cmd - 7: yabai -m space --focus telegram_and_spotify
-cmd - 8: yabai -m space --focus rest
+# Presumably `yabai --focus` will stop working on MacOS Sonoma, that's why I've added system-wide shorcuts to the mix
+# according to https://github.com/koekeishiya/yabai/issues/1772#issuecomment-1731608123
+#
+# For tracking issues with Sonoma: https://github.com/koekeishiya/yabai/issues/1772
+
+cmd - 1: yabai -m space --focus  1 || skhd -k "ctrl + alt + cmd + 1"
+cmd - 2: yabai -m space --focus  2 || skhd -k "ctrl + alt + cmd + 2"
+cmd - 3: yabai -m space --focus  3 || skhd -k "ctrl + alt + cmd + 3"
+cmd - 4: yabai -m space --focus  4 || skhd -k "ctrl + alt + cmd + 4"
+cmd - 5: yabai -m space --focus  5 || skhd -k "ctrl + alt + cmd + 5"
+cmd - 6: yabai -m space --focus  6 || skhd -k "ctrl + alt + cmd + 6"
+cmd - 7: yabai -m space --focus  7 || skhd -k "ctrl + alt + cmd + 7"
+cmd - 8: yabai -m space --focus  8 || skhd -k "ctrl + alt + cmd + 8"
+# cmd - 9: yabai -m space --focus  9 || skhd -k "ctrl + alt + cmd + 9"
+# cmd - 0: yabai -m space --focus 10 || skhd -k "ctrl + alt + cmd + 10"
