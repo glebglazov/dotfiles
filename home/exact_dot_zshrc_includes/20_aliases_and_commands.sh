@@ -20,6 +20,10 @@ function bun {
     op run --no-masking -- command bun "$@"
 }
 
+function pnpm {
+    op run --no-masking -- command pnpm "$@"
+}
+
 function terraform {
     if [[ -v NEEDS_PERSISTED_KEYPAIRS ]] then
         for f in $(ls ~/.ssh/*.template); do
