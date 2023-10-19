@@ -12,6 +12,21 @@
 [commit]
   gpgsign = true
 
+[pull]
+  rebase = true
+
+[rerere]
+  enabled = true
+
 [diff "lockb"]
   textconv = bun
   binary = true
+
+{{- $do_not_push_remote_branches := list
+  "main"
+  "master"
+}}
+{{ range $do_not_push_remote_branches }}
+[branch "{{ . }}"]
+  pushRemote = false
+{{ end }}
