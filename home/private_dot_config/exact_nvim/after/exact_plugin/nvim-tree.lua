@@ -18,13 +18,8 @@ require('nvim-tree').setup({
         modified = false,
       }
     }
-  },
-  filters = {
-    custom = {
-      '^\\.git$'
-    }
-  }
-})
+  }}
+)
 
 nnoremap('<LEADER>fl', '<CMD>NvimTreeOpen<CR>', { silent = true })
 nnoremap('<LEADER>ff', '<CMD>NvimTreeFocus<CR>', { silent = true })
