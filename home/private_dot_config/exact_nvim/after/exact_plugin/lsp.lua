@@ -20,6 +20,14 @@ lsp.setup_nvim_cmp({
   })
 })
 
+-- Disabling semantic highlights for all servers
+-- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/lsp.md#disable-semantic-highlights
+lsp.set_server_config({
+  on_init = function(client)
+    client.server_capabilities.semanticTokensProvider = nil
+  end,
+})
+
 configure.yamlls.setup({
   settings = {
     yaml = {
