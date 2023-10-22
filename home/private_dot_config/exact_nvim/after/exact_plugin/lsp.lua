@@ -9,7 +9,6 @@ table.insert(cmp_sources, { name = 'copilot' })
 
 lsp.preset('recommended')
 lsp.set_preferences({
-  set_lsp_keymaps = false,
   sign_icons = {}
 })
 
@@ -82,10 +81,9 @@ configure.lua_ls.setup({
   }
 })
 
-lsp.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
+lsp.on_attach(function(_, bufnr)
+  local opts = { buffer = bufnr, remap = false }
 
-  nnoremap('gd', function() vim.lsp.buf.definition() end, opts)
   nnoremap('gr', telescope.lsp_references, opts)
 end)
 
