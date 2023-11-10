@@ -35,24 +35,18 @@ return {
   },
   {
     'stevearc/qf_helper.nvim',
-    config = function()
-      require('qf_helper').setup()
-    end
+    config = true
   },
 
   {
     'nvim-telescope/telescope.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
-  {'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 
   {
     'folke/trouble.nvim',
-    config = function ()
-      require('trouble').setup({
-        icons = false
-      })
-    end
+    opts = { icons = false }
   },
   {
     'VonHeikemen/lsp-zero.nvim',
