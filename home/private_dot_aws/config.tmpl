@@ -1,0 +1,12 @@
+[default]
+region = us-east-1
+[profile tds]
+region = us-east-1
+aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" }}
+aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" }}
+[profile data_engineering]
+region = us-east-1
+aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" }}
+aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" }}
+[profile personal]
+region = eu-central-1
