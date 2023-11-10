@@ -7,6 +7,7 @@ nnoremap('<LEADER>gfo', ':G fetch origin<CR>')
 nnoremap('<LEADER>gbl', ':G blame -C -C -C<CR>')
 nnoremap('<LEADER>glg', ':Gclog<CR>')
 nnoremap('<LEADER>gcp', ':G cherry-pick<SPACE>')
+nnoremap('<LEADER>gbr', ':G branch --sort=-committerdate<CR>')
 nnoremap('<LEADER>gcm', function ()
   local output = vim.fn.system('git branch -l')
 
