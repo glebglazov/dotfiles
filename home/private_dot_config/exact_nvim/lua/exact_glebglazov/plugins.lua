@@ -87,19 +87,11 @@ return {
   {
     'zbirenbaum/copilot.lua',
     cmd = 'Copilot',
-    event = 'VimEnter',
-    config = function()
-      vim.defer_fn(function()
-        require('copilot').setup({
-          suggestion = { enabled = false },
-          panel = { enabled = false },
-        })
-      end, 100)
-    end,
+    event = "InsertEnter",
+    config = true
   },
   {
     'zbirenbaum/copilot-cmp',
-    branch = 'formatting-fixes', -- TODO: remove when merged into master
     config = true
   },
 
