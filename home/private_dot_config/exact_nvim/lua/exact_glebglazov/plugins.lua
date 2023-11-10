@@ -25,6 +25,7 @@ return {
   {
     'rgroli/other.nvim',
     config = function()
+      -- Config function here is explicit cause Lazy.nvim cannot find that module
       require('other-nvim').setup({
         mappings = {
           'rails'
