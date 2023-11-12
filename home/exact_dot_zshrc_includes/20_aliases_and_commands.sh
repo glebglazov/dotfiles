@@ -89,3 +89,7 @@ function r-edit-credentials {
 
     RAILS_MASTER_KEY="op://$OP_RAILS_MASTER_KEY_BASE/$env_name" op run -- rails credentials:edit --environment $env_name
 }
+
+function get-my-public-ip {
+    dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com
+}
