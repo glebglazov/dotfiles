@@ -1,68 +1,24 @@
 alias vim="nvim"
 alias ide="tmux-ide-layout"
 
-# All functions below are functions and not aliases just because of the fact
-# that this way we're not breaking original auto-completion
-
-function bundle {
-    op run --no-masking -- command bundle "$@"
-}
-
-function gh {
-    op run --no-masking -- command gh "$@"
-}
-
-function yarn {
-    op run --no-masking -- command yarn "$@"
-}
-
-function bun {
-    op run --no-masking -- command bun "$@"
-}
-
-function pnpm {
-    op run --no-masking -- command pnpm "$@"
-}
-
-function terraform {
-    if [[ -v NEEDS_PERSISTED_KEYPAIRS ]] then
-        for f in $(ls ~/.ssh/*.template); do
-            op inject -i $f -o ~/.ssh/$(basename $f .template)
-        done
-    fi
-
-    op run --no-masking -- command terraform "$@"
-
-    if [[ -v NEEDS_PERSISTED_KEYPAIRS ]] then
-        for f in $(ls ~/.ssh/*.template); do
-            rm ~/.ssh/$(basename $f .template)
-        done
-    fi
-}
-
 function __aws_envrc_path_cd {
     [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
 }
 
 function aws {
-    (__aws_envrc_path_cd; op run --no-masking -- command aws "$@")
+    (__aws_envrc_path_cd; command aws "$@")
 }
 
 function kubectl {
-    (__aws_envrc_path_cd; op run --no-masking -- command kubectl "$@")
+    (__aws_envrc_path_cd; command kubectl "$@")
 }
 
 function docker-login-ecr {
     (__aws_envrc_path_cd; aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 412041701469.dkr.ecr.us-east-1.amazonaws.com)
 }
 
-function docker-login-ghcr {
-    op read op://Private/pj4ygw2cha76xlxbiqehnl4au4/token | docker login ghcr.io -u glebglazov --password-stdin
-}
-
 function docker-login {
     docker-login-ecr
-    docker-login-ghcr
 }
 
 function update-kubectl-context {
