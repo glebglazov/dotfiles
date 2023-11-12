@@ -1,10 +1,10 @@
 shell:
-  program: /opt/homebrew/bin/tmux
+  program: /bin/zsh
   args:
-    - new-session
-    - -A
-    - -s
-    - main
+    - -l
+    - -i
+    - -c
+    - "tmux new-session -A -s main"
 
 font:
   normal:
