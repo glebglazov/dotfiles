@@ -32,5 +32,7 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 for f in ~/.zshrc_includes/*; do source $f; done
 
+export PATH="$PATH:$(brew --prefix mysql-client)/bin:$HOME/.local/bin:$HOME/private/scripts"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
