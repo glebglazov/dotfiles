@@ -40,6 +40,12 @@ function pid-by-port {
 	lsof -i tcp:$pid | tail -1 | awk '{print $2}'
 }
 
+function newrelic {
+    # As RTX prepends path and newrelic_rpm gem has a binstub of "newrelic" in bin/ path
+    # I've decided to use direct alias to target homebrew folder
+    $(brew --prefix newrelic-cli)/bin/newrelic "$@"
+}
+
 function r-edit-credentials {
     env_name=$1
 
