@@ -5,5 +5,5 @@ set -eufo pipefail
 # config hash: {{ include "private_dot_config/obsidian/dot_vimrc" | sha256sum }}
 echo "Running obsidian vimrc configuration copy..."
 
-dir_name=~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/glebglazov
-[[ -d "$dir_name" ]] && cp ~/.config/obsidian/.vimrc "$dir_name/.obsidian.vimrc"
+dir_name=$OBSIDIAN_VAULT_PATH
+[[ -d "$dir_name" ]] && cp ~/.config/obsidian/.vimrc "$dir_name/obsidian.vimrc"
