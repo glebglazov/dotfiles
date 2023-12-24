@@ -1,7 +1,7 @@
 local nnoremap  = require('glebglazov.functions.remap').nnoremap
 
 nnoremap('<LEADER>gg', function ()
-  vim.cmd('G')
+  vim.cmd('LazyGit')
 end)
 nnoremap('<LEADER>gfo', ':G fetch origin<CR>')
 nnoremap('<LEADER>gbl', ':G blame -C -C -C<CR>')
