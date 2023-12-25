@@ -140,6 +140,7 @@ require('lazy').setup({
     'tpope/vim-fugitive',
     lazy = false,
     keys = {
+      { '<LEADER>gg', vim.cmd.G },
       { '<LEADER>gfo', ':G fetch origin<CR>' },
       { '<LEADER>gbl', ':G blame -C -C -C<CR>' },
       { '<LEADER>glg', ':Gclog<CR>' },
@@ -180,9 +181,6 @@ require('lazy').setup({
       'nvim-telescope/telescope.nvim',
       'nvim-lua/plenary.nvim'
     },
-    keys = {
-      { '<LEADER>gg', vim.cmd.LazyGit },
-    }
   },
 
   -------------------------------------------------
