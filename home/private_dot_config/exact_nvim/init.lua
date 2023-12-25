@@ -138,12 +138,11 @@ require('lazy').setup({
   { 'lewis6991/gitsigns.nvim', config = true },
   {
     'tpope/vim-fugitive',
-    lazy = false,
     keys = {
       { '<LEADER>gg', vim.cmd.G },
       { '<LEADER>gfo', ':G fetch origin<CR>' },
       { '<LEADER>gbl', ':G blame -C -C -C<CR>' },
-      { '<LEADER>glg', ':Gclog<CR>' },
+      { '<LEADER>glg', ':Gclog --oneline<CR>' },
       { '<LEADER>gcp', ':G cherry-pick<SPACE>' },
       { '<LEADER>gbr', ':G branch --sort=-committerdate<CR>' },
       { '<LEADER>gcm', function ()
