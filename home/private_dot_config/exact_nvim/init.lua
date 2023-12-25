@@ -527,7 +527,7 @@ configure.yamlls.setup({
   }
 })
 
--- textDocument/diagnostic support until 0.10.0 is released
+-- textDocument/diagnostic support until Neovim 0.10.0 is released
 local _timers = {}
 local function setup_diagnostics(client, buffer)
   if require("vim.lsp.diagnostic")._enable then
