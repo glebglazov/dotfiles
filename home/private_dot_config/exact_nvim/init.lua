@@ -111,7 +111,7 @@ require('lazy').setup({
     }
   },
   {
-    'zbirenbaum/copilot.lua',
+    'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
     cmd = 'Copilot',
     event = "InsertEnter",
     config = true
