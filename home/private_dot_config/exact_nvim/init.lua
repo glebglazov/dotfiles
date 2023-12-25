@@ -84,24 +84,9 @@ vim.opt.rtp:prepend(lazypath)
 -- Plugins setup
 -------------------------------------------------
 require('lazy').setup({
-  -- Open alternative files for the current buffer.
-  {
-    'rgroli/other.nvim',
-    config = function()
-      -- Config function here is explicit cause Lazy.nvim cannot find that module
-      require('other-nvim').setup({
-        mappings = {
-          'rails'
-        }
-      })
-    end
-  },
-  { 'stevearc/qf_helper.nvim', config = true },
-
-  {
-    'folke/trouble.nvim',
-    opts = { icons = false }
-  },
+  -------------------------------------------------
+  -- LSP / Autocompletion
+  -------------------------------------------------
   {
     'VonHeikemen/lsp-zero.nvim',
     dependencies = {
@@ -131,7 +116,9 @@ require('lazy').setup({
   },
   { 'zbirenbaum/copilot-cmp', config = true },
 
-  -- Editor
+  -------------------------------------------------
+  -- Editor improvements
+  -------------------------------------------------
   {
     'kylechui/nvim-surround',
     version = '*', -- Use for stability; omit to use `main` branch for the latest features
@@ -139,12 +126,19 @@ require('lazy').setup({
     config = true
   },
   { 'numToStr/Comment.nvim', config = true },
-  { 'windwp/nvim-autopairs', config = true },
+  { 'stevearc/qf_helper.nvim', config = true }, -- QuickFix window improvements
+  {
+    'folke/trouble.nvim', -- Better QuickFix window
+    opts = { icons = false }
+  },
 
+  -------------------------------------------------
   -- Git integration
+  -------------------------------------------------
   { 'lewis6991/gitsigns.nvim', config = true },
   {
     'tpope/vim-fugitive',
+    lazy = false,
     keys = {
       { '<LEADER>gfo', ':G fetch origin<CR>' },
       { '<LEADER>gbl', ':G blame -C -C -C<CR>' },
@@ -177,8 +171,7 @@ require('lazy').setup({
       { '<LEADER>gpp', ':G push origin HEAD:' },
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' }
-    },
-    config = true
+    }
   },
   {
     'kdheepak/lazygit.nvim',
@@ -192,7 +185,9 @@ require('lazy').setup({
     }
   },
 
-  -- Theme
+  -------------------------------------------------
+  -- Appearance
+  -------------------------------------------------
   {
     'ellisonleao/gruvbox.nvim',
     priority = 1000,
@@ -204,7 +199,9 @@ require('lazy').setup({
     end
   },
 
+  -------------------------------------------------
   -- Navigation
+  -------------------------------------------------
   {
     'theprimeagen/harpoon',
     keys = {
@@ -219,6 +216,18 @@ require('lazy').setup({
   },
   { 'declancm/windex.nvim', config = true },
   { 'tpope/vim-unimpaired' },
+  -- Open alternative files for the current buffer.
+  {
+    'rgroli/other.nvim',
+    config = function()
+      -- Config function here is explicit cause Lazy.nvim cannot find that module
+      require('other-nvim').setup({
+        mappings = {
+          'rails'
+        }
+      })
+    end
+  },
 
   -- Files manager
   {
@@ -430,7 +439,7 @@ require('lazy').setup({
 })
 
 -------------------------------------------------
--- Telescope setup
+-- telescope setup
 -------------------------------------------------
 local actions = require('telescope.actions')
 local builtin = require('telescope.builtin')
@@ -486,7 +495,7 @@ nnoremap(
 )
 
 -------------------------------------------------
--- LSP Setup
+-- LSP / Autocompletion
 -------------------------------------------------
 local lsp = require('lsp-zero')
 local cmp = require('cmp')
@@ -710,7 +719,7 @@ autocmd({ 'FileType' }, {
 })
 
 -------------------------------------------------
--- Keybinings
+-- Keybindings
 -------------------------------------------------
 
 -- General
