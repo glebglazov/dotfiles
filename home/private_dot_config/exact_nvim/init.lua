@@ -744,8 +744,8 @@ xnoremap('<leader>p', "\"_dP")
 
 -- Window
 nnoremap('<LEADER>w', ':hide<CR>', { silent = true })
-nnoremap('<LEADER>d', ':vsp <BAR> :wincmd l<CR>', { silent = true })
-nnoremap('<LEADER>D', ':sp <BAR> :wincmd j<CR>', { silent = true })
+nnoremap('<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
+nnoremap('<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- Files / Projects
 nnoremap('<LEADER>fs', ':up<CR>', { silent = true })
