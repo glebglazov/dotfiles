@@ -231,9 +231,9 @@ require('lazy').setup({
   {
     'nvim-tree/nvim-tree.lua',
     keys = {
-      { '<LEADER>fl', '<CMD>NvimTreeOpen<CR>', { silent = true } },
-      { '<LEADER>ff', '<CMD>NvimTreeFocus<CR>', { silent = true } },
-      { '<LEADER>fc', '<CMD>NvimTreeClose<CR>', { silent = true } },
+      { '<LEADER>fl', ':NvimTreeOpen<CR>' },
+      { '<LEADER>ff', ':NvimTreeFocus<CR>' },
+      { '<LEADER>fc', ':NvimTreeClose<CR>' },
     },
     config = function ()
       require('nvim-tree').setup({
@@ -456,8 +456,7 @@ vnoremap(
     require('telescope.builtin').grep_string({
       search = get_visual_selection()
     })
-  end,
-  { silent = true }
+  end
 )
 
 nnoremap(
@@ -466,8 +465,7 @@ nnoremap(
     require('telescope.builtin').grep_string({
       attach_mappings = search_and_replace_mappings_fn
     })
-  end,
-  { silent = true }
+  end
 )
 
 vnoremap('<LEADER>fr',
@@ -476,8 +474,7 @@ vnoremap('<LEADER>fr',
       search = get_visual_selection(),
       attach_mappings = search_and_replace_mappings_fn
     })
-  end,
-  { silent = true }
+  end
 )
 
 nnoremap('<LEADER>fb', require('telescope.builtin').buffers)
@@ -722,8 +719,8 @@ autocmd({ 'FileType' }, {
 
 -- General
 nnoremap('<ESC>', ':noh<CR>', { silent = true })
-vnoremap('#', 'y/<C-R>"<CR>')
-nnoremap('<LEADER><tab>', '<CMD>b#<CR>')
+vnoremap('#', 'y/<C-R>"<CR>', { silent = true })
+nnoremap('<LEADER><tab>', ':b#<CR>', { silent = true })
 
 -- Copy to clipboard
 vnoremap('<LEADER>y', '"+y')
@@ -732,10 +729,10 @@ nnoremap('<LEADER>y', '"+y')
 nnoremap('<LEADER>yy', '"+yy')
 
 -- Navigation
-nnoremap('<C-D>', '<C-D>zz', { silent = true })
-nnoremap('<C-U>', '<C-U>zz', { silent = true })
-vnoremap('<C-D>', '<C-D>zz', { silent = true })
-vnoremap('<C-U>', '<C-U>zz', { silent = true })
+nnoremap('<C-D>', '<C-D>zz')
+nnoremap('<C-U>', '<C-U>zz')
+vnoremap('<C-D>', '<C-D>zz')
+vnoremap('<C-U>', '<C-U>zz')
 
 nnoremap('H', '^')
 nnoremap('L', '$')
@@ -746,10 +743,10 @@ vnoremap('L', '$')
 xnoremap('<leader>p', "\"_dP")
 
 -- Window
-nnoremap('<LEADER>w', '<CMD>hide<CR>', { silent = true })
-nnoremap('<LEADER>d', '<CMD>vsp <BAR> :wincmd l<CR>', { silent = true })
-nnoremap('<LEADER>D', '<CMD>sp <BAR> :wincmd j<CR>', { silent = true })
+nnoremap('<LEADER>w', ':hide<CR>', { silent = true })
+nnoremap('<LEADER>d', ':vsp <BAR> :wincmd l<CR>', { silent = true })
+nnoremap('<LEADER>D', ':sp <BAR> :wincmd j<CR>', { silent = true })
 
 -- Files / Projects
-nnoremap('<LEADER>fs', '<CMD>up<CR>', { silent = true })
+nnoremap('<LEADER>fs', ':up<CR>', { silent = true })
 nnoremap('<LEADER>pp', ':tcd ~/Dev/')
