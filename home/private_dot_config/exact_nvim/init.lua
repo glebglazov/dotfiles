@@ -210,7 +210,8 @@ require('lazy').setup({
       { '<LEADER>3', function() require('harpoon.ui').nav_file(3) end },
       { '<LEADER>4', function() require('harpoon.ui').nav_file(4) end },
       { '<LEADER>5', function() require('harpoon.ui').nav_file(5) end },
-    }
+    },
+    config = true
   },
   { 'declancm/windex.nvim', config = true },
   { 'tpope/vim-unimpaired' },
