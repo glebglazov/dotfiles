@@ -1,21 +1,6 @@
 -------------------------------------------------
 -- Support functions
 -------------------------------------------------
-local function bind(op, outer_opts)
-    outer_opts = outer_opts or {noremap = true}
-    return function(lhs, rhs, opts)
-        opts = vim.tbl_extend("force",
-            outer_opts,
-            opts or {}
-        )
-        vim.keymap.set(op, lhs, rhs, opts)
-    end
-end
-
-local nnoremap = bind('n')
-local vnoremap = bind('v')
-local xnoremap = bind('x')
-
 local function get_buffer_content()
   return table.concat(
     vim.api.nvim_buf_get_lines(0, 0, -1, false),
@@ -408,10 +393,9 @@ local search_and_replace_mappings_fn = function(_, map)
   return true
 end
 
-nnoremap('<LEADER>/', builtin.live_grep)
-nnoremap('<LEADER>?', builtin.resume)
-vnoremap(
-  '<LEADER>/',
+vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
+vim.keymap.set('n', '<LEADER>?', builtin.resume)
+vim.keymap.set('v', '<LEADER>/',
   function()
     require('telescope.builtin').grep_string({
       search = get_visual_selection()
@@ -419,8 +403,7 @@ vnoremap(
   end
 )
 
-nnoremap(
-  '<LEADER>fr',
+vim.keymap.set('n', '<LEADER>fr',
   function()
     require('telescope.builtin').grep_string({
       attach_mappings = search_and_replace_mappings_fn
@@ -428,7 +411,7 @@ nnoremap(
   end
 )
 
-vnoremap('<LEADER>fr',
+vim.keymap.set('v', '<LEADER>fr',
   function()
     require('telescope.builtin').grep_string({
       search = get_visual_selection(),
@@ -437,10 +420,9 @@ vnoremap('<LEADER>fr',
   end
 )
 
-nnoremap('<LEADER>fb', require('telescope.builtin').buffers)
-nnoremap('<LEADER>fh', require('telescope.builtin').help_tags)
-nnoremap(
-  '<LEADER>fp',
+vim.keymap.set('n', '<LEADER>fb', require('telescope.builtin').buffers)
+vim.keymap.set('n', '<LEADER>fh', require('telescope.builtin').help_tags)
+vim.keymap.set('n', '<LEADER>fp',
   function()
     require('telescope.builtin').find_files({
       hidden = true,
@@ -546,10 +528,10 @@ configure.lua_ls.setup({
   }
 })
 
-lsp.on_attach(function(_, bufnr)
-  local opts = { buffer = bufnr, remap = false }
+lsp.on_attach(function(_, buffer)
+  local opts = { buffer = buffer, remap = false }
 
-  nnoremap('gr', builtin.lsp_references, opts)
+  vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
 end)
 
 lsp.setup()
@@ -593,40 +575,40 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Lua
 -------------------------------------------------
-local lua_base_script = [[
-lua <<EOF
-  %s
-EOF
-]]
-
-local execute_lua_snippet_fn = function(opts)
-  local content_fn = opts.content_fn
-
-  return function()
-    local content = content_fn()
-    local command = string.format(lua_base_script, content)
-
-    vim.cmd(command)
-  end
-end
-
 local lua_keybindings = augroup('lua_keybindings', {})
 autocmd({ 'FileType' }, {
 	group = lua_keybindings,
 	pattern = 'lua',
-	callback = function ()
-    nnoremap(
-      '<LEADER>fe',
+	callback = function (event)
+    local lua_base_script = [[
+      lua <<EOF
+        %s
+      EOF
+    ]]
+
+    local execute_lua_snippet_fn = function(opts)
+      local content_fn = opts.content_fn
+
+      return function()
+        local content = content_fn()
+        local command = string.format(lua_base_script, content)
+
+        vim.cmd(command)
+      end
+    end
+
+    vim.keymap.set('n', '<LEADER>fe',
       execute_lua_snippet_fn({
         content_fn = get_buffer_content
-      })
+      }),
+      { buffer = event.buf }
     )
 
-    vnoremap(
-      '<LEADER>fe',
+    vim.keymap.set('v', '<LEADER>fe',
       execute_lua_snippet_fn({
         content_fn = get_visual_selection
-      })
+      }),
+      { buffer = event.buf }
     )
 	end
 })
@@ -634,20 +616,18 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Ruby
 -------------------------------------------------
-
 local ruby_keybindings = augroup('ruby_keybindings', {})
 autocmd({ 'FileType' }, {
 	group = ruby_keybindings,
 	pattern = 'ruby',
-	callback = function ()
-    nnoremap('<LEADER>ll', function() vim.cmd('!rubocop -A %') end)
+	callback = function (event)
+    vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = event.buf })
 	end
 })
 
 -------------------------------------------------
 -- Autogroups — QuickFix
 -------------------------------------------------
-
 local qf_keybindings = augroup('qf_keybindings', {})
 autocmd({ 'FileType' }, {
 	group = qf_keybindings,
@@ -660,7 +640,6 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Sh
 -------------------------------------------------
-
 local sh_keybindings = augroup('sh_keybindings', {})
 autocmd({ 'FileType' }, {
 	group = sh_keybindings,
@@ -678,35 +657,35 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 
 -- General
-nnoremap('<ESC>', ':noh<CR>', { silent = true })
-vnoremap('#', 'y/<C-R>"<CR>', { silent = true })
-nnoremap('<LEADER><tab>', ':b#<CR>', { silent = true })
+vim.keymap.set('n', '<ESC>', ':noh<CR>', { silent = true })
+vim.keymap.set('v', '#', 'y/<C-R>"<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER><tab>', ':b#<CR>', { silent = true })
 
 -- Copy to clipboard
-vnoremap('<LEADER>y', '"+y')
-nnoremap('<LEADER>Y', '"+yg_')
-nnoremap('<LEADER>y', '"+y')
-nnoremap('<LEADER>yy', '"+yy')
+vim.keymap.set('v', '<LEADER>y', '"+y')
+vim.keymap.set('n', '<LEADER>Y', '"+yg_')
+vim.keymap.set('n', '<LEADER>y', '"+y')
+vim.keymap.set('n', '<LEADER>yy', '"+yy')
 
 -- Navigation
-nnoremap('<C-D>', '<C-D>zz')
-nnoremap('<C-U>', '<C-U>zz')
-vnoremap('<C-D>', '<C-D>zz')
-vnoremap('<C-U>', '<C-U>zz')
+vim.keymap.set('n', '<C-D>', '<C-D>zz', { noremap = true })
+vim.keymap.set('n', '<C-U>', '<C-U>zz', { noremap = true })
+vim.keymap.set('v', '<C-D>', '<C-D>zz', { noremap = true })
+vim.keymap.set('v', '<C-U>', '<C-U>zz', { noremap = true })
 
-nnoremap('H', '^')
-nnoremap('L', '$')
-vnoremap('H', '^')
-vnoremap('L', '$')
+vim.keymap.set('n', 'H', '^', { noremap = true })
+vim.keymap.set('n', 'L', '$', { noremap = true })
+vim.keymap.set('v', 'H', '^', { noremap = true })
+vim.keymap.set('v', 'L', '$', { noremap = true })
 
 -- Paste without messing with register
-xnoremap('<leader>p', "\"_dP")
+vim.keymap.set('x', '<leader>p', "\"_dP")
 
 -- Window
-nnoremap('<LEADER>w', ':hide<CR>', { silent = true })
-nnoremap('<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
-nnoremap('<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>w', ':hide<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- Files / Projects
-nnoremap('<LEADER>fs', ':up<CR>', { silent = true })
-nnoremap('<LEADER>pp', ':tcd ~/Dev/')
+vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
