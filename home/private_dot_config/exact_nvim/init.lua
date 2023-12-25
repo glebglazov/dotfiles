@@ -35,30 +35,32 @@ end
 -------------------------------------------------
 -- Options
 -------------------------------------------------
-vim.g.mapleader = ' ' -- mapleader here so that all <LEADER> keybindings will work
-
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undodir = os.getenv('HOME') .. '/.vim/undodir'
-vim.opt.undofile = true
-
-vim.opt.expandtab=true
-vim.opt.tabstop=2
-vim.opt.softtabstop=2
-vim.opt.shiftwidth=2
-
-vim.opt.hlsearch = true
-vim.opt.incsearch = true
-
-vim.opt.number = true
-vim.opt.relativenumber = true
-
-vim.opt.hidden = true
+-- mapleader and maplocalleader here so that all <LEADER> keybindings will work
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 
-vim.opt.scrolloff = 8
+vim.o.swapfile = false
+vim.o.backup = false
+vim.o.undodir = os.getenv('HOME') .. '/.vim/undodir'
+vim.o.undofile = true
+
+vim.o.expandtab=true
+vim.o.tabstop=2
+vim.o.softtabstop=2
+vim.o.shiftwidth=2
+
+vim.o.hlsearch = true
+vim.o.incsearch = true
+
+vim.o.number = true
+vim.o.relativenumber = true
+
+vim.o.hidden = true
+
+vim.o.scrolloff = 8
 
 vim.o.background = 'dark'
 
