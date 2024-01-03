@@ -1,5 +1,0 @@
-[settings]
-trusted_config_paths = [
-  '~/private/Dev',
-  '~/.rtx.toml'
-]
