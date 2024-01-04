@@ -1,3 +1,11 @@
+# To add some of these to one specific project use:
+# git add --force <ignored_file_pattern>
+
 .vagrant
 *.swo
 *.swp
+*.swp
+
+.npmrc
+
+.tool-versions
