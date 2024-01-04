@@ -1,2 +1,5 @@
 # Ignore known hosts
 .ssh/known_hosts
+
+# Ignore lazy-lock
+.config/nvim/lazy-lock.json
