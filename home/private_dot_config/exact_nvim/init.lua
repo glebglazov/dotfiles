@@ -188,16 +188,17 @@ require('lazy').setup({
   -------------------------------------------------
   {
     'theprimeagen/harpoon',
+    branch = 'harpoon2',
+    config = true,
     keys = {
-      { '<LEADER>a', function() require('harpoon.mark').add_file() end },
-      { '<LEADER>m', function() require('harpoon.ui').toggle_quick_menu() end },
-      { '<LEADER>1', function() require('harpoon.ui').nav_file(1) end },
-      { '<LEADER>2', function() require('harpoon.ui').nav_file(2) end },
-      { '<LEADER>3', function() require('harpoon.ui').nav_file(3) end },
-      { '<LEADER>4', function() require('harpoon.ui').nav_file(4) end },
-      { '<LEADER>5', function() require('harpoon.ui').nav_file(5) end },
-    },
-    config = true
+      { '<LEADER>a', function() require('harpoon'):list():append() end },
+      { '<LEADER>m', function() require('harpoon').ui:toggle_quick_menu(require('harpoon'):list()) end },
+      { '<LEADER>1', function() require('harpoon'):list():select(1) end },
+      { '<LEADER>2', function() require('harpoon'):list():select(2) end },
+      { '<LEADER>3', function() require('harpoon'):list():select(3) end },
+      { '<LEADER>4', function() require('harpoon'):list():select(4) end },
+      { '<LEADER>5', function() require('harpoon'):list():select(5) end },
+    }
   },
   { 'declancm/windex.nvim', config = true },
   { 'tpope/vim-unimpaired' },
