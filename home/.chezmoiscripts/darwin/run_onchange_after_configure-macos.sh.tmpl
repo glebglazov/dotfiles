@@ -26,6 +26,12 @@ defaults write com.apple.dock show-recents -bool false
 # Don’t automatically rearrange Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
 
+# Remove some animations and decrease delays
+defaults write com.apple.finder DisableAllAnimations -bool true
+defaults write com.apple.dock launchanim -bool false
+defaults write -g NSWindowResizeTime -float 0.001
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 
 ###############################################################################
