@@ -351,14 +351,14 @@ bind-key -r Right resize-pane -R 10
 is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
     | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
 
-bind-key -r h select-pane -L \; resize-pane -Z
-bind-key -r j select-pane -D \; resize-pane -Z
-bind-key -r k select-pane -U \; resize-pane -Z
-bind-key -r l select-pane -R \; resize-pane -Z
-bind-key -r H select-pane -L
-bind-key -r J select-pane -D
-bind-key -r K select-pane -U
-bind-key -r L select-pane -R
+bind-key -r h if-shell "$is_vim" "send-keys C-h" "select-pane -L; resize-pane -Z"
+bind-key -r j if-shell "$is_vim" "send-keys C-j" "select-pane -D; resize-pane -Z"
+bind-key -r k if-shell "$is_vim" "send-keys C-k" "select-pane -U; resize-pane -Z"
+bind-key -r l if-shell "$is_vim" "send-keys C-l" "select-pane -R; resize-pane -Z"
+bind-key -r H if-shell "$is_vim" "send-keys C-h" "select-pane -L"
+bind-key -r J if-shell "$is_vim" "send-keys C-j" "select-pane -D"
+bind-key -r K if-shell "$is_vim" "send-keys C-k" "select-pane -U"
+bind-key -r L if-shell "$is_vim" "send-keys C-l" "select-pane -R"
 
 # bind-key -r p run-shell "tmux new-window ~/.local/bin/tmux-sessioniser"
 bind-key -r p run-shell "sesh connect \"$(
