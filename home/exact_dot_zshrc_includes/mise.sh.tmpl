@@ -1,5 +1,5 @@
 {{ if (eq .chezmoi.os "darwin") -}}
-mise_binary_path=$(brew --prefix rtx)/bin/mise
+mise_binary_path=$BREW_PREFIX/mise/bin/mise
 eval "$($mise_binary_path activate zsh)"
 {{ else -}}
 {{ end -}}
