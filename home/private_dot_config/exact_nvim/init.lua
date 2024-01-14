@@ -214,6 +214,7 @@ require('lazy').setup({
       })
     end
   },
+  { 'alexghergh/nvim-tmux-navigation', config = true },
 
   -- Files manager
   {
@@ -663,6 +664,16 @@ vim.keymap.set('n', 'H', '^', { noremap = true })
 vim.keymap.set('n', 'L', '$', { noremap = true })
 vim.keymap.set('v', 'H', '^', { noremap = true })
 vim.keymap.set('v', 'L', '$', { noremap = true })
+
+-- Tmux window switching integration
+vim.keymap.set('n', '<C-h>', '<CMD>NvimTmuxNavigateLeft<CR>', { silent = true })
+vim.keymap.set('v', '<C-h>', '<CMD>NvimTmuxNavigateLeft<CR>', { silent = true })
+vim.keymap.set('n', '<C-j>', '<CMD>NvimTmuxNavigateDown<CR>', { silent = true })
+vim.keymap.set('v', '<C-j>', '<CMD>NvimTmuxNavigateDown<CR>', { silent = true })
+vim.keymap.set('n', '<C-k>', '<CMD>NvimTmuxNavigateUp<CR>', { silent = true })
+vim.keymap.set('v', '<C-k>', '<CMD>NvimTmuxNavigateUp<CR>', { silent = true })
+vim.keymap.set('n', '<C-l>', '<CMD>NvimTmuxNavigateRight<CR>', { silent = true })
+vim.keymap.set('v', '<C-l>', '<CMD>NvimTmuxNavigateRight<CR>', { silent = true })
 
 -- Paste without messing with register
 vim.keymap.set('x', '<leader>p', "\"_dP")
