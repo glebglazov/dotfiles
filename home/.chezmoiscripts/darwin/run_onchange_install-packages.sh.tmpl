@@ -60,8 +60,6 @@
   "k6"
   "keith/formulae/git-pile"
   "keychain"
-  "koekeishiya/formulae/skhd"
-  "koekeishiya/formulae/yabai"
   "kubectl"
   "lazygit"
   "libffi"
@@ -79,6 +77,7 @@
   "planetscale/tap/pscale"
   "postgresql"
   "python"
+  "rbspy"
   "readline"
   "ripgrep"
   "subversion"
@@ -93,8 +92,6 @@
 -}}
 
 {{ $pin_list := list
-  "koekeishiya/formulae/skhd"
-  "koekeishiya/formulae/yabai"
 -}}
 
 #!/bin/bash
@@ -106,6 +103,6 @@ brew tap {{ . }}
 {{ end  }}
 brew install --cask {{ $casks | join " " }}
 brew install {{ $brews | join " " }}
-brew pin {{ $pin_list | join " " }}
+# brew pin {{ $pin_list | join " " }}
 
 {{ end -}}

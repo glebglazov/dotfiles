@@ -85,8 +85,6 @@
            [:k [:!CTOk]]         ; Half-top window
            [:l [:!CTOl]]         ; Half-right window
            [:m [:!CTOm]]         ; Maximize window
-           [:n [:!Tf4]]          ; Focus next window
-           [:p [:!Tf5]]          ; Focus previous window
            [:comma [:!CTOcomma]] ; Almost maximize
            ]
    }
