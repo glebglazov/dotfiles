@@ -14,6 +14,14 @@ function aws {
     (__aws_envrc_path_cd; command aws "$@")
 }
 
+function bi {
+  bundle install $@
+}
+
+function bu {
+  bundle update $@
+}
+
 function kubectl {
     (__aws_envrc_path_cd; command kubectl "$@")
 }
