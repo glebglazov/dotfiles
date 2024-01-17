@@ -1,3 +1,3 @@
 export AWS_PROFILE=tds
-export AWS_ACCESS_KEY_ID={{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" }}
-export AWS_SECRET_ACCESS_KEY={{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" }}
+export AWS_ACCESS_KEY_ID={{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" .onepasswordWorkAccount }}
+export AWS_SECRET_ACCESS_KEY={{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" .onepasswordWorkAccount }}
