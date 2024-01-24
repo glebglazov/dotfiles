@@ -1,7 +1,7 @@
 [user]
   email = glazov.gleb@gmail.com
   name = Gleb Glazov
-  signingkey = ~/.ssh/signing.pub
+  signingkey = ~/.ssh/signing_glebglazov.pub
 
 [core]
   excludesFile = ~/.gitignore
@@ -17,7 +17,6 @@
 
 [push]
   autoSetupRemote = true
-
 [rerere]
   enabled = true
 
@@ -33,3 +32,16 @@
 [branch "{{ . }}"]
   pushRemote = NOPE
 {{ end }}
+
+# Setup to push to obsidian backup vault from automations GitHub profile
+
+[includeIf "gitdir:{{ .obsidianVaultPath }}/"]
+    path = ~/.gitconfig-automations
+
+# Adding for now for that setup to work cause Obsidian uses fully qualified path
+# Will review the whole thing later
+[includeIf "gitdir:/Users/glebglazov/private/Dev/obsidian_vaults/glebglazov/"]
+    path = ~/.gitconfig-automations
+
+[url "github-obsidian-backup:glebglazov/obsidian_backup"]
+    insteadOf = git@github.com:glebglazov/obsidian_backup

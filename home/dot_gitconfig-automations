@@ -1,2 +1,3 @@
 [user]
-  email = glazov.gleb+automations@gmail.com
+  email      = glazov.gleb+automations@gmail.com
+  signingkey = ~/.ssh/signing_glebglazov_automations.pub
