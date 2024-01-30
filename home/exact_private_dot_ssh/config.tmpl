@@ -6,6 +6,7 @@ Host github.com
   User git
   AddKeysToAgent yes
   UseKeychain yes
+  IdentitiesOnly yes
   IdentityFile ~/.ssh/id_ed25519
 
 Host github-obsidian-backup
@@ -13,7 +14,5 @@ Host github-obsidian-backup
   User git
   AddKeysToAgent yes
   UseKeychain yes
-  IdentityFile ~/.ssh/glebglazov_automations
-
-Host *
   IdentitiesOnly yes
+  IdentityFile ~/.ssh/glebglazov_automations
