@@ -93,7 +93,8 @@ require('lazy').setup({
       -- Snippets
       {'L3MON4D3/LuaSnip'},
       {'rafamadriz/friendly-snippets'},
-    }
+    },
+    branch = 'v2.x'
   },
   {
     'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
