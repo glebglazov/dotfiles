@@ -35,11 +35,11 @@
 
 # Setup to push to obsidian backup vault from automations GitHub profile
 
+# Adding these two includeIf with couple of things to review next time I'll need to tweak that setup
+# 1. Directive includeIf works only with "/" at the end
+# 2. There are two paths added, cause "Dev" folder is a symlink of "private/Dev", so I need to include both paths for that to work in all cases
 [includeIf "gitdir:{{ .obsidianVaultPath }}/"]
     path = ~/.gitconfig-automations
-
-# Adding for now for that setup to work cause Obsidian uses fully qualified path
-# Will review the whole thing later
 [includeIf "gitdir:/Users/glebglazov/private/Dev/obsidian_vaults/glebglazov/"]
     path = ~/.gitconfig-automations
 
