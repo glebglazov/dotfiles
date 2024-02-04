@@ -86,21 +86,24 @@ require('lazy').setup({
       {'hrsh7th/nvim-cmp'},
       {'hrsh7th/cmp-buffer'},
       {'hrsh7th/cmp-path'},
-      {'saadparwaiz1/cmp_luasnip'},
       {'hrsh7th/cmp-nvim-lsp'},
       {'hrsh7th/cmp-nvim-lua'},
 
       -- Snippets
       {'L3MON4D3/LuaSnip'},
+      {'saadparwaiz1/cmp_luasnip'},
       {'rafamadriz/friendly-snippets'},
     },
-    branch = 'v2.x'
+    branch = 'v3.x'
   },
   {
     'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
     cmd = 'Copilot',
     event = "InsertEnter",
-    config = true
+    opts = {
+      suggestion = { enabled = false },
+      panel = { enabled = false },
+    }
   },
   { 'zbirenbaum/copilot-cmp', config = true },
 
@@ -109,7 +112,6 @@ require('lazy').setup({
   -------------------------------------------------
   {
     'kylechui/nvim-surround',
-    version = '*', -- Use for stability; omit to use `main` branch for the latest features
     event = 'VeryLazy',
     config = true
   },
@@ -436,39 +438,17 @@ vim.keymap.set('n', '<LEADER>fp',
 -------------------------------------------------
 -- Configure LSP / Autocompletion
 -------------------------------------------------
-local lsp = require('lsp-zero')
-local cmp = require('cmp')
-local configure = require('lspconfig')
+local lsp_zero = require('lsp-zero')
 
-local cmp_sources = lsp.defaults.cmp_sources()
-table.insert(cmp_sources, { name = 'copilot' })
-
-lsp.preset('recommended')
-lsp.set_preferences({
-  sign_icons = {}
-})
-
-lsp.setup_nvim_cmp({
-  sources = cmp_sources,
-  mapping = lsp.defaults.cmp_mappings({
-    ['<CR>'] = cmp.mapping.confirm({ select = false })
-  })
-})
+-- lsp.set_sign_icons({
+-- })
 
 -- Disabling semantic highlights for all servers
 -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/lsp.md#disable-semantic-highlights
-lsp.set_server_config({
+lsp_zero.set_server_config({
   on_init = function(client)
     client.server_capabilities.semanticTokensProvider = nil
   end,
-})
-
-configure.yamlls.setup({
-  settings = {
-    yaml = {
-      keyOrdering = false,
-    }
-  }
 })
 
 -- textDocument/diagnostic support until Neovim 0.10.0 is released
@@ -514,29 +494,135 @@ local function setup_diagnostics(client, buffer)
   })
 end
 
-configure.ruby_ls.setup({
-  on_attach = function(client, buffer)
-    setup_diagnostics(client, buffer)
-  end
-})
+lsp_zero.on_attach(function(_, buffnr)
+  lsp_zero.default_keymaps({buffer = buffnr})
 
-configure.lua_ls.setup({
-  settings = {
-    Lua = {
-      diagnostics = {
-        globals = { 'vim' }
-      },
-    }
+  vim.keymap.set('n', 'gr', builtin.lsp_references, { buffer = buffnr, remap = false })
+end)
+
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {
+    'ruby_ls',
+    'lua_ls',
+    'tsserver',
+    'gopls',
+    'yamlls'
+  },
+  handlers = {
+    lsp_zero.default_setup,
+    ruby_ls = function()
+      require('lspconfig').ruby_ls.setup({
+        on_attach = function(client, buffer)
+          setup_diagnostics(client, buffer)
+        end
+      })
+    end,
+    lua_ls = function()
+      require('lspconfig').lua_ls.setup({
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { 'vim' }
+            },
+          }
+        }
+      })
+    end,
+    yamlls = function()
+      require('lspconfig').yamlls.setup({
+        settings = {
+          yaml = {
+            keyOrdering = false,
+          }
+        }
+      })
+    end
   }
 })
 
-lsp.on_attach(function(_, buffer)
-  local opts = { buffer = buffer, remap = false }
+local cmp = require('cmp')
+local cmp_action = lsp_zero.cmp_action()
 
-  vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
-end)
+-- this is the function that loads the extra snippets
+-- from rafamadriz/friendly-snippets
+require('luasnip.loaders.from_vscode').lazy_load()
+local luasnip = require('luasnip')
 
-lsp.setup()
+local cmp_has_words_before = function()
+  unpack = unpack or table.unpack
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
+
+cmp.setup({
+  -- if you don't know what is a "source" in nvim-cmp read this:
+  -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/autocomplete.md#adding-a-source
+  sources = {
+    { name = 'path' },
+    { name = 'copilot' },
+    { name = 'nvim_lsp' },
+    { name = 'luasnip', keyword_length = 2 },
+    { name = 'buffer', keyword_length = 3 },
+  },
+  window = {
+    -- completion = cmp.config.window.bordered(),
+    -- documentation = cmp.config.window.bordered(),
+  },
+  -- default keybindings for nvim-cmp are here:
+  -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/README.md#keybindings-1
+  mapping = cmp.mapping.preset.insert({
+    -- confirm completion item
+    ['<CR>'] = cmp.mapping({
+      i = function(fallback)
+        if cmp.visible() and cmp.get_active_entry() then
+          cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+        else
+          fallback()
+        end
+      end,
+      s = cmp.mapping.confirm({ select = true }),
+      c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+    }),
+
+    -- scroll up and down the documentation window
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+
+    -- navigate between snippet placeholders
+    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
+    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        if #cmp.get_entries() == 1 then
+          cmp.confirm({ select = true })
+        else
+          cmp.select_next_item()
+        end
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      elseif cmp_has_words_before() then
+        cmp.complete()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+  }),
+  -- note: if you are going to use lsp-kind (another plugin)
+  -- replace the line below with the function from lsp-kind
+  formatting = lsp_zero.cmp_format(),
+})
 
 -------------------------------------------------
 -- Autogroups — All files
