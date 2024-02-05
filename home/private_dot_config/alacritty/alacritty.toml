@@ -40,6 +40,7 @@ key = "Right"
 mode = "AppCursor"
 mods = "Command"
 
+# Move between panes
 [[keyboard.bindings]]
 chars = "\u0002h"
 key = "H"
@@ -80,6 +81,7 @@ chars = "\u0002L"
 key = "L"
 mods = "Command|Shift"
 
+# Resize panes
 [[keyboard.bindings]]
 chars = "\u0002\u001B[D"
 key = "Left"
@@ -100,6 +102,7 @@ chars = "\u0002\u001B[C"
 key = "Right"
 mods = "Command|Shift"
 
+# Move windows
 [[keyboard.bindings]]
 chars = "\u0002{"
 key = "LBracket"
@@ -110,6 +113,7 @@ chars = "\u0002}"
 key = "RBracket"
 mods = "Command|Shift"
 
+# Move between windows
 [[keyboard.bindings]]
 chars = "\u0002["
 key = "LBracket"
@@ -120,16 +124,19 @@ chars = "\u0002]"
 key = "RBracket"
 mods = "Command"
 
+# Projects
 [[keyboard.bindings]]
 chars = "\u0002P"
 key = "P"
 mods = "Command"
 
+# Rename window
 [[keyboard.bindings]]
 chars = "\u0002,"
 key = "Comma"
 mods = "Command"
 
+# Split panes
 [[keyboard.bindings]]
 chars = "\u0002%"
 key = "D"
@@ -140,36 +147,37 @@ chars = "\u0002\""
 key = "D"
 mods = "Command|Shift"
 
+# Quit (?)
 [[keyboard.bindings]]
 chars = "\u0002d"
 key = "Q"
 mods = "Command"
 
+# New tab
 [[keyboard.bindings]]
 chars = "\u0002c"
 key = "T"
 mods = "Command"
 
-[[keyboard.bindings]]
-chars = "\u0002!"
-key = "T"
-mods = "Command|Shift"
-
+# Close pane
 [[keyboard.bindings]]
 chars = "\u0002x"
 key = "W"
 mods = "Command"
 
+# Maximize pane
 [[keyboard.bindings]]
 chars = "\u0002z"
 key = "Z"
 mods = "Command"
 
+# Copy mode
 [[keyboard.bindings]]
 chars = "\u0002\r"
 key = "S"
 mods = "Command"
 
+# Switch to window N
 [[keyboard.bindings]]
 chars = "\u00021"
 key = "Key1"
