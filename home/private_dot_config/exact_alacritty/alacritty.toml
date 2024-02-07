@@ -102,17 +102,6 @@ chars = "\u0002\u001B[C"
 key = "Right"
 mods = "Command|Shift"
 
-# Move windows
-[[keyboard.bindings]]
-chars = "\u0002{"
-key = "LBracket"
-mods = "Command|Shift"
-
-[[keyboard.bindings]]
-chars = "\u0002}"
-key = "RBracket"
-mods = "Command|Shift"
-
 # Move between windows
 [[keyboard.bindings]]
 chars = "\u0002["
@@ -123,6 +112,17 @@ mods = "Command"
 chars = "\u0002]"
 key = "RBracket"
 mods = "Command"
+
+# Move windows
+[[keyboard.bindings]]
+chars = "\u0002{"
+key = "LBracket"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u0002}"
+key = "RBracket"
+mods = "Command|Shift"
 
 # Projects
 [[keyboard.bindings]]
