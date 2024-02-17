@@ -1,0 +1,16 @@
+[
+  {
+    // Adding that just to know that there are those options
+    "context": "Editor && VimControl && !VimWaiting && !menu && vim_mode == normal && !VimCount",
+    "bindings": {}
+  },
+  {
+    "context": "Dock",
+    "bindings": {
+      "cmd-h": ["workspace::ActivatePaneInDirection", "Left"],
+      "cmd-l": ["workspace::ActivatePaneInDirection", "Right"],
+      "cmd-k": ["workspace::ActivatePaneInDirection", "Up"],
+      "cmd-j": ["workspace::ActivatePaneInDirection", "Down"]
+    }
+  }
+]
