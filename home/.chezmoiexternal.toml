@@ -1,10 +1,6 @@
 [".local/bin/goku"]
 	type = "file"
-  {{- if eq .chezmoi.arch "arm" }}
-	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku.zip"
-  {{- else }}
 	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
-  {{- end }}
 	refreshPeriod = "168h"
   exact = true
   stripComponents = 1
