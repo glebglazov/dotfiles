@@ -468,13 +468,6 @@ require('mason-lspconfig').setup({
   },
   handlers = {
     lsp_zero.default_setup,
-    ruby_ls = function()
-      require('lspconfig').ruby_ls.setup({
-        on_attach = function(client, buffer)
-          setup_diagnostics(client, buffer)
-        end
-      })
-    end,
     lua_ls = function()
       require('lspconfig').lua_ls.setup({
         settings = {
