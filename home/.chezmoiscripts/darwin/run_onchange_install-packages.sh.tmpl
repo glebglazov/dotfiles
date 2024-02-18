@@ -11,7 +11,7 @@
   "reviewdog/tap"
 -}}
 
-{{ $brews := list
+{{ $mass_brew := list
   "ansible"
   "apr-util"
   "automake"
@@ -51,7 +51,6 @@
   "mosh"
   "mysql-client@8.0"
   "newrelic-cli"
-  "nvim"
   "openjdk"
   "planetscale/tap/pscale"
   "postgresql"
@@ -68,6 +67,10 @@
   "watch"
   "wget"
   "zed"
+-}}
+
+{{ $craft_brew := list
+  "--HEAD nvim"
 -}}
 
 {{ $casks := list
@@ -104,7 +107,10 @@ brew update
 brew tap {{ . }}
 {{ end  }}
 brew install --cask {{ $casks | join " " }}
-brew install {{ $brews | join " " }}
+brew install {{ $mass_brew | join " " }}
+{{ range $craft_brew }}
+brew install {{ . }}
+{{ end  }}
 # brew pin {{ $pin_list | join " " }}
 
 {{ end -}}
