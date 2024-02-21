@@ -17,8 +17,11 @@
 
 [push]
   autoSetupRemote = true
+
 [rerere]
   enabled = true
+  # automatically solve conflict if rebasing on a branch with a lot of new commits
+  autoUpdate = true
 
 [diff "lockb"]
   textconv = bun
