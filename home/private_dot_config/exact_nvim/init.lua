@@ -157,7 +157,7 @@ require('lazy').setup({
       { '<LEADER>gce', ':G commit --allow-empty -m \'\'<LEFT>' },
       { '<LEADER>gpl', ':G pull --rebase<CR>' },
       { '<LEADER>gpo', ':G push<CR>' },
-      { '<LEADER>gpf', ':G push --force origin HEAD<CR>' },
+      { '<LEADER>gpf', ':G push --force-with-lease origin HEAD<CR>' },
       { '<LEADER>gpp', ':G push origin HEAD:' },
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' }
