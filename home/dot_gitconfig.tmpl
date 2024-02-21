@@ -31,6 +31,10 @@
   "main"
   "master"
 }}
+
+[branch]
+sort = -committerdate
+
 {{ range $do_not_push_remote_branches }}
 [branch "{{ . }}"]
   pushRemote = NOPE
