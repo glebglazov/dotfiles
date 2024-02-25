@@ -116,12 +116,12 @@ mods = "Command"
 # Move windows
 [[keyboard.bindings]]
 chars = "\u0002{"
-key = "LBracket"
+key = "{"
 mods = "Command|Shift"
 
 [[keyboard.bindings]]
 chars = "\u0002}"
-key = "RBracket"
+key = "}"
 mods = "Command|Shift"
 
 # Projects
