@@ -39,7 +39,7 @@ function git-clone-to-folder {
     git pull origin master
 }
 
-function pid-by-port {
+function find-pid-by-port {
 	pid=$1
 
 	lsof -i tcp:$pid | tail -1 | awk '{print $2}'
