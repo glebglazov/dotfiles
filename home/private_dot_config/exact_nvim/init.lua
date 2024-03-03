@@ -21,13 +21,13 @@ end
 -- Options
 -------------------------------------------------
 -- mapleader and maplocalleader here so that all <LEADER> keybindings will work
-vim.global.mapleader = ' '
-vim.global.maplocalleader = ' '
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 -- Disable netrw for nvim-tree
 -- https://github.com/nvim-tree/nvim-tree.lua/tree/efafd73efa9bc8c26282aed563ba0f01c7465b06?tab=readme-ov-file#setup
-vim.global.loaded = 1
-vim.global.loaded_netrwPlugin = 1
+vim.g.loaded = 1
+vim.g.loaded_netrwPlugin = 1
 
 -- Enable 24-bit colour because why not
 vim.opt.termguicolors = true
