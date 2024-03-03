@@ -15,8 +15,10 @@
 	refreshPeriod = "168h"
 
 [".oh-my-zsh"]
-	type = "git-repo"
-	url = "https://github.com/ohmyzsh/ohmyzsh"
+	type = "archive"
+	url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+  stripComponents = 1
+  exact = true
 	refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
