@@ -21,28 +21,56 @@ end
 -- Options
 -------------------------------------------------
 -- mapleader and maplocalleader here so that all <LEADER> keybindings will work
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.global.mapleader = ' '
+vim.global.maplocalleader = ' '
 
-vim.g.loaded = 1
-vim.g.loaded_netrwPlugin = 1
+-- Disable netrw for nvim-tree
+-- https://github.com/nvim-tree/nvim-tree.lua/tree/efafd73efa9bc8c26282aed563ba0f01c7465b06?tab=readme-ov-file#setup
+vim.global.loaded = 1
+vim.global.loaded_netrwPlugin = 1
 
-vim.o.swapfile = false
-vim.o.backup = false
-vim.o.undodir = os.getenv('HOME') .. '/.vim/undodir'
-vim.o.undofile = true
+-- Enable 24-bit colour because why not
+vim.opt.termguicolors = true
 
-vim.o.hlsearch = true
-vim.o.incsearch = true
+-- Save undo history to a file
+vim.opt.undofile = true
+vim.opt.undodir = os.getenv('HOME') .. '/.vim/undodir'
 
-vim.o.number = true
-vim.o.relativenumber = true
+-- Case-insensitive searching UNLESS \C or capital in search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+-- Highlight search results while typing search pattern
+vim.opt.incsearch = true
+-- Highlight search results after 'Enter'
+vim.opt.hlsearch = true
 
-vim.o.hidden = true
+-- Enable line numbers display
+vim.opt.number = true
+-- Swap absolute line numbers to relative ones
+vim.opt.relativenumber = true
 
-vim.o.scrolloff = 8
+-- Hide buffer when it's abandoned instead of unloading it
+vim.opt.hidden = true
 
-vim.o.background = 'dark'
+-- Ensure that there are at least 8 lines above and below the cursor when scrolling buffer
+vim.opt.scrolloff = 8
+
+-- Sets how neovim will display certain whitespace in the editor.
+--  See `:help 'list'`
+--  and `:help 'listchars'`
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+
+-- Decrease update time
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 300
+
+-- For not, dark background only
+vim.opt.background = 'dark'
+
+-- Comment these two for now: I remember those causing some issues, but let's try again
+-- vim.o.swapfile = false
+-- vim.o.backup = false
 
 vim.opt.iskeyword:remove('_')
 
