@@ -638,44 +638,39 @@ cmp.setup({
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-local remove_end_of_line_spaces = augroup('remove_end_of_line_spaces', { })
 autocmd({ 'BufWritePre' }, {
-	group = remove_end_of_line_spaces,
-	pattern = '*',
-	command = '%s/\\s\\+$//e',
+  group = augroup('glebglazov-remove-end-of-line-spaces', {clear = true}),
+  pattern = '*',
+  command = '%s/\\s\\+$//e',
 })
 
-local remove_end_of_file_empty_lines = augroup('remove_end_of_file_empty_lines', { })
 autocmd({ 'BufWritePre' }, {
-	group = remove_end_of_file_empty_lines,
-	pattern = '*',
-	command = '%s#\\($\\n\\s*\\)\\+\\%$##e',
+  group = augroup('glebglazov-remove-end-of-file-empty-lines', {clear = true}),
+  pattern = '*',
+  command = '%s#\\($\\n\\s*\\)\\+\\%$##e',
 })
 
-local open_nvim_tree_at_startup = augroup('open_nvim_tree_at_startup', { })
 autocmd({ 'VimEnter' }, {
-  group = open_nvim_tree_at_startup,
+  group = augroup('glebglazov-open-nvim-tree-at-startup', {clear = true}),
   callback = require('nvim-tree.api').tree.open
 })
 
 -------------------------------------------------
 -- Autogroups — Fugitive
 -------------------------------------------------
-local fugitive_remap_equals_to_tab = augroup('fugitive_remap_equals_to_tab', {})
 autocmd({ 'FileType' }, {
-	group = fugitive_remap_equals_to_tab,
-	pattern = 'fugitive',
-	command = 'nmap <buffer> <tab> =',
+  group = augroup('glebglazov-fugitive-settings', {clear = true}),
+  pattern = 'fugitive',
+  command = 'nmap <buffer> <tab> =',
 })
 
 -------------------------------------------------
 -- Autogroups — Lua
 -------------------------------------------------
-local lua_keybindings = augroup('lua_keybindings', {})
 autocmd({ 'FileType' }, {
-	group = lua_keybindings,
-	pattern = 'lua',
-	callback = function (event)
+  group = augroup('glebglazov-lua-settings', {clear = true}),
+  pattern = 'lua',
+  callback = function (event)
     local lua_base_script = [[
       lua <<EOF
         %s
@@ -706,31 +701,29 @@ autocmd({ 'FileType' }, {
       }),
       { buffer = event.buf }
     )
-	end
+  end
 })
 
 -------------------------------------------------
 -- Autogroups — Ruby
 -------------------------------------------------
-local ruby_keybindings = augroup('ruby_keybindings', {})
 autocmd({ 'FileType' }, {
-	group = ruby_keybindings,
-	pattern = 'ruby',
-	callback = function (event)
+  group = augroup('glebglazov-ruby-settings', {clear = true}),
+  pattern = 'ruby',
+  callback = function (event)
     vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = event.buf })
-	end
+  end
 })
 
 -------------------------------------------------
 -- Autogroups — QuickFix
 -------------------------------------------------
-local qf_keybindings = augroup('qf_keybindings', {})
 autocmd({ 'FileType' }, {
-	group = qf_keybindings,
-	pattern = 'qf',
-	callback = function ()
+  group = augroup('glebglazov-quickfix-settings', {clear = true}),
+  pattern = 'qf',
+  callback = function ()
     vim.api.nvim_buf_set_keymap(0, '', 'dd', ':.Reject<cr>', { noremap = true, silent = true })
-	end
+  end
 })
 
 -------------------------------------------------
