@@ -456,9 +456,27 @@ lsp_zero.set_server_config({
 })
 
 lsp_zero.on_attach(function(_, buffnr)
-  lsp_zero.default_keymaps({buffer = buffnr})
+  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', {buffer = buffnr})
+  vim.keymap.set('x', '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', {buffer = buffnr})
+  vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', {buffer = buffnr})
 
-  vim.keymap.set('n', 'gr', builtin.lsp_references, { buffer = buffnr, remap = false })
+  if vim.lsp.buf.range_code_action then
+    vim.keymap.set('x', '<F4>', '<cmd>lua vim.lsp.buf.range_code_action()<cr>', {buffer = buffnr})
+  else
+    vim.keymap.set('x', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', {buffer = buffnr})
+  end
+
+  vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', {buffer = buffnr})
 end)
 
 require('mason').setup({})
