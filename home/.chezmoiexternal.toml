@@ -25,9 +25,11 @@
 	type = "archive"
 	url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
 	stripComponents = 1
+  exact = true
 	refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/themes/powerlevel10k"]
 	type = "archive"
 	url = "https://github.com/romkatv/powerlevel10k/archive/v1.19.0.tar.gz"
 	stripComponents = 1
+  exact = true
