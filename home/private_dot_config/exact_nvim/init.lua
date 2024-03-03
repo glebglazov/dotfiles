@@ -283,15 +283,25 @@ require('lazy').setup({
   -- Telescope
   {
     'nvim-telescope/telescope.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = {
+      { 'nvim-lua/plenary.nvim' },
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      { 'nvim-telescope/telescope-ui-select.nvim' },
+    },
     config = function()
       require('telescope').setup({
+        extensions = {
+          ['ui-select'] = {
+            require('telescope.themes').get_dropdown(),
+          },
+        },
       })
       require('telescope').load_extension('fzf')
       require('telescope').load_extension('lazygit')
+      require('telescope').load_extension('ui-select')
     end,
   },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+
 
   -- Treesitter
   {
