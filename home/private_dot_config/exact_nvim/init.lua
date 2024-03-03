@@ -63,7 +63,6 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Decrease update time
 vim.opt.updatetime = 250
-vim.opt.timeoutlen = 300
 
 -- For not, dark background only
 vim.opt.background = 'dark'
