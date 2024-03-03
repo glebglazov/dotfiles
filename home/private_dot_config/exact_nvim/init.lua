@@ -339,7 +339,7 @@ vim.defer_fn(function() -- Defer Treesitter setup after first render to improve 
       'clojure',
       'javascript',
     },
-
+    auto_install = true,
     highlight = {
       enable = true,
 
