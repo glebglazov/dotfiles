@@ -32,11 +32,6 @@ vim.o.backup = false
 vim.o.undodir = os.getenv('HOME') .. '/.vim/undodir'
 vim.o.undofile = true
 
-vim.o.expandtab=true
-vim.o.tabstop=2
-vim.o.softtabstop=2
-vim.o.shiftwidth=2
-
 vim.o.hlsearch = true
 vim.o.incsearch = true
 
@@ -77,6 +72,9 @@ require('lazy').setup({
   {
     'VonHeikemen/lsp-zero.nvim',
     dependencies = {
+      -- Heuristic tabstop / softtabstop / etc.
+      { 'tpope/vim-sleuth' },
+
       -- LSP Support
       {'neovim/nvim-lspconfig'},
       {'williamboman/mason.nvim'},
