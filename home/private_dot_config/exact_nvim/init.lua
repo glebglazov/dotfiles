@@ -866,6 +866,7 @@ vim.keymap.set('x', '<leader>p', "\"_dP")
 
 -- Window
 vim.keymap.set('n', '<LEADER>w', ':hide<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>W', ':bd<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
