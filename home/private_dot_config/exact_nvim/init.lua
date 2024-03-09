@@ -17,6 +17,12 @@ local function get_visual_selection()
   return vim.fn.getreg('v')
 end
 
+local function tmux_new_window_command_execute_fn(command)
+  return function ()
+    vim.cmd(string.format('silent !tmux new-window -n "new-pane" "%s; read -n 1"', command))
+  end
+end
+
 -------------------------------------------------
 -- Options
 -------------------------------------------------
@@ -145,6 +151,25 @@ require('lazy').setup({
   {
     'folke/trouble.nvim', -- Better QuickFix window
     opts = { icons = false }
+  },
+
+  -------------------------------------------------
+  -- Language plugins
+  -------------------------------------------------
+  {
+    'fatih/vim-go',
+    config = function ()
+      -- copied from https://raw.githubusercontent.com/fatih/dotfiles/main/init.lua
+      vim.g['go_gopls_enabled'] = 0
+      vim.g['go_code_completion_enabled'] = 0
+      vim.g['go_fmt_autosave'] = 0
+      vim.g['go_imports_autosave'] = 0
+      vim.g['go_mod_fmt_autosave'] = 0
+      vim.g['go_doc_keywordprg_enabled'] = 0
+      vim.g['go_def_mapping_enabled'] = 0
+      vim.g['go_textobj_enabled'] = 0
+      vim.g['go_list_type'] = 'quickfix'
+    end,
   },
 
   -------------------------------------------------
@@ -544,6 +569,47 @@ require('mason-lspconfig').setup({
           }
         }
       })
+    end,
+    gopls = function()
+      require('lspconfig').gopls.setup({
+        flags = { debounce_text_changes = 200 },
+        settings = {
+          gopls = {
+            usePlaceholders = true,
+            gofumpt = true,
+            analyses = {
+              nilness = true,
+              unusedparams = true,
+              unusedwrite = true,
+              useany = true,
+            },
+            codelenses = {
+              gc_details = false,
+              generate = true,
+              regenerate_cgo = true,
+              run_govulncheck = true,
+              test = true,
+              tidy = true,
+              upgrade_dependency = true,
+              vendor = true,
+            },
+            experimentalPostfixCompletions = true,
+            completeUnimported = true,
+            staticcheck = true,
+            directoryFilters = { "-.git", "-node_modules" },
+            semanticTokens = true,
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+          },
+        },
+      })
     end
   }
 })
@@ -711,6 +777,39 @@ autocmd({ 'FileType' }, {
   pattern = 'ruby',
   callback = function (event)
     vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = event.buf })
+  end
+})
+
+-------------------------------------------------
+-- Autogroups — Golang
+-------------------------------------------------
+autocmd({ 'FileType' }, {
+  group = augroup('glebglazov-golang-settings', {clear = true}),
+  pattern = 'go',
+  callback = function (event)
+    vim.keymap.set('n', '<LEADER>ef', tmux_new_window_command_execute_fn("go run %"), {buffer = event.buf})
+  end
+})
+
+-- Run gofmt/gofmpt, import packages automatically on save
+autocmd({ 'BufWritePre' }, {
+  group = augroup('setGoFormatting', {clear = true}),
+  pattern = '*.go',
+  callback = function()
+    local params = vim.lsp.util.make_range_params()
+    params.context = { only = { "source.organizeImports" } }
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 2000)
+    for _, res in pairs(result or {}) do
+      for _, r in pairs(res.result or {}) do
+        if r.edit then
+          vim.lsp.util.apply_workspace_edit(r.edit, "utf-16")
+        else
+          vim.lsp.buf.execute_command(r.command)
+        end
+      end
+    end
+
+    vim.lsp.buf.format()
   end
 })
 
