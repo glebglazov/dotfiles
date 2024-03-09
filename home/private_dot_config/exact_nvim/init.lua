@@ -461,6 +461,7 @@ local search_and_replace_mappings_fn = function(_, map)
   return true
 end
 
+vim.keymap.set('n', '<LEADER>bb', builtin.buffers)
 vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
 vim.keymap.set('n', '<LEADER>?', builtin.resume)
 vim.keymap.set('v', '<LEADER>/',
