@@ -698,10 +698,21 @@ cmp.setup({
 })
 
 -------------------------------------------------
--- Autogroups — All files
+-- Autogroups - General
 -------------------------------------------------
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+
+autocmd({ 'VimResized' }, {
+  group = augroup('glebglazov-resize', {clear = true}),
+  callback = function()
+    vim.cmd('wincmd =')
+  end
+})
+
+-------------------------------------------------
+-- Autogroups — All files
+-------------------------------------------------
 
 autocmd({ 'BufWritePre' }, {
   group = augroup('glebglazov-remove-end-of-line-spaces', {clear = true}),
