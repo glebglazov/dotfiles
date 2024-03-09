@@ -152,6 +152,13 @@ require('lazy').setup({
     'folke/trouble.nvim', -- Better QuickFix window
     opts = { icons = false }
   },
+  {
+    'vim-test/vim-test',
+    config = function ()
+      vim.g['test#strategy'] = 'neovim'
+      vim.g['test#neovim#start_normal'] = '1'
+    end,
+  },
 
   -------------------------------------------------
   -- Language plugins
@@ -864,6 +871,10 @@ vim.keymap.set('v', 'L', '$', { noremap = true })
 
 -- Paste without messing with register
 vim.keymap.set('x', '<leader>p', "\"_dP")
+
+-- Tests
+vim.keymap.set('n', '<LEADER>tt', ':TestNearest<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>tf', ':TestFile<CR>', { silent = true })
 
 -- Window
 vim.keymap.set('n', '<LEADER>w', ':hide<CR>', { silent = true })
