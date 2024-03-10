@@ -191,6 +191,7 @@ require('lazy').setup({
       { '<LEADER>gbl', ':G blame -C -C -C<CR>' },
       { '<LEADER>glg', ':Gclog --oneline<CR>' },
       { '<LEADER>gcp', ':G cherry-pick<SPACE>' },
+
       { '<LEADER>gbr', ':G branch --sort=-committerdate<CR>' },
       { '<LEADER>gcm', function ()
         local output = vim.fn.system('git branch -l')
