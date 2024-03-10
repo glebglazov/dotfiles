@@ -883,6 +883,12 @@ vim.keymap.set('n', '<LEADER>Bd', ':%bdelete | edit # | normal `', { silent = tr
 vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
+-- git-pile (EXPERIMENTAL)
+vim.keymap.set('n', '<LEADER>gsp', ':!git submitpr<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>gup', ':!git updatepr<SPACE>', { silent = true })
+vim.keymap.set('n', '<LEADER>ghp', ':!git headpr<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>grp', ':!git rebasepr<SPACE>', { silent = true })
+
 -- Files / Projects
 vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
