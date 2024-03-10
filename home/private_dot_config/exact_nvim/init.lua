@@ -193,6 +193,7 @@ require('lazy').setup({
       { '<LEADER>gcp', ':G cherry-pick<SPACE>' },
 
       { '<LEADER>gbr', ':G branch --sort=-committerdate<CR>' },
+
       { '<LEADER>gcm', function ()
         local output = vim.fn.system('git branch -l')
 
