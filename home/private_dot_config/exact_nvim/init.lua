@@ -878,7 +878,8 @@ vim.keymap.set('n', '<LEADER>tf', ':TestFile<CR>', { silent = true })
 
 -- Window
 vim.keymap.set('n', '<LEADER>w', ':hide<CR>', { silent = true })
-vim.keymap.set('n', '<LEADER>W', ':bd<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>bd', ':bd<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>Bd', ':%bdelete | edit # | normal `', { silent = true })
 vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
