@@ -55,3 +55,10 @@ sort = -committerdate
 
 [pile]
   cleanupRemoteOnSubmitFailure = true
+
+[mergetool "fugitive"]
+  cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
+  trustExitCode = false
+
+[merge]
+  tool = fugitive
