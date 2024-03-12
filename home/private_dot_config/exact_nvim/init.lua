@@ -885,6 +885,7 @@ vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
 vim.keymap.set('n', '<LEADER>gsp', ':!git submitpr<CR>')
+vim.keymap.set('n', '<LEADER>gso', ':!git submitpr<SPACE>--onto<SPACE>')
 vim.keymap.set('n', '<LEADER>gup', ':!git updatepr<SPACE>')
 vim.keymap.set('n', '<LEADER>ghp', ':!git headpr<CR>')
 vim.keymap.set('n', '<LEADER>grp', ':!git rebasepr<SPACE>')
