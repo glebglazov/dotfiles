@@ -1,3 +1,0 @@
-export GH_TOKEN={{ onepasswordRead "op://Private/pj4ygw2cha76xlxbiqehnl4au4/token" .onepasswordPersonalAccount }}
-export GITHUB_TOKEN={{ onepasswordRead "op://Private/pj4ygw2cha76xlxbiqehnl4au4/token" .onepasswordPersonalAccount }}
-export BUNDLE_RUBYGEMS__PKG__GITHUB__COM={{ onepasswordRead "op://Private/pj4ygw2cha76xlxbiqehnl4au4/username_and_token" .onepasswordPersonalAccount }}
