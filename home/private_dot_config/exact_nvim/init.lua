@@ -745,7 +745,10 @@ autocmd({ 'VimEnter' }, {
 autocmd({ 'FileType' }, {
   group = augroup('glebglazov-fugitive-settings', {clear = true}),
   pattern = 'fugitive',
-  command = 'nmap <buffer> <tab> =',
+  callback = function ()
+    vim.keymap.set('n', '<TAB>', '=', { remap = true, silent = true, buffer = true })
+    vim.keymap.set('n', 'ce', ':G commit --allow-empty<CR>', { silent = true, buffer = true })
+  end
 })
 
 -------------------------------------------------
@@ -754,7 +757,7 @@ autocmd({ 'FileType' }, {
 autocmd({ 'FileType' }, {
   group = augroup('glebglazov-lua-settings', {clear = true}),
   pattern = 'lua',
-  callback = function (event)
+  callback = function ()
     local lua_base_script = [[
       lua <<EOF
         %s
@@ -776,14 +779,14 @@ autocmd({ 'FileType' }, {
       execute_lua_snippet_fn({
         content_fn = get_buffer_content
       }),
-      { buffer = event.buf }
+      { buffer = true }
     )
 
     vim.keymap.set('v', '<LEADER>fe',
       execute_lua_snippet_fn({
         content_fn = get_visual_selection
       }),
-      { buffer = event.buf }
+      { buffer = true }
     )
   end
 })
@@ -794,8 +797,8 @@ autocmd({ 'FileType' }, {
 autocmd({ 'FileType' }, {
   group = augroup('glebglazov-ruby-settings', {clear = true}),
   pattern = 'ruby',
-  callback = function (event)
-    vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = event.buf })
+  callback = function ()
+    vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = true })
   end
 })
 
@@ -806,7 +809,7 @@ autocmd({ 'FileType' }, {
   group = augroup('glebglazov-golang-settings', {clear = true}),
   pattern = 'go',
   callback = function (event)
-    vim.keymap.set('n', '<LEADER>ef', tmux_new_window_command_execute_fn("go run %"), {buffer = event.buf})
+    vim.keymap.set('n', '<LEADER>ef', tmux_new_window_command_execute_fn("go run %"), { buffer = true })
   end
 })
 
@@ -839,7 +842,7 @@ autocmd({ 'FileType' }, {
   group = augroup('glebglazov-quickfix-settings', {clear = true}),
   pattern = 'qf',
   callback = function ()
-    vim.api.nvim_buf_set_keymap(0, '', 'dd', ':.Reject<cr>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, '', 'dd', ':.Reject<cr>', { silent = true })
   end
 })
 
