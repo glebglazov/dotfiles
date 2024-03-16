@@ -157,6 +157,15 @@ require('lazy').setup({
       vim.g['test#neovim#start_normal'] = '1'
     end,
   },
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+    end,
+    ft = { 'markdown' },
+  },
 
   -------------------------------------------------
   -- Language plugins
@@ -807,8 +816,19 @@ autocmd({ 'FileType' }, {
 autocmd({ 'FileType' }, {
   group = augroup('glebglazov-golang-settings', {clear = true}),
   pattern = 'go',
-  callback = function (event)
+  callback = function ()
     vim.keymap.set('n', '<LEADER>ef', tmux_new_window_command_execute_fn("go run %"), { buffer = true })
+  end
+})
+
+-------------------------------------------------
+-- Autogroups — Markdown
+-------------------------------------------------
+autocmd({ 'FileType' }, {
+  group = augroup('glebglazov-markdown-settings', {clear = true}),
+  pattern = 'markdown',
+  callback = function ()
+    vim.keymap.set('n', '<LEADER>vf', function() vim.cmd('MarkdownPreview') end, { buffer = true })
   end
 })
 
