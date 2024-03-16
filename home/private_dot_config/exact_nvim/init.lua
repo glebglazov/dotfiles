@@ -105,9 +105,6 @@ require('lazy').setup({
   {
     'VonHeikemen/lsp-zero.nvim',
     dependencies = {
-      -- Heuristic tabstop / softtabstop / etc.
-      { 'tpope/vim-sleuth' },
-
       -- LSP Support
       {'neovim/nvim-lspconfig'},
       {'williamboman/mason.nvim'},
@@ -137,6 +134,7 @@ require('lazy').setup({
     }
   },
   { 'zbirenbaum/copilot-cmp', config = true },
+  { 'tpope/vim-sleuth' }, -- Heuristic tabstop / softtabstop / etc.
 
   -------------------------------------------------
   -- Editor improvements
