@@ -747,7 +747,7 @@ autocmd({ 'FileType' }, {
   group = augroup('glebglazov-fugitive-settings', {clear = true}),
   pattern = 'fugitive',
   callback = function ()
-    vim.keymap.set('n', '<TAB>', '=', { remap = true, silent = true, buffer = true })
+    vim.keymap.set('n', '<TAB>', '=', { remap = true, silent = true, buffer = true }) -- TIL: in vim.keymap.set only "remap" option works
     vim.keymap.set('n', 'ce', ':G commit --allow-empty<CR>', { silent = true, buffer = true })
   end
 })
@@ -866,15 +866,15 @@ vim.keymap.set('n', '<LEADER>y', '"+y')
 vim.keymap.set('n', '<LEADER>yy', '"+yy')
 
 -- Navigation
-vim.keymap.set('n', '<C-D>', '<C-D>zz', { noremap = true })
-vim.keymap.set('n', '<C-U>', '<C-U>zz', { noremap = true })
-vim.keymap.set('v', '<C-D>', '<C-D>zz', { noremap = true })
-vim.keymap.set('v', '<C-U>', '<C-U>zz', { noremap = true })
+vim.keymap.set('n', '<C-D>', '<C-D>zz')
+vim.keymap.set('n', '<C-U>', '<C-U>zz')
+vim.keymap.set('v', '<C-D>', '<C-D>zz')
+vim.keymap.set('v', '<C-U>', '<C-U>zz')
 
-vim.keymap.set('n', 'H', '^', { noremap = true })
-vim.keymap.set('n', 'L', '$', { noremap = true })
-vim.keymap.set('v', 'H', '^', { noremap = true })
-vim.keymap.set('v', 'L', '$', { noremap = true })
+vim.keymap.set('n', 'H', '^')
+vim.keymap.set('n', 'L', '$')
+vim.keymap.set('v', 'H', '^')
+vim.keymap.set('v', 'L', '$')
 
 -- Paste without messing with register
 vim.keymap.set('x', '<leader>p', "\"_dP")
