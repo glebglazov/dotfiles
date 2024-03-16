@@ -856,6 +856,9 @@ vim.keymap.set('n', '<ESC>', ':noh<CR>', { silent = true })
 vim.keymap.set('v', '#', 'y/<C-R>"<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER><tab>', ':b#<CR>', { silent = true })
 
+-- cd to current files' directory
+vim.keymap.set('n', '<LEADER>cdc', ':cd %:p:h<CR>', { silent = true })
+
 -- Copy to clipboard
 vim.keymap.set('v', '<LEADER>y', '"+y')
 vim.keymap.set('n', '<LEADER>Y', '"+yg_')
