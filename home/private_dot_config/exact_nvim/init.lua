@@ -157,15 +157,6 @@ require('lazy').setup({
       vim.g['test#neovim#start_normal'] = '1'
     end,
   },
-  {
-    'iamcco/markdown-preview.nvim',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
-    end,
-    ft = { 'markdown' },
-  },
 
   -------------------------------------------------
   -- Language plugins
@@ -184,6 +175,15 @@ require('lazy').setup({
       vim.g['go_textobj_enabled'] = 0
       vim.g['go_list_type'] = 'quickfix'
     end,
+  },
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+    end,
+    ft = { 'markdown' },
   },
 
   -------------------------------------------------
