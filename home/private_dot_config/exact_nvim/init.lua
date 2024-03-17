@@ -766,20 +766,23 @@ autocmd({ 'FileType' }, {
   group = augroup('glebglazov-lua-settings', {clear = true}),
   pattern = 'lua',
   callback = function ()
-    local lua_base_script = [[
-      lua <<EOF
-        %s
-      EOF
-    ]]
-
     local execute_lua_snippet_fn = function(opts)
       local content_fn = opts.content_fn
 
       return function()
-        local content = content_fn()
-        local command = string.format(lua_base_script, content)
+        local file_path = vim.fn.tempname()
+        local file = io.open(file_path, "w")
 
-        vim.cmd(command)
+        if file then
+          local content = content_fn()
+
+          file:write(content)
+          file:close()
+
+          vim.cmd(string.format("luafile %s", file_path))
+        else
+          print("Failed to open file for writing")
+        end
       end
     end
 
