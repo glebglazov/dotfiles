@@ -20,6 +20,8 @@ export GITHUB_USER=glebglazov
 
 export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/config
 
+export TMUX_FOLDERS_SEARCH_PATHS="~ ~/Dev ~/Dev/random ~/.local/share"
+
 {{ if eq .chezmoi.os "darwin" -}}
 export HOMEBREW_NO_AUTO_UPDATE=1
 {{- end }}
