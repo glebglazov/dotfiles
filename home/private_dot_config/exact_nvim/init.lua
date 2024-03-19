@@ -317,10 +317,17 @@ require('lazy').setup({
   {
     'ellisonleao/gruvbox.nvim',
     priority = 1000,
-    -- freeze it here, cause it seems that in new version big rework is ongoing
-    -- TODO: retry to upgrade sometime in future
-    version = '1.1.0',
+    version = '2.0.0',
     config = function ()
+      local gruvbox = require('gruvbox')
+
+      gruvbox.setup({
+        overrides = {
+          DiffAdd = { fg = "#b8bb26", bg = "NONE" },
+          DiffDelete = { fg = "#fb4934", bg = "NONE" },
+        },
+      })
+
       vim.cmd([[colorscheme gruvbox]])
     end
   },
