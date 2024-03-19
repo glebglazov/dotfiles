@@ -137,14 +137,69 @@ require('lazy').setup({
   { 'tpope/vim-sleuth' }, -- Heuristic tabstop / softtabstop / etc.
 
   -------------------------------------------------
+  -- Coding
+  -------------------------------------------------
+
+  {
+    'echasnovski/mini.pairs',
+    event = 'VeryLazy',
+    opts = {},
+  },
+  {
+    'echasnovski/mini.surround',
+    opts = {
+      mappings = {
+        add = 'sa', -- Add surrounding in Normal and Visual modes
+        delete = 'sd', -- Delete surrounding
+        find = 'sn', -- Find surrounding (to the right)
+        find_left = 'sF', -- Find surrounding (to the left)
+        highlight = 'sh', -- Highlight surrounding
+        replace = 'sr', -- Replace surrounding
+        update_n_lines = 'sn', -- Update `n_lines`
+      },
+    },
+  },
+  {
+    'JoosepAlviste/nvim-ts-context-commentstring',
+    lazy = true,
+    opts = {
+      enable_autocmd = false,
+    },
+  },
+  {
+    'echasnovski/mini.comment',
+    event = 'VeryLazy',
+    opts = {
+      options = {
+        custom_commentstring = function()
+          return require('ts_context_commentstring.internal').calculate_commentstring() or vim.bo.commentstring
+        end,
+      },
+    }
+  },
+  {
+    'echasnovski/mini.ai',
+    event = 'VeryLazy',
+    opts = function()
+      local ai = require('mini.ai')
+      return {
+        n_lines = 500,
+        custom_textobjects = {
+          o = ai.gen_spec.treesitter({
+            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
+            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          }, {}),
+          f = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }, {}),
+          c = ai.gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }, {}),
+          t = { '<([%p%w]-)%f[^<%w][^<>]->.-</%1>', '^<.->().*()</[^/]->$' },
+        },
+      }
+    end,
+  },
+
+  -------------------------------------------------
   -- Editor improvements
   -------------------------------------------------
-  {
-    'kylechui/nvim-surround',
-    event = 'VeryLazy',
-    config = true
-  },
-  { 'numToStr/Comment.nvim', config = true },
   { 'stevearc/qf_helper.nvim', config = true }, -- QuickFix window improvements
   {
     'folke/trouble.nvim', -- Better QuickFix window
@@ -156,6 +211,31 @@ require('lazy').setup({
       vim.g['test#strategy'] = 'neovim'
       vim.g['test#neovim#start_normal'] = '1'
     end,
+  },
+  -- Formatting
+  { 'stevearc/conform.nvim',
+    dependencies = { 'mason.nvim' },
+    lazy = true,
+    cmd = 'ConformInfo',
+    opts = {
+      -- LazyVim will use these options when formatting with the conform.nvim formatter
+      format = {
+        timeout_ms = 3000,
+        async = false, -- not recommended to change
+        quiet = false, -- not recommended to change
+        lsp_fallback = true, -- not recommended to change
+      },
+      formatters_by_ft = {
+        lua = { 'stylua' },
+        fish = { 'fish_indent' },
+        sh = { 'shfmt' },
+      },
+      -- The options you set here will be merged with the builtin formatters.
+      -- You can also define any custom formatters here.
+      formatters = {
+        injected = { options = { ignore_errors = true } },
+      },
+    }
   },
 
   -------------------------------------------------
@@ -189,7 +269,10 @@ require('lazy').setup({
   -------------------------------------------------
   -- Git integration
   -------------------------------------------------
-  { 'lewis6991/gitsigns.nvim', config = true },
+  {
+    'lewis6991/gitsigns.nvim',
+    config = true
+  },
   {
     'tpope/vim-fugitive',
     keys = {
@@ -226,14 +309,6 @@ require('lazy').setup({
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' }
     }
-  },
-  {
-    'kdheepak/lazygit.nvim',
-    -- optional for floating window border decoration
-    dependencies = {
-      'nvim-telescope/telescope.nvim',
-      'nvim-lua/plenary.nvim'
-    },
   },
 
   -------------------------------------------------
@@ -335,7 +410,6 @@ require('lazy').setup({
         },
       })
       require('telescope').load_extension('fzf')
-      require('telescope').load_extension('lazygit')
       require('telescope').load_extension('ui-select')
     end,
   },
@@ -344,6 +418,7 @@ require('lazy').setup({
   -- Treesitter
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     build = ':TSUpdate'
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects' },
@@ -397,9 +472,6 @@ vim.defer_fn(function() -- Defer Treesitter setup after first render to improve 
       disable = { 'ruby' }
     },
     autotag = {
-      enable = true,
-    },
-    autopairs = {
       enable = true,
     },
     endwise = {
@@ -799,6 +871,13 @@ autocmd({ 'FileType' }, {
       }),
       { buffer = true }
     )
+
+    vim.keymap.set('n', '<LEADER>cai',
+      function()
+        vim.cmd('!chezmoi apply ~/.config/nvim/init.lua')
+      end,
+      { buffer = true }
+    )
   end
 })
 
@@ -810,6 +889,9 @@ autocmd({ 'FileType' }, {
   pattern = 'ruby',
   callback = function ()
     vim.keymap.set('n', '<LEADER>tl', function() vim.cmd('!rubocop -A %') end, { buffer = true })
+
+    local pairs = require('mini.pairs')
+    pairs.map_buf(0, 'i', '|', { action = 'closeopen', pair = '||' })
   end
 })
 
