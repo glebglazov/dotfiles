@@ -379,7 +379,7 @@ require('lazy').setup({
     config = function ()
       require('nvim-tree').setup({
         git = {
-          ignore = false
+          enable = false
         },
         update_focused_file = {
           enable = true,
