@@ -637,7 +637,6 @@ end)
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
-    'ruby_ls',
     'lua_ls',
     'tsserver',
     'gopls',
