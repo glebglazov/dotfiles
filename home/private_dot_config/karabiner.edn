@@ -31,9 +31,17 @@
            }
 
  :templates {
+             :open "open \"%s\""
              }
+
  :main
  [
+  {
+   :des "Caps Lock to Escape or Hyper"
+   :rules [
+           [:##caps_lock :!QWEright_shift nil {:alone :escape}]
+           ]
+   }
   {
    :des "Control/Option swap on built-in keyboard"
    :rules [
@@ -41,7 +49,6 @@
            [:##left_option :##left_control]
            [:##right_option :##right_control]
            [:##left_control :##left_option]
-           [:##caps_lock :##escape]
            ]
    }
   {
