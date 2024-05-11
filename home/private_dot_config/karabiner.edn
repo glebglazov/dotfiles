@@ -5,7 +5,7 @@
  :profiles {
             :Default {
                       :default true
-                      :sim 50
+                      :sim 30
                       :delay 500
                       :alone 500
                       :held 500
