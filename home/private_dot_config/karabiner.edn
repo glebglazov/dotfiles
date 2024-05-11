@@ -6,9 +6,9 @@
             :Default {
                       :default true
                       :sim 30
-                      :delay 500
-                      :alone 500
-                      :held 500
+                      :delay 0
+                      :alone 80
+                      :held 50
                       }
             }
 
