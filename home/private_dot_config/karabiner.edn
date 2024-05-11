@@ -16,6 +16,7 @@
              :window_mode { :key :w }
              :system_mode { :key :s }
              :format_mode { :key :g }
+             :quick_access_mode { :key :open_bracket }
              }
 
  :input-sources { ;; define input-source, these data can be found in Karabiner EventViewer gui
@@ -31,6 +32,7 @@
            }
 
  :templates {
+             :km "osascript -e 'tell application \"Keyboard Maestro Engine\" to do script \"%s\"'"
              }
  :main
  [
@@ -102,9 +104,9 @@
            ]
    }
   {
-   :des "Format mode (en)"
+   :des "Format mode"
    :rules [
-           [:condi :format_mode :en]
+           :format_mode
            [:y [:!S8 :!S8]]
            [:u [:!S8]]
            [:h [:!Ssemicolon]]
@@ -112,13 +114,17 @@
            ]
    }
   {
-   :des "Format mode (ru)"
+   :des "Quick access mode"
    :rules [
-           [:condi :format_mode :ru]
-           [:y [:!O8 :!O8]]
-           [:u [:!O8]]
-           [:h [:!S5]]
-           [:hyphen [:!SOhyphen]]
+           :quick_access_mode
+           [:q  [:km "open: Arc"]]
+           [:w  [:km "open: Alacritty"]]
+           [:e  [:km "open: Finder"]]
+           [:r  [:km "open: Obsidian"]]
+           [:a  [:km "open: Slack"]]
+           [:s  [:km "open: Telegram"]]
+           [:d  [:km "open: Zoom"]]
+           [:f  [:km "open: HEY"]]
            ]
    }
   ]
