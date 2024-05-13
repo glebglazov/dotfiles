@@ -2,12 +2,13 @@
 	type = "file"
 	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
 	refreshPeriod = "168h"
-  exact = true
-  stripComponents = 1
-  executable = true
-  [".local/bin/goku".filter]
-    command = "tar"
-    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
+	exact = true
+	stripComponents = 1
+	executable = true
+
+	[".local/bin/goku".filter]
+	    command = "tar"
+	    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
 
 [".tmux.conf"]
 	type = "file"
@@ -17,19 +18,20 @@
 [".oh-my-zsh"]
 	type = "archive"
 	url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
-  stripComponents = 1
-  exact = true
+	stripComponents = 1
+	exact = true
 	refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
 	type = "archive"
 	url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
 	stripComponents = 1
-  exact = true
+	exact = true
 	refreshPeriod = "168h"
 
 [".oh-my-zsh/custom/themes/powerlevel10k"]
 	type = "archive"
 	url = "https://github.com/romkatv/powerlevel10k/archive/v1.20.0.tar.gz"
 	stripComponents = 1
-  exact = true
+	exact = true
+
