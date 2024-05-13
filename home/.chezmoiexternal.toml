@@ -35,3 +35,8 @@
 	stripComponents = 1
 	exact = true
 
+['.local/share/git-pile']
+	type = "archive"
+	url = "https://github.com/keith/git-pile/archive/20bc5e22e162a069cc36befc1305594fa8c97de6.tar.gz"
+	stripComponents = 1
+	exact = true
