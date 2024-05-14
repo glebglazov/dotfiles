@@ -308,7 +308,10 @@ require('lazy').setup({
       { '<LEADER>gpp', ':G push origin HEAD:' },
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' }
-    }
+    },
+  },
+  {
+    'tpope/vim-rhubarb'
   },
 
   -------------------------------------------------
