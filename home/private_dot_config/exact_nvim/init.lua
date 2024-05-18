@@ -975,6 +975,15 @@ vim.keymap.set('n', '<LEADER><tab>', ':b#<CR>', { silent = true })
 -- cd to current files' directory
 vim.keymap.set('n', '<LEADER>cdc', ':cd %:p:h<CR>', { silent = true })
 
+-- on search, center the screen
+vim.keymap.set(
+  'c', '<CR>',
+  function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end,
+  { expr = true }
+)
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
+
 -- Copy to clipboard
 vim.keymap.set('v', '<LEADER>y', '"+y')
 vim.keymap.set('n', '<LEADER>Y', '"+yg_')
