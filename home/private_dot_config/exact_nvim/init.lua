@@ -270,10 +270,6 @@ require('lazy').setup({
   -- Git integration
   -------------------------------------------------
   {
-    'lewis6991/gitsigns.nvim',
-    config = true
-  },
-  {
     'tpope/vim-fugitive',
     keys = {
       { '<LEADER>gg', vim.cmd.G },
