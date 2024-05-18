@@ -13,10 +13,11 @@
             }
 
  :simlayers {
+             :arrow_mode { :key :a }
              :window_mode { :key :w }
              :system_mode { :key :s }
              :format_mode { :key :g }
-             :quick_access_mode { :key :open_bracket }
+             :quick_access_mode { :key :semicolon }
              }
 
  :input-sources { ;; define input-source, these data can be found in Karabiner EventViewer gui
@@ -32,6 +33,7 @@
            }
 
  :templates {
+             :raycast "open raycast://extensions/raycast/%s"
              :km "osascript -e 'tell application \"Keyboard Maestro Engine\" to do script \"%s\"'"
              }
  :main
@@ -113,10 +115,25 @@
            [:hyphen [:!SOhyphen]]
            ]
    }
+  {:des "Arrow mode"
+   :rules [:arrow_mode
+           [:##h :left_arrow]
+           [:##j :down_arrow]
+           [:##k :up_arrow]
+           [:##l :right_arrow]
+           ; [:##n :return_or_enter]
+           ; [:##m :return_or_enter]
+           ; [:##u :tab]
+           ; [:##i :tab]
+           [:comma :page_down]
+           [:period :page_up]
+           ]
+   }
   {
    :des "Quick access mode"
    :rules [
            :quick_access_mode
+           [:1  [:km "open: 1Password"]]
            [:q  [:km "open: Arc"]]
            [:w  [:km "open: Alacritty"]]
            [:e  [:km "open: Finder"]]
@@ -125,6 +142,7 @@
            [:s  [:km "open: Telegram"]]
            [:d  [:km "open: Zoom"]]
            [:f  [:km "open: HEY"]]
+           [:v  [:raycast "clipboard-history/clipboard-history"]]
            ]
    }
   ]
