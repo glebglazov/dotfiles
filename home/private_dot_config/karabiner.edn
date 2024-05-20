@@ -34,7 +34,8 @@
 
  :templates {
              :raycast "open raycast://extensions/raycast/%s"
-             :km "osascript -e 'tell application \"Keyboard Maestro Engine\" to do script \"%s\"'"
+             :open "open %s"
+             :open_app "open -a %s"
              }
  :main
  [
@@ -133,16 +134,9 @@
    :des "Quick access mode"
    :rules [
            :quick_access_mode
-           [:1  [:km "open: 1Password"]]
-           [:q  [:km "open: Arc"]]
-           [:w  [:km "open: Alacritty"]]
-           [:e  [:km "open: Finder"]]
-           [:r  [:km "open: Obsidian"]]
-           [:a  [:km "open: Slack"]]
-           [:s  [:km "open: Telegram"]]
-           [:d  [:km "open: Zoom"]]
-           [:f  [:km "open: HEY"]]
-           [:v  [:raycast "clipboard-history/clipboard-history"]]
+           [:t  [:open_app "telegram"]]
+           [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
+           [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
            ]
    }
   ]
