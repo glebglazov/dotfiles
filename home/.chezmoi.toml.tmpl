@@ -1,9 +1,13 @@
 {{- $tds := false -}}
 
-{{- $computerName := output "scutil" "--get" "ComputerName" | trim -}}
-{{ if (eq $computerName "macbook-tds") -}}
-  {{- $tds = true -}}
-{{ end -}}
+# FIXME: find a way of cross-platform computer name definition
+{{- $computerName := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
+{{-   if (eq $computerName "macbook-tds") -}}
+{{-     $tds = true -}}
+{{-   end -}}
+{{- end -}}
 
 [data]
 tds = {{ $tds }}
