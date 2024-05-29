@@ -5,14 +5,18 @@ Host github.com
   HostName github.com
   User git
   AddKeysToAgent yes
-  UseKeychain yes
   IdentitiesOnly yes
   IdentityFile ~/.ssh/id_ed25519
+{{- if eq .chezmoi.os "darwin" }}
+  UseKeychain yes
+{{- end }}
 
 Host github-obsidian-backup
   HostName github.com
   User git
   AddKeysToAgent yes
-  UseKeychain yes
   IdentitiesOnly yes
   IdentityFile ~/.ssh/glebglazov_automations
+{{- if eq .chezmoi.os "darwin" }}
+  UseKeychain yes
+{{- end }}
