@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 
 set -eufo pipefail
@@ -5,3 +6,4 @@ set -eufo pipefail
 # config hash: {{ include "private_dot_config/karabiner.edn" | sha256sum }}
 echo "Running goku..."
 goku
+{{- end }}

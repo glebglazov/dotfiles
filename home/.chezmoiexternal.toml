@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/goku"]
 	type = "file"
 	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
@@ -10,6 +11,7 @@
 	    command = "tar"
 	    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
 
+{{- end }}
 [".tmux.conf"]
 	type = "file"
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
