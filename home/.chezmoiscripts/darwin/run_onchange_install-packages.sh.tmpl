@@ -1,6 +1,10 @@
-{{ if (eq .chezmoi.os "darwin") -}}
+{{ $taps := list -}}
+{{ $casks := list -}}
+{{ $mass_brew := list -}}
+{{ $craft_brew := list -}}
+{{ $pin_list := list -}}
 
-{{ $taps := list
+{{ $taps = list
   "hashicorp/tap"
   "homebrew/autoupdate"
   "homebrew/bundle"
@@ -11,7 +15,7 @@
   "reviewdog/tap"
 -}}
 
-{{ $mass_brew := list
+{{ $mass_brew = list
   "ansible"
   "apr-util"
   "automake"
@@ -69,10 +73,8 @@
   "zed"
 -}}
 
-{{ $craft_brew := list
--}}
-
-{{ $casks := list
+{{ if (eq .chezmoi.os "darwin") -}}
+{{ $casks = list
   "1password/tap/1password-cli"
   "alacritty"
   "alt-tab"
@@ -93,9 +95,7 @@
   "whatsapp"
   "zoom"
 -}}
-
-{{ $pin_list := list
--}}
+{{- end -}}
 
 #!/bin/bash
 
@@ -110,5 +110,3 @@ brew install {{ $mass_brew | join " " }}
 brew install {{ . }}
 {{ end  }}
 # brew pin {{ $pin_list | join " " }}
-
-{{ end -}}
