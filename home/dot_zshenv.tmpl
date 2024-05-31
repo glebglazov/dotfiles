@@ -1,5 +1,10 @@
 export PATH=/opt/homebrew/bin:$PATH
+
+{{ if eq .chezmoi.os "darwin" -}}
 export BREW_PREFIX=/opt/homebrew/opt
+{{ else -}}
+export BREW_PREFIX=/home/linuxbrew/.linuxbrew
+{{ end -}}
 
 export XDG_CONFIG_DIRS=$HOME/.local/share
 export XDG_CONFIG_HOME=$HOME/.config
