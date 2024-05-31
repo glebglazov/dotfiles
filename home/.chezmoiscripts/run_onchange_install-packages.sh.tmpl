@@ -111,6 +111,6 @@ brew tap {{ . }}
 brew install --cask {{ $casks | join " " }}
 brew install {{ $mass_brew | join " " }}
 {{ range $craft_brew }}
-brew install {{ . }} || echo "It's okay"
+  brew install {{ . }} || echo "\033[0;31mSomething went wrong crafting {{ . }}"
 {{ end  }}
 # brew pin {{ $pin_list | join " " }}

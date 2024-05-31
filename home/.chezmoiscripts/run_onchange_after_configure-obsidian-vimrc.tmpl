@@ -6,4 +6,4 @@ set -eufo pipefail
 echo "Running obsidian vimrc configuration copy..."
 
 dir_name=$OBSIDIAN_VAULT_PATH
-[[ -d "$dir_name" ]] && cp ~/.config/obsidian/.vimrc "$dir_name/obsidian.vimrc" || echo "No Obsidian vault found"
+[[ -d "$dir_name" ]] && cp ~/.config/obsidian/.vimrc "$dir_name/obsidian.vimrc" || echo "\033[0;31mNo Obsidian vault found"
