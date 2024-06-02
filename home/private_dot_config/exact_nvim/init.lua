@@ -203,7 +203,7 @@ require('lazy').setup({
   { 'stevearc/qf_helper.nvim', config = true }, -- QuickFix window improvements
   {
     'folke/trouble.nvim', -- Better QuickFix window
-    opts = { icons = false }
+    opts = {}
   },
   {
     'vim-test/vim-test',
