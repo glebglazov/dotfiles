@@ -1,7 +1,7 @@
 {{ $taps := list -}}
 {{ $casks := list -}}
 {{ $mass_brew := list -}}
-{{ $craft_brew := list -}}
+{{ $darwin_brew := list -}}
 {{ $pin_list := list -}}
 
 {{ $taps = list
@@ -68,12 +68,10 @@
   "unixodbc"
   "watch"
   "wget"
-  "zed"
   "zoxide"
   "zsh"
 -}}
 
-{{ if (eq .chezmoi.os "darwin") -}}
 {{ $casks = list
   "1password/tap/1password-cli"
   "alacritty"
@@ -95,10 +93,10 @@
   "whatsapp"
   "zoom"
 -}}
-{{- end -}}
 
-{{- $craft_brew = list
+{{- $darwin_brew = list
   "monodraw"
+  "zed"
 -}}
 
 #!/bin/bash
@@ -108,9 +106,16 @@ brew update
 {{ range $taps }}
 brew tap {{ . }}
 {{ end  }}
-brew install --cask {{ $casks | join " " }}
+
+echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
-{{ range $craft_brew }}
-  brew install {{ . }} || echo "\033[0;31mSomething went wrong crafting {{ . }}"
-{{ end  }}
+
+{{ if (eq .chezmoi.os "darwin") -}}
+echo "brew install --cask {{ $casks | join " " }}"
+brew install --cask {{ $casks | join " " }}
+
+echo "brew install {{ $darwin_brew | join " " }}"
+brew install {{ $darwin_brew | join " " }}
+{{ end -}}
+
 # brew pin {{ $pin_list | join " " }}
