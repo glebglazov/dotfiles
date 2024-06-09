@@ -118,4 +118,6 @@ echo "brew install {{ $darwin_brew | join " " }}"
 brew install {{ $darwin_brew | join " " }}
 {{ end -}}
 
-# brew pin {{ $pin_list | join " " }}
+{{ if (gt len($pin_list) 0) -}}
+brew pin {{ $pin_list | join " " }}
+{{ end -}}
