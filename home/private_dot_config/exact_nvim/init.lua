@@ -106,6 +106,11 @@ require('lazy').setup({
     "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
+      messages = {
+        -- TODO: Disabled currently because of the https://github.com/rcarriga/nvim-notify/issues/63
+        -- Check periodically to see if it's fixed
+        enabled = false,
+      },
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
