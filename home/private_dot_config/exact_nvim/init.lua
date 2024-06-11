@@ -423,9 +423,9 @@ require('lazy').setup({
   {
     'nvim-tree/nvim-tree.lua',
     keys = {
-      { '<LEADER>fl', ':NvimTreeOpen<CR>' },
-      { '<LEADER>ff', ':NvimTreeFocus<CR>' },
-      { '<LEADER>fc', ':NvimTreeClose<CR>' },
+      { '<LEADER>fl', vim.cmd.NvimTreeOpen },
+      { '<LEADER>ff', vim.cmd.NvimTreeFocus },
+      { '<LEADER>fc', vim.cmd.NvimTreeClose },
     },
     config = function ()
       require('nvim-tree').setup({
