@@ -4,9 +4,6 @@ trusted_config_paths = [
   '~/.rtx.toml'
 ]
 
-[env]
-DOCKER_CONTEXT = 'orbstack'
-
 [tools]
 rust      = '1.74.0'
 golang    = '1.22.1'

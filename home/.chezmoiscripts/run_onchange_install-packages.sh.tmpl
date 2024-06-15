@@ -94,6 +94,11 @@
   "zoom"
 -}}
 
+{{- $linux_brew = list
+  "colima"
+  "docker-compose"
+-}}
+
 {{- $darwin_brew = list
   "monodraw"
   "zed"
@@ -109,6 +114,10 @@ brew tap {{ . }}
 
 echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
+
+{{ if (not eq .chezmoi.os "darwin") -}}
+brew install {{ $linux_brew | join " " }}
+{{ end -}}
 
 {{ if (eq .chezmoi.os "darwin") -}}
 echo "brew install --cask {{ $casks | join " " }}"
