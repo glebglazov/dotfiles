@@ -2,6 +2,7 @@
 {{ $casks := list -}}
 {{ $mass_brew := list -}}
 {{ $darwin_brew := list -}}
+{{ $linux_brew := list -}}
 {{ $pin_list := list -}}
 
 {{ $taps = list
@@ -115,7 +116,7 @@ brew tap {{ . }}
 echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
 
-{{ if (not eq .chezmoi.os "darwin") -}}
+{{ if (eq .chezmoi.os "darwin" | not) -}}
 brew install {{ $linux_brew | join " " }}
 {{ end -}}
 
@@ -127,6 +128,6 @@ echo "brew install {{ $darwin_brew | join " " }}"
 brew install {{ $darwin_brew | join " " }}
 {{ end -}}
 
-{{ if (gt len($pin_list) 0) -}}
+{{ if (len $pin_list | gt 0) -}}
 brew pin {{ $pin_list | join " " }}
 {{ end -}}
