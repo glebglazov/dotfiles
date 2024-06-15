@@ -617,6 +617,14 @@ vim.keymap.set('v', '<LEADER>/',
   end
 )
 
+vim.keymap.set('n', '<LEADER>fd',
+  function()
+    require('telescope.builtin').find_files({
+      cwd = require('telescope.utils').buffer_dir()
+    })
+  end
+)
+
 vim.keymap.set('n', '<LEADER>fr',
   function()
     require('telescope.builtin').grep_string({
