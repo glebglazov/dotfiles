@@ -126,7 +126,7 @@ mods = "Command|Shift"
 
 # Projects
 [[keyboard.bindings]]
-chars = "\u0002P"
+chars = "\u0002p"
 key = "P"
 mods = "Command"
 
