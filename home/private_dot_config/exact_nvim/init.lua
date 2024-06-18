@@ -351,6 +351,18 @@ require('lazy').setup({
       { '<LEADER>gpo', ':G push<CR>' },
       { '<LEADER>gpf', ':G push --force-with-lease origin HEAD<CR>' },
       { '<LEADER>gpp', ':G push origin HEAD:' },
+      {
+        '<LEADER>gpc',
+        function()
+          local handle = io.popen("git rev-parse --abbrev-ref HEAD 2>/dev/null")
+
+          if handle then
+            local branch = handle:read("*a"):gsub("%s+", "")
+
+            vim.cmd('G push origin HEAD:' .. branch)
+          end
+        end
+      },
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' }
     },
