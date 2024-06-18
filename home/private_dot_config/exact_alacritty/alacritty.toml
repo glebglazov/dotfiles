@@ -130,6 +130,12 @@ chars = "\u0002p"
 key = "P"
 mods = "Command"
 
+# Projects
+[[keyboard.bindings]]
+chars = "\u0002P"
+key = "P"
+mods = "Command|Shirt"
+
 # Rename window
 [[keyboard.bindings]]
 chars = "\u0002,"
