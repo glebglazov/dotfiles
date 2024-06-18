@@ -134,7 +134,7 @@ mods = "Command"
 [[keyboard.bindings]]
 chars = "\u0002P"
 key = "P"
-mods = "Command|Shirt"
+mods = "Command|Shift"
 
 # Rename window
 [[keyboard.bindings]]
