@@ -351,14 +351,14 @@ bind-key -r Right resize-pane -R 10
 is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
     | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
 
-bind-key -r H select-pane -L \; resize-pane -Z
-bind-key -r J select-pane -D \; resize-pane -Z
-bind-key -r K select-pane -U \; resize-pane -Z
-bind-key -r L select-pane -R \; resize-pane -Z
-bind-key -r h select-pane -L
-bind-key -r j select-pane -D
-bind-key -r k select-pane -U
-bind-key -r l select-pane -R
+bind-key -r h select-pane -L \; resize-pane -Z
+bind-key -r j select-pane -D \; resize-pane -Z
+bind-key -r k select-pane -U \; resize-pane -Z
+bind-key -r l select-pane -R \; resize-pane -Z
+bind-key -r H select-pane -L
+bind-key -r J select-pane -D
+bind-key -r K select-pane -U
+bind-key -r L select-pane -R
 
 bind-key -r p run-shell "tmux new-window ~/.local/bin/tmux-windowiser"
 
