@@ -31,7 +31,7 @@ function git-clone-to-folder {
 
     git init
     git remote add origin "git@github.com:$remote"
-    git pull origin master
+    git pull origin $branch
 }
 
 function find-pid-by-port {
