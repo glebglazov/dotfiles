@@ -406,7 +406,7 @@ require('lazy').setup({
     'theprimeagen/harpoon',
     branch = 'harpoon2',
     keys = {
-      { '<LEADER>a', function() require('harpoon'):list():append() end },
+      { '<LEADER>a', function() require('harpoon'):list():add() end },
       { '<LEADER>m', function() require('harpoon').ui:toggle_quick_menu(require('harpoon'):list()) end },
       { '<LEADER>1', function() require('harpoon'):list():select(1) end },
       { '<LEADER>2', function() require('harpoon'):list():select(2) end },
