@@ -897,7 +897,10 @@ autocmd({ 'BufWritePre' }, {
 
 autocmd({ 'VimEnter' }, {
   group = augroup('glebglazov-open-nvim-tree-at-startup', {clear = true}),
-  callback = require('nvim-tree.api').tree.open
+  callback = function()
+    require('nvim-tree.api').tree.open()
+    vim.api.nvim_command('wincmd l')
+  end
 })
 
 -------------------------------------------------
