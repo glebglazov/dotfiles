@@ -348,8 +348,8 @@ bind-key -n 'C-l' if-shell "$is_vim" "send-keys C-l" "select-pane -R"
 
 bind-key -n 'C-f' copy-mode
 
-bind-key -n 'C--' split-window -c "#{pane_current_path}"
-bind-key -n 'C-\' split-window -h -c "#{pane_current_path}"
+bind-key -r d split-window -c "#{pane_current_path}"
+bind-key -r D split-window -h -c "#{pane_current_path}"
 
 bind-key -n 'C-Left' resize-pane -L 10
 bind-key -n 'C-Up' resize-pane -U 10
