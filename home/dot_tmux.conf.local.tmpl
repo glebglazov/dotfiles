@@ -343,6 +343,11 @@ is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
 
 bind-key -n 'C-t' new-window
 
+bind-key -n 'C-s' copy-mode
+
+bind-key -n 'C-a' resize-pane -Z
+bind-key z resize-pane -Z
+
 bind-key -r d split-window -c "#{pane_current_path}"
 bind-key -r D split-window -h -c "#{pane_current_path}"
 
