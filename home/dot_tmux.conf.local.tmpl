@@ -351,10 +351,10 @@ bind-key z resize-pane -Z
 bind-key -r d split-window -c "#{pane_current_path}"
 bind-key -r D split-window -h -c "#{pane_current_path}"
 
-bind-key -n 'C-Left' resize-pane -L 10
-bind-key -n 'C-Up' resize-pane -U 10
-bind-key -n 'C-Down' resize-pane -D 10
-bind-key -n 'C-Right' resize-pane -R 10
+bind-key -r Left resize-pane -L 10
+bind-key -r Up resize-pane -U 10
+bind-key -r Down resize-pane -D 10
+bind-key -r Right resize-pane -R 10
 
 bind-key -n 'C-h' select-pane -L \; resize-pane -Z
 bind-key -n 'C-j' select-pane -D \; resize-pane -Z
