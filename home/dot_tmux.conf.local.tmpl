@@ -337,30 +337,31 @@ set -g default-command "${SHELL}"
 set -g status-keys vi
 set -g mode-keys vi
 
-# Check if the current pane is running Vim or Neovim
-is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
-    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
-
-bind-key -n 'C-t' new-window
+bind-key t new-window
 
 bind-key -r d split-window -c "#{pane_current_path}"
 bind-key -r D split-window -h -c "#{pane_current_path}"
 
-bind-key -n 'C-Left' resize-pane -L 10
-bind-key -n 'C-Up' resize-pane -U 10
-bind-key -n 'C-Down' resize-pane -D 10
-bind-key -n 'C-Right' resize-pane -R 10
+bind-key -r Left resize-pane -L 10
+bind-key -r Up resize-pane -U 10
+bind-key -r Down resize-pane -D 10
+bind-key -r Right resize-pane -R 10
 
-bind-key -n 'C-h' select-pane -L \; resize-pane -Z
-bind-key -n 'C-j' select-pane -D \; resize-pane -Z
-bind-key -n 'C-k' select-pane -U \; resize-pane -Z
-bind-key -n 'C-l' select-pane -R \; resize-pane -Z
+# Check if the current pane is running Vim or Neovim
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
+
+bind-key -r h select-pane -L \; resize-pane -Z
+bind-key -r j select-pane -D \; resize-pane -Z
+bind-key -r k select-pane -U \; resize-pane -Z
+bind-key -r l select-pane -R \; resize-pane -Z
 bind-key -r H select-pane -L
 bind-key -r J select-pane -D
 bind-key -r K select-pane -U
 bind-key -r L select-pane -R
 
-bind-key -n 'C-p' run-shell "sesh connect \"$(
+# bind-key -r p run-shell "tmux new-window ~/.local/bin/tmux-sessioniser"
+bind-key -r p run-shell "sesh connect \"$(
 	sesh list | fzf-tmux -p 55%,60% \
 		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
 		--header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
@@ -372,11 +373,15 @@ bind-key -n 'C-p' run-shell "sesh connect \"$(
 		--bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
 		--bind 'ctrl-d:execute(tmux kill-session -t {})+change-prompt(⚡  )+reload(sesh list)'
 )\""
+bind-key -r P run-shell "tmux new-window ~/.local/bin/tmux-windowiser"
 
-# bind-key -n 'C-[' prev
-# bind-key -n 'C-]' next
+bind-key -r [ prev
+bind-key -r ] next
 bind-key -r \{ swap-window -t -1 \; prev
 bind-key -r \} swap-window -t +1 \; next
+
+bind-key -T copy-mode-vi K send -X page-up
+bind-key -T copy-mode-vi J send -X page-down
 
 run -b 'tmux bind -T copy-mode-vi y send -X copy-selection 2> /dev/null || true'
 run -b 'tmux bind -T copy-mode-vi q send -X clear-selection 2> /dev/null || true'
