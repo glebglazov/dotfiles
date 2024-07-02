@@ -44,22 +44,22 @@ mods = "Command"
 
 # Move between panes
 [[keyboard.bindings]]
-chars = "\u0008"
+chars = "\u0002h"
 key = "H"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u000a"
+chars = "\u0002j"
 key = "J"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u000b"
+chars = "\u0002k"
 key = "K"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u000c"
+chars = "\u0002l"
 key = "L"
 mods = "Command"
 
@@ -128,9 +128,15 @@ mods = "Command|Shift"
 
 # Projects
 [[keyboard.bindings]]
-chars = "\u0010"
+chars = "\u0002p"
 key = "P"
 mods = "Command"
+
+# Projects
+[[keyboard.bindings]]
+chars = "\u0002P"
+key = "P"
+mods = "Command|Shift"
 
 # Rename window
 [[keyboard.bindings]]
@@ -169,13 +175,13 @@ mods = "Command"
 
 # Maximize pane
 [[keyboard.bindings]]
-chars = "\u0001"
-key = "A"
+chars = "\u0002z"
+key = "Z"
 mods = "Command"
 
 # Copy mode
 [[keyboard.bindings]]
-chars = "\u0013"
+chars = "\u0002\r"
 key = "S"
 mods = "Command"
 
