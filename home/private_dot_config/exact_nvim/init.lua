@@ -67,6 +67,10 @@ vim.opt.scrolloff = 8
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
+-- Do not highlight horizontal and vertical lines of a cursor by default
+vim.opt.cursorline = false
+vim.opt.cursorcolumn = false
+
 -- Decrease update time
 vim.opt.updatetime = 250
 
@@ -1042,6 +1046,16 @@ autocmd({ 'FileType' }, {
 vim.keymap.set('n', '<ESC>', ':noh<CR>', { silent = true })
 vim.keymap.set('v', '#', 'y/<C-R>"<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER><tab>', ':b#<CR>', { silent = true })
+
+vim.keymap.set({'n', 'v'}, '<LEADER>th', function()
+  if vim.opt.cursorline:get() or vim.opt.cursorcolumn:get() then
+    vim.opt.cursorline = false
+    vim.opt.cursorcolumn = false
+  else
+    vim.opt.cursorline = true
+    vim.opt.cursorcolumn = true
+  end
+end)
 
 -- cd to current files' directory
 vim.keymap.set('n', '<LEADER>cdc', ':cd %:p:h<CR>', { silent = true })
