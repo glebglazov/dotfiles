@@ -351,6 +351,7 @@ bind-key -r Right resize-pane -R 10
 is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
     | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
 
+bind-key -r a resize-pane -Z
 bind-key -r h select-pane -L \; resize-pane -Z
 bind-key -r j select-pane -D \; resize-pane -Z
 bind-key -r k select-pane -U \; resize-pane -Z

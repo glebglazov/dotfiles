@@ -175,8 +175,8 @@ mods = "Command"
 
 # Maximize pane
 [[keyboard.bindings]]
-chars = "\u0002z"
-key = "Z"
+chars = "\u0002a"
+key = "A"
 mods = "Command"
 
 # Copy mode
