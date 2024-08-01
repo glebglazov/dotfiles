@@ -355,6 +355,7 @@ require('lazy').setup({
       { '<LEADER>gpo', ':G push<CR>' },
       { '<LEADER>gpf', ':G push --force-with-lease origin HEAD<CR>' },
       { '<LEADER>gpp', ':G push origin HEAD:' },
+      { '<LEADER>gsu', ':G branch --set-upstream-to=origin<CR>' },
       {
         '<LEADER>gpc',
         function()
