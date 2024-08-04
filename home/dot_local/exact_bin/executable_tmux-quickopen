@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Harpoon-like idea of switching between projects
+
+function print_help() {
+  echo "Usage: $0 <mode> [other_args...]"
+  exit 1
+}
+
+if [ "$#" -lt 1 ]; then
+  print_help
+fi
+
+mode=$1
+shift  # Shift the arguments to remove the first one, so $@ contains the rest
+
+config_folder=~/.local/tmux-quickopen
+config_path="$config_folder/.config"
+
+mkdir -p $config_folder
+
+case "$mode" in
+  edit)
+    $EDITOR $config_path
+    ;;
+  goto)
+    target=$1
+    shift
+
+    line=$(sed "${target}q;d" $config_path)
+    if [ -n "$line" ]; then
+      sesh connect $line
+    else
+      echo "Line is empty"
+    fi
+    ;;
+  *)
+    print_help
+    ;;
+esac
