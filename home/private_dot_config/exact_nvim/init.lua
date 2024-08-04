@@ -872,8 +872,14 @@ autocmd({ 'BufWritePre' }, {
 autocmd({ 'VimEnter' }, {
   group = augroup('glebglazov-open-nvim-tree-at-startup', {clear = true}),
   callback = function()
-    require('nvim-tree.api').tree.open()
-    vim.api.nvim_command('wincmd l')
+    local args = vim.v.argv
+    local last_arg = args[#args]
+
+    -- do not open tree if first argument is something other then the dot
+    if last_arg == '.' then
+      require('nvim-tree.api').tree.open()
+      vim.api.nvim_command('wincmd l')
+    end
   end
 })
 
