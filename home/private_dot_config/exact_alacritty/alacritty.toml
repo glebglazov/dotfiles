@@ -126,6 +126,12 @@ chars = "\u0002}"
 key = "}"
 mods = "Command|Shift"
 
+# tmux-quickopen script
+[[keyboard.bindings]]
+chars = "\u0002o"
+key = "O"
+mods = "Command"
+
 # Projects
 [[keyboard.bindings]]
 chars = "\u0002p"
