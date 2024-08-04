@@ -254,37 +254,6 @@ require('lazy').setup({
       vim.g['test#neovim#start_normal'] = '1'
     end,
   },
-  -- Formatting
-  { 'stevearc/conform.nvim',
-    dependencies = { 'mason.nvim' },
-    lazy = true,
-    cmd = 'ConformInfo',
-    opts = {
-      -- LazyVim will use these options when formatting with the conform.nvim formatter
-      format = {
-        timeout_ms = 3000,
-        async = false, -- not recommended to change
-        quiet = false, -- not recommended to change
-        lsp_fallback = true, -- not recommended to change
-      },
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        fish = { 'fish_indent' },
-        sh = { 'shfmt' },
-        javascript = { 'prettierd', 'prettier' },
-        ruby = { 'rubocop' }
-      },
-      -- The options you set here will be merged with the builtin formatters.
-      -- You can also define any custom formatters here.
-      formatters = {
-        injected = { options = { ignore_errors = true } },
-      },
-    }
-  },
 
   -------------------------------------------------
   -- Language plugins
