@@ -21,7 +21,7 @@ mkdir -p $config_folder
 
 case "$mode" in
   edit)
-    $EDITOR $config_path
+    nvim $config_path -u ~/.config/nvim/init-tools.lua
     ;;
   goto)
     target=$1
