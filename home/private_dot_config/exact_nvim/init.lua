@@ -326,7 +326,7 @@ require('lazy').setup({
       { '<LEADER>gpp', ':G push origin HEAD:' },
       { '<LEADER>gst', ':G stash<CR>' },
       { '<LEADER>gsa', ':G stash apply<CR>' },
-      { '<LEADER>gsp', ':G stash pop<CR>' },
+      { '<LEADER>gsb', ':G stash pop<CR>' },
       { '<LEADER>gsu', ':G branch --set-upstream-to=origin/' },
       {
         '<LEADER>gpc',
