@@ -10,3 +10,5 @@
 # Ignore oh-my-zsh custom folder
 .oh-my-zsh/custom/**/*
 
+# Ignore sesh compiled by me
+.local/bin/sesh
