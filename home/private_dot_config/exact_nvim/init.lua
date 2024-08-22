@@ -83,6 +83,8 @@ vim.opt.background = 'dark'
 
 vim.opt.iskeyword:remove('_')
 
+vim.opt.clipboard = 'unnamed,unnamedplus'
+
 -------------------------------------------------
 -- Initialise lazy.nvim
 -------------------------------------------------
