@@ -13,7 +13,7 @@
             }
 
  :simlayers {
-             :arrow_mode { :key :a }
+             ; :arrow_mode { :key :a }
              :window_mode { :key :w }
              :system_mode { :key :s }
              :format_mode { :key :g }
