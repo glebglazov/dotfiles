@@ -134,8 +134,8 @@
    :des "Quick access mode"
    :rules [
            :quick_access_mode
-           [:t  [:open_app "telegram"]]
            [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
+           [:t  [:open "raycast://extensions/raycast/snippets/search-snippets"]]
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
            ]
    }
