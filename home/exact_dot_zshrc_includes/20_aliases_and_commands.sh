@@ -1,4 +1,5 @@
 alias vim="nvim"
+alias tf="terraform"
 alias ide="tmux-ide-layout"
 
 function __aws_envrc_path_cd {
