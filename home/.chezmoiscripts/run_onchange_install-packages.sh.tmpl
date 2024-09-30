@@ -37,6 +37,7 @@
   "graphviz"
   "htop"
   "imagemagick@6"
+  "joshmedeski/sesh/sesh"
   "jq"
   "k6"
   "keychain"
@@ -53,8 +54,8 @@
   "mysql-client@8.0"
   "newrelic-cli"
   "nvim"
-  "overmind"
   "openjdk"
+  "overmind"
   "postgresql"
   "pstree"
   "python"
@@ -62,7 +63,6 @@
   "readline"
   "redis"
   "ripgrep"
-  "sesh"
   "terrascan"
   "tflint"
   "tig"
@@ -119,6 +119,8 @@ brew tap {{ . }}
 
 echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
+
+echo "123"
 
 {{ if (eq .chezmoi.os "darwin" | not) -}}
 brew install {{ $linux_brew | join " " }}
