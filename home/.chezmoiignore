@@ -4,11 +4,11 @@
 # Ignore lazy-lock
 .config/nvim/lazy-lock.json
 
-# Ignore oh-my-zsh cache
+# Ignore some oh-my-zsh folders
 .oh-my-zsh/cache/**/*
-
-# Ignore oh-my-zsh custom folder
-.oh-my-zsh/custom/**/*
+.oh-my-zsh/plugins/**
+.oh-my-zsh/templates/**
+.oh-my-zsh/custom/themes/powerlevel10k/**/*.zwc
 
 # Ignore sesh compiled by me
 .local/bin/sesh

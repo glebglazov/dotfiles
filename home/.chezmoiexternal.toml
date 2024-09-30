@@ -12,6 +12,7 @@
 	    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
 
 {{- end }}
+
 [".tmux.conf"]
 	type = "file"
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
