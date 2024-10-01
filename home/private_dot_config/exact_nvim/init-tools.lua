@@ -20,6 +20,13 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -------------------------------------------------
+-- Save and exit
+-------------------------------------------------
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+vim.keymap.set('n', '<LEADER>fs', ':wq<CR>', { silent = true })
+
+-------------------------------------------------
 -- Plugins setup
 -------------------------------------------------
 require('lazy').setup({

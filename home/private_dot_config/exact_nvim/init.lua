@@ -1108,4 +1108,5 @@ vim.keymap.set('n', '<LEADER>grp', ':!git rebasepr<SPACE>')
 
 -- Files / Projects
 vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>fS', ':wq<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
