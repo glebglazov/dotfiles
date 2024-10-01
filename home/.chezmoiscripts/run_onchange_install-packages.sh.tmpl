@@ -120,8 +120,6 @@ brew tap {{ . }}
 echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
 
-echo "123"
-
 {{ if (eq .chezmoi.os "darwin" | not) -}}
 brew install {{ $linux_brew | join " " }}
 {{ end -}}
