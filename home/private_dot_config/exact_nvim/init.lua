@@ -313,6 +313,8 @@ require('lazy').setup({
         end
       end
       },
+      { '<LEADER>gw', ':Gwrite' },
+      { '<LEADER>gW', ':Gwrite!' },
       { '<LEADER>grb', ':G rebase<SPACE>' },
       { '<LEADER>gri', ':G rebase --interactive<SPACE>' },
       { '<LEADER>gra', ':G rebase --abort<CR>' },
