@@ -27,7 +27,12 @@ case "$mode" in
     target=$1
     shift
 
-    line=$(sed "${target}q;d" $config_path)
+    if [ "$target" -eq 0 ]; then
+      line=$QUICKOPEN_FOLDER_0
+    else
+      line=$(sed "${target}q;d" $config_path)
+    fi
+
     if [ -n "$line" ]; then
       sesh connect $line
     else
