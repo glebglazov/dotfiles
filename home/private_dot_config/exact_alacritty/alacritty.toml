@@ -191,7 +191,12 @@ chars = "\u0002\r"
 key = "S"
 mods = "Command"
 
-# Switch to window N
+# Trigger CTRL+b+<number> in tmux
+[[keyboard.bindings]]
+chars = "\u00020"
+key = "Key0"
+mods = "Control"
+
 [[keyboard.bindings]]
 chars = "\u00021"
 key = "Key1"
