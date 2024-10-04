@@ -621,7 +621,15 @@ local search_and_replace_mappings_fn = function(_, map)
   return true
 end
 
-vim.keymap.set('n', '<LEADER>bb', builtin.buffers)
+vim.keymap.set('n', '<LEADER>cai',
+  function()
+    vim.cmd('!chezmoi apply ~/.config/nvim/init.lua')
+  end,
+  { buffer = true }
+)
+vim.keymap.set('n', '<LEADER>csi', function() vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua') end)
+
+vim.keymap.set('n', '<LEADER>bb',builtin.buffers)
 vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
 vim.keymap.set('n', '<LEADER>?', builtin.resume)
 vim.keymap.set('v', '<LEADER>/',
@@ -958,13 +966,6 @@ autocmd({ 'FileType' }, {
       execute_lua_snippet_fn({
         content_fn = get_visual_selection
       }),
-      { buffer = true }
-    )
-
-    vim.keymap.set('n', '<LEADER>cai',
-      function()
-        vim.cmd('!chezmoi apply ~/.config/nvim/init.lua')
-      end,
       { buffer = true }
     )
   end
