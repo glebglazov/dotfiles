@@ -15,7 +15,8 @@
 
 [".tmux.conf"]
 	type = "file"
-	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
+	 # TODO: switch to master after that FB would be merged
+	url = "https://raw.githubusercontent.com/gpakosz/.tmux/gh-761/.tmux.conf"
 	refreshPeriod = "168h"
 
 [".oh-my-zsh"]
