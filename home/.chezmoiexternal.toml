@@ -13,12 +13,6 @@
 
 {{- end }}
 
-[".tmux.conf"]
-	type = "file"
-	 # TODO: switch to master after that FB would be merged
-	url = "https://raw.githubusercontent.com/gpakosz/.tmux/gh-761/.tmux.conf"
-	refreshPeriod = "168h"
-
 [".oh-my-zsh"]
 	type = "archive"
 	url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
@@ -44,3 +38,9 @@
 	url = "https://github.com/keith/git-pile/archive/20bc5e22e162a069cc36befc1305594fa8c97de6.tar.gz"
 	stripComponents = 1
 	exact = true
+
+[".config/tmux/tmux.conf"]
+	type = "file"
+	 # TODO: switch to master after that FB would be merged
+	url = "https://raw.githubusercontent.com/gpakosz/.tmux/gh-761/.tmux.conf"
+	refreshPeriod = "168h"

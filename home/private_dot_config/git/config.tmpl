@@ -49,9 +49,9 @@ sort = -committerdate
 # 1. Directive includeIf works only with "/" at the end
 # 2. There are two paths added, cause "Dev" folder is a symlink of "private/Dev", so I need to include both paths for that to work in all cases
 [includeIf "gitdir:{{ .obsidianVaultPath }}/"]
-    path = ~/.gitconfig-automations
+    path = ~/.config/git/config-automations
 [includeIf "gitdir:/Users/glebglazov/private/Dev/obsidian_vaults/glebglazov/"]
-    path = ~/.gitconfig-automations
+    path = ~/.config/git/config-automations
 
 [url "github-obsidian-backup:glebglazov/obsidian_backup"]
     insteadOf = git@github.com:glebglazov/obsidian_backup
