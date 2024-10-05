@@ -1,1 +1,3 @@
+{{ if .work }}
 {{ onepasswordRead "op://Private/j2dzoxxaq6bps3xp53khsskqy4/private_key_base64" .onepasswordWorkAccount | b64dec -}}
+{{- end -}}

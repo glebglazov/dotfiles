@@ -1,7 +1,8 @@
+{{- $computerName := "" -}}
 {{- $work := false -}}
+{{- $mixed := false -}}
 {{- $personal := false -}}
 
-{{- $computerName := "" -}}
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
 {{-   if (eq $computerName "macbook-tds") -}}
@@ -13,7 +14,7 @@
 {{-   $computerName = output "uname" "-n" | trim -}}
 {{-   if (eq $computerName "hetzner-mixed") -}}
 {{-     $work = true -}}
-{{-     $personal = true -}}
+{{-     $mixed = true -}}
 {{-   else if (eq $computerName "hetzner-personal") -}}
 {{-     $personal = true -}}
 {{-   end -}}
@@ -26,3 +27,4 @@ onepasswordWorkAccount     = "ACU5EGZ7SNDWLK6DFFGDAWBZOI"
 obsidianVaultPath          = "~/Dev/obsidian_vaults/glebglazov"
 work                       = {{ $work }}
 personal                   = {{ $personal }}
+mixed                      = {{ $mixed }}
