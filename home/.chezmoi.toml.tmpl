@@ -2,6 +2,7 @@
 {{- $work := false -}}
 {{- $mixed := false -}}
 {{- $personal := false -}}
+{{- $remote := false -}}
 
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
@@ -15,8 +16,10 @@
 {{-   if (eq $computerName "hetzner-mixed") -}}
 {{-     $work = true -}}
 {{-     $mixed = true -}}
+{{-     $remote = true -}}
 {{-   else if (eq $computerName "hetzner-personal") -}}
 {{-     $personal = true -}}
+{{-     $remote = true -}}
 {{-   end -}}
 {{- end -}}
 
@@ -31,3 +34,4 @@ obsidianVaultPath          = "~/Dev/obsidian_vaults/glebglazov"
 work                       = {{ $work }}
 personal                   = {{ $personal }}
 mixed                      = {{ $mixed }}
+remote                     = {{ $remote }}
