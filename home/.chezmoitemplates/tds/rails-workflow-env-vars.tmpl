@@ -1,3 +1,5 @@
+{{- if .work -}}
 {{- template "tds/ruby-workflow-env-vars.tmpl" . -}}
 {{- template "tds/aws-env-vars.tmpl" . -}}
 export ENV_DOCKERIZED=false
+{{- end -}}
