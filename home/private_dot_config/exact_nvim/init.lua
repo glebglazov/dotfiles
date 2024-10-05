@@ -642,6 +642,10 @@ local search_and_replace_mappings_fn = function(_, map)
   return true
 end
 
+vim.keymap.set('n', '<LEADER>cf', function()
+  vim.cmd('edit ~/.local/share/chezmoi/home/private_dot_config/exact_nvim/init.lua', { silent = true })
+end)
+
 vim.keymap.set('n', '<LEADER>cs', function()
   vim.cmd('!chezmoi apply ~/.config/nvim/init.lua', { silent = true })
   vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')
