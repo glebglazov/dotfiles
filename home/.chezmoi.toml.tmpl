@@ -1,16 +1,28 @@
-{{- $tds := false -}}
+{{- $work := false -}}
+{{- $personal := false -}}
 
 {{- $computerName := "" -}}
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
 {{-   if (eq $computerName "macbook-tds") -}}
-{{-     $tds = true -}}
+{{-     $work = true -}}
+{{-   else if (eq $computerName "macbook-personal") -}}
+{{-     $personal = true -}}
+{{-   end -}}
+{{- else -}}
+{{-   $computerName = output "uname" "-n" | trim -}}
+{{-   if (eq $computerName "hetzner-mixed") -}}
+{{-     $work = true -}}
+{{-     $personal = true -}}
+{{-   else if (eq $computerName "hetzner-personal") -}}
+{{-     $personal = true -}}
 {{-   end -}}
 {{- end -}}
 
 [data]
-tds = {{ $tds }}
 githubTokenBase            = "op://Private/pj4ygw2cha76xlxbiqehnl4au4/"
 onepasswordPersonalAccount = "ACU5EGZ7SNDWLK6DFFGDAWBZOI"
 onepasswordWorkAccount     = "ACU5EGZ7SNDWLK6DFFGDAWBZOI"
 obsidianVaultPath          = "~/Dev/obsidian_vaults/glebglazov"
+work                       = {{ $work }}
+personal                   = {{ $personal }}
