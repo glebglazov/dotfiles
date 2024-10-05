@@ -27,31 +27,21 @@
   textconv = bun
   binary = true
 
-{{- $do_not_push_remote_branches := list
-  "main"
-  "master"
-}}
 
 [branch]
 sort = -committerdate
 
+# Prevent pushing to main and master branches
+# The only way to push to them is to do it explicitly or tinkering config in the repo itself
+# TODO: add more presice explanation
+{{- $do_not_push_remote_branches := list
+  "main"
+  "master"
+}}
 {{ range $do_not_push_remote_branches }}
 [branch "{{ . }}"]
   pushRemote = NOPE
 {{ end }}
-
-# Setup to push to obsidian backup vault from automations GitHub profile
-
-# Adding these two includeIf with couple of things to review next time I'll need to tweak that setup
-# 1. Directive includeIf works only with "/" at the end
-# 2. There are two paths added, cause "Dev" folder is a symlink of "private/Dev", so I need to include both paths for that to work in all cases
-[includeIf "gitdir:{{ .obsidianVaultPath }}/"]
-    path = ~/.config/git/config-automations
-[includeIf "gitdir:/Users/glebglazov/private/Dev/obsidian_vaults/glebglazov/"]
-    path = ~/.config/git/config-automations
-
-[url "github-obsidian-backup:glebglazov/obsidian_backup"]
-    insteadOf = git@github.com:glebglazov/obsidian_backup
 
 [pile]
   cleanupRemoteOnSubmitFailure = true
@@ -62,3 +52,20 @@ sort = -committerdate
 
 [merge]
   tool = fugitive
+
+# Setup of work account
+[includeIf "gitdir:~/Dev/work/"]
+    path = ~/.config/git/config-work
+[includeIf "gitdir:~/Dev/private/work/"]
+    path = ~/.config/git/config-work
+
+# Setup to push to obsidian backup vault from automations GitHub profile
+# Adding these two includeIf with couple of things to review next time I'll need to tweak that setup
+# 1. Directive includeIf works only with "/" at the end
+# 2. There are two paths added, cause "Dev" folder is a symlink of "private/Dev", so I need to include both paths for that to work in all cases
+[includeIf "gitdir:{{ .obsidianVaultPath }}/"]
+    path = ~/.config/git/config-automations
+[includeIf "gitdir:/Users/glebglazov/private/Dev/obsidian_vaults/glebglazov/"]
+    path = ~/.config/git/config-automations
+[url "github-obsidian-backup:glebglazov/obsidian_backup"]
+    insteadOf = git@github.com:glebglazov/obsidian_backup
