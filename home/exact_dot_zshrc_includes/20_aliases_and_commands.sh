@@ -14,6 +14,10 @@ function kubectl {
     (__aws_envrc_path_cd; command kubectl "$@")
 }
 
+function zoxide-index {
+    for d in ~/Dev/*; do zoxide add $d/*; done
+}
+
 function docker-login-ecr {
     (__aws_envrc_path_cd; aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 412041701469.dkr.ecr.us-east-1.amazonaws.com)
 }
