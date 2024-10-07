@@ -1,3 +1,3 @@
-{{- if .work -}}
+{{ if .work -}}
 export GH_TOKEN={{ onepasswordRead (printf "%v%v" .githubTokenBase "token") .onepasswordMigrateToWorkAccount }}
-{{- end -}}
+{{ end -}}

@@ -1,10 +1,10 @@
 [default]
 region = us-east-1
-{{- if .personal -}}
+{{ if .personal -}}
 [profile personal]
 region = eu-central-1
-{{- end -}}
-{{- if .work -}}
+{{ end -}}
+{{ if .work -}}
 [profile tds]
 region = us-east-1
 aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" .onepasswordMigrateToWorkAccount }}
@@ -13,4 +13,4 @@ aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/
 region = us-east-1
 aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" .onepasswordMigrateToWorkAccount }}
 aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" .onepasswordMigrateToWorkAccount }}
-{{- end -}}
+{{ end -}}
