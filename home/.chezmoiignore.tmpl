@@ -10,5 +10,15 @@
 .oh-my-zsh/templates/**
 .oh-my-zsh/custom/themes/powerlevel10k/**/*.zwc
 
-# Ignore sesh compiled by me
-.local/bin/sesh
+# Ignore machine-specific directories
+{{ if not .work -}}
+private/Dev/work
+{{ end -}}
+
+{{ if not .personal -}}
+private/Dev/personal
+{{ end -}}
+
+{{ if not .mixed -}}
+private/Dev/mixed
+{{ end -}}
