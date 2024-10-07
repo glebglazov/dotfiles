@@ -1,24 +1,17 @@
-{{- $computerName := "" -}}
 {{- $work := false -}}
 {{- $mixed := false -}}
 {{- $personal := false -}}
 {{- $remote := false -}}
 
-{{- if eq .chezmoi.os "darwin" -}}
-{{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
-{{- else -}}
-{{-   $computerName = output "uname" "-n" | trim -}}
-{{- end -}}
-
-{{- if (eq $computerName "macbook-tds") -}}
+{{- if (eq .chezmoi.hostname "macbook-tds") -}}
 {{-   $work = true -}}
-{{- else if (eq $computerName "macbook-personal") -}}
+{{- else if (eq .chezmoi.hostname "macbook-personal") -}}
 {{-   $personal = true -}}
-{{- else if (eq $computerName "hetzner-mixed") -}}
+{{- else if (eq .chezmoi.hostname "hetzner-mixed") -}}
 {{-   $work = true -}}
 {{-   $mixed = true -}}
 {{-   $remote = true -}}
-{{- else if (eq $computerName "hetzner-personal") -}}
+{{- else if (eq .chezmoi.hostname "hetzner-personal") -}}
 {{-   $personal = true -}}
 {{-   $remote = true -}}
 {{- end -}}
