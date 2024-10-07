@@ -6,21 +6,21 @@
 
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $computerName = output "scutil" "--get" "ComputerName" | trim -}}
-{{-   if (eq $computerName "macbook-tds") -}}
-{{-     $work = true -}}
-{{-   else if (eq $computerName "macbook-personal") -}}
-{{-     $personal = true -}}
-{{-   end -}}
 {{- else -}}
 {{-   $computerName = output "uname" "-n" | trim -}}
-{{-   if (eq $computerName "hetzner-mixed") -}}
-{{-     $work = true -}}
-{{-     $mixed = true -}}
-{{-     $remote = true -}}
-{{-   else if (eq $computerName "hetzner-personal") -}}
-{{-     $personal = true -}}
-{{-     $remote = true -}}
-{{-   end -}}
+{{- end -}}
+
+{{- if (eq $computerName "macbook-tds") -}}
+{{-   $work = true -}}
+{{- else if (eq $computerName "macbook-personal") -}}
+{{-   $personal = true -}}
+{{- else if (eq $computerName "hetzner-mixed") -}}
+{{-   $work = true -}}
+{{-   $mixed = true -}}
+{{-   $remote = true -}}
+{{- else if (eq $computerName "hetzner-personal") -}}
+{{-   $personal = true -}}
+{{-   $remote = true -}}
 {{- end -}}
 
 [data]
