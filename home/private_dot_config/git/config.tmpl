@@ -65,7 +65,7 @@ sort = -committerdate
 # 2. There are two paths added, cause "Dev" folder is a symlink of "private/Dev", so I need to include both paths for that to work in all cases
 [includeIf "gitdir:{{ .obsidianVaultPath }}/"]
     path = ~/.config/git/config-automations
-[includeIf "gitdir:/Users/glebglazov/private/Dev/personal/obsidian_vaults/glebglazov/"]
+[includeIf "gitdir:/Users/glebglazov/private/Dev/mixed/obsidian_vaults/glebglazov/"]
     path = ~/.config/git/config-automations
 [url "github-obsidian-backup:glebglazov/obsidian_backup"]
     insteadOf = git@github.com:glebglazov/obsidian_backup
