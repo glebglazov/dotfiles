@@ -1125,7 +1125,7 @@ vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
-vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr'))
+vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
 vim.keymap.set('n', '<LEADER>gso', run_in_new_tmux_window_fn('git submitpr --onto', { prompt = true }))
 vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>ghp', run_in_new_tmux_window_fn('git headpr'))
