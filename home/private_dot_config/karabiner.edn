@@ -65,20 +65,12 @@
            [:!Wdown_arrow :!Odown_arrow]
            [:!Wleft_arrow :!Oleft_arrow]
            [:!Wright_arrow :!Oright_arrow]
-           [:!Oup_arrow :!Tup_arrow]
-           [:!Odown_arrow :!Tdown_arrow]
-           [:!Oleft_arrow :!Tleft_arrow]
-           [:!Oright_arrow :!Tright_arrow]
 
            ; Visual selection
-           [:!SOright_arrow :!STright_arrow]
-           [:!STright_arrow :!SOright_arrow]
-           [:!SOleft_arrow :!STleft_arrow]
-           [:!STleft_arrow :!SOleft_arrow]
-           [:!SOup_arrow :!STup_arrow]
            [:!STup_arrow :!SOup_arrow]
-           [:!SOdown_arrow :!STdown_arrow]
            [:!STdown_arrow :!SOdown_arrow]
+           [:!STleft_arrow :!SOleft_arrow]
+           [:!STright_arrow :!SOright_arrow]
            ]
    }
   {
