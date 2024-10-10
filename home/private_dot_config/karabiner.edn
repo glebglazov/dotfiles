@@ -126,6 +126,8 @@
    :des "Quick access mode"
    :rules [
            :quick_access_mode
+           [:c  [:open "raycast://extensions/raycast/jira/create-issue"]]
+           [:j  [:open "raycast://extensions/raycast/jira/search-issues"]]
            [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
            [:t  [:open "raycast://extensions/raycast/snippets/search-snippets"]]
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
