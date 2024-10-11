@@ -77,12 +77,13 @@
    :des "Window mode"
    :rules [
            :window_mode
-           [:h [:!CTOh]]         ; Half-left window
-           [:j [:!CTOj]]         ; Half-bottom window
-           [:k [:!CTOk]]         ; Half-top window
-           [:l [:!CTOl]]         ; Half-right window
-           [:m [:!CTOm]]         ; Maximize window
-           [:comma [:!CTOcomma]] ; Almost maximize
+           [:h [:!QWOh]]         ; Half-left window
+           [:j [:!QWOj]]         ; Half-bottom window
+           [:k [:!QWOk]]         ; Half-top window
+           [:l [:!QWOl]]         ; Half-right window
+           [:m [:!QWOm]]         ; Maximize window
+           [:comma [:!QWOcomma]] ; Almost maximize
+           [:backslash [:!Ttab :return_or_enter]] ; Trigger Alt-Tab app
            ]
    }
   {
