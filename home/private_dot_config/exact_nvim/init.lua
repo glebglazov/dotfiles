@@ -385,6 +385,18 @@ require('lazy').setup({
     },
   },
   {
+    'pwntester/octo.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+      -- OR 'ibhagwan/fzf-lua',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function ()
+      require"octo".setup()
+    end
+  },
+  {
     'tpope/vim-rhubarb',
     config = function ()
       vim.keymap.set('n', '<LEADER>gbr', vim.cmd.GBrowse)
