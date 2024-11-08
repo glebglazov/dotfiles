@@ -242,6 +242,6 @@ chars = "\u00029"
 key = "Key9"
 mods = "Control"
 
-[terminal.shell]
+[shell]
 args = ["-l", "-i", "-c", "tmux new-session -A -s main"]
 program = "/bin/zsh"
