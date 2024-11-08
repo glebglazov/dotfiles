@@ -15,6 +15,7 @@ function kubectl {
 }
 
 function zoxide-index {
+    zoxide add ~/.local/share/chezmoi
     for d in ~/Dev/*; do zoxide add $d/*; done
 }
 
