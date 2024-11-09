@@ -68,7 +68,6 @@
   "readline"
   "redis"
   "ripgrep"
-  "sf-symbols"
   "terrascan"
   "tflint"
   "tig"
@@ -86,7 +85,6 @@
   "alt-tab"
   "chatgpt"
   "cleanmymac"
-  "figma"
   "font-hack-nerd-font"
   "karabiner-elements"
   "keycastr"
@@ -103,6 +101,15 @@
   "whatsapp"
   "zoom"
 -}}
+
+{{ if (eq .personal true) }}
+  {{ $casks = concat $casks (list
+       "figma"
+       "font-sf-pro"
+       "sf-symbols"
+    )
+  }}
+{{ end }}
 
 {{- $linux_brew = list
   "docker-compose"
