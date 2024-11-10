@@ -102,14 +102,14 @@
   "zoom"
 -}}
 
-{{ if (eq .personal true) }}
+{{- if (eq .personal true) -}}
   {{ $casks = concat $casks (list
        "figma"
        "font-sf-pro"
        "sf-symbols"
     )
   }}
-{{ end }}
+{{- end -}}
 
 {{- $linux_brew = list
   "docker-compose"
