@@ -713,16 +713,16 @@ vim.keymap.set('v', '<LEADER>fr',
   end
 )
 
+local telescope_find_files = function()
+  require('telescope.builtin').find_files({
+    hidden = true,
+    file_ignore_patterns = { "^.git/", "^node_modules/" },
+  })
+end
+
 vim.keymap.set('n', '<LEADER>fb', require('telescope.builtin').buffers)
 vim.keymap.set('n', '<LEADER>fh', require('telescope.builtin').help_tags)
-vim.keymap.set('n', '<LEADER>fp',
-  function()
-    require('telescope.builtin').find_files({
-      hidden = true,
-      file_ignore_patterns = { "^.git/", "^node_modules/" },
-    })
-  end
-)
+vim.keymap.set('n', '<LEADER>fp', telescope_find_files)
 
 -------------------------------------------------
 -- Setup LSP / Autocompletion
@@ -951,15 +951,20 @@ autocmd({ 'BufWritePre' }, {
 })
 
 autocmd({ 'VimEnter' }, {
-  group = augroup('glebglazov-open-nvim-tree-at-startup', {clear = true}),
+  group = augroup('glebglazov-open-file-browser-at-startup', {clear = true}),
   callback = function()
-    local args = vim.v.argv
-    local last_arg = args[#args]
+    local is_headless = false
 
-    -- do not open tree if first argument is something other then the dot
-    if last_arg == '.' then
-      require('nvim-tree.api').tree.open()
-      vim.api.nvim_command('wincmd l')
+    local startup_args = vim.v.argv
+    for _, arg in ipairs(startup_args) do
+      if arg == '--headless' then
+        is_headless = true
+        break
+      end
+    end
+
+    if not is_headless then
+      telescope_find_files()
     end
   end
 })
