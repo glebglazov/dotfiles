@@ -92,7 +92,6 @@
   "nordvpn"
   "obsidian"
   "orbstack"
-  "postman"
   "raycast"
   "skype"
   "slack"
@@ -107,7 +106,13 @@
   {{ $casks = concat $casks (list
        "figma"
        "font-sf-pro"
+       "rapidapi"
        "sf-symbols"
+    )
+  }}
+{{- else if (eq .work true) -}}
+  {{ $casks = concat $casks (list
+       "postman"
     )
   }}
 {{- end -}}
