@@ -51,8 +51,7 @@ end
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Disable netrw for nvim-tree
--- https://github.com/nvim-tree/nvim-tree.lua/tree/efafd73efa9bc8c26282aed563ba0f01c7465b06?tab=readme-ov-file#setup
+-- Disable netrw
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -466,34 +465,12 @@ require('lazy').setup({
 
   -- Files manager
   {
-    'nvim-tree/nvim-tree.lua',
+    'stevearc/oil.nvim',
+    opts = {},
     keys = {
-      { '<LEADER>fl', vim.cmd.NvimTreeOpen },
-      { '<LEADER>ff', vim.cmd.NvimTreeFocus },
-      { '<LEADER>fc', vim.cmd.NvimTreeClose },
+      { '<LEADER>fl', vim.cmd.Oil }
     },
-    config = function ()
-      require('nvim-tree').setup({
-        git = {
-          enable = false
-        },
-        update_focused_file = {
-          enable = true,
-          update_root = true,
-        },
-        renderer = {
-          icons = {
-            show = {
-              git = false,
-              folder = false,
-              file = false,
-              folder_arrow = false,
-              modified = false,
-            }
-          }
-        }}
-      )
-    end
+    dependencies = { { "echasnovski/mini.icons", opts = {} } },  -- use if prefer mini.icons
   },
 
   -- Telescope
