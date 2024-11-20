@@ -1,5 +1,4 @@
-;; examples - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/examples.org
-;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
+;; most common modifiers (full documentation link below):
 
 ;; !  | means mandatory
 ;; #  | means optional
@@ -15,6 +14,21 @@
 ;; P  | caps_lock
 ;; !! | mandatory command + control + optional + shift (hyper)
 ;; ## | optional any
+
+;; examples
+;; !CTSequal_sign  | mandatory command control shift =
+;;                 | which is command control +
+;; !O#Sright_arrow | mandatory option optional any right_arrow
+
+;; karabiner definition of mandatory and optional
+;; https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/from/modifiers/
+
+;; rule [<from> <to>]
+;; if simplified modifier is used in <to>, optional(#) definition will be
+;; ignored.
+
+;; examples - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/examples.org
+;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
 
 {
  :profiles {
@@ -39,7 +53,6 @@
                  :en { :language "en" }
                  :ru { :language "ru" }
                  }
-
 
  :devices {
            :built_in [
@@ -150,10 +163,11 @@
            ]
    }
   {
-   :des "Switch quote (\') and double quote (\")"
+   :des "Switch quote (') and double quote (\")"
    :rules [
            :built_in
-           [:##quote :##]
+           [:!Squote :quote]
+           [:quote :!Squote]
            ]
    }
   ]
