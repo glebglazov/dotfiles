@@ -1,6 +1,21 @@
 ;; examples - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/examples.org
 ;; modifiers (Command, Control, Option, etc) - https://github.com/yqrashawn/GokuRakuJoudo/blob/65a5e10abbb600ca3c9e4a0bd39153f212709d59/tutorial.md#command-a-to-control-1
 
+;; !  | means mandatory
+;; #  | means optional
+;; C  | left_command
+;; T  | left_control
+;; O  | left_option
+;; S  | left_shift
+;; F  | fn
+;; Q  | right_command
+;; W  | right_control
+;; E  | right_option
+;; R  | right_shift
+;; P  | caps_lock
+;; !! | mandatory command + control + optional + shift (hyper)
+;; ## | optional any
+
 {
  :profiles {
             :Default {
@@ -132,6 +147,13 @@
            [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
            [:t  [:open "raycast://extensions/raycast/snippets/search-snippets"]]
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
+           ]
+   }
+  {
+   :des "Switch quote (\') and double quote (\")"
+   :rules [
+           :built_in
+           [:##quote :##]
            ]
    }
   ]
