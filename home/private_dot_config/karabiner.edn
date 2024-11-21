@@ -165,7 +165,6 @@
   {
    :des "Switch quote (') and double quote (\")"
    :rules [
-           :built_in
            [:!Squote :quote]
            [:quote :!Squote]
            ]
