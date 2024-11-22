@@ -102,6 +102,14 @@
            ]
    }
   {
+   :des "Switch quote (') and double quote (\") on English keyboard"
+   :rules [
+           :en
+           [:!Squote :quote]
+           [:quote :!Squote]
+           ]
+   }
+  {
    :des "Window mode"
    :rules [
            :window_mode
@@ -160,13 +168,6 @@
            [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
            [:t  [:open "raycast://extensions/raycast/snippets/search-snippets"]]
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
-           ]
-   }
-  {
-   :des "Switch quote (') and double quote (\")"
-   :rules [
-           [:!Squote :quote]
-           [:quote :!Squote]
            ]
    }
   ]
