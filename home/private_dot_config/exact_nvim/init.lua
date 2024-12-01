@@ -1022,7 +1022,8 @@ autocmd({ 'FileType' }, {
   group = augroup('glebglazov-golang-settings', {clear = true}),
   pattern = 'go',
   callback = function ()
-    vim.keymap.set('n', '<LEADER>ef', run_in_new_tmux_window_fn("go run %"), { buffer = true })
+    local full_path = vim.fn.expand("%")
+    vim.keymap.set('n', '<LEADER>ef', run_in_new_tmux_window_fn("go run " .. full_path), { buffer = true })
   end
 })
 
