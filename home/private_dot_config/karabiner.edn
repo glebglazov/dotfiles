@@ -102,14 +102,6 @@
            ]
    }
   {
-   :des "Switch quote (') and double quote (\") on English keyboard"
-   :rules [
-           :en
-           [:!Squote :quote]
-           [:quote :!Squote]
-           ]
-   }
-  {
    :des "Window mode"
    :rules [
            :window_mode
