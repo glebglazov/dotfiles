@@ -1108,6 +1108,26 @@ vim.keymap.set('n', '<LEADER>Y', '"+yg_')
 vim.keymap.set('n', '<LEADER>y', '"+y')
 vim.keymap.set('n', '<LEADER>yy', '"+yy')
 
+local function yank_file_path_fn(opts)
+  return function()
+    opts = opts or {}
+    local path_manipulation_fn = opts.path_manipulation_fn or function(path) return path end
+
+    local path = path_manipulation_fn(vim.fn.expand('%:p'))
+    vim.fn.setreg('+', path)
+    print("Copied to clipboard: " .. path)
+  end
+end
+
+vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
+  path_manipulation_fn = function(path)
+    local line_num = vim.api.nvim_win_get_cursor(0)[1]
+
+    return path .. ':' .. line_num
+  end
+}))
+vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn())
+
 -- Navigation
 vim.keymap.set('n', '<C-D>', '<C-D>zz')
 vim.keymap.set('n', '<C-U>', '<C-U>zz')
