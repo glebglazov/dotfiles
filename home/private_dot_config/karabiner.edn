@@ -42,7 +42,7 @@
             }
 
  :simlayers {
-             ; :arrow_mode { :key :a }
+             :arrow_mode { :key :3 }
              :window_mode { :key :w }
              :system_mode { :key :s }
              :format_mode { :key :g }
@@ -147,10 +147,10 @@
            [:##j :down_arrow]
            [:##k :up_arrow]
            [:##l :right_arrow]
-           ; [:##n :return_or_enter]
-           ; [:##m :return_or_enter]
-           ; [:##u :tab]
-           ; [:##i :tab]
+           [:##n :return_or_enter]
+           [:##m :return_or_enter]
+           [:##u :tab]
+           [:##i :tab]
            [:comma :page_down]
            [:period :page_up]
            ]
