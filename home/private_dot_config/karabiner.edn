@@ -166,12 +166,5 @@
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
            ]
    }
-  {
-   :des "Switch quote (') and double quote (\")"
-   :rules [
-           [:!Squote :quote]
-           [:quote :!Squote]
-           ]
-   }
   ]
  }
