@@ -99,6 +99,10 @@
            [:!STdown_arrow :!SOdown_arrow]
            [:!STleft_arrow :!SOleft_arrow]
            [:!STright_arrow :!SOright_arrow]
+           [:!SWup_arrow :!SOup_arrow]
+           [:!SWdown_arrow :!SOdown_arrow]
+           [:!SWleft_arrow :!SOleft_arrow]
+           [:!SWright_arrow :!SOright_arrow]
            ]
    }
   {
@@ -160,6 +164,13 @@
            [:s  [:open "raycast://extensions/the-browser-company/arc/search"]]
            [:t  [:open "raycast://extensions/raycast/snippets/search-snippets"]]
            [:v  [:open "raycast://extensions/raycast/clipboard-history/clipboard-history"]]
+           ]
+   }
+  {
+   :des "Switch quote (') and double quote (\")"
+   :rules [
+           [:!Squote :quote]
+           [:quote :!Squote]
            ]
    }
   ]
