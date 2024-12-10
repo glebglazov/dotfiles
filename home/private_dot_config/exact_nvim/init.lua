@@ -466,11 +466,7 @@ require('lazy').setup({
   -- Files manager
   {
     'stevearc/oil.nvim',
-    opts = {
-      view_options = {
-        show_hidden = true,
-      }
-    },
+    opts = {},
     keys = {
       { '<LEADER>fl', vim.cmd.Oil }
     },
