@@ -143,16 +143,13 @@
    }
   {:des "Arrow mode"
    :rules [:arrow_mode
-           [:##h :left_arrow]
-           [:##j :down_arrow]
-           [:##k :up_arrow]
-           [:##l :right_arrow]
-           [:##n :return_or_enter]
-           [:##m :return_or_enter]
-           [:##u :tab]
-           [:##i :tab]
-           [:comma :page_down]
-           [:period :page_up]
+           [:h :left_arrow]
+           [:j :down_arrow]
+           [:k :up_arrow]
+           [:l :right_arrow]
+           [:d :page_down]
+           [:u :page_up]
+           [:n :return_or_enter]
            ]
    }
   {
