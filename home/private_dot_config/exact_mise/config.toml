@@ -16,7 +16,7 @@ python    = '3.11.5'
 terraform = '1.4.7'
 java      = '22.0.1'
 
-[plugins]
+[alias]
 bun       = 'https://github.com/cometkim/asdf-bun.git'
 go        = 'https://github.com/rtx-plugins/rtx-golang.git'
 pnpm      = 'https://github.com/jonathanmorley/asdf-pnpm.git'
