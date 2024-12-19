@@ -5,17 +5,16 @@ trusted_config_paths = [
 ]
 
 [tools]
-bun       = '1.0.4'
-crystal   = "1.11.2"
-golang    = '1.23.0'
-java      = '22.0.1'
-nodejs    = '22.5.1'
-pnpm      = '9.15.0'
-python    = '3.11.5'
-ruby      = '3.4.0-preview2'
 rust      = '1.74.0'
-terraform = '1.4.7'
+golang    = '1.23.0'
+nodejs    = '22.5.1'
+bun       = '1.0.4'
+pnpm      = '9.15.0'
+ruby      = '3.4.0-preview2'
 yarn      = '1.22.19'
+python    = '3.11.5'
+terraform = '1.4.7'
+java      = '22.0.1'
 
 [alias]
 bun       = 'https://github.com/cometkim/asdf-bun.git'
