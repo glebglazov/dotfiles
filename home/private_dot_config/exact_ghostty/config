@@ -1,7 +1,7 @@
 initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
-theme = tomorrow_night
+theme = "Tomorrow Night"
 
 font-family  = Hack Nerd Font Mono
 font-size    = 15
