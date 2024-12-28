@@ -1,5 +1,8 @@
 # xxd -psd
 
+[window]
+decorations = "None"
+
 [font]
 size = 15
 
