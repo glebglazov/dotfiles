@@ -1,5 +1,8 @@
 # xxd -psd
 
+[window]
+decorations_theme_variant = "Dark"
+
 [font]
 size = 15
 
