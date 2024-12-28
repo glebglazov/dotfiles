@@ -7,6 +7,11 @@ font-family  = Hack Nerd Font Mono
 font-size    = 15
 font-thicken = true
 
+window-padding-color = background
+window-padding-x = 0
+window-padding-y = 0
+window-padding-balance = false
+
 adjust-cell-width=-5%
 
 keybind = cmd+s=text:\x02\r
