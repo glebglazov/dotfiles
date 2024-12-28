@@ -7,10 +7,7 @@ font-family  = Hack Nerd Font Mono
 font-size    = 15
 font-thicken = true
 
-window-padding-color = background
-window-padding-x = 0
-window-padding-y = 0
-window-padding-balance = false
+window-padding-x=0,0
 
 adjust-cell-width=-5%
 
