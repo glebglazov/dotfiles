@@ -1,15 +1,20 @@
 initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
-theme = "Tomorrow Night"
+theme = "alacritty-imo"
 
 font-family  = Hack Nerd Font Mono
 font-size    = 16
 font-thicken = true
 
-window-padding-x=0,0
+window-padding-x = 0,0
 
-adjust-cell-width=-5%
+adjust-cell-width = -5%
+
+selection-invert-fg-bg=true
+cursor-invert-fg-bg=true
+
+# Tmux proxying
 
 keybind = cmd+s=text:\x02\r
 
