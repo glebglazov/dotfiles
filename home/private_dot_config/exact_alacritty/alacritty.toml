@@ -12,7 +12,7 @@ style = "Bold"
 
 [font.italic]
 family = "TX-02"
-style = "Italic"
+style = "Oblique"
 
 [font.normal]
 family = "TX-02"
