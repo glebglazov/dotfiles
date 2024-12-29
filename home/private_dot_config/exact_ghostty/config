@@ -3,13 +3,13 @@ command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
 theme = "Tomorrow Night"
 
-font-family  = TX-02
-font-size    = 16
+font-family  = Hack Nerd Font Mono
+font-size    = 15
 font-thicken = true
 
 window-padding-x=0,0
 
-adjust-cell-width=-3%
+adjust-cell-width=-5%
 
 keybind = cmd+s=text:\x02\r
 

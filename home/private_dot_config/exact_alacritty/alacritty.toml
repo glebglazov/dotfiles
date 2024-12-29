@@ -4,18 +4,18 @@
 decorations_theme_variant = "Dark"
 
 [font]
-size = 16
+size = 15
 
 [font.bold]
-family = "TX-02"
+family = "Hack Nerd Font Mono"
 style = "Bold"
 
 [font.italic]
-family = "TX-02"
-style = "Oblique"
+family = "Hack Nerd Font Mono"
+style = "Italic"
 
 [font.normal]
-family = "TX-02"
+family = "Hack Nerd Font Mono"
 style = "Regular"
 
 [[keyboard.bindings]]
