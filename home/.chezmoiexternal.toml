@@ -43,3 +43,16 @@
 	type = "file"
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
 	refreshPeriod = "168h"
+
+# How to patch fonts:
+#
+# 1. cd .local/share/font-patcher
+# 2. for each font: fontforge -script font-patcher ~/Downloads/241229X0R4V539NX/TX-02-JR435M1M/TX-02-Regular.otf
+# 3. apply all fonts
+#
+# More on that: https://github.com/ryanoasis/nerd-fonts?tab=readme-ov-file#font-patcher
+[".local/share/font-patcher"]
+	type = "archive"
+	url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FontPatcher.zip"
+	exact = true
+	refreshPeriod = "720h"
