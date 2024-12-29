@@ -4,7 +4,7 @@ command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 theme = "Tomorrow Night"
 
 font-family  = Hack Nerd Font Mono
-font-size    = 15
+font-size    = 16
 font-thicken = true
 
 window-padding-x=0,0

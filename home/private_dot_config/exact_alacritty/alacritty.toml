@@ -4,7 +4,7 @@
 decorations_theme_variant = "Dark"
 
 [font]
-size = 15
+size = 16
 
 [font.bold]
 family = "Hack Nerd Font Mono"
