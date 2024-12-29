@@ -10,6 +10,7 @@ font-thicken = true
 window-padding-x=0,0
 
 adjust-cell-height=-3%
+adjust-cell-width=-3%
 
 keybind = cmd+s=text:\x02\r
 
