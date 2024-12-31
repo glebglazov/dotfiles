@@ -42,7 +42,7 @@
             }
 
  :simlayers {
-             :arrow_mode { :key :3 }
+             :navigation_mode { :key :3 }
              :window_mode { :key :w }
              :system_mode { :key :s }
              :format_mode { :key :g }
@@ -141,14 +141,14 @@
            [:hyphen [:!SOhyphen]]
            ]
    }
-  {:des "Arrow mode"
-   :rules [:arrow_mode
+  {:des "Navigation mode"
+   :rules [:navigation_mode
            [:h :left_arrow]
            [:j :down_arrow]
            [:k :up_arrow]
            [:l :right_arrow]
-           [:d :page_down]
-           [:u :page_up]
+           [:u {:mkey {:vwheel 40}}] ; scroll down
+           [:i {:mkey {:vwheel -40}}] ; scroll up
            [:n :return_or_enter]
            ]
    }
