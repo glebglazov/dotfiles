@@ -92,6 +92,7 @@
   "cleanshot"
   "font-hack-nerd-font"
   "ghostty@tip"
+  "homerow"
   "karabiner-elements"
   "keycastr"
   "nordvpn"
@@ -149,8 +150,10 @@ brew install {{ $linux_brew | join " " }}
 {{ end -}}
 
 {{ if (eq .chezmoi.os "darwin") -}}
-echo "brew install --cask {{ $casks | join " " }}"
-brew install --cask {{ $casks | join " " }}
+{{ range $casks }}
+  echo "brew install --cask {{ . }}"
+  brew install --cask {{ . }}
+{{ end }}
 
 echo "brew install {{ $darwin_brew | join " " }}"
 brew install {{ $darwin_brew | join " " }}
