@@ -1,15 +1,10 @@
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/goku"]
-	type = "file"
+	type = "archive-file"
 	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
+	path = "goku/goku"
 	refreshPeriod = "168h"
-	exact = true
-	stripComponents = 1
 	executable = true
-
-	[".local/bin/goku".filter]
-	    command = "tar"
-	    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
 {{- end }}
 
 [".local/bin/mise"]
@@ -20,8 +15,8 @@
 	{{- else }}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-arm64.tar.gz"
 	{{- end }}
-	refreshPeriod = "168h"
 	path = "mise/bin/mise"
+	refreshPeriod = "168h"
 	executable = true
 
 [".oh-my-zsh"]
