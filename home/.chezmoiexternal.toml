@@ -10,8 +10,19 @@
 	[".local/bin/goku".filter]
 	    command = "tar"
 	    args = ["--extract", "--file", "/dev/stdin", "--gzip", "--to-stdout", "goku/goku"]
-
 {{- end }}
+
+[".local/bin/mise"]
+	type = "archive-file"
+	{{- $mise_version := "2024.12.14" }}
+	{{ if eq .chezmoi.os "darwin" -}}
+	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
+	{{- else }}
+	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-arm64.tar.gz"
+	{{- end }}
+	refreshPeriod = "168h"
+	path = "mise/bin/mise"
+	executable = true
 
 [".oh-my-zsh"]
 	type = "archive"
