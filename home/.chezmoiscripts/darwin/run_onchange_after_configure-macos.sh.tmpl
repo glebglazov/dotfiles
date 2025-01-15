@@ -12,6 +12,13 @@ echo "Reconfiguring MacOS..."
 osascript -e 'tell application "System Preferences" to quit'
 
 ###############################################################################
+# General                                                                     #
+###############################################################################
+
+# Remove automatic spelling correction
+defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
+
+###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
 
