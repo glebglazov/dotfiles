@@ -123,6 +123,7 @@
 {{- else if (eq .work true) -}}
   {{ $casks = concat $casks (list
        "postman"
+       "snowflake-snowsql"
     )
   }}
 {{- end -}}
