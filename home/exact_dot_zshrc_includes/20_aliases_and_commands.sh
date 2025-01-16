@@ -1,4 +1,3 @@
-alias vim="nvim"
 alias tf="terraform"
 alias ide="tmux-ide-layout"
 
