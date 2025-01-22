@@ -8,8 +8,6 @@ font-size    = 16
 font-thicken = true
 
 window-colorspace = display-p3
-window-padding-x = 0
-window-padding-y = 0
 
 adjust-cell-width = -5%
 
