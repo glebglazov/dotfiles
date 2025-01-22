@@ -7,8 +7,9 @@ font-family  = Hack Nerd Font Mono
 font-size    = 16
 font-thicken = true
 
-window-padding-x = 0,0
 window-colorspace = display-p3
+window-padding-x = 0
+window-padding-y = 0
 
 adjust-cell-width = -5%
 
