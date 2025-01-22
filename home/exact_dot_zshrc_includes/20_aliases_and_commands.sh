@@ -1,9 +1,6 @@
 alias tf="terraform"
 alias ide="tmux-ide-layout"
 
-function raw_vim {
-}
-
 function __aws_envrc_path_cd {
     [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
 }
