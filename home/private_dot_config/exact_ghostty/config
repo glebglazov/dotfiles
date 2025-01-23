@@ -13,9 +13,6 @@ font-size         = 16
 font-thicken      = true
 adjust-cell-width = -5%
 
-selection-invert-fg-bg = true
-cursor-invert-fg-bg    = true
-
 # Tmux proxying
 
 keybind = cmd+s=text:\x02\r
