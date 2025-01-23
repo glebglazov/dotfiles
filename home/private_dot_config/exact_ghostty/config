@@ -1,7 +1,11 @@
 initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
-theme = "alikeritty"
+confirm-close-surface = false
+
+theme = light:GruvboxLightHard,dark:GruvboxDarkHard
+
+mouse-hide-while-typing=true
 
 font-family  = Hack Nerd Font Mono
 font-size    = 16
