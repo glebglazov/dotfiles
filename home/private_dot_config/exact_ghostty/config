@@ -7,9 +7,10 @@ theme = GruvboxDarkHard
 
 mouse-hide-while-typing=true
 
-font-family  = Hack Nerd Font Mono
-font-size    = 16
-font-thicken = true
+font-family       = TX-02
+font-style-italic = Regular
+font-size         = 16
+font-thicken      = true
 
 window-colorspace = display-p3
 
