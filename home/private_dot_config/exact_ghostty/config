@@ -1,23 +1,20 @@
 initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
-confirm-close-surface = false
-
 theme = GruvboxDarkHard
 
-mouse-hide-while-typing=true
+confirm-close-surface   = false
+mouse-hide-while-typing = true
+window-colorspace       = display-p3
 
 font-family       = TX-02
 font-style-italic = Regular
 font-size         = 16
 font-thicken      = true
-
-window-colorspace = display-p3
-
 adjust-cell-width = -5%
 
-selection-invert-fg-bg=true
-cursor-invert-fg-bg=true
+selection-invert-fg-bg = true
+cursor-invert-fg-bg    = true
 
 # Tmux proxying
 
