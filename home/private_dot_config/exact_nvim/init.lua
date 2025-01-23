@@ -561,8 +561,6 @@ vim.defer_fn(function() -- Defer Treesitter setup after first render to improve 
           return true
         end
       end,
-
-      additional_vim_regex_highlighting = { 'ruby' },
     },
     indent = {
       enable = true,
