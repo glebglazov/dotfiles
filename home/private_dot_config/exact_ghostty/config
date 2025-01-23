@@ -3,7 +3,7 @@ command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
 confirm-close-surface = false
 
-theme = light:GruvboxLightHard,dark:GruvboxDarkHard
+theme = GruvboxDarkHard
 
 mouse-hide-while-typing=true
 
