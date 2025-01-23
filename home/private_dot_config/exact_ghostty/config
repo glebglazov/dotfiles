@@ -1,6 +1,8 @@
 initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
+auto-update = off
+
 theme = GruvboxDarkHard
 
 confirm-close-surface   = false
