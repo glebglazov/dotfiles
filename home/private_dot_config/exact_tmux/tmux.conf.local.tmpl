@@ -376,7 +376,6 @@ bind-key 9 run-shell "tmux-quickopen goto 9"
 # bind-key -r p run-shell "tmux new-window ~/.local/bin/tmux-sessioniser"
 bind-key -r p run-shell "sesh connect \"$(
 	sesh list | fzf-tmux -p 55%,60% \
-		--preview 'sesh preview {}' \
 		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
 		--header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
 		--bind 'tab:down,btab:up' \
