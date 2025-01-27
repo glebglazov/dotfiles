@@ -393,9 +393,6 @@ bind-key -r ] next
 bind-key -r \{ swap-window -t -1 \; prev
 bind-key -r \} swap-window -t +1 \; next
 
-bind-key -T copy-mode-vi K send -X page-up
-bind-key -T copy-mode-vi J send -X page-down
-
 run -b 'tmux bind -T copy-mode-vi y send -X copy-selection 2> /dev/null || true'
 run -b 'tmux bind -T copy-mode-vi q send -X clear-selection 2> /dev/null || true'
 
