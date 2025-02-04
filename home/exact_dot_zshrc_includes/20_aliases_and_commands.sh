@@ -74,3 +74,11 @@ function get-my-public-ip {
 function tmux-main {
     tmux new-session -A -s main
 }
+
+function wifi-off {
+    sudo ifconfig en0 down
+}
+
+function wifi-on {
+    sudo ifconfig en0 up
+}
