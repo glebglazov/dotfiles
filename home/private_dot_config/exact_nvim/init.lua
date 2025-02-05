@@ -38,8 +38,9 @@ local function run_in_new_tmux_window_fn(command, opts)
     end
 
     if execute then
+      full_command = string.format("tmux new-window \"$SHELL -i -c '%s %s'\"", full_command, postfix)
       vim.print("Executing: " .. full_command)
-      vim.fn.system(string.format('tmux new-window "%s %s"', full_command, postfix))
+      vim.fn.system(full_command)
     end
   end
 end
@@ -1152,6 +1153,7 @@ vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
+vim.keymap.set('n', '<LEADER>test', run_in_new_tmux_window_fn('printenv', { with_pause = true }))
 vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
 vim.keymap.set('n', '<LEADER>gso', run_in_new_tmux_window_fn('git submitpr --onto', { prompt = true }))
 vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
