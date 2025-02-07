@@ -164,6 +164,12 @@ require('lazy').setup({
       "rcarriga/nvim-notify",
     }
   },
+  {
+    "rcarriga/nvim-notify",
+    opts = {
+      background_colour = "#FFF0AA"
+    },
+  },
   -------------------------------------------------
   -- LSP / Autocompletion
   -------------------------------------------------
