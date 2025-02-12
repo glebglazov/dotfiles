@@ -1,7 +1,7 @@
 [settings]
 trusted_config_paths = [
   '~/private/Dev',
-  '~/.rtx.toml'
+  '~/.config/mise/config.toml'
 ]
 
 [tools]
