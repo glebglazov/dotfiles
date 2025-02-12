@@ -522,7 +522,7 @@ require('lazy').setup({
   -- Treesitter
   {
     'nvim-treesitter/nvim-treesitter',
-    version = false,
+    commit = '16a51977dcaab1e1adc3152471ac862202f9be83',
     build = ':TSUpdate'
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects' },
