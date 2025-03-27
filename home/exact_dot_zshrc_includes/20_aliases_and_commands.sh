@@ -1,6 +1,7 @@
 alias vim="nvim"
 alias tf="terraform"
 alias ide="tmux-ide-layout"
+alias git="git_wrapper"
 
 function __aws_envrc_path_cd {
     [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
