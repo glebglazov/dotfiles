@@ -3,6 +3,10 @@
 convert_to_ssh() {
   local url="$1"
 
+  # Strip query string and fragments
+  url="${url%%\?*}"
+  url="${url%%\#*}"
+
   # Match URLs like:
   # https://github.com/user/repo
   # https://github.com/user/repo.git
