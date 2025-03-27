@@ -68,7 +68,7 @@
  :main
  [
   {
-   :des "Control/Option swap on built-in keyboard"
+   :des "Built-in Macbook keyboard overrides (make all 'control' keys 'option' and vice versa + and Caps Lock -> Escape)"
    :rules [
            :built_in
            [:##left_option :##left_control]
