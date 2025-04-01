@@ -109,13 +109,13 @@
    :des "Window mode"
    :rules [
            :window_mode
-           [:h [:!QWOh]]         ; Half-left window
-           [:j [:!QWOj]]         ; Half-bottom window
-           [:k [:!QWOk]]         ; Half-top window
-           [:l [:!QWOl]]         ; Half-right window
-           [:m [:!QWOm]]         ; Maximize window
-           [:backslash [:!QWOo]] ; Move focused window to another monitor
-           [:comma [:!QWOcomma]] ; Almost maximize
+           [:h [:!CTOh]]         ; Half-left window
+           [:j [:!CTOj]]         ; Half-bottom window
+           [:k [:!CTOk]]         ; Half-top window
+           [:l [:!CTOl]]         ; Half-right window
+           [:m [:!CTOm]]         ; Maximize window
+           [:backslash [:!CTOo]] ; Move focused window to another monitor
+           [:comma [:!CTOcomma]] ; Almost maximize
            ]
    }
   {
