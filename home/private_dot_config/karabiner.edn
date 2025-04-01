@@ -114,8 +114,8 @@
            [:k [:!QWOk]]         ; Half-top window
            [:l [:!QWOl]]         ; Half-right window
            [:m [:!QWOm]]         ; Maximize window
+           [:backslash [:!QWOo]] ; Move focused window to another monitor
            [:comma [:!QWOcomma]] ; Almost maximize
-           [:backslash [:!Ttab :return_or_enter]] ; Trigger Alt-Tab app
            ]
    }
   {
