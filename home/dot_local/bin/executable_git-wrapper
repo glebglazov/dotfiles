@@ -1,31 +1,7 @@
 #!/bin/zsh
 
-convert_to_ssh() {
-  local url="$1"
-
-  # Strip query string and fragments
-  url="${url%%\?*}"
-  url="${url%%\#*}"
-
-  # Match URLs like:
-  # https://github.com/user/repo
-  # https://github.com/user/repo.git
-  # https://github.com/user/repo/blob/branch/path/to/file
-  # https://github.com/user/repo/tree/branch/path/
-  if [[ "$url" =~ "^https://github\.com/([^/]+)/([^/]+)" ]]; then
-    local user="${match[1]}"
-    local repo="${match[2]}"
-
-    # Strip trailing .git or anything after /blob/... or /tree/...
-    repo="${repo%.git}"  # remove .git if present
-    echo "git@github.com:${user}/${repo}.git"
-  else
-    echo "$url"
-  fi
-}
-
 if [[ "$1" == "clone" ]]; then
-  ssh_url=$(convert_to_ssh "$2")
+  ssh_url=$(./git-ssh-repo-name-from-any-link "$2")
   command git clone "$ssh_url" "${@:3}"
   zoxide-index
 else

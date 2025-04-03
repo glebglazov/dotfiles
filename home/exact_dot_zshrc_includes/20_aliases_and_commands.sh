@@ -34,7 +34,7 @@ function update-kubectl-context {
 }
 
 function git-clone-to-folder {
-    remote=$1
+    remote=$(./git-ssh-repo-name-from-any-link $1)
     branch=$(git ls-remote --symref "git@github.com:$remote" HEAD | head -1 | awk '{print $2}' | cut -d/ -f3)
 
     git init
