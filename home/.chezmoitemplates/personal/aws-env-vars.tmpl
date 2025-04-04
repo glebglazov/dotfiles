@@ -1,0 +1,4 @@
+{{ if .personal -}}
+export AWS_ACCESS_KEY_ID={{ onepasswordRead "op://Private/xecsbdzxtko4nlw5hjgraeqivq/access_key_id" .onepasswordPersonalAccount }}
+export AWS_SECRET_ACCESS_KEY={{ onepasswordRead "op://Private/xecsbdzxtko4nlw5hjgraeqivq/secret_access_key" .onepasswordPersonalAccount }}
+{{ end -}}
