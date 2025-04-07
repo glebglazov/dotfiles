@@ -1,5 +1,4 @@
 {{ if .work -}}
 {{ template "tds/github-workflow-env-vars.tmpl" . }}
-export GITHUB_TOKEN={{ onepasswordRead (printf "%v%v" .githubWorkTokenBase "token") .onepasswordMigrateToWorkAccount }}
 export BUNDLE_RUBYGEMS__PKG__GITHUB__COM={{ onepasswordRead (printf "%v%v" .githubWorkTokenBase "username_and_token") .onepasswordMigrateToWorkAccount }}
 {{ end -}}
