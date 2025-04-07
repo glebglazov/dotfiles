@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 if [[ "$1" == "clone" ]]; then
-  ssh_url=$(./git-ssh-repo-name-from-any-link "$2")
+  ssh_url=$(git-ssh-repo-name-from-any-link "$2")
   command git clone "$ssh_url" "${@:3}"
   zoxide-index
 else
