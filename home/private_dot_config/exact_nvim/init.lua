@@ -659,6 +659,10 @@ vim.keymap.set('n', '<LEADER>cs', function()
   vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')
 end)
 
+vim.keymap.set('n', '<LEADER>cc', function()
+  vim.cmd('!chezmoi apply --source-path %', { silent = true })
+end)
+
 vim.keymap.set('n', '<LEADER>bb',builtin.buffers)
 vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
 vim.keymap.set('n', '<LEADER>?', builtin.resume)
