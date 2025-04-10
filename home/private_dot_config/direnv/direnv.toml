@@ -3,5 +3,6 @@ load_dotenv = true
 
 [whitelist]
 prefix = [
-  '/Users/glebglazov/private/Dev'
+  '/Users/glebglazov/private/Dev',
+  '/home/glebglazov/private/Dev'
 ]
