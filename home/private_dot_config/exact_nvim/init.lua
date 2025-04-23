@@ -456,7 +456,8 @@ require('lazy').setup({
     }
   },
   { 'declancm/windex.nvim', config = true },
-  { 'tpope/vim-unimpaired' },
+  { 'echasnovski/mini.move', version = '*' },
+  { 'echasnovski/mini.bracketed', version = '*' },
   -- Open alternative files for the current buffer.
   {
     'rgroli/other.nvim',
