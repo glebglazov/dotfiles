@@ -1,7 +1,7 @@
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/goku"]
 	type = "archive-file"
-	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.6.0/goku-arm.zip"
+	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.8.0/goku-arm.zip"
 	path = "goku/goku"
 	refreshPeriod = "168h"
 	executable = true
@@ -9,7 +9,7 @@
 
 [".local/bin/mise"]
 	type = "archive-file"
-	{{- $mise_version := "2025.2.3" }}
+	{{- $mise_version := "2025.4.7" }}
 	{{ if eq .chezmoi.os "darwin" -}}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
 	{{- else }}
@@ -41,7 +41,7 @@
 
 ['.local/share/git-pile']
 	type = "archive"
-	url = "https://github.com/keith/git-pile/archive/20bc5e22e162a069cc36befc1305594fa8c97de6.tar.gz"
+	url = "https://github.com/keith/git-pile/archive/dbd9585fb0762c83b24873017bd0727225b37a76.tar.gz"
 	stripComponents = 1
 	exact = true
 
