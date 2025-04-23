@@ -675,6 +675,8 @@ vim.keymap.set('v', '<LEADER>/',
   end
 )
 
+vim.keymap.set('n', '<LEADER>fo', '<cmd>Other<cr>')
+
 vim.keymap.set('n', '<LEADER>fd',
   function()
     require('telescope.builtin').find_files({
