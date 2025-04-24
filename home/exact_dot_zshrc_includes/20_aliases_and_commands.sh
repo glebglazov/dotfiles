@@ -7,6 +7,10 @@ function __aws_envrc_path_cd {
     [ -v AWS_ENVRC_PATH ] && cd $AWS_ENVRC_PATH
 }
 
+function t {
+    tmux new -A -s main
+}
+
 function aws {
     (__aws_envrc_path_cd; command aws "$@")
 }
