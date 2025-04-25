@@ -270,16 +270,14 @@ require('lazy').setup({
     opts = function()
       local ai = require('mini.ai')
       return {
-        n_lines = 500,
+        n_lines = 250,
         custom_textobjects = {
-          r = ai.gen_spec.treesitter({ a = '@block.outer', i = '@block.inner' }, {}),
-          o = ai.gen_spec.treesitter({
-            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
-          }, {}),
+          -- "r" is proudly stolen from documentation — "bracket" implementation of mini.ai
+          r = { { '%b()', '%b[]', '%b{}' }, '^.().*().$' },
+          b = ai.gen_spec.treesitter({ a = '@block.outer', i = '@block.inner' }, {}),
           f = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }, {}),
+          m = ai.gen_spec.treesitter({ a = '@method.outer', i = '@method.inner' }, {}),
           c = ai.gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }, {}),
-          t = { '<([%p%w]-)%f[^<%w][^<>]->.-</%1>', '^<.->().*()</[^/]->$' },
         },
       }
     end,
@@ -602,59 +600,6 @@ vim.defer_fn(function() -- Defer Treesitter setup after first render to improve 
     playground = {
       enable = true
     },
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = '<c-space>',
-        node_incremental = '<c-space>',
-        scope_incremental = '<c-s>',
-        node_decremental = '<M-space>',
-      },
-    },
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-        keymaps = {
-          -- You can use the capture groups defined in textobjects.scm
-          ['aa'] = '@parameter.outer',
-          ['ia'] = '@parameter.inner',
-          ['af'] = '@function.outer',
-          ['if'] = '@function.inner',
-          ['ac'] = '@class.outer',
-          ['ic'] = '@class.inner',
-        },
-      },
-      move = {
-        enable = true,
-        set_jumps = true, -- whether to set jumps in the jumplist
-        goto_next_start = {
-          [']m'] = '@function.outer',
-          [']]'] = '@class.outer',
-        },
-        goto_next_end = {
-          [']M'] = '@function.outer',
-          [']['] = '@class.outer',
-        },
-        goto_previous_start = {
-          ['[m'] = '@function.outer',
-          ['[['] = '@class.outer',
-        },
-        goto_previous_end = {
-          ['[M'] = '@function.outer',
-          ['[]'] = '@class.outer',
-        },
-      },
-      swap = {
-        enable = true,
-        swap_next = {
-          -- ['<leader>a'] = '@parameter.inner',
-        },
-        swap_previous = {
-          -- ['<leader>A'] = '@parameter.inner',
-        }
-      }
-    }
   })
 end, 0)
 
