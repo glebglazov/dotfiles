@@ -11,6 +11,10 @@ function t {
     tmux new -A -s main
 }
 
+function cha {
+    chezmoi apply $@
+}
+
 function aws {
     (__aws_envrc_path_cd; command aws "$@")
 }
