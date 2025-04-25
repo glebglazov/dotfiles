@@ -294,11 +294,28 @@ require('lazy').setup({
     opts = {}
   },
   {
-    'vim-test/vim-test',
-    config = function ()
-      vim.g['test#strategy'] = 'neovim'
-      vim.g['test#neovim#start_normal'] = '1'
-    end,
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      -- Runners
+      "fredrikaverpil/neotest-golang",
+      "olimorris/neotest-rspec",
+      "nvim-neotest/neotest-vim-test",
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-rspec"),
+          require("neotest-golang"),
+          require("neotest-vim-test")({
+            ignore_file_types = { "ruby", "go" },
+          }),
+        },
+      })
+    end
   },
 
   -------------------------------------------------
@@ -1168,13 +1185,18 @@ vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
-vim.keymap.set('n', '<LEADER>test', run_in_new_tmux_window_fn('printenv', { with_pause = true }))
 vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
 vim.keymap.set('n', '<LEADER>gso', run_in_new_tmux_window_fn('git submitpr --onto', { prompt = true }))
 vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>ghp', run_in_new_tmux_window_fn('git headpr'))
 vim.keymap.set('n', '<LEADER>grp', run_in_new_tmux_window_fn('git replacepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>grP', run_in_new_tmux_window_fn('git rebasepr', { prompt = true }))
+
+-- Running tests
+vim.keymap.set('n', '<LEADER>tt', function() require("neotest").run.run() end)
+vim.keymap.set('n', '<LEADER>tT', function() require("neotest").run.run(vim.fn.expand("%")) end)
+vim.keymap.set('n', '<LEADER>ts', function() require("neotest").run.stop() end)
+vim.keymap.set('n', '<LEADER>ta', function() require("neotest").run.attach() end)
 
 -- Files / Projects
 vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
