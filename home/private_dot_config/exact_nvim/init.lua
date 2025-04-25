@@ -227,6 +227,7 @@ require('lazy').setup({
 
   {
     'echasnovski/mini.pairs',
+    version = '*',
     event = 'VeryLazy',
     opts = {},
   },
@@ -244,6 +245,7 @@ require('lazy').setup({
       },
     },
   },
+  { 'echasnovski/mini.splitjoin', version = '*' },
   {
     'JoosepAlviste/nvim-ts-context-commentstring',
     lazy = true,
