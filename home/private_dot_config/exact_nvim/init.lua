@@ -1114,6 +1114,8 @@ vim.keymap.set('n', '<LEADER>tf', ':TestFile<CR>', { silent = true })
 
 -- Window
 vim.keymap.set('n', '<LEADER>w', ':hide<CR>', { silent = true })
+vim.keymap.set('t', '<LEADER>w', [[<C-\><C-n>:hide<CR>]])
+
 vim.keymap.set('n', '<LEADER>bd', ':bd<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>Bd', ':%bdelete | edit # | normal `', { silent = true })
 vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
@@ -1136,4 +1138,6 @@ vim.keymap.set('n', '<LEADER>ta', function() require("neotest").run.attach() end
 -- Files / Projects
 vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>fS', ':wq<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
+
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
