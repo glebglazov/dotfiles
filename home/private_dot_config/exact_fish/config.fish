@@ -1,5 +1,13 @@
-set -a fish_function_path ~/private/.config/fish/functions
+set -g fish_color_command green
+set -g fish_color_error "#DF0001" --bold
+
+set -g fish_color_param normal
+set -g fish_color_operator normal
+set -g fish_color_end normal
+
 set fish_greeting
+
+set -a fish_function_path ~/private/.config/fish/functions
 
 source $__fish_config_dir/env.fish
 
