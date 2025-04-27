@@ -29,17 +29,10 @@ function cdp {
       --bind "enter:execute-silent(tmux send-keys -t $TMUX_PANE 'cd {} && clear' C-m)+abort"
 }
 
-function docker-login-ecr {
-    (__aws_envrc_path_cd; aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 412041701469.dkr.ecr.us-east-1.amazonaws.com)
-}
-
 function docker-login {
     docker-login-ecr
 }
 
-function update-kubectl-context {
-    for c in $(aws eks list-clusters | jq -r '.clusters | .[]'); do aws eks update-kubeconfig --name $c; done
-}
 
 function git-clone-to-folder {
     remote=$(git-ssh-repo-name-from-any-link $1)
@@ -68,27 +61,6 @@ function r-edit-credentials {
     RAILS_MASTER_KEY="op://$OP_RAILS_MASTER_KEY_BASE/$env_name" op run -- rails credentials:edit --environment $env_name
 }
 
-function git-overview {
-    author=$1
-    since=$2
-
-    glog --author $author \
-        --since $since \
-        --pretty='format:%h %as %s' | tac
-}
-
 function get-my-public-ip {
     dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com
-}
-
-function tmux-main {
-    tmux new-session -A -s main
-}
-
-function wifi-off {
-    sudo ifconfig en0 down
-}
-
-function wifi-on {
-    sudo ifconfig en0 up
 }
