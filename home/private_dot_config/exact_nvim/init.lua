@@ -245,7 +245,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'echasnovski/mini.splitjoin', version = '*', config = true },
+  { 'AndrewRadev/splitjoin.vim' },
   {
     'JoosepAlviste/nvim-ts-context-commentstring',
     lazy = true,
