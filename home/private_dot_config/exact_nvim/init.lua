@@ -233,13 +233,6 @@ require('lazy').setup({
   },
   { 'AndrewRadev/splitjoin.vim' },
   {
-    'JoosepAlviste/nvim-ts-context-commentstring',
-    lazy = true,
-    opts = {
-      enable_autocmd = false,
-    },
-  },
-  {
     'echasnovski/mini.comment',
     event = 'VeryLazy',
     opts = {
@@ -279,6 +272,7 @@ require('lazy').setup({
   },
   {
     "nvim-neotest/neotest",
+    lazy = true,
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
@@ -446,12 +440,22 @@ require('lazy').setup({
       }
     }
   },
-  { 'declancm/windex.nvim', config = true },
+  {
+    'declancm/windex.nvim',
+    lazy = true,
+    keys = {
+      { "<LEADER>h", "<CMD>lua require('windex').switch_window('left')<CR>" },
+      { "<LEADER>j", "<CMD>lua require('windex').switch_window('down')<CR>" },
+      { "<LEADER>k", "<CMD>lua require('windex').switch_window('up')<CR>" },
+      { "<LEADER>l", "<CMD>lua require('windex').switch_window('right')<CR>" },
+    },
+  },
   { 'echasnovski/mini.move', version = '*', config = true },
   { 'echasnovski/mini.bracketed', version = '*', config = true },
   -- Open alternative files for the current buffer.
   {
     'rgroli/other.nvim',
+    lazy = true,
     config = function()
       -- Config function here is explicit cause Lazy.nvim cannot find that module
       require('other-nvim').setup({
@@ -465,6 +469,7 @@ require('lazy').setup({
   -- Files manager
   {
     'stevearc/oil.nvim',
+    lazy = true,
     opts = {},
     keys = {
       { '<LEADER>fl', vim.cmd.Oil }
@@ -518,9 +523,16 @@ require('lazy').setup({
     build = ':TSUpdate'
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects' },
-  { 'nvim-treesitter/playground' },
   { 'RRethy/nvim-treesitter-endwise' },
   { 'windwp/nvim-ts-autotag' },
+  {
+    'JoosepAlviste/nvim-ts-context-commentstring',
+    lazy = true,
+    opts = {
+      enable_autocmd = false,
+    },
+  },
+  { 'nvim-treesitter/playground', lazy = true },
 
   -- Undotree
   {
