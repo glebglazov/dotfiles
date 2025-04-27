@@ -639,7 +639,7 @@ vim.keymap.set('v', '<LEADER>/',
   end
 )
 
-vim.keymap.set('n', '<LEADER>fo', '<cmd>Other<cr>')
+vim.keymap.set('n', '<LEADER>fo', vim.cmd.Other)
 
 vim.keymap.set('n', '<LEADER>fd',
   function()
@@ -694,17 +694,14 @@ lsp_zero.set_server_config({
 })
 
 lsp_zero.on_attach(function(_, buffnr)
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', {buffer = buffnr})
-
-  vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', {buffer = buffnr})
-  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', {buffer = buffnr})
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer = buffnr})
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer = buffnr})
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {buffer = buffnr})
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {buffer = buffnr})
+  vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, {buffer = buffnr})
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, {buffer = buffnr})
+  vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, {buffer = buffnr})
+  vim.keymap.set('n', 'gl', vim.diagnostic.open_float, {buffer = buffnr})
 end)
 
 require('mason').setup({})
