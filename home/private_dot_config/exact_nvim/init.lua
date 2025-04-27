@@ -245,7 +245,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'echasnovski/mini.splitjoin', version = '*' },
+  { 'echasnovski/mini.splitjoin', version = '*', config = true },
   {
     'JoosepAlviste/nvim-ts-context-commentstring',
     lazy = true,
@@ -473,8 +473,8 @@ require('lazy').setup({
     }
   },
   { 'declancm/windex.nvim', config = true },
-  { 'echasnovski/mini.move', version = '*' },
-  { 'echasnovski/mini.bracketed', version = '*' },
+  { 'echasnovski/mini.move', version = '*', config = true },
+  { 'echasnovski/mini.bracketed', version = '*', config = true },
   -- Open alternative files for the current buffer.
   {
     'rgroli/other.nvim',
