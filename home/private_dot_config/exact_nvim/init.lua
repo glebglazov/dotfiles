@@ -463,7 +463,8 @@ require('lazy').setup({
           'rails'
         }
       })
-    end
+    end,
+    cmd = 'Other'
   },
 
   -- Files manager
