@@ -231,7 +231,17 @@ require('lazy').setup({
       },
     },
   },
-  { 'AndrewRadev/splitjoin.vim' },
+  {
+    'Wansmer/treesj',
+    lazy = true,
+    keys = { 'gS' },
+    config = function()
+      local treesj = require('treesj')
+      treesj.setup({ dot_repeat = true, use_default_keymaps = false })
+
+      vim.keymap.set('n', 'gS', function() treesj.toggle() end)
+    end
+  },
   {
     'echasnovski/mini.comment',
     event = 'VeryLazy',
