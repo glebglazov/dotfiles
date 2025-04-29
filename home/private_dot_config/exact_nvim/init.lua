@@ -460,7 +460,6 @@ require('lazy').setup({
       { "<LEADER>l", "<CMD>lua require('windex').switch_window('right')<CR>" },
     },
   },
-  { 'echasnovski/mini.move', version = '*', config = true },
   { 'echasnovski/mini.bracketed', version = '*', config = true },
   -- Open alternative files for the current buffer.
   {
