@@ -237,7 +237,20 @@ require('lazy').setup({
     keys = { 'gS' },
     config = function()
       local treesj = require('treesj')
-      treesj.setup({ dot_repeat = true, use_default_keymaps = false })
+      local lang_utils = require('treesj.langs.utils')
+      treesj.setup({
+        dot_repeat = true,
+        use_default_keymaps = false,
+        langs = {
+          ruby = {
+            array = lang_utils.set_preset_for_list({
+              join = {
+                space_in_brackets = false,
+              }
+            })
+          }
+        }
+      })
 
       vim.keymap.set('n', 'gS', function() treesj.toggle() end)
     end
