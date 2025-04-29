@@ -1,6 +1,3 @@
 function aws
-    begin
-        __aws_envrc_path_cd
-        command aws $argv
-    end
+    _execute-with-aws-envrc command aws $argv
 end
