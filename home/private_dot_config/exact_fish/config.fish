@@ -1,6 +1,5 @@
 set -g fish_color_command green
 set -g fish_color_error "#DF0001" --bold
-
 set -g fish_color_param normal
 set -g fish_color_operator normal
 set -g fish_color_end normal
