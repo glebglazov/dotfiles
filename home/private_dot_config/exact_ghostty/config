@@ -28,6 +28,8 @@ keybind = cmd+shift+right=text:\x02\x1B[C
 keybind = cmd+t=text:\x02c
 keybind = cmd+left_bracket=text:\x02[
 keybind = cmd+right_bracket=text:\x02]
+keybind = cmd+shift+comma=text:\x02<
+keybind = cmd+shift+period=text:\x02>
 keybind = cmd+comma=text:\x02,
 keybind = cmd+w=text:\x02x
 
