@@ -16,6 +16,8 @@ yarn      = '1.22.19'
 python    = '3.11.5'
 terraform = '1.4.7'
 java      = '22.0.1'
+erlang    = '27.3.3'
+elixir    = '1.18.3'
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"
