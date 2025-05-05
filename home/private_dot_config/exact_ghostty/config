@@ -35,14 +35,14 @@ keybind = cmd+w=text:\x02x
 
 keybind = cmd+d=text:\x02%
 keybind = cmd+shift+d=text:\x02\"
-keybind = cmd+h=text:\x02h
-keybind = cmd+j=text:\x02j
-keybind = cmd+k=text:\x02k
-keybind = cmd+l=text:\x02l
-keybind = cmd+shift+h=text:\x02H
-keybind = cmd+shift+j=text:\x02J
-keybind = cmd+shift+k=text:\x02K
-keybind = cmd+shift+l=text:\x02L
+keybind = cmd+h=text:\x02H
+keybind = cmd+j=text:\x02J
+keybind = cmd+k=text:\x02K
+keybind = cmd+l=text:\x02L
+keybind = cmd+shift+h=text:\x02h
+keybind = cmd+shift+j=text:\x02j
+keybind = cmd+shift+k=text:\x02k
+keybind = cmd+shift+l=text:\x02l
 keybind = cmd+m=text:\x02m
 
 keybind = cmd+p=text:\x02p
