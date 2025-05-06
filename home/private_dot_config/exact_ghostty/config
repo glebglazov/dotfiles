@@ -20,10 +20,10 @@ adjust-cell-width = -5%
 keybind = cmd+s=text:\x02\r
 
 keybind = cmd+backspace=text:\x15
-keybind = cmd+up=text:\x02\x1B[A
-keybind = cmd+down=text:\x02\x1B[B
-keybind = cmd+left=text:\x02\x1B[D
-keybind = cmd+right=text:\x02\x1B[C
+keybind = cmd+shift+up=text:\x02\x1B[A
+keybind = cmd+shift+down=text:\x02\x1B[B
+keybind = cmd+shift+left=text:\x02\x1B[D
+keybind = cmd+shift+right=text:\x02\x1B[C
 
 keybind = cmd+t=text:\x02c
 keybind = cmd+left_bracket=text:\x02[
