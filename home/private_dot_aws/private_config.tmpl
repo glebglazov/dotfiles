@@ -9,8 +9,8 @@ region = eu-central-1
 region = us-east-1
 aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" .onepasswordMigrateToWorkAccount }}
 aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" .onepasswordMigrateToWorkAccount }}
-[profile data_engineering]
+[profile tds-abc]
+source_profile = tds
 region = us-east-1
-aws_access_key_id = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/access_key_id" .onepasswordMigrateToWorkAccount }}
-aws_secret_access_key = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/secret_access_key" .onepasswordMigrateToWorkAccount }}
+role_arn = {{ onepasswordRead "op://TDS/m4qawe5zz4olywpqg3olpmc3am/tds abc assume role" .onepasswordMigrateToWorkAccount }}
 {{ end -}}
