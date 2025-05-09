@@ -13,3 +13,20 @@
   lsft z    x    c    v    b    n    m    ,    .    /    rsft
   lalt lctl lmet           spc            rmet rctl ralt
 )
+
+(platform (macos)
+  (defoverrides
+    (lctl bspc) (lalt bspc)
+    (rctl bspc) (ralt bspc)
+
+    (lctl up) (lalt up)
+    (lctl down) (lalt down)
+    (lctl left) (lalt left)
+    (lctl right) (lalt right)
+
+    (rctl up) (ralt up)
+    (rctl down) (ralt down)
+    (rctl left) (ralt left)
+    (rctl right) (ralt right)
+  )
+)
