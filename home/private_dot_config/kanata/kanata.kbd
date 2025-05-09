@@ -33,7 +33,7 @@
   _      _      _      _      _      _      _      _      _      _      _      _      _
   _      _      _      _      _      _      _      _      _      _      _      _      _      _
   _      _      _      _      _      _      _      🔅     🔆     _      ▶⏸     _      _      _
-  _      _      _      _      _      _      _      🔉     🔊     _      _      _      _
+  _      _      _      _      _      _      _      🔉     🔊     _      _      _      @slock
   _      _      _      _      _      _      _      🔇     _      _      _      _
   _      _      _      _                    _                    _      _      _      _      _      _      _
 )
@@ -92,27 +92,27 @@
 )
 
 (defalias
+  ;; layer switchers
   fn (tap-hold 200 200 fn (layer-toggle fn))
   grv (tap-hold 200 200 grv (layer-toggle layers))
   s (tap-hold 200 200 s (layer-toggle system))
   w (tap-hold 200 200 w (layer-toggle window))
   ; (tap-hold 200 200 ; (layer-toggle quick-access))
+  qwr (layer-switch qwerty)
 
   ;; dash to long dash
   - (tap-hold 200 200 - (unicode "—"))
 
-  qwr (layer-switch qwerty)
+  wmxf C-A-M-m ;; window maximize (full)
+  wmxa C-A-M-, ;; window maximize (almost)
+  wmvh C-A-M-h ;; window move (left)
+  wmvj C-A-M-j ;; window move (down)
+  wmvk C-A-M-k ;; window move (up)
+  wmvl C-A-M-l ;; window move (right)
+  wswm C-A-M-o ;; window switch to another monitor
 
-  ;; window mode
-  wmxf C-S-M-m
-  wmxa C-S-M-,
-  wmvh C-S-M-h
-  wmvj C-S-M-j
-  wmvk C-S-M-k
-  wmvl C-S-M-l
-  wswm C-S-M-o
-
-  ;; quick access mode
   qclp (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
   qtpl (cmd-log none none open -g raycast://extensions/raycast/snippets/search-snippets)
+
+  slock C-M-q ;; lock system
 )
