@@ -5,6 +5,12 @@
 	path = "goku/goku"
 	refreshPeriod = "168h"
 	executable = true
+
+[".local/bin/kanata"]
+	type = "file"
+	url = "https://github.com/jtroo/kanata/releases/download/v1.8.1/kanata_macos_cmd_allowed_arm64"
+	executable = true
+	checksum.sha256="44afb42be91824beb55cf607db8750ad3129af644959415765316ae8bdc45d26"
 {{- end }}
 
 [".local/bin/mise"]
