@@ -1,17 +1,64 @@
 (defsrc
-       1    2    3    4    5    6    7    8    9    0    -    =    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
-  caps a    s    d    f    g    h    j    k    l    ;    '    ret
-  lsft z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lalt lmet           spc            rmet ralt rctl
+  esc    f1     f2     f3     f4     f5     f6     f7     f8     f9     f10    f11    f12
+  grv    1      2      3      4      5      6      7      8      9      0      -      =      bspc
+  tab    q      w      e      r      t      y      u      i      o      p      [      ]      ret
+  caps   a      s      d      f      g      h      j      k      l      ;      '      \
+  lsft   z      x      c      v      b      n      m      ,      .      /      rsft
+  fn     lctl   lalt   lmet                 spc                  rmet   ralt   rctl   left   down   up     right
 )
 
-(deflayer default
-       1    2    3    4    5    6    7    8    9    0    -    =    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
-  esc  a    s    d    f    g    h    j    k    l    ;    '    ret
-  lsft z    x    c    v    b    n    m    ,    .    /    rsft
-  lalt lctl lmet           spc            rmet rctl ralt
+(deflayer qwerty
+  esc    🔅     🔆     mctl   sls    dtn    dnd    ◀◀     ▶⏸     ▶▶     🔇     🔉     🔊
+  @grv   1      2      3      4      5      6      7      8      9      0      @-     =      bspc
+  tab    q      @w     e      r      t      y      u      i      o      p      [      ]      ret
+  esc    a      @s     d      f      g      h      j      k      l      ;      '      \
+  lsft   z      x      c      v      b      n      m      ,      .      /      rsft
+  @fn    lalt   lctl   lmet                 spc                  rmet   rctl   ralt   left   down   up     right
+)
+
+(deflayer layers
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      @qwr   _      _      lrld   _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
+)
+
+(deflayer system
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      🔅     🔆     _      ▶⏸     _      _      _
+  _      _      _      _      _      _      _      🔉     🔊     _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
+)
+
+(deflayer window
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      @wmvh  @wmvj  @wmvk  @wmvl  _      _      @wswm
+  _      _      _      _      _      _      _      @wmxf  @wmxa  _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
+)
+
+(deflayer fn
+  _      f1     f2     f3     f4     f5     f6     f7     f8     f9     f10    f11    f12
+  _      _      _      _      _      _      _      _      _      _      _      _      _      del
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
+)
+
+(deflayer sample
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
 )
 
 (platform (macos)
@@ -29,4 +76,25 @@
     (rctl left) (ralt left)
     (rctl right) (ralt right)
   )
+)
+
+(defalias
+  fn (tap-hold 200 200 fn (layer-toggle fn))
+  grv (tap-hold 200 200 grv (layer-toggle layers))
+  s (tap-hold 200 200 s (layer-toggle system))
+  w (tap-hold 200 200 w (layer-toggle window))
+
+  ;; dash to long dash
+  - (tap-hold 200 200 - (unicode "—"))
+
+  qwr (layer-switch qwerty)
+
+  ;; window mode
+  wmxf C-S-M-m
+  wmxa C-S-M-,
+  wmvh C-S-M-h
+  wmvj C-S-M-j
+  wmvk C-S-M-k
+  wmvl C-S-M-l
+  wswm C-S-M-o
 )
