@@ -1,3 +1,7 @@
+(defcfg
+  danger-enable-cmd yes
+)
+
 (defsrc
   esc    f1     f2     f3     f4     f5     f6     f7     f8     f9     f10    f11    f12
   grv    1      2      3      4      5      6      7      8      9      0      -      =      bspc
@@ -11,7 +15,7 @@
   esc    🔅     🔆     mctl   sls    dtn    dnd    ◀◀     ▶⏸     ▶▶     🔇     🔉     🔊
   @grv   1      2      3      4      5      6      7      8      9      0      @-     =      bspc
   tab    q      @w     e      r      t      y      u      i      o      p      [      ]      ret
-  esc    a      @s     d      f      g      h      j      k      l      ;      '      \
+  esc    a      @s     d      f      g      h      j      k      l      @;     '      \
   lsft   z      x      c      v      b      n      m      ,      .      /      rsft
   @fn    lalt   lctl   lmet                 spc                  rmet   rctl   ralt   left   down   up     right
 )
@@ -30,7 +34,7 @@
   _      _      _      _      _      _      _      _      _      _      _      _      _      _
   _      _      _      _      _      _      _      🔅     🔆     _      ▶⏸     _      _      _
   _      _      _      _      _      _      _      🔉     🔊     _      _      _      _
-  _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      🔇     _      _      _      _
   _      _      _      _                    _                    _      _      _      _      _      _      _
 )
 
@@ -40,6 +44,15 @@
   _      _      _      _      _      _      _      _      _      _      _      _      _      _
   _      _      _      _      _      _      @wmvh  @wmvj  @wmvk  @wmvl  _      _      @wswm
   _      _      _      _      _      _      _      @wmxf  @wmxa  _      _      _
+  _      _      _      _                    _                    _      _      _      _      _      _      _
+)
+
+(deflayer quick-access
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      _      @qtpl  _      _      _      _      _      _      _      _
+  _      _      _      _      _      _      _      _      _      _      _      _      _
+  _      _      _      _      @qclp  _      _      _      _      _      _      _
   _      _      _      _                    _                    _      _      _      _      _      _      _
 )
 
@@ -83,6 +96,7 @@
   grv (tap-hold 200 200 grv (layer-toggle layers))
   s (tap-hold 200 200 s (layer-toggle system))
   w (tap-hold 200 200 w (layer-toggle window))
+  ; (tap-hold 200 200 ; (layer-toggle quick-access))
 
   ;; dash to long dash
   - (tap-hold 200 200 - (unicode "—"))
@@ -97,4 +111,8 @@
   wmvk C-S-M-k
   wmvl C-S-M-l
   wswm C-S-M-o
+
+  ;; quick access mode
+  qclp (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
+  qtpl (cmd-log none none open -g raycast://extensions/raycast/snippets/search-snippets)
 )
