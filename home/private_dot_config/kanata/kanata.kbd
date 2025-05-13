@@ -1,5 +1,6 @@
 (defcfg
   danger-enable-cmd yes
+  concurrent-tap-hold yes
 )
 
 (defsrc
@@ -31,14 +32,22 @@
 (defvar
   tap-timeout 200
   hold-timeout 200
+  chord-timeout 30
+  chord-timeout-slow 50
 )
 
 (defalias
+  ;; layers
+  l_fn (layer-while-held fn)
+  l_system (layer-while-held system)
+  l_window (layer-while-held window)
+  l_quick_access (layer-while-held quick-access)
+
   ;; layer switchers
-  fn (tap-hold $tap-timeout $hold-timeout fn (layer-while-held fn))
-  s (tap-hold $tap-timeout $hold-timeout s (layer-while-held system))
-  w (tap-hold $tap-timeout $hold-timeout w (layer-while-held window))
-  ; (tap-hold $tap-timeout $hold-timeout ; (layer-while-held quick-access))
+  fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
+  s (tap-hold $tap-timeout $hold-timeout s @l_system)
+  w (tap-hold $tap-timeout $hold-timeout w @l_window)
+  ; (tap-hold $tap-timeout $hold-timeout ; @l_quick_access)
 
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "—"))
@@ -57,11 +66,18 @@
   slock C-M-q ;; lock system
 )
 
+(defchordsv2
+  (f j) esc $chord-timeout all-released ()
+  (; r) lrld $chord-timeout-slow all-released ()
+  (; t) @qtpl $chord-timeout-slow all-released ()
+  (; v) @qclp $chord-timeout-slow all-released ()
+)
+
 (deflayer base
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
   grv      1        2        3        4        5        6        7        8        9        0        @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
-  esc      a        @s       d        f        g        h        j        k        l        @;       '        \
+  esc      a        @s       d        f        g        h        j        k        l        ;        '        \
   lsft     z        x        c        v        b        n        m        ,        .        /        rsft
   @fn      lalt     lctl     lmet                       spc                        rmet     rctl     ralt     left     down     up       right
 )
