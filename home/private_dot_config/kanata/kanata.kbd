@@ -68,8 +68,8 @@
   (f j) esc $chord-timeout all-released ()
   (d k) ret $chord-timeout all-released ()
   (; r) lrld $chord-timeout-slow all-released ()
-  (; t) @open_clipboard_history $chord-timeout-slow all-released ()
-  (; v) @open_snippets $chord-timeout-slow all-released ()
+  (; t) @open_snippets $chord-timeout-slow all-released ()
+  (; v) @open_clipboard_history $chord-timeout-slow all-released ()
   (s \) @lock_system $chord-timeout-slow all-released ()
 
   ;; formatting chords
