@@ -41,13 +41,11 @@
   l_fn (layer-while-held fn)
   l_system (layer-while-held system)
   l_window (layer-while-held window)
-  l_quick_access (layer-while-held quick-access)
 
   ;; layer switchers
   fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
   s (tap-hold $tap-timeout $hold-timeout s @l_system)
   w (tap-hold $tap-timeout $hold-timeout w @l_window)
-  ; (tap-hold $tap-timeout $hold-timeout ; @l_quick_access)
 
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "—"))
@@ -60,17 +58,19 @@
   wmvl C-A-M-l ;; window move (right)
   wswm C-A-M-o ;; window switch to another monitor
 
-  qclp (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
-  qtpl (cmd-log none none open -g raycast://extensions/raycast/snippets/search-snippets)
-
-  slock C-M-q ;; lock system
+  ;; chords actons
+  open_clipboard_history (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
+  open_snippets (cmd-log none none open -g raycast://extensions/raycast/snippets/search-snippets)
+  lock_system C-M-q
 )
 
 (defchordsv2
   (f j) esc $chord-timeout all-released ()
+  (d k) ret $chord-timeout all-released ()
   (; r) lrld $chord-timeout-slow all-released ()
-  (; t) @qtpl $chord-timeout-slow all-released ()
-  (; v) @qclp $chord-timeout-slow all-released ()
+  (; t) @open_clipboard_history $chord-timeout-slow all-released ()
+  (; v) @open_snippets $chord-timeout-slow all-released ()
+  (s \) @lock_system $chord-timeout-slow all-released ()
 )
 
 (deflayer base
@@ -86,7 +86,7 @@
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       🔅       🔆       XX       ▶⏸       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔉       🔊       XX       XX       XX       @slock
+  XX       XX       XX       XX       XX       XX       XX       🔉       🔊       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       🔇       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
@@ -97,15 +97,6 @@
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       @wmvh    @wmvj    @wmvk    @wmvl    XX       XX       @wswm
   XX       XX       XX       XX       XX       XX       XX       @wmxf    @wmxa    XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
-)
-
-(deflayer quick-access
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       lrld     @qtpl    XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       @qclp    XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
 
