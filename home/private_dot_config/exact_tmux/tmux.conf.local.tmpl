@@ -339,6 +339,11 @@ set -g mode-keys vi
 
 bind-key t new-window
 
+bind-key -T prefix -r s copy-mode
+bind-key -r w confirm-before -p "kill-pane #P? (y/n)" kill-pane
+bind-key -r , swap-pane -U
+bind-key -r . swap-pane -D
+
 bind-key -r d split-window -h -c "#{pane_current_path}"
 bind-key -r D split-window -c "#{pane_current_path}"
 

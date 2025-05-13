@@ -17,7 +17,7 @@ adjust-cell-width = -5%
 
 # Tmux proxying
 
-keybind = cmd+f=text:\x02\r
+keybind = cmd+s=text:\x02s
 
 keybind = cmd+backspace=text:\x15
 keybind = cmd+shift+up=text:\x02\x1B[A
@@ -25,15 +25,15 @@ keybind = cmd+shift+down=text:\x02\x1B[B
 keybind = cmd+shift+left=text:\x02\x1B[D
 keybind = cmd+shift+right=text:\x02\x1B[C
 
-keybind = cmd+t=text:\x02c
+keybind = cmd+t=text:\x02t
 keybind = cmd+left_bracket=text:\x02[
 keybind = cmd+right_bracket=text:\x02]
-keybind = cmd+comma=text:\x02<
-keybind = cmd+period=text:\x02>
-keybind = cmd+w=text:\x02x
+keybind = cmd+comma=text:\x02,
+keybind = cmd+period=text:\x02.
+keybind = cmd+w=text:\x02w
 
-keybind = cmd+d=text:\x02%
-keybind = cmd+shift+d=text:\x02\"
+keybind = cmd+d=text:\x02d
+keybind = cmd+shift+d=text:\x02D
 keybind = cmd+h=text:\x02H
 keybind = cmd+j=text:\x02J
 keybind = cmd+k=text:\x02K
