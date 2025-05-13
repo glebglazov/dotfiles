@@ -71,6 +71,11 @@
   (; t) @open_clipboard_history $chord-timeout-slow all-released ()
   (; v) @open_snippets $chord-timeout-slow all-released ()
   (s \) @lock_system $chord-timeout-slow all-released ()
+
+  ;; formatting chords
+  (c n) S-; $chord-timeout all-released ()
+  (c o) S-' $chord-timeout all-released ()
+  (c b) S-[ $chord-timeout all-released ()
 )
 
 (deflayer base
