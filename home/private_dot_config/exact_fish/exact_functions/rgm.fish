@@ -1,3 +1,3 @@
 function rgm
-    be rails generate migration $argv
+    _be_wrap rails generate migration $argv
 end

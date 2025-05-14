@@ -1,3 +1,3 @@
 function rspec
-    be command rspec $argv
+    _be_wrap command rspec $argv
 end

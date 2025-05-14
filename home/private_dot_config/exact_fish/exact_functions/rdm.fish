@@ -1,3 +1,3 @@
 function rdm
-    be rails db:migrate $argv
+    _be_wrap rails db:migrate $argv
 end

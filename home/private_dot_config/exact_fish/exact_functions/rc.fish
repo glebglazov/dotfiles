@@ -1,3 +1,3 @@
 function rc
-    be rails console $argv
+    _be_wrap rails console $argv
 end

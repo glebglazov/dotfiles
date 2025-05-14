@@ -1,3 +1,3 @@
 function rs
-    be rails server $argv
+    _be_wrap rails server $argv
 end

@@ -1,3 +1,3 @@
 function rdr
-    be rails db:rollback $argv
+    _be_wrap rails db:rollback $argv
 end
