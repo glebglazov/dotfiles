@@ -65,17 +65,19 @@
 )
 
 (defchordsv2
-  (f j) esc $chord-timeout first-released ()
-  (d k) ret $chord-timeout first-released ()
-  (; r) lrld $chord-timeout-slow first-released ()
-  (; t) @open_snippets $chord-timeout-slow first-released ()
-  (; v) @open_clipboard_history $chord-timeout-slow first-released ()
-  (s \) @lock_system $chord-timeout-slow first-released ()
+  (d f) esc $chord-timeout first-release ()
+  (j k) esc $chord-timeout first-release ()
+  (f j) ret $chord-timeout first-release ()
+
+  (; r) lrld $chord-timeout-slow first-release ()
+  (; t) @open_snippets $chord-timeout-slow first-release ()
+  (; v) @open_clipboard_history $chord-timeout-slow first-release ()
+  (s \) @lock_system $chord-timeout-slow first-release ()
 
   ;; formatting chords
-  (c n) S-; $chord-timeout first-released ()
-  (c o) S-' $chord-timeout first-released ()
-  (c b) S-[ $chord-timeout first-released ()
+  (c n) S-; $chord-timeout first-release ()
+  (c o) S-' $chord-timeout first-release ()
+  (c b) S-[ $chord-timeout first-release ()
 )
 
 (deflayer base
