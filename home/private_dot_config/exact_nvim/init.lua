@@ -174,37 +174,37 @@ require('lazy').setup({
   -- LSP / Autocompletion
   -------------------------------------------------
   {
-    'VonHeikemen/lsp-zero.nvim',
+    'neovim/nvim-lspconfig',
     dependencies = {
-      -- LSP Support
-      {'neovim/nvim-lspconfig'},
       {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
-
-      -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
+      {'williamboman/mason-lspconfig.nvim', version = '1.32.0'},
+    },
+  },
+  {
+    'hrsh7th/nvim-cmp',
+    dependencies = {
       {'hrsh7th/cmp-buffer'},
       {'hrsh7th/cmp-path'},
       {'hrsh7th/cmp-nvim-lsp'},
       {'hrsh7th/cmp-nvim-lua'},
 
-      -- Snippets
+      {
+        'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
+        cmd = 'Copilot',
+        event = "InsertEnter",
+        opts = {
+          suggestion = { enabled = false },
+          panel = { enabled = false },
+        }
+      },
+      {'zbirenbaum/copilot-cmp', config = true},
+
       {'L3MON4D3/LuaSnip'},
       {'saadparwaiz1/cmp_luasnip'},
       {'rafamadriz/friendly-snippets'},
-    },
-    branch = 'v3.x'
-  },
-  {
-    'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
-    cmd = 'Copilot',
-    event = "InsertEnter",
-    opts = {
-      suggestion = { enabled = false },
-      panel = { enabled = false },
     }
   },
-  { 'zbirenbaum/copilot-cmp', config = true },
+
   { 'tpope/vim-sleuth' }, -- Heuristic tabstop / softtabstop / etc.
 
   -------------------------------------------------
@@ -707,106 +707,50 @@ vim.keymap.set('n', '<LEADER>fp', telescope_find_files)
 -------------------------------------------------
 -- Setup LSP / Autocompletion
 -------------------------------------------------
-local lsp_zero = require('lsp-zero')
 
--- lsp.set_sign_icons({
--- })
 
--- Disabling semantic highlights for all servers
--- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/lsp.md#disable-semantic-highlights
-lsp_zero.set_server_config({
-  on_init = function(client)
-    client.server_capabilities.semanticTokensProvider = nil
-  end,
-})
-
-lsp_zero.on_attach(function(_, buffnr)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer = buffnr})
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer = buffnr})
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {buffer = buffnr})
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {buffer = buffnr})
-  vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, {buffer = buffnr})
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, {buffer = buffnr})
-  vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, {buffer = buffnr})
-  vim.keymap.set('n', 'gl', vim.diagnostic.open_float, {buffer = buffnr})
-end)
+local servers = {
+  lua_ls = {
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = { 'vim' }
+        },
+      }
+    }
+  },
+  yamlls = {
+    settings = {
+      yaml = {
+        keyOrdering = false,
+      }
+    }
+  },
+  gopls = {}
+}
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
+    'ruby_lsp',
     'lua_ls',
     'ts_ls',
     'gopls',
     'yamlls'
   },
   handlers = {
-    lsp_zero.default_setup,
-    lua_ls = function()
-      require('lspconfig').lua_ls.setup({
-        settings = {
-          Lua = {
-            diagnostics = {
-              globals = { 'vim' }
-            },
-          }
-        }
-      })
+    function (server_name)
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+      local server = servers[server_name] or {}
+      server.capabilities = capabilities
+
+      require('lspconfig')[server_name].setup(server)
     end,
-    yamlls = function()
-      require('lspconfig').yamlls.setup({
-        settings = {
-          yaml = {
-            keyOrdering = false,
-          }
-        }
-      })
-    end,
-    gopls = function()
-      require('lspconfig').gopls.setup({
-        flags = { debounce_text_changes = 200 },
-        settings = {
-          gopls = {
-            usePlaceholders = true,
-            gofumpt = true,
-            analyses = {
-              nilness = true,
-              unusedparams = true,
-              unusedwrite = true,
-              useany = true,
-            },
-            codelenses = {
-              gc_details = false,
-              generate = true,
-              regenerate_cgo = true,
-              run_govulncheck = true,
-              test = true,
-              tidy = true,
-              upgrade_dependency = true,
-              vendor = true,
-            },
-            experimentalPostfixCompletions = true,
-            completeUnimported = true,
-            staticcheck = true,
-            directoryFilters = { "-.git", "-node_modules" },
-            semanticTokens = true,
-            hints = {
-              assignVariableTypes = true,
-              compositeLiteralFields = true,
-              compositeLiteralTypes = true,
-              constantValues = true,
-              functionTypeParameters = true,
-              parameterNames = true,
-              rangeVariableTypes = true,
-            },
-          },
-        },
-      })
-    end
   }
 })
 
 local cmp = require('cmp')
-local cmp_action = lsp_zero.cmp_action()
 
 -- this is the function that loads the extra snippets
 -- from rafamadriz/friendly-snippets
@@ -820,8 +764,6 @@ local cmp_has_words_before = function()
 end
 
 cmp.setup({
-  -- if you don't know what is a "source" in nvim-cmp read this:
-  -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/autocomplete.md#adding-a-source
   sources = {
     { name = 'path' },
     { name = 'copilot' },
@@ -829,12 +771,6 @@ cmp.setup({
     { name = 'luasnip', keyword_length = 2 },
     { name = 'buffer', keyword_length = 3 },
   },
-  window = {
-    -- completion = cmp.config.window.bordered(),
-    -- documentation = cmp.config.window.bordered(),
-  },
-  -- default keybindings for nvim-cmp are here:
-  -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/README.md#keybindings-1
   mapping = cmp.mapping.preset.insert({
     -- confirm completion item
     ['<CR>'] = cmp.mapping({
@@ -852,10 +788,6 @@ cmp.setup({
     -- scroll up and down the documentation window
     ['<C-u>'] = cmp.mapping.scroll_docs(-4),
     ['<C-d>'] = cmp.mapping.scroll_docs(4),
-
-    -- navigate between snippet placeholders
-    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
 
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
@@ -883,9 +815,6 @@ cmp.setup({
       end
     end, { 'i', 's' }),
   }),
-  -- note: if you are going to use lsp-kind (another plugin)
-  -- replace the line below with the function from lsp-kind
-  formatting = lsp_zero.cmp_format(),
 })
 
 -------------------------------------------------
@@ -894,7 +823,7 @@ cmp.setup({
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-autocmd({ 'VimResized' }, {
+autocmd('VimResized', {
   group = augroup('glebglazov-resize', {clear = true}),
   callback = function()
     vim.cmd('wincmd =')
@@ -905,19 +834,35 @@ autocmd({ 'VimResized' }, {
 -- Autogroups — All files
 -------------------------------------------------
 
-autocmd({ 'BufWritePre' }, {
+autocmd('LspAttach', {
+  group = augroup('lsp-attach', { clear = true }),
+  callback = function(event)
+    local buffnr = event.buf
+
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer = buffnr})
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer = buffnr})
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {buffer = buffnr})
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {buffer = buffnr})
+    vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, {buffer = buffnr})
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, {buffer = buffnr})
+    vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, {buffer = buffnr})
+    vim.keymap.set('n', 'gl', vim.diagnostic.open_float, {buffer = buffnr})
+  end
+})
+
+autocmd('BufWritePre', {
   group = augroup('glebglazov-remove-end-of-line-spaces', {clear = true}),
   pattern = '*',
   command = '%s/\\s\\+$//e',
 })
 
-autocmd({ 'BufWritePre' }, {
+autocmd('BufWritePre', {
   group = augroup('glebglazov-remove-end-of-file-empty-lines', {clear = true}),
   pattern = '*',
   command = '%s#\\($\\n\\s*\\)\\+\\%$##e',
 })
 
-autocmd({ 'VimEnter' }, {
+autocmd('VimEnter', {
   group = augroup('glebglazov-open-file-browser-at-startup', {clear = true}),
   callback = function()
     local is_headless = false
@@ -939,7 +884,7 @@ autocmd({ 'VimEnter' }, {
 -------------------------------------------------
 -- Autogroups — Fugitive
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-fugitive-settings', {clear = true}),
   pattern = 'fugitive',
   callback = function ()
@@ -951,7 +896,7 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Lua
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-lua-settings', {clear = true}),
   pattern = 'lua',
   callback = function ()
@@ -994,7 +939,7 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Ruby
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-ruby-settings', {clear = true}),
   pattern = 'ruby',
   callback = function ()
@@ -1008,7 +953,7 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Golang
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-golang-settings', {clear = true}),
   pattern = 'go',
   callback = function ()
@@ -1020,7 +965,7 @@ autocmd({ 'FileType' }, {
 -------------------------------------------------
 -- Autogroups — Markdown
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-markdown-settings', {clear = true}),
   pattern = 'markdown',
   callback = function ()
@@ -1029,7 +974,7 @@ autocmd({ 'FileType' }, {
 })
 
 -- Run gofmt/gofmpt, import packages automatically on save
-autocmd({ 'BufWritePre' }, {
+autocmd('BufWritePre', {
   group = augroup('setGoFormatting', {clear = true}),
   pattern = '*.go',
   callback = function()
@@ -1053,7 +998,7 @@ autocmd({ 'BufWritePre' }, {
 -------------------------------------------------
 -- Autogroups — QuickFix
 -------------------------------------------------
-autocmd({ 'FileType' }, {
+autocmd('FileType', {
   group = augroup('glebglazov-quickfix-settings', {clear = true}),
   pattern = 'qf',
   callback = function ()
