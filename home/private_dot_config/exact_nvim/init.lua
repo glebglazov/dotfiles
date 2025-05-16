@@ -741,9 +741,13 @@ require('mason-lspconfig').setup({
   handlers = {
     function (server_name)
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local on_init = function(client)
+        client.server_capabilities.semanticTokensProvider = nil
+      end
 
       local server = servers[server_name] or {}
       server.capabilities = capabilities
+      server.on_init = on_init
 
       require('lspconfig')[server_name].setup(server)
     end,
