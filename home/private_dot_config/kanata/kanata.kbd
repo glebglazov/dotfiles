@@ -73,11 +73,6 @@
   (; t) @open_snippets $chord-timeout-slow first-release ()
   (; v) @open_clipboard_history $chord-timeout-slow first-release ()
   (s \) @lock_system $chord-timeout-slow first-release ()
-
-  ;; formatting chords
-  (c n) S-; $chord-timeout first-release ()
-  (c o) S-' $chord-timeout first-release ()
-  (c b) S-[ $chord-timeout first-release ()
 )
 
 (deflayer base
