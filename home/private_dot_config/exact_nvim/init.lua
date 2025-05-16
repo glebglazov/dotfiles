@@ -106,6 +106,10 @@ vim.opt.iskeyword:remove('_')
 
 vim.opt.clipboard = 'unnamed,unnamedplus'
 
+vim.diagnostic.config({
+  update_in_insert = true,
+})
+
 -------------------------------------------------
 -- Initialise lazy.nvim
 -------------------------------------------------
