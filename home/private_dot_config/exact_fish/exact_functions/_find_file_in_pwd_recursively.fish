@@ -1,6 +1,6 @@
 function _find_file_in_pwd_recursively
     if test (count $argv) -eq 0
-        echo "Usage: find_in_parents FILENAME"
+        echo "Usage: _find_file_in_pwd_recursively FILENAME"
         return 1
     end
 
