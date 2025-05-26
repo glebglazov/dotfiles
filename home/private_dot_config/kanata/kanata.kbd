@@ -53,15 +53,15 @@
 
   ;; layout qwerty rebinds
   l_q_grv (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
-  l_q_a (t! charmod a lmet)
-  l_q_s (t! charmod s lsft)
-  l_q_d (t! charmod d lctl)
-  l_q_f (t! charmod f lalt)
-  l_q_j (t! charmod j lalt)
-  l_q_k (t! charmod k rctl)
-  l_q_l (t! charmod l rsft)
-  l_q_; (t! charmod ; rmet)
-  l_q_v (t! charmod v ralt)
+  l_q_a (t! charmod a lalt)
+  l_q_s (t! charmod s lctl)
+  l_q_d (t! charmod d lsft)
+  l_q_f (t! charmod f lmet)
+  l_q_j (t! charmod j lmet)
+  l_q_k (t! charmod k rsft)
+  l_q_l (t! charmod l rctl)
+  l_q_; (t! charmod ; ralt)
+  l_q_c (t! charmod c ralt)
   l_q_m (t! charmod m ralt)
 
   ;; layout colemak rebinds
@@ -105,7 +105,7 @@
   @l_q_grv 1        2        3        4        5        6        7        8        9        0        @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
   esc      @l_q_a   @l_q_s   @l_q_d   @l_q_f   g        h        @l_q_j   @l_q_k   @l_q_l   @l_q_;   '        \
-  lsft     z        x        c        v        b        n        m        ,        .        /        rsft
+  lsft     z        x        @l_q_c   v        b        n        @l_q_m   ,        .        /        rsft
   @fn      lalt     lctl     lmet                       spc                        rmet     rctl     ralt     left     down     up       right
 )
 
