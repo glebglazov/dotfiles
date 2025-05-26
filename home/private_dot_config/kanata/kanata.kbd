@@ -57,11 +57,11 @@
   l_q_s (t! charmod s lctl)
   l_q_d (t! charmod d lsft)
   l_q_f (t! charmod f lmet)
-  l_q_j (t! charmod j lmet)
+  l_q_j (t! charmod j rmet)
   l_q_k (t! charmod k rsft)
   l_q_l (t! charmod l rctl)
   l_q_; (t! charmod ; ralt)
-  l_q_c (t! charmod c ralt)
+  l_q_c (t! charmod c lalt)
   l_q_m (t! charmod m ralt)
 
   ;; layout colemak rebinds
