@@ -106,6 +106,7 @@ vim.opt.iskeyword:remove('_')
 
 vim.opt.clipboard = 'unnamed,unnamedplus'
 
+vim.opt.signcolumn = "yes:2"
 vim.diagnostic.config({
   update_in_insert = true,
 })
