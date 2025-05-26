@@ -44,8 +44,11 @@
   l_colemak (layer-switch colemak)
   l_qwerty (layer-switch qwerty)
 
-  grvq (tap-hold $tap-timeout $hold-timeout grv @l_qwerty)
-  grvc (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
+  ;; layout qwerty rebinds
+  l_q_grv (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
+
+  ;; layout colemak rebinds
+  l_c_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwerty)
 
   ;; layer switchers
   fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
@@ -82,7 +85,7 @@
 
 (deflayer qwerty
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @grvc    1        2        3        4        5        6        7        8        9        0        @-       =        bspc
+  @l_q_grv 1        2        3        4        5        6        7        8        9        0        @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
   esc      a        @s       d        f        g        h        j        k        l        ;        '        \
   lsft     z        x        c        v        b        n        m        ,        .        /        rsft
@@ -91,7 +94,7 @@
 
 (deflayer colemak
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @grvq    1        2        3        4        5        6        7        8        9        0        @-       =        bspc
+  @l_c_grv 1        2        3        4        5        6        7        8        9        0        @-       =        bspc
   tab      q        @w       f        p        b        j        l        u        y        ;        [        ]        ret
   esc      a        r        @s       t        g        m        n        e        i        o        '        \
   lsft     z        x        c        d        v        k        h        ,        .        /        rsft
