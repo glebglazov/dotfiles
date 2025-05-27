@@ -53,24 +53,24 @@
 
   ;; layout qwerty rebinds
   l_q_grv (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
-  l_q_s (t! charmod s lctl)
-  l_q_d (t! charmod d lsft)
+  l_q_s (t! charmod s lsft)
+  l_q_d (t! charmod d lctl)
   l_q_f (t! charmod f lmet)
   l_q_c (t! charmod c lalt)
   l_q_j (t! charmod j rmet)
-  l_q_k (t! charmod k rsft)
-  l_q_l (t! charmod l rctl)
+  l_q_k (t! charmod k rctl)
+  l_q_l (t! charmod l rsft)
   l_q_m (t! charmod m ralt)
 
   ;; layout colemak rebinds
   l_c_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwerty)
-  l_c_r (t! charmod r lctl)
-  l_c_s (t! charmod s lsft)
+  l_c_r (t! charmod r lsft)
+  l_c_s (t! charmod s lctl)
   l_c_t (t! charmod t lmet)
   l_c_c (t! charmod c lalt)
   l_c_n (t! charmod n rmet)
-  l_c_e (t! charmod e rsft)
-  l_c_i (t! charmod i rctl)
+  l_c_e (t! charmod e rctl)
+  l_c_i (t! charmod i rsft)
   l_c_h (t! charmod h ralt)
 
   ;; layer switchers
