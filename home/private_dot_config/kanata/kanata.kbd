@@ -75,8 +75,8 @@
 
   ;; layer switchers
   fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
-  s (tap-hold $tap-timeout $hold-timeout s @l_system)
-  w (tap-hold $tap-timeout $hold-timeout w @l_window)
+  s (tap-hold-release-timeout $tap-timeout $hold-timeout s @l_system s)
+  w (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
 
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "—"))
@@ -105,7 +105,7 @@
   (; r) lrld $chord-timeout-slow first-release ()
   (; t) @open_snippets $chord-timeout-slow first-release ()
   (; v) @open_clipboard_history $chord-timeout-slow first-release ()
-  (s \) @lock_system $chord-timeout-slow first-release ()
+  (; q) @lock_system $chord-timeout-slow first-release ()
 )
 
 (deflayer qwerty
