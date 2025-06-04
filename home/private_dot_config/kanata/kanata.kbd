@@ -75,7 +75,7 @@
 
   ;; layer switchers
   fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
-  s (tap-hold-release-timeout $tap-timeout $hold-timeout s @l_system s)
+  5 (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_system 5)
   w (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
 
   ;; dash to long dash
@@ -110,7 +110,7 @@
 
 (deflayer qwerty
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_q_grv 1        2        3        4        5        6        7        8        9        0        @-       =        bspc
+  @l_q_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
   esc      a        @l_q_s   @l_q_d   @l_q_f   g        h        @l_q_j   @l_q_k   @l_q_l   ;        '        \
   lsft     z        x        @l_q_c   v        b        n        @l_q_m   ,        .        /        rsft
@@ -119,7 +119,7 @@
 
 (deflayer colemak
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_c_grv 1        2        3        4        5        6        7        8        9        0        @-       =        bspc
+  @l_c_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
   tab      q        @w       f        p        b        j        l        u        y        ;        [        ]        ret
   esc      a        @l_c_r   @l_c_s   @l_c_t   g        m        @l_c_n   @l_c_e   @l_c_i   o        '        \
   lsft     z        x        @l_c_c   d        v        k        @l_c_h   ,        .        /        rsft
