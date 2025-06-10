@@ -87,7 +87,7 @@
   wmvj C-A-M-j ;; window move (down)
   wmvk C-A-M-k ;; window move (up)
   wmvl C-A-M-l ;; window move (right)
-  wswm C-A-M-o ;; window switch to another monitor
+  wsam C-A-M-o ;; window switch to another monitor
 
   ;; chords actons
   open_clipboard_history (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
@@ -138,8 +138,8 @@
 (deflayer window
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       @wmvh    @wmvj    @wmvk    @wmvl    XX       XX       @wswm
+  XX       XX       XX       XX       XX       XX       XX       XX       XX       @wsam    XX       XX       XX       XX
+  XX       XX       XX       XX       XX       XX       @wmvh    @wmvj    @wmvk    @wmvl    XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       @wmxf    @wmxa    XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
