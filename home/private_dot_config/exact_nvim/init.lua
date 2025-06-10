@@ -399,6 +399,16 @@ require('lazy').setup({
       },
       { '<LEADER>gw', ':Gwrite' },
       { '<LEADER>gW', ':Gwrite!' },
+      {
+        '<LEADER>gop', function()
+          local sha = vim.fn.expand("<cword>")
+          -- command below might be very fish-shell specific
+          local my_pr_command = string.format("branch=(git-pilebranchname %s) gh pr view $branch --web", sha)
+          local historical_pr_command = string.format("url=$(gh pr list --search %s --state=all --json=url --jq=\".[0].url\") open $url", sha)
+
+          vim.cmd("!" .. my_pr_command .. "||" .. historical_pr_command)
+        end
+      },
       { '<LEADER>grb', ':G rebase<SPACE>' },
       { '<LEADER>gri', ':G rebase --interactive<SPACE>' },
       { '<LEADER>gra', ':G rebase --abort<CR>' },
