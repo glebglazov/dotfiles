@@ -427,6 +427,7 @@ require('lazy').setup({
       { '<LEADER>gsa', ':G stash apply<CR>' },
       { '<LEADER>gsb', ':G stash pop<CR>' },
       { '<LEADER>gsu', ':G branch --set-upstream-to=origin/' },
+      { '<LEADER>gbd', ':G branch -D <SPACE>' },
       {
         '<LEADER>gpc',
         function()
