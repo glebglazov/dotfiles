@@ -1117,6 +1117,7 @@ vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { p
 vim.keymap.set('n', '<LEADER>guP', function()
   local sha = vim.fn.expand("<cword>")
 
+
   run_in_new_tmux_window_fn(string.format("git updatepr %s", sha), { with_pause = false })()
 end)
 vim.keymap.set('n', '<LEADER>ghp', run_in_new_tmux_window_fn('git headpr'))
