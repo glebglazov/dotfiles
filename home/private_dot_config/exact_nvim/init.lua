@@ -74,6 +74,7 @@ vim.opt.hlsearch = true
 -- Enable line numbers display
 vim.opt.number = true
 -- Swap absolute line numbers to relative ones
+--
 vim.opt.relativenumber = true
 
 -- Hide buffer when it's abandoned instead of unloading it
