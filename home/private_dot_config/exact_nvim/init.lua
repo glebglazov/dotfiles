@@ -226,34 +226,34 @@ require('lazy').setup({
     'echasnovski/mini.surround',
     opts = {
       mappings = {
-        add = 'gsa', -- Add surrounding in Normal and Visual modes
-        delete = 'gsd', -- Delete surrounding
-        find = 'gsn', -- Find surrounding (to the right)
-        find_left = 'gsF', -- Find surrounding (to the left)
-        highlight = 'gsh', -- Highlight surrounding
-        replace = 'gsr', -- Replace surrounding
-        update_n_lines = 'gsn', -- Update `n_lines`
+        add = 'sa', -- Add surrounding in Normal and Visual modes
+        delete = 'sd', -- Delete surrounding
+        find = 'sn', -- Find surrounding (to the right)
+        find_left = 'sF', -- Find surrounding (to the left)
+        highlight = 'sh', -- Highlight surrounding
+        replace = 'sr', -- Replace surrounding
+        update_n_lines = 'sn', -- Update `n_lines`
       },
     },
   },
-  {
-    'folke/flash.nvim',
-    event = "VeryLazy",
-    opts = {
-      modes = {
-        char = {
-          enabled = false
-        },
-      },
-    },
-    keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end },
-      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end },
-      { "r", mode = "o", function() require("flash").remote() end },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end },
-      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end },
-    },
-  },
+  -- {
+  --   'folke/flash.nvim',
+  --   event = "VeryLazy",
+  --   opts = {
+  --     modes = {
+  --       char = {
+  --         enabled = false
+  --       },
+  --     },
+  --   },
+  --   keys = {
+  --     { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end },
+  --     { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end },
+  --     { "r", mode = "o", function() require("flash").remote() end },
+  --     { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end },
+  --     { "<c-s>", mode = { "c" }, function() require("flash").toggle() end },
+  --   },
+  -- },
   {
     'Wansmer/treesj',
     lazy = true,
