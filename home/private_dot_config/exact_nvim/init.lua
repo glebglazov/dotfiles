@@ -311,9 +311,8 @@ require('lazy').setup({
       return {
         n_lines = 250,
         custom_textobjects = {
-          -- "r" is proudly stolen from documentation — "bracket" implementation of mini.ai
-          r = { { '%b()', '%b[]', '%b{}' }, '^.().*().$' },
-          b = ai.gen_spec.treesitter({ a = '@block.outer', i = '@block.inner' }, {}),
+          b = { { '%b()', '%b[]', '%b{}' }, '^.().*().$' },
+          l = ai.gen_spec.treesitter({ a = '@block.outer', i = '@block.inner' }, {}),
           f = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }, {}),
           m = ai.gen_spec.treesitter({ a = '@method.outer', i = '@method.inner' }, {}),
           c = ai.gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }, {}),
