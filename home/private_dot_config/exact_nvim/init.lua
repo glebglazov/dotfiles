@@ -45,6 +45,24 @@ local function run_in_new_tmux_window_fn(command, opts)
   end
 end
 
+local function git_run_or_prompt_fn(main_command, opts)
+  opts = opts or {}
+  local is_shell_command = opts.is_shell_command or false
+  local is_quick_execute = opts.quick_execute or false
+
+  local base_command = is_shell_command and "!:" or ":" .. main_command .. " "
+
+  return function()
+    if (is_quick_execute) then
+      local sha = vim.fn.expand("<cword>")
+
+      vim.api.nvim_feedkeys(base_command .. sha .. "\n", "n", false)
+    else
+      vim.api.nvim_feedkeys(base_command, "n", false)
+    end
+  end
+end
+
 -------------------------------------------------
 -- Options
 -------------------------------------------------
@@ -409,13 +427,17 @@ require('lazy').setup({
           vim.cmd("!" .. my_pr_command .. "||" .. historical_pr_command)
         end
       },
+      { '<LEADER>gso', git_run_or_prompt_fn('G show') },
+      { '<LEADER>gsO', git_run_or_prompt_fn('G show', { quick_execute = true }) },
       { '<LEADER>grb', ':G rebase<SPACE>' },
-      { '<LEADER>gri', ':G rebase --interactive<SPACE>' },
+      { '<LEADER>gri', git_run_or_prompt_fn('G rebase --interactive') },
+      { '<LEADER>grI', git_run_or_prompt_fn('G rebase --interactive', { quick_execute = true }) },
       { '<LEADER>gra', ':G rebase --abort<CR>' },
       { '<LEADER>grc', ':G rebase --continue<CR>' },
       { '<LEADER>grs', ':G reset --soft<SPACE>' },
       { '<LEADER>grh', ':G reset --hard<SPACE>' },
-      { '<LEADER>grv', ':G revert<SPACE>' },
+      { '<LEADER>grv', git_run_or_prompt_fn('G revert') },
+      { '<LEADER>grV', git_run_or_prompt_fn('G revert', { quick_execute = true }) },
       { '<LEADER>gco', ':G checkout<SPACE>' },
       { '<LEADER>gcb', ':G checkout -b<SPACE>' },
       { '<LEADER>gce', ':G commit --allow-empty -m \'\'<LEFT>' },
@@ -1112,7 +1134,6 @@ vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
 vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
-vim.keymap.set('n', '<LEADER>gso', run_in_new_tmux_window_fn('git submitpr --onto', { prompt = true }))
 vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>guP', function()
   local sha = vim.fn.expand("<cword>")
