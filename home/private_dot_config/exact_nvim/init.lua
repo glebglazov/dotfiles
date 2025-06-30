@@ -45,12 +45,16 @@ local function run_in_new_tmux_window_fn(command, opts)
   end
 end
 
-local function git_run_or_prompt_fn(main_command, opts)
+local function run_or_prompt_fn(main_command, opts)
   opts = opts or {}
   local is_shell_command = opts.is_shell_command or false
   local is_quick_execute = opts.quick_execute or false
+  local move_result_to_new_tab = opts.move_result_to_new_tab or false
 
-  local base_command = is_shell_command and "!:" or ":" .. main_command .. " "
+  local base_command =
+    (is_shell_command and "!:" or ":") ..
+    main_command ..
+    " "
 
   return function()
     if (is_quick_execute) then
@@ -59,6 +63,12 @@ local function git_run_or_prompt_fn(main_command, opts)
       vim.api.nvim_feedkeys(base_command .. sha .. "\n", "n", false)
     else
       vim.api.nvim_feedkeys(base_command, "n", false)
+    end
+
+    if move_result_to_new_tab then
+      vim.defer_fn(function()
+        vim.cmd('tab split | tabprev | quit | tabnext')
+      end, 20)
     end
   end
 end
@@ -422,17 +432,17 @@ require('lazy').setup({
           vim.cmd("!" .. my_pr_command .. "||" .. historical_pr_command)
         end
       },
-      { '<LEADER>gso', git_run_or_prompt_fn('G show') },
-      { '<LEADER>gsO', git_run_or_prompt_fn('G show', { quick_execute = true }) },
+      { '<LEADER>gso', run_or_prompt_fn('G show') },
+      { '<LEADER>gsO', run_or_prompt_fn('G show', { quick_execute = true, move_result_to_new_tab = true }) },
       { '<LEADER>grb', ':G rebase<SPACE>' },
-      { '<LEADER>gri', git_run_or_prompt_fn('G rebase --interactive') },
-      { '<LEADER>grI', git_run_or_prompt_fn('G rebase --interactive', { quick_execute = true }) },
+      { '<LEADER>gri', run_or_prompt_fn('G rebase --interactive') },
+      { '<LEADER>grI', run_or_prompt_fn('G rebase --interactive', { quick_execute = true }) },
       { '<LEADER>gra', ':G rebase --abort<CR>' },
       { '<LEADER>grc', ':G rebase --continue<CR>' },
       { '<LEADER>grs', ':G reset --soft<SPACE>' },
       { '<LEADER>grh', ':G reset --hard<SPACE>' },
-      { '<LEADER>grv', git_run_or_prompt_fn('G revert') },
-      { '<LEADER>grV', git_run_or_prompt_fn('G revert', { quick_execute = true }) },
+      { '<LEADER>grv', run_or_prompt_fn('G revert') },
+      { '<LEADER>grV', run_or_prompt_fn('G revert', { quick_execute = true }) },
       { '<LEADER>gco', ':G checkout<SPACE>' },
       { '<LEADER>gcb', ':G checkout -b<SPACE>' },
       { '<LEADER>gce', ':G commit --allow-empty -m \'\'<LEFT>' },
