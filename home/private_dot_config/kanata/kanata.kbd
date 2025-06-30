@@ -112,7 +112,7 @@
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
   @l_q_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
-  esc      a        @l_q_s   @l_q_d   @l_q_f   g        h        @l_q_j   @l_q_k   @l_q_l   ;        '        \
+  esc      a        s        d        f        g        h        j        k        l        ;        '        \
   lsft     z        x        @l_q_c   v        b        n        @l_q_m   ,        .        /        rsft
   @fn      lalt     lctl     lmet                       spc                        rmet     rctl     ralt     left     down     up       right
 )
