@@ -254,7 +254,7 @@ require('lazy').setup({
     'echasnovski/mini.surround',
     opts = {
       mappings = {
-        add = 'ca', -- Add surrounding in Normal and Visual modes
+        add = 'cv', -- Add surrounding in Normal and Visual modes
         delete = 'cd', -- Delete surrounding
         replace = 'cs', -- Replace surrounding
       },
