@@ -1110,6 +1110,8 @@ vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
 }))
 vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn())
 
+vim.keymap.set('n', '<LEADER>by', 'ggVGy')
+
 -- Navigation
 vim.keymap.set('n', '<C-D>', '<C-D>zz')
 vim.keymap.set('n', '<C-U>', '<C-U>zz')
