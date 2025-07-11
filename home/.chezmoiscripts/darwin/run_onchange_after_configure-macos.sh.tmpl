@@ -64,6 +64,12 @@ launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.
 # How to override already set custom shortcut (set an empty dict):
 # defaults write com.flexibits.fantastical2.mac NSUserKeyEquivalents -dict
 
+# Change default keybindings of Cmd+H in order to not conflict with tmux config and to not
+defaults write org.alacritty NSUserKeyEquivalents -dict-add "Hide alacritty" "\UF70E"  # F11 key
+
+# Change default keybindings of Cmd+Q in order to not accidentally exit Alacritty
+defaults write org.alacritty NSUserKeyEquivalents -dict-add "Quit alacritty" "\UF70F"  # F12 key
+
 # Fantastical setup
 defaults write com.flexibits.fantastical2.mac NSUserKeyEquivalents -dict-add "By Day" "@d"
 defaults write com.flexibits.fantastical2.mac NSUserKeyEquivalents -dict-add "By Month" "@m"
