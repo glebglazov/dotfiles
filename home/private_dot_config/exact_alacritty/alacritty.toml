@@ -7,15 +7,15 @@ decorations_theme_variant = "Dark"
 size = 16
 
 [font.bold]
-family = "Hack Nerd Font Mono"
+family = "TX-02"
 style = "Bold"
 
 [font.italic]
-family = "Hack Nerd Font Mono"
-style = "Italic"
+family = "TX-02"
+style = "Regular"
 
 [font.normal]
-family = "Hack Nerd Font Mono"
+family = "TX-02"
 style = "Regular"
 
 [[keyboard.bindings]]
@@ -47,42 +47,42 @@ mods = "Command"
 
 # Move between panes
 [[keyboard.bindings]]
-chars = "\u0002h"
-key = "H"
-mods = "Command"
-
-[[keyboard.bindings]]
-chars = "\u0002j"
-key = "J"
-mods = "Command"
-
-[[keyboard.bindings]]
-chars = "\u0002k"
-key = "K"
-mods = "Command"
-
-[[keyboard.bindings]]
-chars = "\u0002l"
-key = "L"
-mods = "Command"
-
-[[keyboard.bindings]]
 chars = "\u0002H"
 key = "H"
-mods = "Command|Shift"
+mods = "Command"
 
 [[keyboard.bindings]]
 chars = "\u0002J"
 key = "J"
-mods = "Command|Shift"
+mods = "Command"
 
 [[keyboard.bindings]]
 chars = "\u0002K"
 key = "K"
-mods = "Command|Shift"
+mods = "Command"
 
 [[keyboard.bindings]]
 chars = "\u0002L"
+key = "L"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0002h"
+key = "H"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u0002j"
+key = "J"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u0002k"
+key = "K"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u0002l"
 key = "L"
 mods = "Command|Shift"
 
@@ -153,6 +153,12 @@ chars = "\u0002,"
 key = "Comma"
 mods = "Command"
 
+# Rename window
+[[keyboard.bindings]]
+chars = "\u0002."
+key = "Period"
+mods = "Command"
+
 # Split panes
 [[keyboard.bindings]]
 chars = "\u0002%"
@@ -184,8 +190,8 @@ mods = "Command"
 
 # Maximize pane
 [[keyboard.bindings]]
-chars = "\u0002a"
-key = "A"
+chars = "\u0002m"
+key = "M"
 mods = "Command"
 
 # Copy mode
