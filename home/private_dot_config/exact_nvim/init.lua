@@ -663,6 +663,7 @@ vim.defer_fn(function() -- Defer Treesitter setup after first render to improve 
   require('nvim-treesitter.configs').setup({
     ensure_installed = {
       'ruby',
+      'elixir',
       'terraform',
       'hcl',
       'lua',
