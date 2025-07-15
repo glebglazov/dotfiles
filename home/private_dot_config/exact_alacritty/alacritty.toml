@@ -6,16 +6,26 @@ decorations_theme_variant = "Dark"
 [font]
 size = 16
 
+# to patch i've used something like that:
+#
+# docker run --rm \
+# -v ~/Downloads/25071581R1LJX4YZ/original:/in \
+# -v ~/Downloads/25071581R1LJX4YZ/new:/out \
+# nerdfonts/patcher \
+# --complete \
+# --use-single-width-glyphs \
+# --adjust-line-height
+#
 [font.bold]
-family = "TX-02"
+family = "BerkeleyMono Nerd Font Mono"
 style = "Bold"
 
 [font.italic]
-family = "TX-02"
+family = "BerkeleyMono Nerd Font Mono"
 style = "Regular"
 
 [font.normal]
-family = "TX-02"
+family = "BerkeleyMono Nerd Font Mono"
 style = "Regular"
 
 [[keyboard.bindings]]
