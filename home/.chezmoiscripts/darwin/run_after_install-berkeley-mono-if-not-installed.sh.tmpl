@@ -12,7 +12,7 @@ fi
 
 # Create directory and download
 mkdir -p "$FONT_DIR"
-op read op://Private/zvatyhrwhybsw2rkbg52dgyiiu/font.zip -o /tmp/berkeley_fonts.zip -f
+op read {{ .berkeleyMonoOnepasswordPath }} -o /tmp/berkeley_fonts.zip -f
 unzip /tmp/berkeley_fonts.zip -d "$FONT_DIR"
 
 # Install fonts (copy to macOS font directory)
