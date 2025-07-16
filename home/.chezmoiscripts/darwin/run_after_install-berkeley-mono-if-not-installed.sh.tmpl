@@ -1,0 +1,26 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+
+#!/bin/bash
+
+FONT_DIR="$HOME/.local/fonts/BerkeleyMono"
+
+# Check if folder exists
+if [ -d "$FONT_DIR" ]; then
+    echo "Font already installed"
+    exit 0
+fi
+
+# Create directory and download
+mkdir -p "$FONT_DIR"
+op read op://Private/zvatyhrwhybsw2rkbg52dgyiiu/font.zip -o /tmp/berkeley_fonts.zip -f
+unzip /tmp/berkeley_fonts.zip -d "$FONT_DIR"
+
+# Install fonts (copy to macOS font directory)
+cp "$FONT_DIR"/*.{ttf,otf} "$HOME/Library/Fonts/" 2>/dev/null
+
+# Cleanup
+rm /tmp/berkeley_fonts.zip
+
+echo "Fonts installed"
+
+{{- end }}
