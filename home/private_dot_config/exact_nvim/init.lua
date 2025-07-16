@@ -58,9 +58,9 @@ local function run_or_prompt_fn(main_command, opts)
 
   return function()
     if (is_quick_execute) then
-      local sha = vim.fn.expand("<cWORD>")
+      local word_under_cursor = vim.fn.expand("<cWORD>")
 
-      vim.api.nvim_feedkeys(base_command .. sha .. "\n", "n", false)
+      vim.api.nvim_feedkeys(base_command .. word_under_cursor .. "\n", "n", false)
     else
       vim.api.nvim_feedkeys(base_command, "n", false)
     end
@@ -424,10 +424,10 @@ require('lazy').setup({
       { '<LEADER>gW', ':Gwrite!' },
       {
         '<LEADER>gop', function()
-          local sha = vim.fn.expand("<cWORD>")
+          local target = vim.fn.expand("<cWORD>")
           -- command below might be very fish-shell specific
-          local my_pr_command = string.format("branch=(git-pilebranchname %s) gh pr view $branch --web", sha)
-          local historical_pr_command = string.format("url=$(gh pr list --search %s --state=all --json=url --jq=\".[0].url\") open $url", sha)
+          local my_pr_command = string.format("branch=(git-pilebranchname %s) gh pr view $branch --web", target)
+          local historical_pr_command = string.format("url=$(gh pr list --search %s --state=all --json=url --jq=\".[0].url\") open $url", target)
 
           vim.cmd("!" .. my_pr_command .. "||" .. historical_pr_command)
         end
@@ -1140,9 +1140,9 @@ vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
 vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>guP', function()
-  local sha = vim.fn.expand("<cWORD>")
+  local target = vim.fn.expand("<cWORD>")
 
-  run_in_new_tmux_window_fn(string.format("git updatepr %s", sha), { with_pause = false })()
+  run_in_new_tmux_window_fn(string.format("git updatepr %s", target), { with_pause = false })()
 end)
 vim.keymap.set('n', '<LEADER>ghp', run_in_new_tmux_window_fn('git headpr'))
 vim.keymap.set('n', '<LEADER>grp', run_in_new_tmux_window_fn('git replacepr', { prompt = true }))
