@@ -176,7 +176,7 @@ require('lazy').setup({
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+          ["cmp.entry.get_documentation"] = true, -- requires blink.cmp
         },
       },
       -- you can enable a preset for easier configuration
@@ -214,13 +214,10 @@ require('lazy').setup({
     },
   },
   {
-    'hrsh7th/nvim-cmp',
+    'saghen/blink.cmp',
     dependencies = {
-      {'hrsh7th/cmp-buffer'},
-      {'hrsh7th/cmp-path'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'hrsh7th/cmp-nvim-lua'},
-
+      'rafamadriz/friendly-snippets',
+      'saghen/blink.compat',
       {
         'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
         cmd = 'Copilot',
@@ -231,11 +228,8 @@ require('lazy').setup({
         }
       },
       {'zbirenbaum/copilot-cmp', config = true},
-
-      {'L3MON4D3/LuaSnip'},
-      {'saadparwaiz1/cmp_luasnip'},
-      {'rafamadriz/friendly-snippets'},
-    }
+    },
+    version = '*',
   },
 
   { 'tpope/vim-sleuth' }, -- Heuristic tabstop / softtabstop / etc.
@@ -784,7 +778,7 @@ require('mason-lspconfig').setup({
   },
   handlers = {
     function (server_name)
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
       local on_init = function(client)
         client.server_capabilities.semanticTokensProvider = nil
       end
@@ -798,71 +792,88 @@ require('mason-lspconfig').setup({
   }
 })
 
-local cmp = require('cmp')
-
--- this is the function that loads the extra snippets
--- from rafamadriz/friendly-snippets
-require('luasnip.loaders.from_vscode').lazy_load()
-local luasnip = require('luasnip')
-
-local cmp_has_words_before = function()
-  unpack = unpack or table.unpack
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
-
-cmp.setup({
-  sources = {
-    { name = 'path' },
-    { name = 'copilot' },
-    { name = 'nvim_lsp' },
-    { name = 'luasnip', keyword_length = 2 },
-    { name = 'buffer', keyword_length = 3 },
+require('blink.cmp').setup({
+  keymap = {
+    preset = 'default',
+    ['<CR>'] = { 'accept', 'fallback' },
+    ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
+    ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+    ['<C-u>'] = { 'scroll_documentation_up', 'fallback' },
+    ['<C-d>'] = { 'scroll_documentation_down', 'fallback' },
   },
-  mapping = cmp.mapping.preset.insert({
-    -- confirm completion item
-    ['<CR>'] = cmp.mapping({
-      i = function(fallback)
-        if cmp.visible() and cmp.get_active_entry() then
-          cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-        else
-          fallback()
-        end
-      end,
-      s = cmp.mapping.confirm({ select = true }),
-      c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
-    }),
 
-    -- scroll up and down the documentation window
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+  appearance = {
+    use_nvim_cmp_as_default = true,
+    nerd_font_variant = 'mono'
+  },
 
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        if #cmp.get_entries() == 1 then
-          cmp.confirm({ select = true })
-        else
-          cmp.select_next_item()
-        end
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      elseif cmp_has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
+  sources = {
+    default = { 'copilot', 'lsp', 'path', 'snippets', 'buffer' },
+    providers = {
+      copilot = {
+        name = "copilot",
+        module = "blink.compat.source",
+        score_offset = 100,
+        async = true,
+        opts = {
+          get_source = function()
+            return require("copilot_cmp.source")
+          end,
+        },
+      },
+    },
+  },
 
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  }),
+  completion = {
+    accept = {
+      auto_brackets = {
+        enabled = true,
+      },
+    },
+    menu = {
+      draw = {
+        treesitter = { "lsp" },
+      },
+    },
+    documentation = {
+      auto_show = true,
+      auto_show_delay_ms = 200,
+    },
+    ghost_text = {
+      enabled = vim.g.ai_cmp,
+    },
+  },
+
+  enabled = function()
+    -- Disable in certain buffer types
+    local disabled_filetypes = {
+      'fugitive',
+      'fugitiveblame',
+      'gitcommit',
+      'gitrebase',
+      'help',
+      'TelescopePrompt',
+      'oil',
+    }
+    
+    local ft = vim.bo.filetype
+    if vim.tbl_contains(disabled_filetypes, ft) then
+      return false
+    end
+    
+    -- Disable in command-line mode
+    return vim.api.nvim_get_mode().mode ~= 'c'
+  end,
+
+  snippets = {
+    expand = function(snippet) vim.snippet.expand(snippet) end,
+    active = function(filter)
+      return vim.snippet.active(filter)
+    end,
+    jump = function(direction)
+      vim.snippet.jump(direction)
+    end,
+  },
 })
 
 -------------------------------------------------
