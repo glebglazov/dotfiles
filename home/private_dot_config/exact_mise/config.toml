@@ -6,18 +6,18 @@ trusted_config_paths = [
 idiomatic_version_file_enable_tools = ["ruby"]
 
 [tools]
-rust      = '1.83.0'
-go        = '1.24.1'
-nodejs    = '22.14.0'
-bun       = '1.2.2'
-pnpm      = '10.6.0'
-ruby      = '3.4.2'
-yarn      = '1.22.19'
-python    = '3.11.5'
-terraform = '1.4.7'
-java      = '22.0.1'
-erlang    = '27.3.3'
-elixir    = '1.18.3'
+rust      = '1.88.0'
+go        = '1.24.5'
+nodejs    = '24.4.1'
+bun       = '1.2.18'
+pnpm      = '10.13.1'
+ruby      = '3.4.5'
+yarn      = '4.9.2'
+python    = '3.13.5'
+terraform = '1.12.2'
+java      = '24.0.2'
+erlang    = '28.0.2'
+elixir    = '1.18.4'
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"

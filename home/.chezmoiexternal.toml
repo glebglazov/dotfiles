@@ -15,7 +15,7 @@
 
 [".local/bin/mise"]
 	type = "archive-file"
-	{{- $mise_version := "2025.4.7" }}
+	{{- $mise_version := "2025.7.17" }}
 	{{ if eq .chezmoi.os "darwin" -}}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
 	{{- else }}
