@@ -799,7 +799,22 @@ require('blink.cmp').setup({
   keymap = {
     preset = 'default',
     ['<CR>'] = { 'accept', 'fallback' },
-    ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
+    ['<Tab>'] = {
+      function(cmp)
+        if cmp.snippet_active() then
+          return cmp.snippet_forward()
+        elseif cmp.is_visible() then
+          local items = cmp.get_items()
+          if items and #items == 1 then
+            return cmp.accept()
+          else
+            return cmp.select_next()
+          end
+        else
+          return cmp.show()
+        end
+      end
+    },
     ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
     ['<C-u>'] = { 'scroll_documentation_up', 'fallback' },
     ['<C-d>'] = { 'scroll_documentation_down', 'fallback' },
