@@ -171,6 +171,9 @@ require('lazy').setup({
         -- Check periodically to see if it's fixed
         enabled = false,
       },
+      popupmenu = {
+        enabled = false,
+      },
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
@@ -839,9 +842,10 @@ require('blink.cmp').setup({
       auto_show = true,
       auto_show_delay_ms = 200,
     },
-    ghost_text = {
-      enabled = vim.g.ai_cmp,
-    },
+  },
+
+  cmdline = {
+    enabled = false,
   },
 
   enabled = function()
@@ -855,12 +859,12 @@ require('blink.cmp').setup({
       'TelescopePrompt',
       'oil',
     }
-    
+
     local ft = vim.bo.filetype
     if vim.tbl_contains(disabled_filetypes, ft) then
       return false
     end
-    
+
     -- Disable in command-line mode
     return vim.api.nvim_get_mode().mode ~= 'c'
   end,
