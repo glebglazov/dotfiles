@@ -810,10 +810,9 @@ require('blink.cmp').setup({
           else
             return cmp.select_next()
           end
-        else
-          return cmp.show()
         end
-      end
+      end,
+      'fallback'
     },
     ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
     ['<C-u>'] = { 'scroll_documentation_up', 'fallback' },
