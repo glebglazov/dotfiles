@@ -1,0 +1,11 @@
+function update-kubectl-context {
+    for c in $(aws eks list-clusters | jq -r '.clusters | .[]'); do
+        aws eks update-kubeconfig --name "$c"
+    done
+
+{{ if .work -}}
+    for c in $(aws eks list-clusters --profile tds-abc | jq -r '.clusters | .[]'); do
+        aws eks update-kubeconfig --profile tds-abc --name "$c"
+    done
+{{ end }}
+}
