@@ -1204,5 +1204,5 @@ vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
 
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
 
-vim.keymap.set('n', '<LEADER>qq', ':qa')
-vim.keymap.set('n', '<LEADER>QQ', ':qa!')
+vim.keymap.set('n', '<LEADER>qq', ':qa<CR>')
+vim.keymap.set('n', '<LEADER>QQ', ':qa!<CR>')
