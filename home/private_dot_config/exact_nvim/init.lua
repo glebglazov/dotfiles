@@ -962,12 +962,25 @@ autocmd('VimEnter', {
 -------------------------------------------------
 -- Autogroups — Fugitive
 -------------------------------------------------
+
+local fugitive_group = augroup('glebglazov-fugitive-settings', {clear = true})
+
 autocmd('FileType', {
-  group = augroup('glebglazov-fugitive-settings', {clear = true}),
+  group = fugitive_group,
   pattern = 'fugitive',
   callback = function ()
     vim.keymap.set('n', '<TAB>', '=', { remap = true, silent = true, buffer = true }) -- TIL: in vim.keymap.set only "remap" option works
     vim.keymap.set('n', 'ce', ':G commit --allow-empty<CR>', { silent = true, buffer = true })
+  end
+})
+
+autocmd('FileType', {
+  group = fugitive_group,
+  pattern = 'gitcommit',
+  callback = function()
+    vim.opt_local.textwidth = 0
+    vim.opt_local.wrapmargin = 0
+    vim.opt_local.colorcolumn = "72"
   end
 })
 
