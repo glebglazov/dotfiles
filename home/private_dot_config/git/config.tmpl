@@ -54,7 +54,9 @@ sort = -committerdate
   tool = fugitive
 
 # Setup of work account
-[includeIf "gitdir:~/Dev/private/work/"]
+[includeIf "gitdir:~/Dev/work/"]
+    path = ~/.config/git/config-work
+[includeIf "gitdir:~/private/Dev/work/"]
     path = ~/.config/git/config-work
 
 # Setup to push to obsidian backup vault from automations GitHub profile
