@@ -1203,3 +1203,6 @@ vim.keymap.set('n', '<LEADER>fS', ':wq<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
 
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
+
+vim.keymap.set('n', '<LEADER>qq', ':qa')
+vim.keymap.set('n', '<LEADER>QQ', ':qa!')
