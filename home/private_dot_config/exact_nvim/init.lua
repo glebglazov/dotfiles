@@ -50,6 +50,7 @@ local function run_or_prompt_fn(main_command, opts)
   local is_shell_command = opts.is_shell_command or false
   local is_quick_execute = opts.quick_execute or false
   local move_result_to_new_tab = opts.move_result_to_new_tab or false
+  local postfix = opts.postfix or ""
 
   local base_command =
     (is_shell_command and "!:" or ":") ..
@@ -60,9 +61,9 @@ local function run_or_prompt_fn(main_command, opts)
     if (is_quick_execute) then
       local word_under_cursor = vim.fn.expand("<cWORD>")
 
-      vim.api.nvim_feedkeys(base_command .. word_under_cursor .. "\n", "n", false)
+      vim.api.nvim_feedkeys(base_command .. word_under_cursor .. postfix .. "\n", "n", false)
     else
-      vim.api.nvim_feedkeys(base_command, "n", false)
+      vim.api.nvim_feedkeys(base_command .. postfix, "n", false)
     end
 
     if move_result_to_new_tab then
@@ -433,7 +434,7 @@ require('lazy').setup({
       { '<LEADER>gsO', run_or_prompt_fn('G show', { quick_execute = true, move_result_to_new_tab = true }) },
       { '<LEADER>grb', ':G rebase<SPACE>' },
       { '<LEADER>gri', run_or_prompt_fn('G rebase --interactive') },
-      { '<LEADER>grI', run_or_prompt_fn('G rebase --interactive', { quick_execute = true }) },
+      { '<LEADER>grI', run_or_prompt_fn('G rebase --interactive', { quick_execute = true, postfix = "~1" }) },
       { '<LEADER>gra', ':G rebase --abort<CR>' },
       { '<LEADER>grc', ':G rebase --continue<CR>' },
       { '<LEADER>grs', ':G reset --soft<SPACE>' },
