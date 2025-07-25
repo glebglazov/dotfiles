@@ -56,8 +56,3 @@
 	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
 	refreshPeriod = "168h"
 
-[".config/fish/plugins/transient.fish"]
-	type = "archive"
-	url = "https://github.com/zzhaolei/transient.fish/archive/main.tar.gz"
-	stripComponents = 1
-	exact = true
