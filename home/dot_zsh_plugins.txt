@@ -1,0 +1,11 @@
+# Theme (must be loaded first for instant prompt)
+romkatv/powerlevel10k
+
+# Core functionality
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-completions
+
+# Common aliases and utilities
+ohmyzsh/ohmyzsh path:lib/directories.zsh
+ohmyzsh/ohmyzsh path:plugins/common-aliases

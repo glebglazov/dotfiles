@@ -44,15 +44,13 @@ key = "Back"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u001BOH"
+chars = "\u001Bb"
 key = "Left"
-mode = "AppCursor"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u001BOF"
+chars = "\u001Bf"
 key = "Right"
-mode = "AppCursor"
 mods = "Command"
 
 # Move between panes
