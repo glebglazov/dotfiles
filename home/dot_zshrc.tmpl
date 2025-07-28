@@ -11,6 +11,9 @@ fi
 # Initialize completion system before loading plugins
 autoload -Uz compinit && compinit
 
+# Enable menu selection for completions (arrow key navigation)
+zstyle ':completion:*' menu select
+
 # Set emacs key bindings mode (equivalent to oh-my-zsh default)
 bindkey -e
 
