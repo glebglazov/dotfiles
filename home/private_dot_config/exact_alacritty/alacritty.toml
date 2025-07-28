@@ -44,12 +44,12 @@ key = "Back"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u001Bb"
+chars = "\u0001"
 key = "Left"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u001Bf"
+chars = "\u0005"
 key = "Right"
 mods = "Command"
 
