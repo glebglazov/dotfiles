@@ -79,7 +79,7 @@
   w (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
 
   ;; dash to long dash
-  - (tap-hold $tap-timeout $hold-timeout - (unicode "—"))
+  - (tap-hold $tap-timeout $hold-timeout - (unicode "–"))
 
   wmxf C-A-M-m ;; window maximize (full)
   wmxa C-A-M-, ;; window maximize (almost)
