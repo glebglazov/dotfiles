@@ -770,6 +770,7 @@ local servers = {
   },
   gopls = {},
   ruby_lsp = {
+    cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
     init_options = {
       addonSettings = {
         ["Ruby LSP Rails"] = {
@@ -777,6 +778,9 @@ local servers = {
         }
       }
     }
+  },
+  rubocop = {
+    cmd = { vim.fn.expand("~/.local/share/mise/shims/rubocop") },
   }
 }
 
