@@ -332,6 +332,7 @@ require('lazy').setup({
   -------------------------------------------------
   -- Editor improvements
   -------------------------------------------------
+  { "Pocco81/auto-save.nvim", config = true },
   { 'stevearc/qf_helper.nvim', config = true }, -- QuickFix window improvements
   {
     'folke/trouble.nvim', -- Better QuickFix window
