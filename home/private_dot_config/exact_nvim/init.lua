@@ -332,16 +332,6 @@ require('lazy').setup({
   -------------------------------------------------
   -- Editor improvements
   -------------------------------------------------
-  {
-    "Pocco81/auto-save.nvim",
-    config = {
-      execution_message = {
-        message = function()
-          return "Autosaved at " .. vim.fn.strftime("%H:%M:%S")
-        end
-      },
-    },
-  },
   { 'stevearc/qf_helper.nvim', config = true }, -- QuickFix window improvements
   {
     'folke/trouble.nvim', -- Better QuickFix window
