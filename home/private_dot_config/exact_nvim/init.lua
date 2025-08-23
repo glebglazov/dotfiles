@@ -957,16 +957,20 @@ autocmd('VimEnter', {
   group = augroup('glebglazov-open-file-browser-at-startup', {clear = true}),
   callback = function()
     local is_headless = false
+    local has_file_arg = false
 
     local startup_args = vim.v.argv
     for _, arg in ipairs(startup_args) do
       if arg == '--headless' then
         is_headless = true
         break
+      elseif not string.match(arg, '^-') and arg ~= vim.v.argv[1] then
+        -- Check if argument is not a flag and not the nvim executable name
+        has_file_arg = true
       end
     end
 
-    if not is_headless then
+    if not is_headless and not has_file_arg then
       telescope_find_files()
     end
   end
