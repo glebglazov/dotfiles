@@ -1,4 +1,7 @@
 #!/bin/zsh
 
 zoxide add ~/.local/share/chezmoi
-for d in ~/Dev/*; do zoxide add $d/*; done
+for d in $(find ~/private/Dev -type d -maxdepth 2)
+do
+  zoxide add $d
+done
