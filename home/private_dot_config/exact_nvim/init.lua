@@ -17,13 +17,14 @@ local function get_visual_selection()
   return vim.fn.getreg('v')
 end
 
-local function run_in_new_tmux_window_fn(command, opts)
+local function run_in_tmux_fn(command, opts)
   return function ()
-    opts = opts or { with_pause = true }
+    local tmux_cmd = opts.tmux_cmd or "new-window"
+    local with_pause = opts.with_pause or true
 
-    local full_command = command
+    local full_command = type(command) == "function" and command() or command
     local postfix = ''
-    postfix = postfix .. (opts.with_pause and '; read -n 1' or '')
+    postfix = postfix .. (with_pause and '; read -n 1' or '')
     local execute = true
 
     opts.prompt = opts.prompt or false
@@ -38,7 +39,7 @@ local function run_in_new_tmux_window_fn(command, opts)
     end
 
     if execute then
-      full_command = string.format("tmux new-window \"$SHELL -i -c '%s %s'\"", full_command, postfix)
+      full_command = string.format("tmux %s \"$SHELL -i -c '%s %s'\"", tmux_cmd, full_command, postfix)
       vim.print("Executing: " .. full_command)
       vim.fn.system(full_command)
     end
@@ -693,9 +694,10 @@ vim.keymap.set('n', '<LEADER>cs', function()
   vim.cmd('source ' .. vim.fn.stdpath('config') .. '/init.lua')
 end)
 
-vim.keymap.set('n', '<LEADER>cc', function()
-  vim.cmd('!chezmoi apply --source-path %', { silent = true })
-end)
+vim.keymap.set('n', '<LEADER>cc', run_in_tmux_fn(
+  function() return 'chezmoi apply --source-path ' .. vim.fn.expand('%') end,
+  { tmux_cmd = "split-window -h -p 25" }
+))
 
 vim.keymap.set('n', '<LEADER>bb',builtin.buffers)
 vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
@@ -1066,7 +1068,7 @@ autocmd('FileType', {
   pattern = 'go',
   callback = function ()
     local full_path = vim.fn.expand("%")
-    vim.keymap.set('n', '<LEADER>ef', run_in_new_tmux_window_fn("go run " .. full_path), { buffer = true })
+    vim.keymap.set('n', '<LEADER>ef', run_in_tmux_fn("go run " .. full_path), { buffer = true })
   end
 })
 
@@ -1197,16 +1199,16 @@ vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git-pile (EXPERIMENTAL)
-vim.keymap.set('n', '<LEADER>gsp', run_in_new_tmux_window_fn('git submitpr', { with_pause = false }))
-vim.keymap.set('n', '<LEADER>gup', run_in_new_tmux_window_fn('git updatepr', { prompt = true }))
+vim.keymap.set('n', '<LEADER>gsp', run_in_tmux_fn('git submitpr', { with_pause = false }))
+vim.keymap.set('n', '<LEADER>gup', run_in_tmux_fn('git updatepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>guP', function()
   local target = vim.fn.expand("<cWORD>")
 
-  run_in_new_tmux_window_fn(string.format("git updatepr %s", target), { with_pause = false })()
+  run_in_tmux_fn(string.format("git updatepr %s", target), { with_pause = false })()
 end)
-vim.keymap.set('n', '<LEADER>ghp', run_in_new_tmux_window_fn('git headpr'))
-vim.keymap.set('n', '<LEADER>grp', run_in_new_tmux_window_fn('git replacepr', { prompt = true }))
-vim.keymap.set('n', '<LEADER>grP', run_in_new_tmux_window_fn('git rebasepr', { prompt = true }))
+vim.keymap.set('n', '<LEADER>ghp', run_in_tmux_fn('git headpr'))
+vim.keymap.set('n', '<LEADER>grp', run_in_tmux_fn('git replacepr', { prompt = true }))
+vim.keymap.set('n', '<LEADER>grP', run_in_tmux_fn('git rebasepr', { prompt = true }))
 
 -- Running tests
 vim.keymap.set('n', '<LEADER>tt', function() require("neotest").run.run() end)
