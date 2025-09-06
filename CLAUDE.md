@@ -25,7 +25,7 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 
 ### Development Environment
 - **Version Management**: `mise` manages all language runtimes (Node.js, Ruby, Python, Go, Rust, Java, etc.)
-- **Shell**: Primary shell is `fish` with custom prompt and functions
+- **Shell**: Primary shell is `zsh` with custom prompt and functions
 - **Terminal**: Alacritty with Berkeley Mono Nerd Font
 - **Editor**: Neovim with custom Lua configuration
 - **Session Management**: Tmux with custom layouts and session management tools
@@ -84,7 +84,6 @@ The `.chezmoiexternal.toml` automatically downloads and manages:
 - `oh-my-zsh` with `zsh-syntax-highlighting` and `powerlevel10k` theme
 - `git-pile` for enhanced Git workflow
 - `tmux` configuration from gpakosz/.tmux
-- Fish shell transient prompt plugin
 
 ### Multi-Language Development Support
 Configured languages and versions (via mise):
