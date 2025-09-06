@@ -23,8 +23,8 @@ local function run_in_tmux_fn(command, opts)
     local with_pause = opts.with_pause or true
 
     local full_command = type(command) == "function" and command() or command
-    local postfix = ''
-    postfix = postfix .. (with_pause and '; read -n 1' or '')
+
+    local postfix = with_pause and '; read -n 1' or ''
     local execute = true
 
     opts.prompt = opts.prompt or false
