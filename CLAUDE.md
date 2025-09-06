@@ -10,6 +10,7 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 
 ### Chezmoi Operations
 - `chezmoi apply` - Apply configuration changes to the system
+- `chezmoi apply <target_file>` - Apply configuration changes to the target file of the template file
 - `chezmoi diff` - Show what would change without applying
 - `chezmoi add <file>` - Add a new file to be managed by chezmoi
 - `chezmoi re-add` - Update managed files with local changes
