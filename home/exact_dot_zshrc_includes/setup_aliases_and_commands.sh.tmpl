@@ -3,6 +3,10 @@ alias tf="terraform"
 alias ide="tmux-ide-layout"
 alias git="git-wrapper"
 
+{{ if eq .chezmoi.os "darwin" -}}
+alias love="/Applications/love.app/Contents/MacOS/love"
+{{ end }}
+
 # Source all functions
 for func_file in "${0:h}/functions/"*.sh; do
     source "$func_file"
