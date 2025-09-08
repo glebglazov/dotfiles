@@ -1173,6 +1173,17 @@ vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
 }))
 vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn())
 
+vim.keymap.set('v', '<LEADER>fy', function()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+
+  local path = vim.fn.expand('%:p')
+  local range_path = path .. ':' .. start_line .. '-' .. end_line
+
+  vim.fn.setreg('+', range_path)
+  print("Copied to clipboard: " .. range_path)
+end)
+
 vim.keymap.set('n', '<LEADER>by', 'ggVGy')
 
 -- Navigation
