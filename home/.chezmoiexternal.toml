@@ -3,7 +3,6 @@
 	type = "archive-file"
 	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.8.0/goku-arm.zip"
 	path = "goku/goku"
-	refreshPeriod = "168h"
 	executable = true
 
 [".local/bin/kanata"]
@@ -22,7 +21,6 @@
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-x64.tar.gz"
 	{{- end }}
 	path = "mise/bin/mise"
-	refreshPeriod = "168h"
 	executable = true
 
 [".local/share/antidote"]
