@@ -260,5 +260,5 @@ key = "Key9"
 mods = "Control"
 
 [terminal.shell]
-args = ["-l", "-i", "-c", "tmux new-session -A -s main"]
 program = "/bin/zsh"
+args = ["-l", "-i", "-c", "tmux new-session -A -s main"]
