@@ -423,9 +423,9 @@ require('lazy').setup({
       {
         '<LEADER>gop', function()
           local target = vim.fn.expand("<cWORD>")
-          -- command below might be very fish-shell specific
-          local my_pr_command = string.format("branch=(git-pilebranchname %s) gh pr view $branch --web", target)
-          local historical_pr_command = string.format("url=$(gh pr list --search %s --state=all --json=url --jq=\".[0].url\") open $url", target)
+          -- zsh version
+          local my_pr_command = string.format("branch=$(git-pilebranchname %s) && gh pr view $branch --web", target)
+          local historical_pr_command = string.format("url=$(gh pr list --search %s --state=all --json=url --jq=\".[0].url\") && open $url", target)
 
           vim.cmd("!" .. my_pr_command .. "||" .. historical_pr_command)
         end
