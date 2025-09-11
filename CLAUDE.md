@@ -42,7 +42,7 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 
 ### Key Configuration Categories
 
-**Shell Environment** (`home/exact_dot_zshrc_includes/`):
+**Shell Environment** (`home/exact_dot_my_zsh_plugins/`):
 - Modular zsh configuration with separate files for different concerns
 - `env_vars.sh` - Environment variables
 - `aliases_and_commands.sh` - Shell aliases and functions
