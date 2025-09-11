@@ -1111,7 +1111,9 @@ autocmd('FileType', {
   group = augroup('glebglazov-json-settings', {clear = true}),
   pattern = 'json',
   callback = function ()
-    vim.bo.equalprg = [[sh -c 'input=$(cat); echo "$input" | jq . 2>/dev/null || echo "$input"']]
+    vim.bo.equalprg = [=[
+      sh -c 'input=$(cat); jq_output=$(echo "$input" | jq . 2>/dev/null); [[ $? -eq 0 ]] && echo "$jq_output" || echo "$input"'
+    ]=]
   end
 })
 
