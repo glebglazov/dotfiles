@@ -1105,6 +1105,17 @@ autocmd('BufWritePre', {
 })
 
 -------------------------------------------------
+-- Autogroups — JSON
+-------------------------------------------------
+autocmd('FileType', {
+  group = augroup('glebglazov-json-settings', {clear = true}),
+  pattern = 'json',
+  callback = function ()
+    vim.bo.equalprg = [[sh -c 'input=$(cat); echo "$input" | jq . 2>/dev/null || echo "$input"']]
+  end
+})
+
+-------------------------------------------------
 -- Autogroups — QuickFix
 -------------------------------------------------
 autocmd('FileType', {
