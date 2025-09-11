@@ -20,7 +20,7 @@ end
 local function run_in_tmux_fn(command, opts)
   return function ()
     local tmux_cmd = opts.tmux_cmd or "new-window"
-    local with_pause = opts.with_pause or true
+    local with_pause = opts.with_pause == nil and true or opts.with_pause
 
     local full_command = type(command) == "function" and command() or command
 
@@ -40,7 +40,6 @@ local function run_in_tmux_fn(command, opts)
 
     if execute then
       full_command = string.format("tmux %s \"$SHELL -i -c '%s %s'\"", tmux_cmd, full_command, postfix)
-      vim.print("Executing: " .. full_command)
       vim.fn.system(full_command)
     end
   end
@@ -696,7 +695,7 @@ end)
 
 vim.keymap.set('n', '<LEADER>cc', run_in_tmux_fn(
   function() return 'chezmoi apply --source-path ' .. vim.fn.expand('%') end,
-  { tmux_cmd = "split-window -h -p 25" }
+  { tmux_cmd = "split-window -h -p 25", with_pause = false }
 ))
 
 vim.keymap.set('n', '<LEADER>bb',builtin.buffers)
