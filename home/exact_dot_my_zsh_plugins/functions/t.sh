@@ -1,3 +1,3 @@
 function t {
-    tmux new -A -s main "$@"
+    tmux new -A -s main
 }
