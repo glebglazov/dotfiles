@@ -393,6 +393,8 @@ bind-key -r p run-shell "sesh connect \"$(
 )\""
 bind-key -r P run-shell "tmux new-window ~/.local/bin/tmux-windowiser"
 
+bind-key N command-prompt -p "New session name:" "new-session -s '%%'"
+
 bind-key -r [ prev
 bind-key -r ] next
 bind-key -r \{ swap-window -t -1 \; prev

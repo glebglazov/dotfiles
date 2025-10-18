@@ -155,6 +155,12 @@ chars = "\u0002P"
 key = "P"
 mods = "Command|Shift"
 
+# New session with prompted name
+[[keyboard.bindings]]
+chars = "\u0002N"
+key = "N"
+mods = "Command|Shift"
+
 # Rename window
 [[keyboard.bindings]]
 chars = "\u0002,"
