@@ -19,6 +19,7 @@ java      = '24.0.2'
 erlang    = '28.0.2'
 elixir    = '1.18.4'
 uv        = '0.8.15'
+lua       = '5.4.8'
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"
