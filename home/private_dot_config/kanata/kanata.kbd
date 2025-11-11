@@ -47,11 +47,16 @@
   (cmd-log none none open -g $url)
 )
 
+(deftemplate openapp (appname)
+  (cmd-log none none open -a $appname)
+)
+
 (defalias
   ;; layers
   l_fn (layer-while-held fn)
   l_system (layer-while-held system)
   l_window (layer-while-held window)
+  l_app (layer-while-held app)
   l_colemak (layer-switch colemak)
   l_qwerty (layer-switch qwerty)
 
@@ -81,6 +86,7 @@
   fn (tap-hold $tap-timeout $hold-timeout fn @l_fn)
   5 (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_system 5)
   w (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
+  0 (tap-hold-release-timeout $tap-timeout $hold-timeout 0 @l_app 0)
 
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "–"))
@@ -97,6 +103,16 @@
   open_clipboard_history (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
   open_snippets (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
   lock_system C-M-q
+
+  ;; app switching
+  l_a_al (t! openapp Alacritty)
+  l_a_ar (t! openapp Arc)
+  l_a_fa (t! openapp Fantastical)
+  l_a_ma (t! openapp Mail)
+  l_a_sp (t! openapp Spotify)
+  l_a_ob (t! openapp Obsidian)
+  l_a_td (t! openapp Todoist)
+  l_a_tg (t! openapp Telegram)
 )
 
 (defchordsv2
@@ -114,7 +130,7 @@
 
 (deflayer qwerty
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_q_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
+  @l_q_grv 1        2        3        4        @5       6        7        8        9        @0       @-       =        bspc
   tab      q        @w       e        r        t        y        u        i        o        p        [        ]        ret
   esc      a        s        d        f        g        h        j        k        l        ;        '        \
   lsft     z        x        c        v        b        n        m        ,        .        /        rsft
@@ -123,7 +139,7 @@
 
 (deflayer colemak
   esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_c_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
+  @l_c_grv 1        2        3        4        @5       6        7        8        9        @0       @-       =        bspc
   tab      q        @w       f        p        b        j        l        u        y        ;        [        ]        ret
   esc      a        @l_c_r   @l_c_s   @l_c_t   g        m        @l_c_n   @l_c_e   @l_c_i   o        '        \
   lsft     z        x        @l_c_c   d        v        k        @l_c_h   ,        .        /        rsft
@@ -163,5 +179,14 @@
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+)
+
+(deflayer app
+  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       @l_a_ma  XX       @l_a_al  XX       XX       XX       @l_a_ob  XX       XX       XX       XX
+  XX       XX       @l_a_sp  XX       XX       @l_a_tg  XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       @l_a_fa  XX       @l_a_ar  XX       @l_a_td  XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
