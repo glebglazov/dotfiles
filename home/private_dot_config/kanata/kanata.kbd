@@ -43,6 +43,10 @@
   )
 )
 
+(deftemplate deeplink (url)
+  (cmd-log none none open -g $url)
+)
+
 (defalias
   ;; layers
   l_fn (layer-while-held fn)
@@ -81,17 +85,17 @@
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "–"))
 
-  wmxf C-A-M-m ;; window maximize (full)
-  wmxa C-A-M-, ;; window maximize (almost)
-  wmvh C-A-M-h ;; window move (left)
-  wmvj C-A-M-j ;; window move (down)
-  wmvk C-A-M-k ;; window move (up)
-  wmvl C-A-M-l ;; window move (right)
-  wsam C-A-M-o ;; window switch to another monitor
+  wmxf (t! deeplink raycast://extensions/raycast/window-management/maximize) ;; window maximize (full)
+  wmxa (t! deeplink raycast://extensions/raycast/window-management/almost-maximize) ;; window maximize (almost)
+  wmvh (t! deeplink raycast://extensions/raycast/window-management/left-half) ;; window move (left)
+  wmvj (t! deeplink raycast://extensions/raycast/window-management/bottom-half) ;; window move (down)
+  wmvk (t! deeplink raycast://extensions/raycast/window-management/top-half) ;; window move (up)
+  wmvl (t! deeplink raycast://extensions/raycast/window-management/right-half) ;; window move (right)
+  wsam (t! deeplink raycast://extensions/raycast/window-management/next-display) ;; window switch to another monitor
 
   ;; chords actons
-  open_clipboard_history (cmd-log none none open -g raycast://extensions/raycast/clipboard-history/clipboard-history)
-  open_snippets (cmd-log none none open -g raycast://extensions/raycast/snippets/search-snippets)
+  open_clipboard_history (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
+  open_snippets (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
   lock_system C-M-q
 )
 
