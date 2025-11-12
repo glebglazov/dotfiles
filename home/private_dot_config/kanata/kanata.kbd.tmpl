@@ -108,6 +108,11 @@
 
   ;; app switching
   l_a_ala (t! openapp Alacritty)
+{{- if .work }}
+  l_a_agi (t! openapp ChatGPT)
+{{- else }}
+  l_a_agi (t! openapp Claude)
+{{- end }}
   l_a_arc (t! openapp Arc)
   l_a_fan (t! openapp Fantastical)
   l_a_mai (t! openapp Mail)
@@ -118,6 +123,7 @@
   l_a_tod (t! openapp Todoist)
   l_a_tgr (t! openapp Telegram)
   l_a_wts (t! openapp WhatsApp)
+  l_a_zoo (t! openapp Zoom)
 )
 
 (defchordsv2
@@ -183,9 +189,9 @@
 (deflayer app
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       XX       XX       @l_a_pst XX       XX       XX
+  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       @l_a_agi XX       @l_a_pst XX       XX       XX
   XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       @l_a_slk XX       XX       XX
-  XX       XX       XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
+  XX       @l_a_zoo XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
 
