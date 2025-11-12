@@ -110,6 +110,7 @@
   l_a_fan (t! openapp Fantastical)
   l_a_mai (t! openapp Mail)
   l_a_pst (t! openapp Postman)
+  l_a_slk (t! openapp Slack)
   l_a_spo (t! openapp Spotify)
   l_a_obd (t! openapp Obsidian)
   l_a_tod (t! openapp Todoist)
@@ -175,20 +176,20 @@
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
 
+(deflayer app
+  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       XX       XX       @l_a_pst XX       XX       XX
+  XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       @l_a_slk XX       XX       XX
+  XX       XX       XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
+  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+)
+
 (deflayer sample
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
-)
-
-(deflayer app
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       XX       XX       @l_a_pst XX       XX       XX
-  XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
