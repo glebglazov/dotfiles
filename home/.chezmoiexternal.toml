@@ -7,7 +7,7 @@
 
 [".local/bin/kanata"]
 	type = "file"
-	url = "https://github.com/jtroo/kanata/releases/download/v1.9.0/kanata_macos_cmd_allowed_arm64"
+	url = "https://github.com/jtroo/kanata/releases/download/v1.10.0/kanata_macos_cmd_allowed_arm64"
 	executable = true
 	checksum.sha256="616480fc13b9040a02f7df13f7b49fce8273aa68d2cc73d8416e50fd9cfc2f7f"
 {{- end }}
