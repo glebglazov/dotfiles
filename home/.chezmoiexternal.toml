@@ -1,10 +1,4 @@
 {{ if eq .chezmoi.os "darwin" -}}
-[".local/bin/goku"]
-	type = "archive-file"
-	url = "https://github.com/yqrashawn/GokuRakuJoudo/releases/download/v0.8.0/goku-arm.zip"
-	path = "goku/goku"
-	executable = true
-
 [".local/bin/kanata"]
 	type = "archive-file"
 	url = "https://github.com/jtroo/kanata/releases/download/v1.10.0/macos-binaries-arm64-v1.10.0.zip"
