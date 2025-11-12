@@ -105,15 +105,16 @@
   lock_system C-M-q
 
   ;; app switching
-  l_a_al (t! openapp Alacritty)
-  l_a_ar (t! openapp Arc)
-  l_a_fa (t! openapp Fantastical)
-  l_a_ma (t! openapp Mail)
-  l_a_sp (t! openapp Spotify)
-  l_a_ob (t! openapp Obsidian)
-  l_a_td (t! openapp Todoist)
-  l_a_tg (t! openapp Telegram)
-  l_a_wa (t! openapp WhatsApp)
+  l_a_ala (t! openapp Alacritty)
+  l_a_arc (t! openapp Arc)
+  l_a_fan (t! openapp Fantastical)
+  l_a_mai (t! openapp Mail)
+  l_a_pst (t! openapp Postman)
+  l_a_spo (t! openapp Spotify)
+  l_a_obd (t! openapp Obsidian)
+  l_a_tod (t! openapp Todoist)
+  l_a_tgr (t! openapp Telegram)
+  l_a_wts (t! openapp WhatsApp)
 )
 
 (defchordsv2
@@ -186,8 +187,8 @@
 (deflayer app
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_wa  @l_a_ma  XX       @l_a_al  XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_sp  @l_a_td  XX       @l_a_tg  XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       @l_a_fa  XX       @l_a_ar  @l_a_ob  XX       XX       XX       XX       XX
+  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       XX       XX       @l_a_pst XX       XX       XX
+  XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       XX       XX       XX       XX
+  XX       XX       XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
 )
