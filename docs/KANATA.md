@@ -52,6 +52,15 @@ Reboot again.
 sudo kanata --cfg your-config.kbd
 ```
 
+### 6. Reset Input Monitoring Permissions (Optional)
+
+If kanata isn't working properly:
+
+1. Remove your terminal (iTerm, Alacritty, etc.) and kanata from **Input Monitoring** permissions in System Settings
+2. Re-add them to Input Monitoring
+3. Reload your terminal (close and reopen)
+4. Try running kanata again
+
 ---
 
 ## Notes
