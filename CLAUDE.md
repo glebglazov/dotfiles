@@ -80,11 +80,10 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 
 ### External Tool Management
 The `.chezmoiexternal.toml` automatically downloads and manages:
-- `mise` (v2025.7.17) for language version management
-- `kanata` (v1.9.0) for keyboard remapping on macOS
-- `oh-my-zsh` with `zsh-syntax-highlighting` and `powerlevel10k` theme
+- `mise` for language version management
+- `kanata` for keyboard remapping on macOS
+- `antidote` for zsh plugin management
 - `git-pile` for enhanced Git workflow
-- `tmux` configuration from gpakosz/.tmux
 
 ### Multi-Language Development Support
 Configured languages and versions (via mise):
