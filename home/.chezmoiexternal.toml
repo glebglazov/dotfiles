@@ -29,26 +29,6 @@
 	stripComponents = 1
 	exact = true
 
-[".oh-my-zsh"]
-	type = "archive"
-	url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
-	stripComponents = 1
-	exact = true
-	refreshPeriod = "168h"
-
-[".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
-	type = "archive"
-	url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
-	stripComponents = 1
-	exact = true
-	refreshPeriod = "168h"
-
-[".oh-my-zsh/custom/themes/powerlevel10k"]
-	type = "archive"
-	url = "https://github.com/romkatv/powerlevel10k/archive/v1.20.0.tar.gz"
-	stripComponents = 1
-	exact = true
-
 ['.local/share/git-pile']
 	type = "archive"
 	url = "https://github.com/keith/git-pile/archive/dbd9585fb0762c83b24873017bd0727225b37a76.tar.gz"
