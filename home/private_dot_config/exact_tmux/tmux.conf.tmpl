@@ -1,0 +1,149 @@
+# -- General settings ----------------------------------------------------------
+
+set -g default-terminal "screen-256color"
+set -g default-command "${SHELL}"
+set -ga terminal-overrides ",xterm-256color:Tc"
+
+# Enable mouse support
+set -g mouse on
+
+# Start window and pane numbering at 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Renumber windows when one is closed
+set -g renumber-windows on
+
+# Increase scrollback buffer size
+set -g history-limit 50000
+
+# Display messages for 2 seconds
+set -g display-time 2000
+
+# Refresh status bar every 5 seconds
+set -g status-interval 5
+
+# Focus events enabled for terminals that support them
+set -g focus-events on
+
+# Vi mode
+set -g status-keys vi
+set -g mode-keys vi
+
+{{- if (eq .chezmoi.os "darwin") }}
+# macOS specific: disable key repeat delay
+set-option -g repeat-time 0
+{{ end -}}
+
+# -- Clipboard -----------------------------------------------------------------
+
+# Copy to system clipboard
+{{- if (eq .chezmoi.os "darwin") }}
+set -g copy-command "pbcopy"
+{{- else }}
+# Linux: requires xsel or xclip
+set -g copy-command "xclip -selection clipboard"
+{{- end }}
+
+# -- Minimal Status Bar --------------------------------------------------------
+
+# Should be off by default
+set -g status off
+
+set -g status-position bottom
+
+# Colors
+set -g status-style bg=default,fg=colour245
+set -g pane-border-style fg=colour238
+set -g pane-active-border-style fg=colour245
+set -g message-style fg=colour0,bg=colour245
+set -g mode-style fg=colour0,bg=colour11,bold
+
+# Window status
+setw -g window-status-style fg=colour238
+setw -g window-status-current-style fg=colour250,bold
+setw -g window-status-format " #I #W "
+setw -g window-status-current-format " #I #W "
+
+# Status bar content
+set -g status-left "#[fg=colour109,bold] #S  "
+set -g status-right "#{?client_prefix,#[fg=colour15] PREFIX ,}#[fg=colour238]%H:%M "
+set -g status-left-length 20
+set -g status-right-length 40
+
+# -- Custom Keybindings --------------------------------------------------------
+
+# Copy mode bindings
+bind -T copy-mode-vi v send -X begin-selection
+bind -T copy-mode-vi y send -X copy-pipe-and-cancel
+bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel
+bind -T copy-mode-vi q send -X cancel
+bind -T copy-mode-vi Escape send -X cancel
+
+# Window and pane management
+bind-key t new-window
+bind-key s copy-mode
+bind-key b set-option status
+bind-key -r w confirm-before -p "kill-pane #P? (y/n)" kill-pane
+bind-key -r , swap-pane -U
+bind-key -r . swap-pane -D
+
+bind-key -r d split-window -h -c "#{pane_current_path}"
+bind-key -r D split-window -c "#{pane_current_path}"
+
+bind-key -r Left resize-pane -L 10
+bind-key -r Up resize-pane -U 10
+bind-key -r Down resize-pane -D 10
+bind-key -r Right resize-pane -R 10
+
+# Vim-aware pane navigation
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
+
+# Pane navigation with auto-zoom
+bind-key -r m resize-pane -Z
+bind-key -r h select-pane -L \; resize-pane -Z
+bind-key -r j select-pane -D \; resize-pane -Z
+bind-key -r k select-pane -U \; resize-pane -Z
+bind-key -r l select-pane -R \; resize-pane -Z
+bind-key -r H select-pane -L
+bind-key -r J select-pane -D
+bind-key -r K select-pane -U
+bind-key -r L select-pane -R
+
+# Tmux quickopen integration
+bind-key o run-shell "tmux new-window 'tmux-quickopen edit'"
+bind-key 0 run-shell "tmux-quickopen goto 0"
+bind-key 1 run-shell "tmux-quickopen goto 1"
+bind-key 2 run-shell "tmux-quickopen goto 2"
+bind-key 3 run-shell "tmux-quickopen goto 3"
+bind-key 4 run-shell "tmux-quickopen goto 4"
+bind-key 5 run-shell "tmux-quickopen goto 5"
+bind-key 6 run-shell "tmux-quickopen goto 6"
+bind-key 7 run-shell "tmux-quickopen goto 7"
+bind-key 8 run-shell "tmux-quickopen goto 8"
+bind-key 9 run-shell "tmux-quickopen goto 9"
+
+# Session management with sesh
+bind-key -r p run-shell "sesh connect \"$(
+	sesh list | fzf-tmux -p 55%,60% \
+		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
+		--header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
+		--bind 'tab:down,btab:up' \
+		--bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list)' \
+		--bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t)' \
+		--bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c)' \
+		--bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z)' \
+		--bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
+		--bind 'ctrl-d:execute(tmux kill-session -t {})+change-prompt(⚡  )+reload(sesh list)'
+)\""
+bind-key -r P run-shell "tmux new-window ~/.local/bin/tmux-windowiser"
+
+# Create new session
+bind-key N command-prompt -p "New session name:" "new-session -s '%%'"
+
+# Window navigation
+bind-key -r [ prev
+bind-key -r ] next
+bind-key -r \{ swap-window -t -1 \; prev
+bind-key -r \} swap-window -t +1 \; next

@@ -33,8 +33,3 @@
 	url = "https://github.com/keith/git-pile/archive/dbd9585fb0762c83b24873017bd0727225b37a76.tar.gz"
 	stripComponents = 1
 	exact = true
-
-[".config/tmux/tmux.conf"]
-	type = "file"
-	url = "https://raw.githubusercontent.com/gpakosz/.tmux/master/.tmux.conf"
-	refreshPeriod = "168h"

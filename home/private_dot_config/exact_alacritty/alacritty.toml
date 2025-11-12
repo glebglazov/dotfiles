@@ -210,7 +210,7 @@ mods = "Command"
 
 # Copy mode
 [[keyboard.bindings]]
-chars = "\u0002\r"
+chars = "\u0002s"
 key = "S"
 mods = "Command"
 
