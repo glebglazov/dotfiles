@@ -101,6 +101,8 @@
 
   ;; chords actons
   open_clipboard_history (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
+  open_confetti (t! deeplink raycast://extensions/raycast/raycast/confetti)
+  open_emoji_symbols (t! deeplink raycast://extensions/raycast/emoji-symbols/search-emoji-symbols)
   open_snippets (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
   lock_system C-M-q
 
@@ -126,6 +128,8 @@
   (t n) esc $chord-timeout first-release (qwerty)
 
   (; r) lrld $chord-timeout-slow first-release ()
+  (; c) @open_confetti $chord-timeout-slow first-release ()
+  (; e) @open_emoji_symbols $chord-timeout-slow first-release ()
   (; t) @open_snippets $chord-timeout-slow first-release ()
   (; v) @open_clipboard_history $chord-timeout-slow first-release ()
   (; q) @lock_system $chord-timeout-slow first-release ()
