@@ -6,20 +6,25 @@
 	executable = true
 
 [".local/bin/kanata"]
-	type = "file"
-	url = "https://github.com/jtroo/kanata/releases/download/v1.10.0/kanata_macos_cmd_allowed_arm64"
+	type = "archive-file"
+	url = "https://github.com/jtroo/kanata/releases/download/v1.10.0/macos-binaries-arm64-v1.10.0.zip"
+	path = "kanata_macos_cmd_allowed_arm64"
+	checksum.sha256="19fdeb89087b83cd6c1ac8f49612206acbb5134f5b14154966dcb3fa80dc9150"
 	executable = true
-	checksum.sha256="616480fc13b9040a02f7df13f7b49fce8273aa68d2cc73d8416e50fd9cfc2f7f"
 {{- end }}
 
 [".local/bin/mise"]
 	type = "archive-file"
 	{{- $mise_version := "2025.11.3" }}
+	{{- $mise_checksum := "" }}
 	{{ if eq .chezmoi.os "darwin" -}}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
+	{{- $mise_checksum = "4e7dc4b6204eb6291039d10c7339fe6c800061316886934b9964bda0390f848a" }}
 	{{- else }}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-x64.tar.gz"
+	{{- $mise_checksum = "237117418efdfb42af5c5833bddcc151e50ffdb3046aa73d57a94b8426538081" }}
 	{{- end }}
+	checksum.sha256="{{ $mise_checksum }}"
 	path = "mise/bin/mise"
 	executable = true
 
