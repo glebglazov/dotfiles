@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-[ -f bin/webpack-dev-server ] && bin/webpack-dev-server || bin/webpacker-dev-server

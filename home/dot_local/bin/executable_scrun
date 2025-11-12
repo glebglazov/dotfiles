@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-vim scrun.sh && chmod a+x scrun.sh && ./scrun.sh
