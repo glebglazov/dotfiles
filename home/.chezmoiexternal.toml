@@ -16,7 +16,7 @@
 	{{- $mise_checksum = "4e7dc4b6204eb6291039d10c7339fe6c800061316886934b9964bda0390f848a" }}
 	{{- else }}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-x64.tar.gz"
-	{{- $mise_checksum = "237117418efdfb42af5c5833bddcc151e50ffdb3046aa73d57a94b8426538081" }}
+	{{- $mise_checksum = "7328499f0c467b11b8131e8d7d272948b46a423967b7235228c2e62a95b2459c" }}
 	{{- end }}
 	checksum.sha256="{{ $mise_checksum }}"
 	path = "mise/bin/mise"
