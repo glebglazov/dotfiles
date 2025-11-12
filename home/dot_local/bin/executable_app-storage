@@ -1,0 +1,28 @@
+#!/bin/bash
+# Find macOS applications using the most storage
+
+set -euo pipefail
+
+echo "🔍 Analyzing app storage usage..."
+echo ""
+
+echo "=== Application Support ==="
+du -sh ~/Library/"Application Support"/* 2>/dev/null | sort -hr | head -15
+echo ""
+
+echo "=== Caches ==="
+du -sh ~/Library/Caches/* 2>/dev/null | sort -hr | head -15
+echo ""
+
+echo "=== Containers ==="
+du -sh ~/Library/Containers/* 2>/dev/null | sort -hr | head -15
+echo ""
+
+echo "=== Total by category ==="
+du -sh ~/Library/"Application Support" ~/Library/Caches ~/Library/Containers 2>/dev/null
+echo ""
+
+echo "💡 Quick cleanup suggestions:"
+echo "  brew cleanup              # Clean Homebrew cache"
+echo "  pnpm store prune          # Clean pnpm cache"
+echo "  poetry cache clear --all  # Clean poetry cache"
