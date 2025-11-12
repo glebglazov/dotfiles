@@ -113,6 +113,7 @@
   l_a_ob (t! openapp Obsidian)
   l_a_td (t! openapp Todoist)
   l_a_tg (t! openapp Telegram)
+  l_a_wa (t! openapp WhatsApp)
 )
 
 (defchordsv2
@@ -185,7 +186,7 @@
 (deflayer app
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       @l_a_ma  XX       @l_a_al  XX       XX       XX       XX       XX       XX       XX       XX
+  XX       XX       @l_a_wa  @l_a_ma  XX       @l_a_al  XX       XX       XX       XX       XX       XX       XX       XX
   XX       XX       @l_a_sp  @l_a_td  XX       @l_a_tg  XX       XX       XX       XX       XX       XX       XX
   XX       XX       XX       @l_a_fa  XX       @l_a_ar  @l_a_ob  XX       XX       XX       XX       XX
   XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
