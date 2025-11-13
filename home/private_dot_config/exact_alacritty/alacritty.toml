@@ -2,6 +2,7 @@
 
 [window]
 decorations_theme_variant = "Dark"
+dynamic_title = true
 
 [font]
 size = 16

@@ -30,6 +30,9 @@ set -g focus-events on
 set -g status-keys vi
 set -g mode-keys vi
 
+set -g set-titles on
+set -g set-titles-string "#S"
+
 {{- if (eq .chezmoi.os "darwin") }}
 # macOS specific: disable key repeat delay
 set-option -g repeat-time 0
