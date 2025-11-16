@@ -76,6 +76,9 @@ set -g status-right-length 40
 
 # -- Custom Keybindings --------------------------------------------------------
 
+# Reload configuration
+bind r source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded"
+
 # Copy mode bindings
 bind -T copy-mode-vi v send -X begin-selection
 bind -T copy-mode-vi y send -X copy-pipe-and-cancel
