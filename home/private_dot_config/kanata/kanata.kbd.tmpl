@@ -53,78 +53,70 @@
 
 (defalias
   ;; layers
-  l_fn (layer-while-held fn)
-  l_system (layer-while-held system)
-  l_window (layer-while-held window)
-  l_app (layer-while-held app)
-  l_colemak (layer-switch colemak)
-  l_qwerty (layer-switch qwerty)
+  l_fn     (layer-while-held fn)
+  l_sys    (layer-while-held system)
+  l_wh_win (layer-while-held window)
+  l_sw_win (layer-switch window)
+  l_wh_app (layer-while-held app)
+  l_sw_app (layer-switch app)
+  l_act    (layer-switch actions)
+  l_scr    (layer-switch screenshot)
+  l_ray    (layer-switch raycast)
+  l_cmk    (layer-switch colemak)
+  l_qwe    (layer-switch qwerty)
 
-  ;; layout qwerty rebinds
-  l_q_grv (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
-  l_q_s (t! charmod s lsft)
-  l_q_d (t! charmod d lctl)
-  l_q_f (t! charmod f lmet)
-  l_q_c (t! charmod c lalt)
-  l_q_j (t! charmod j rmet)
-  l_q_k (t! charmod k rctl)
-  l_q_l (t! charmod l rsft)
-  l_q_m (t! charmod m ralt)
-
-  ;; layout colemak rebinds
-  l_c_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwerty)
-  l_c_r (t! charmod r lsft)
-  l_c_s (t! charmod s lctl)
-  l_c_t (t! charmod t lmet)
-  l_c_c (t! charmod c lalt)
-  l_c_n (t! charmod n rmet)
-  l_c_e (t! charmod e rctl)
-  l_c_i (t! charmod i rsft)
-  l_c_h (t! charmod h ralt)
+  ;; layout switching via grave key
+  l_qwe_grv (tap-hold $tap-timeout $hold-timeout grv @l_cmk)
+  l_cmk_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwe)
 
   ;; layer switchers
   fn   (tap-hold $tap-timeout $hold-timeout fn @l_fn)
-  5    (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_system 5)
-  w    (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
-  u    (fork u (one-shot-press 2000 @l_app) (lmet rmet))
-  rmet (tap-dance 200 (rmet (layer-toggle app)))
+  5    (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_sys 5)
+  w    (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_wh_win w)
+  u    (fork u (one-shot-press 2000 @l_wh_app) (lmet rmet))
+  rmet (tap-dance 200 (rmet @l_wh_app))
 
   ;; dash to long dash
   - (tap-hold $tap-timeout $hold-timeout - (unicode "–"))
 
-  wmxf (t! deeplink raycast://extensions/raycast/window-management/maximize) ;; window maximize (full)
-  wmxa (t! deeplink raycast://extensions/raycast/window-management/almost-maximize) ;; window maximize (almost)
-  wmvh (t! deeplink raycast://extensions/raycast/window-management/left-half) ;; window move (left)
-  wmvj (t! deeplink raycast://extensions/raycast/window-management/bottom-half) ;; window move (down)
-  wmvk (t! deeplink raycast://extensions/raycast/window-management/top-half) ;; window move (up)
-  wmvl (t! deeplink raycast://extensions/raycast/window-management/right-half) ;; window move (right)
-  wsam (t! deeplink raycast://extensions/raycast/window-management/next-display) ;; window switch to another monitor
+  ;; window management actions
+  a_winmax  (t! deeplink raycast://extensions/raycast/window-management/maximize) ;; window maximize (full)
+  a_winamax (t! deeplink raycast://extensions/raycast/window-management/almost-maximize) ;; window maximize (almost)
+  a_winmovh (t! deeplink raycast://extensions/raycast/window-management/left-half) ;; window move (left)
+  a_winmovj (t! deeplink raycast://extensions/raycast/window-management/bottom-half) ;; window move (down)
+  a_winmovk (t! deeplink raycast://extensions/raycast/window-management/top-half) ;; window move (up)
+  a_winmovl (t! deeplink raycast://extensions/raycast/window-management/right-half) ;; window move (right)
+  a_winmosw (t! deeplink raycast://extensions/raycast/window-management/next-display) ;; window switch to another monitor
 
-  ;; chords actons
-  open_clipboard_history (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
-  open_confetti (t! deeplink raycast://extensions/raycast/raycast/confetti)
-  open_emoji_symbols (t! deeplink raycast://extensions/raycast/emoji-symbols/search-emoji-symbols)
-  open_snippets (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
-  lock_system C-M-q
+  ;; chord actions
+  a_cliphis (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
+  a_confett (t! deeplink raycast://extensions/raycast/raycast/confetti)
+  a_emojlst (t! deeplink raycast://extensions/raycast/emoji-symbols/search-emoji-symbols)
+  a_snippet (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
+  a_locksys C-M-q
 
-  ;; app switching
-  l_a_ala (t! openapp Alacritty)
+  ;; screenshot actions
+  a_scrarea (t! deeplink cleanshot://capture-area)
+  a_scrfull (t! deeplink cleanshot://capture-fullscreen)
+
+  ;; app opening actions
+  a_opn_ala (t! openapp Alacritty)
 {{- if .work }}
-  l_a_agi (t! openapp ChatGPT)
+  a_opn_agi (t! openapp ChatGPT)
 {{- else }}
-  l_a_agi (t! openapp Claude)
+  a_opn_agi (t! openapp Claude)
 {{- end }}
-  l_a_arc (t! openapp Arc)
-  l_a_fan (t! openapp Fantastical)
-  l_a_mai (t! openapp Mail)
-  l_a_pst (t! openapp Postman)
-  l_a_slk (t! openapp Slack)
-  l_a_spo (t! openapp Spotify)
-  l_a_obd (t! openapp Obsidian)
-  l_a_tod (t! openapp Todoist)
-  l_a_tgr (t! openapp Telegram)
-  l_a_wts (t! openapp WhatsApp)
-  l_a_zoo (t! openapp Zoom)
+  a_opn_arc (t! openapp Arc)
+  a_opn_fan (t! openapp Fantastical)
+  a_opn_mai (t! openapp Mail)
+  a_opn_pst (t! openapp Postman)
+  a_opn_slk (t! openapp Slack)
+  a_opn_spo (t! openapp Spotify)
+  a_opn_obd (t! openapp Obsidian)
+  a_opn_tod (t! openapp Todoist)
+  a_opn_tgr (t! openapp Telegram)
+  a_opn_wts (t! openapp WhatsApp)
+  a_opn_zoo (t! openapp Zoom)
 )
 
 (defchordsv2
@@ -134,91 +126,111 @@
   (f j) esc $chord-timeout first-release (colemak)
   (t n) esc $chord-timeout first-release (qwerty)
 
+  (d f) @l_act $chord-timeout-slow first-release (colemak)
+
   (; r) lrld $chord-timeout-slow first-release ()
-  (; c) @open_confetti $chord-timeout-slow first-release ()
-  (; e) @open_emoji_symbols $chord-timeout-slow first-release ()
-  (; t) @open_snippets $chord-timeout-slow first-release ()
-  (; v) @open_clipboard_history $chord-timeout-slow first-release ()
-  (; q) @lock_system $chord-timeout-slow first-release ()
+  (; c) @a_confett $chord-timeout-slow first-release ()
+  (; e) @a_emojlst $chord-timeout-slow first-release ()
+  (; t) @a_snippet $chord-timeout-slow first-release ()
+  (; v) @a_cliphis $chord-timeout-slow first-release ()
+  (; q) @a_locksys $chord-timeout-slow first-release ()
 )
 
 (deflayer qwerty
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_q_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
-  tab      q        @w       e        r        t        y        @u       i        o        p        [        ]        ret
-  esc      a        s        d        f        g        h        j        k        l        ;        '        \
-  lsft     z        x        c        v        b        n        m        ,        .        /        rsft
-  @fn      lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  @l_qwe_grv 1          2          3          4          @5         6          7          8          9          0          @-         =          bspc
+  tab        q          @w         e          r          t          y          @u         i          o          p          [          ]          ret
+  esc        a          s          d          f          g          h          j          k          l          ;          '          \
+  lsft       z          x          c          v          b          n          m          ,          .          /          rsft
+  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer colemak
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_c_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
-  tab      q        @w       f        p        b        j        l        @u       y        ;        [        ]        ret
-  esc      a        @l_c_r   @l_c_s   @l_c_t   g        m        @l_c_n   @l_c_e   @l_c_i   o        '        \
-  lsft     z        x        @l_c_c   d        v        k        @l_c_h   ,        .        /        rsft
-  @fn      lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  @l_cmk_grv 1          2          3          4          @5         6          7          8          9          0          @-         =          bspc
+  tab        q          @w         f          p          b          j          l          @u         y          ;          [          ]          ret
+  esc        a          r          s          t          g          m          n          e          i          o          '          \
+  lsft       z          x          c          d          v          k          h          ,          .          /          rsft
+  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer system
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔅       🔆       XX       ▶⏸       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔉       🔊       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔇       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
-)
-
-(deflayer window
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       @wsam    XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       @wmvh    @wmvj    @wmvk    @wmvl    XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       @wmxf    @wmxa    XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          XX
+  XX         XX         XX         XX         XX         XX         XX         🔅         🔆         XX         ▶⏸         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         🔉         🔊         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         🔇         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer fn
-  XX       f1       f2       f3       f4       f5       f6       f7       f8       f9       f10      f11      f12
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       del
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  XX         f1         f2         f3         f4         f5         f6         f7         f8         f9         f10        f11        f12
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          del
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
+)
+
+(deflayer actions
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_qwe
+  XX         XX         @l_sw_win  XX         @l_ray     XX         XX         XX         XX         @l_sw_app  XX         XX         XX         XX
+  @l_qwe     XX         @l_scr     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
+)
+
+(deflayer window
+  @l_qwe     🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         @a_winmosw XX         XX         XX         XX
+  @l_qwe     XX         XX         XX         XX         XX         @a_winmovh @a_winmovj @a_winmovk @a_winmovl XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         @a_winmax  @a_winamax XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
+)
+
+(deflayer screenshot
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  @l_qwe     @a_scrarea XX         XX         @a_scrfull XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
+)
+
+(deflayer raycast
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
+  XX         XX         XX         @a_emojlst XX         @a_snippet XX         XX         XX         XX         XX         XX         XX         XX
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         @a_confett @a_cliphis XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer app
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       @l_a_agi XX       @l_a_pst XX       XX       XX
-  XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       @l_a_slk XX       XX       XX
-  XX       @l_a_zoo XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
-)
-
-(deflayer sample
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
+  XX         XX         @a_opn_wts @a_opn_mai XX         @a_opn_ala XX         XX         @a_opn_agi XX         @a_opn_pst XX         XX         XX
+  XX         XX         @a_opn_spo @a_opn_tod XX         @a_opn_tgr XX         XX         XX         @a_opn_slk XX         XX         XX
+  XX         @a_opn_zoo XX         @a_opn_fan XX         @a_opn_arc @a_opn_obd XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer qwerty_sample_keys
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  grv      1        2        3        4        5        6        7        8        9        0        -        =        bspc
-  tab      q        w        e        r        t        y        u        i        o        p        [        ]        ret
-  esc      a        s        d        f        g        h        j        k        l        ;        '        \
-  lsft     z        x        c        v        b        n        m        ,        .        /        rsft
-  fn       lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  grv        1          2          3          4          5          6          7          8          9          0          -          =          bspc
+  tab        q          w          e          r          t          y          u          i          o          p          [          ]          ret
+  esc        a          s          d          f          g          h          j          k          l          ;          '          \
+  lsft       z          x          c          v          b          n          m          ,          .          /          rsft
+  fn         lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer sample
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
