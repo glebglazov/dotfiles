@@ -53,39 +53,41 @@
 
 (defalias
   ;; layers
-  l_fn (layer-while-held fn)
-  l_system (layer-while-held system)
-  l_window (layer-while-held window)
+  l_fn  (layer-while-held fn)
+  l_sys (layer-while-held system)
+  l_win (layer-while-held window)
   l_app (layer-while-held app)
-  l_colemak (layer-switch colemak)
-  l_qwerty (layer-switch qwerty)
+  l_act (layer-switch actions)
+  l_scr (layer-switch screenshot)
+  l_cmk (layer-switch colemak)
+  l_qwe (layer-switch qwerty)
 
   ;; layout qwerty rebinds
-  l_q_grv (tap-hold $tap-timeout $hold-timeout grv @l_colemak)
-  l_q_s (t! charmod s lsft)
-  l_q_d (t! charmod d lctl)
-  l_q_f (t! charmod f lmet)
-  l_q_c (t! charmod c lalt)
-  l_q_j (t! charmod j rmet)
-  l_q_k (t! charmod k rctl)
-  l_q_l (t! charmod l rsft)
-  l_q_m (t! charmod m ralt)
+  l_qwe_grv (tap-hold $tap-timeout $hold-timeout grv @l_cmk)
+  l_qwe_s (t! charmod s lsft)
+  l_qwe_d (t! charmod d lctl)
+  l_qwe_f (t! charmod f lmet)
+  l_qwe_c (t! charmod c lalt)
+  l_qwe_j (t! charmod j rmet)
+  l_qwe_k (t! charmod k rctl)
+  l_qwe_l (t! charmod l rsft)
+  l_qwe_m (t! charmod m ralt)
 
   ;; layout colemak rebinds
-  l_c_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwerty)
-  l_c_r (t! charmod r lsft)
-  l_c_s (t! charmod s lctl)
-  l_c_t (t! charmod t lmet)
-  l_c_c (t! charmod c lalt)
-  l_c_n (t! charmod n rmet)
-  l_c_e (t! charmod e rctl)
-  l_c_i (t! charmod i rsft)
-  l_c_h (t! charmod h ralt)
+  l_cmk_grv (tap-hold $tap-timeout $hold-timeout grv @l_qwe)
+  l_cmk_r (t! charmod r lsft)
+  l_cmk_s (t! charmod s lctl)
+  l_cmk_t (t! charmod t lmet)
+  l_cmk_c (t! charmod c lalt)
+  l_cmk_n (t! charmod n rmet)
+  l_cmk_e (t! charmod e rctl)
+  l_cmk_i (t! charmod i rsft)
+  l_cmk_h (t! charmod h ralt)
 
   ;; layer switchers
   fn   (tap-hold $tap-timeout $hold-timeout fn @l_fn)
-  5    (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_system 5)
-  w    (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_window w)
+  5    (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_sys 5)
+  w    (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_win w)
   u    (fork u (one-shot-press 2000 @l_app) (lmet rmet))
   rmet (tap-dance 200 (rmet (layer-toggle app)))
 
@@ -107,24 +109,50 @@
   open_snippets (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
   lock_system C-M-q
 
+  ;; layer notifications
+  l_qwe_notify (cmd-log none none osascript -e "display notification \"Qwerty Layer\" with title \"Kanata\"")
+  l_cmk_notify (cmd-log none none osascript -e "display notification \"Colemak Layer\" with title \"Kanata\"")
+  l_act_notify (cmd-log none none osascript -e "display notification \"Actions Layer\" with title \"Kanata\"")
+  l_scr_notify (cmd-log none none osascript -e "display notification \"Screenshot Layer\" with title \"Kanata\"")
+  l_sys_notify (cmd-log none none osascript -e "display notification \"System Layer\" with title \"Kanata\"")
+  l_win_notify (cmd-log none none osascript -e "display notification \"Window Layer\" with title \"Kanata\"")
+  l_fn_notify  (cmd-log none none osascript -e "display notification \"Fn Layer\" with title \"Kanata\"")
+  l_app_notify (cmd-log none none osascript -e "display notification \"App Layer\" with title \"Kanata\"")
+
+  ;; layer indicator on = key
+  l_qwe_eql     (tap-hold $tap-timeout $hold-timeout = @l_qwe_notify)
+  l_cmk_eql     (tap-hold $tap-timeout $hold-timeout = @l_cmk_notify)
+  l_act_eql     (tap-hold $tap-timeout $hold-timeout = @l_act_notify)
+  l_scr_eql     (tap-hold $tap-timeout $hold-timeout = @l_scr_notify)
+  l_sys_eql     (tap-hold $tap-timeout $hold-timeout = @l_sys_notify)
+  l_win_eql     (tap-hold $tap-timeout $hold-timeout = @l_win_notify)
+  l_fn_eql      (tap-hold $tap-timeout $hold-timeout = @l_fn_notify)
+  l_app_eql     (tap-hold $tap-timeout $hold-timeout = @l_app_notify)
+  l_qwe_smp_eql (tap-hold $tap-timeout $hold-timeout = (cmd-log none none osascript -e "display notification \"Qwerty Sample Keys Layer\" with title \"Kanata\""))
+  l_smp_eql     (tap-hold $tap-timeout $hold-timeout = (cmd-log none none osascript -e "display notification \"Sample Layer\" with title \"Kanata\""))
+
+  ;; screenshot actions
+  l_scr_are (t! deeplink cleanshot://capture-area)
+  l_scr_ful (t! deeplink cleanshot://capture-fullscreen)
+
   ;; app switching
-  l_a_ala (t! openapp Alacritty)
+  l_app_ala (t! openapp Alacritty)
 {{- if .work }}
-  l_a_agi (t! openapp ChatGPT)
+  l_app_agi (t! openapp ChatGPT)
 {{- else }}
-  l_a_agi (t! openapp Claude)
+  l_app_agi (t! openapp Claude)
 {{- end }}
-  l_a_arc (t! openapp Arc)
-  l_a_fan (t! openapp Fantastical)
-  l_a_mai (t! openapp Mail)
-  l_a_pst (t! openapp Postman)
-  l_a_slk (t! openapp Slack)
-  l_a_spo (t! openapp Spotify)
-  l_a_obd (t! openapp Obsidian)
-  l_a_tod (t! openapp Todoist)
-  l_a_tgr (t! openapp Telegram)
-  l_a_wts (t! openapp WhatsApp)
-  l_a_zoo (t! openapp Zoom)
+  l_app_arc (t! openapp Arc)
+  l_app_fan (t! openapp Fantastical)
+  l_app_mai (t! openapp Mail)
+  l_app_pst (t! openapp Postman)
+  l_app_slk (t! openapp Slack)
+  l_app_spo (t! openapp Spotify)
+  l_app_obd (t! openapp Obsidian)
+  l_app_tod (t! openapp Todoist)
+  l_app_tgr (t! openapp Telegram)
+  l_app_wts (t! openapp WhatsApp)
+  l_app_zoo (t! openapp Zoom)
 )
 
 (defchordsv2
@@ -133,6 +161,8 @@
 
   (f j) esc $chord-timeout first-release (colemak)
   (t n) esc $chord-timeout first-release (qwerty)
+
+  (d f) @l_act $chord-timeout-slow first-release (colemak)
 
   (; r) lrld $chord-timeout-slow first-release ()
   (; c) @open_confetti $chord-timeout-slow first-release ()
@@ -143,82 +173,91 @@
 )
 
 (deflayer qwerty
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_q_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
-  tab      q        @w       e        r        t        y        @u       i        o        p        [        ]        ret
-  esc      a        s        d        f        g        h        j        k        l        ;        '        \
-  lsft     z        x        c        v        b        n        m        ,        .        /        rsft
-  @fn      lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  @l_qwe_grv 1          2          3          4          @5         6          7          8          9          0          @-         @l_qwe_eql bspc
+  tab        q          @w         e          r          t          y          @u         i          o          p          [          ]          ret
+  esc        a          @l_qwe_s   @l_qwe_d   @l_qwe_f   g          h          @l_qwe_j   @l_qwe_k   @l_qwe_l   ;          '          \
+  lsft       z          x          @l_qwe_c   v          b          n          @l_qwe_m   ,          .          /          rsft
+  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer colemak
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  @l_c_grv 1        2        3        4        @5       6        7        8        9        0        @-       =        bspc
-  tab      q        @w       f        p        b        j        l        @u       y        ;        [        ]        ret
-  esc      a        @l_c_r   @l_c_s   @l_c_t   g        m        @l_c_n   @l_c_e   @l_c_i   o        '        \
-  lsft     z        x        @l_c_c   d        v        k        @l_c_h   ,        .        /        rsft
-  @fn      lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  @l_cmk_grv 1          2          3          4          @5         6          7          8          9          0          @-         @l_cmk_eql bspc
+  tab        q          @w         f          p          b          j          l          @u         y          ;          [          ]          ret
+  esc        a          @l_cmk_r   @l_cmk_s   @l_cmk_t   g          m          @l_cmk_n   @l_cmk_e   @l_cmk_i   o          '          \
+  lsft       z          x          @l_cmk_c   d          v          k          @l_cmk_h   ,          .          /          rsft
+  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer system
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔅       🔆       XX       ▶⏸       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔉       🔊       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       🔇       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_sys_eql XX
+  XX         XX         XX         XX         XX         XX         XX         🔅         🔆         XX         ▶⏸         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         🔉         🔊         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         🔇         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer window
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       @wsam    XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       @wmvh    @wmvj    @wmvk    @wmvl    XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       @wmxf    @wmxa    XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_win_eql XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         @wsam      XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         @wmvh      @wmvj      @wmvk      @wmvl      XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         @wmxf      @wmxa      XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer fn
-  XX       f1       f2       f3       f4       f5       f6       f7       f8       f9       f10      f11      f12
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       del
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  XX         f1         f2         f3         f4         f5         f6         f7         f8         f9         f10        f11        f12
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_fn_eql  del
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer app
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       @l_a_wts @l_a_mai XX       @l_a_ala XX       XX       @l_a_agi XX       @l_a_pst XX       XX       XX
-  XX       XX       @l_a_spo @l_a_tod XX       @l_a_tgr XX       XX       XX       @l_a_slk XX       XX       XX
-  XX       @l_a_zoo XX       @l_a_fan XX       @l_a_arc @l_a_obd XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_app_eql XX
+  XX         XX         @l_app_wts @l_app_mai XX         @l_app_ala XX         XX         @l_app_agi XX         @l_app_pst XX         XX         XX
+  XX         XX         @l_app_spo @l_app_tod XX         @l_app_tgr XX         XX         XX         @l_app_slk XX         XX         XX
+  XX         @l_app_zoo XX         @l_app_fan XX         @l_app_arc @l_app_obd XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
-(deflayer sample
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+(deflayer actions
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_act_eql @l_qwe
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  @l_qwe     XX         @l_scr     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
+)
+
+(deflayer screenshot
+  @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_scr_eql @l_act
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  @l_qwe     @l_scr_are XX         XX         @l_scr_ful XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
 (deflayer qwerty_sample_keys
-  esc      🔅       🔆       mctl     sls      dtn      dnd      ◀◀       ▶⏸       ▶▶       🔇       🔉       🔊
-  grv      1        2        3        4        5        6        7        8        9        0        -        =        bspc
-  tab      q        w        e        r        t        y        u        i        o        p        [        ]        ret
-  esc      a        s        d        f        g        h        j        k        l        ;        '        \
-  lsft     z        x        c        v        b        n        m        ,        .        /        rsft
-  fn       lalt     lctl     lmet                       spc                        @rmet    rctl     ralt     left     down     up       right
+  esc        🔅         🔆         mctl       sls        dtn        dnd        ◀◀         ▶⏸         ▶▶         🔇         🔉         🔊
+  grv        1          2          3          4          5          6          7          8          9          0          -          @l_qwe_smp_eql bspc
+  tab        q          w          e          r          t          y          u          i          o          p          [          ]          ret
+  esc        a          s          d          f          g          h          j          k          l          ;          '          \
+  lsft       z          x          c          v          b          n          m          ,          .          /          rsft
+  fn         lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer sample
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX       XX
-  XX       XX       XX       XX                         XX                         XX       XX       XX       XX       XX       XX       XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         @l_smp_eql XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
