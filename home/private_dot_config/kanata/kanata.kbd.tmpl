@@ -89,15 +89,15 @@
   a_winmosw (t! deeplink raycast://extensions/raycast/window-management/next-display) ;; window switch to another monitor
 
   ;; chord actions
-  a_cliphis (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history)
+  a_cliphis (multi (t! deeplink raycast://extensions/raycast/clipboard-history/clipboard-history) @l_qwe)
   a_confett (t! deeplink raycast://extensions/raycast/raycast/confetti)
-  a_emojlst (t! deeplink raycast://extensions/raycast/emoji-symbols/search-emoji-symbols)
-  a_snippet (t! deeplink raycast://extensions/raycast/snippets/search-snippets)
+  a_emojlst (multi (t! deeplink raycast://extensions/raycast/emoji-symbols/search-emoji-symbols) @l_qwe)
+  a_snippet (multi (t! deeplink raycast://extensions/raycast/snippets/search-snippets) @l_qwe)
   a_locksys C-M-q
 
   ;; screenshot actions
-  a_scrarea (t! deeplink cleanshot://capture-area)
-  a_scrfull (t! deeplink cleanshot://capture-fullscreen)
+  a_scrarea (multi (t! deeplink cleanshot://capture-area) @l_qwe)
+  a_scrfull (multi (t! deeplink cleanshot://capture-fullscreen) @l_qwe)
 
   ;; app opening actions
   a_opn_ala (t! openapp Alacritty)
