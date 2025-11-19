@@ -74,6 +74,7 @@
   fn   (tap-hold $tap-timeout $hold-timeout fn @l_fn)
   5    (tap-hold-release-timeout $tap-timeout $hold-timeout 5 @l_wh_sys 5)
   w    (tap-hold-release-timeout $tap-timeout $hold-timeout w @l_wh_win w)
+  lmet (tap-dance 200 (lmet @l_wh_app))
   rmet (tap-dance 200 (rmet @l_wh_app))
 
   ;; dash to long dash
@@ -142,7 +143,7 @@
   tab        q          @w         e          r          t          y          u          i          o          p          [          ]          ret
   esc        a          s          d          f          g          h          j          k          l          ;          '          \
   lsft       z          x          c          v          b          n          m          ,          .          /          rsft
-  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
+  @fn        lalt       lctl       @lmet                            spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer colemak
@@ -151,7 +152,7 @@
   tab        q          @w         f          p          b          j          l          u          y          ;          [          ]          ret
   esc        a          r          s          t          g          m          n          e          i          o          '          \
   lsft       z          x          c          d          v          k          h          ,          .          /          rsft
-  @fn        lalt       lctl       lmet                             spc                              @rmet      rctl       ralt       left       down       up         right
+  @fn        lalt       lctl       @lmet                            spc                              @rmet      rctl       ralt       left       down       up         right
 )
 
 (deflayer fn
