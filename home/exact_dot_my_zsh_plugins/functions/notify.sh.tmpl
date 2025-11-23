@@ -1,0 +1,15 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+function notify {
+    local title="${1:-Notification}"
+    local message="${2:-Done}"
+    local subtitle="${3:-}"
+
+    local script="display notification \"$message\" with title \"$title\""
+
+    if [[ -n "$subtitle" ]]; then
+        script="display notification \"$message\" with title \"$title\" subtitle \"$subtitle\""
+    fi
+
+    osascript -e "$script"
+}
+{{ end -}}
