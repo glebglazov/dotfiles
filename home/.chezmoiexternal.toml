@@ -7,6 +7,12 @@
 	executable = true
 {{- end }}
 
+[".local/bin/try.rb"]
+	type = "file"
+	url = "https://raw.githubusercontent.com/tobi/try/d075e05c44d3f9bafa48a2c1f20488ead7824639/try.rb"
+	checksum.sha256 = "1b4e620da3d54c601b7533e30e2ef2838f0a8f778954f7fcecb4567f05d790f4"
+	executable = true
+
 [".local/bin/mise"]
 	type = "archive-file"
 	{{- $mise_version := "2025.11.3" }}
