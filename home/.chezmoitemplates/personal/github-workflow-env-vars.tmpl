@@ -1,3 +1,4 @@
 {{ if .personal -}}
-export GH_TOKEN={{ onepasswordRead (printf "%v%v" .githubPersonalTokenBase "token") .onepasswordPersonalAccount }}
+export GH_TOKEN={{ onepasswordRead (printf "%v%v" .githubWorkTokenBase "token") .onepasswordMigrateToWorkAccount }}
+export GITHUB_TOKEN={{ onepasswordRead (printf "%v%v" .githubWorkTokenBase "token") .onepasswordMigrateToWorkAccount }}
 {{ end -}}
