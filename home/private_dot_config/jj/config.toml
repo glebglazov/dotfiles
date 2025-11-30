@@ -6,3 +6,8 @@ email = "glazov.gleb@gmail.com"
 
 [ui]
 paginate = "never"
+
+[[--scope]]
+--when.repositories=["~/private/Dev/work"]
+[--scope.user]
+email = "gleb.glazov@tripledotstudios.com"
