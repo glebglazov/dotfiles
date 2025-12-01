@@ -19,6 +19,7 @@ end
 
 local function run_in_tmux_fn(command, opts)
   return function ()
+    opts = opts or {}
     local tmux_cmd = opts.tmux_cmd or "new-window"
     local with_pause = opts.with_pause == nil and true or opts.with_pause
 
