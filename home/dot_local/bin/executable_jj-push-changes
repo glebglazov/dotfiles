@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Get the current changeset
+current_change=$(jj log -r @ --no-graph -T 'change_id' --limit 1)
+
+# Get all bookmarks for current changeset and its descendants
+bookmarks=$(jj log -r '@::' --no-graph -T 'bookmarks' 2>/dev/null | grep -v '^$' | tr -d ' ' || echo "")
+
+# Filter out master/main bookmarks
+filtered_bookmarks=$(echo "$bookmarks" | grep -v '^master$' | grep -v '^main$' || echo "")
+
+if [ -n "$filtered_bookmarks" ]; then
+  # Take the first non-master/main bookmark
+  bookmark_name=$(echo "$filtered_bookmarks" | head -n1)
+
+  echo "Found bookmark: $bookmark_name"
+  echo "Moving bookmark to current changeset..."
+
+  # Move the bookmark to current changeset
+  jj bookmark set "$bookmark_name"
+
+  echo "Pushing to remote..."
+  jj git push
+
+else
+  echo "No bookmark found. Creating new branch and opening PR..."
+
+  # Push current changeset and create new branch
+  output=$(jj git push -c@ -N 2>&1)
+
+  # Extract the PR URL from the output
+  # GitHub typically outputs a URL in the format: https://github.com/...
+  pr_url=$(echo "$output" | grep -oE 'https://github\.com/[^[:space:]]+' | head -n1 || echo "")
+
+  if [ -n "$pr_url" ]; then
+    echo "Opening PR URL in browser: $pr_url"
+
+    # Open URL in default browser (cross-platform)
+    if command -v open &> /dev/null; then
+      # macOS
+      open "$pr_url"
+    elif command -v xdg-open &> /dev/null; then
+      # Linux
+      xdg-open "$pr_url"
+    else
+      echo "Could not open browser automatically. Please open: $pr_url"
+    fi
+  else
+    echo "Branch pushed successfully but could not extract PR URL."
+    echo "Output:"
+    echo "$output"
+  fi
+fi
