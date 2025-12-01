@@ -40,6 +40,11 @@ set-option -g repeat-time 0
 
 # -- Clipboard -----------------------------------------------------------------
 
+# If SSH_CONNECTION exists, we're remote; use OSC 52. Otherwise disable it.
+if-shell '[ -n "$SSH_CONNECTION" ]' \
+  'set -g set-clipboard on' \
+  'set -g set-clipboard off'
+
 # Copy to system clipboard
 {{- if (eq .chezmoi.os "darwin") }}
 set -g copy-command "pbcopy"
