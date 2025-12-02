@@ -5,6 +5,7 @@ name = "Gleb Glazov"
 email = "glazov.gleb@gmail.com"
 
 [ui]
+default-command = "log"
 paginate = "never"
 
 [[--scope]]
