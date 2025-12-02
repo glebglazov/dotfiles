@@ -400,6 +400,15 @@ require('lazy').setup({
     config = true
   },
   {
+    "nicolasgb/jj.nvim",
+    config = function()
+      require("jj").setup({})
+    end,
+    keys = {
+      { '<LEADER>gj', vim.cmd.J },
+    }
+  },
+  {
     'tpope/vim-fugitive',
     lazy = false,
     keys = {
