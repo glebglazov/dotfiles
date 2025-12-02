@@ -5,11 +5,16 @@ set -euo pipefail
 # Get the current changeset
 current_change=$(jj log -r @ --no-graph -T 'change_id' --limit 1)
 
-# Get all bookmarks for current changeset and its descendants
-bookmarks=$(jj log -r '@::' --no-graph -T 'bookmarks' 2>/dev/null | grep -v '^$' | tr -d ' ' || echo "")
+# Get all bookmarks for current changeset, its ancestors, and descendants
+# Each commit's bookmarks are on a separate line
+bookmarks=$(jj log -r '::@ | @::' --no-graph -T 'bookmarks ++ "\n"' 2>/dev/null | grep -v '^$' || echo "")
+
+# Parse bookmarks - they may have * (tracking) or % (conflicted) suffixes
+# Split on spaces and strip suffixes
+all_bookmarks=$(echo "$bookmarks" | tr ' ' '\n' | sed 's/[*%]$//' | grep -v '^$')
 
 # Filter out master/main bookmarks
-filtered_bookmarks=$(echo "$bookmarks" | grep -v '^master$' | grep -v '^main$' || echo "")
+filtered_bookmarks=$(echo "$all_bookmarks" | grep -v '^master$' | grep -v '^main$' || echo "")
 
 if [ -n "$filtered_bookmarks" ]; then
   # Take the first non-master/main bookmark
@@ -23,7 +28,6 @@ if [ -n "$filtered_bookmarks" ]; then
 
   echo "Pushing to remote..."
   jj git push
-
 else
   echo "No bookmark found. Creating new branch and opening PR..."
 
