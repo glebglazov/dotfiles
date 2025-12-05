@@ -31,11 +31,13 @@
 [".local/share/antidote"]
 	type = "archive"
 	url = "https://github.com/mattmc3/antidote/archive/refs/tags/v1.9.10.tar.gz"
+	checksum.sha256="4beb9074da75bfe44a502db61542c557af1a6206a3cdd6e36c3f0743d71417ec"
 	stripComponents = 1
 	exact = true
 
 ['.local/share/git-pile']
 	type = "archive"
-	url = "https://github.com/keith/git-pile/archive/dbd9585fb0762c83b24873017bd0727225b37a76.tar.gz"
+	url = "https://github.com/keith/git-pile/archive/8a1c17fa632c29fc230acb2d0ee0cd183e22f793.tar.gz"
+	checksum.sha256="cb06cd00e43ee3d3640cc9e1ee266dfbf4cc34b4e596999902ac08daed45ed9d"
 	stripComponents = 1
 	exact = true
