@@ -400,15 +400,6 @@ require('lazy').setup({
     config = true
   },
   {
-    "nicolasgb/jj.nvim",
-    config = function()
-      require("jj").setup({})
-    end,
-    keys = {
-      { '<LEADER>gj', vim.cmd.J },
-    }
-  },
-  {
     'tpope/vim-fugitive',
     lazy = false,
     keys = {
@@ -1241,9 +1232,6 @@ end)
 vim.keymap.set('n', '<LEADER>ghp', run_in_tmux_fn('git headpr'))
 vim.keymap.set('n', '<LEADER>grp', run_in_tmux_fn('git replacepr', { prompt = true }))
 vim.keymap.set('n', '<LEADER>grP', run_in_tmux_fn('git rebasepr', { prompt = true }))
-
--- jj (HIGHLY EXPERIMENTAL)
-vim.keymap.set('n', '<LEADER>guj', run_in_tmux_fn('jj-push-changes'))
 
 -- Running tests
 vim.keymap.set('n', '<LEADER>tt', function() require("neotest").run.run() end)
