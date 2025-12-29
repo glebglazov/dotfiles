@@ -7,19 +7,19 @@ idiomatic_version_file_enable_tools = ["ruby"]
 
 [tools]
 rust      = '1.88.0'
-go        = '1.24.5'
-nodejs    = '24.4.1'
-bun       = '1.2.18'
-pnpm      = '10.13.1'
+go        = '1.24'
+nodejs    = '24'
+bun       = '1'
+pnpm      = '10'
 ruby      = '4.0.0'
-yarn      = '4.9.2'
-python    = '3.13.5'
-terraform = '1.12.2'
-java      = '24.0.2'
-erlang    = '28.0.2'
-elixir    = '1.18.4'
-uv        = '0.8.15'
-lua       = '5.4.8'
+yarn      = '4.9'
+python    = '3.13'
+terraform = '1.12'
+java      = '24.0'
+erlang    = '28.0'
+elixir    = '1.18'
+uv        = '0.8'
+lua       = '5.4'
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"
