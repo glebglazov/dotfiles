@@ -4,6 +4,7 @@
 {{ $darwin_brew := list -}}
 {{ $linux_brew := list -}}
 {{ $pin_list := list -}}
+{{ $cleanup_list := list -}}
 
 {{ $taps = list
   "hashicorp/tap"
@@ -151,6 +152,10 @@
   "zed"
 -}}
 
+{{- $cleanup_list = list
+  "fantastical"
+-}}
+
 #!/bin/bash
 
 # brew update
@@ -159,7 +164,6 @@
 brew tap {{ . }}
 {{ end  }}
 
-echo "brew install {{ $mass_brew | join " " }}"
 brew install {{ $mass_brew | join " " }}
 
 {{ if (eq .chezmoi.os "darwin" | not) -}}
@@ -179,3 +183,5 @@ brew install {{ $darwin_brew | join " " }}
 {{ if (len $pin_list | gt 0) -}}
 brew pin {{ $pin_list | join " " }}
 {{ end -}}
+
+brew uninstall {{ $cleanup_list | join " " }}
