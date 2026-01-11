@@ -3,6 +3,7 @@
 [window]
 decorations_theme_variant = "Dark"
 dynamic_title = true
+option_as_alt = "Both"
 
 [font]
 size = 16
@@ -265,6 +266,11 @@ mods = "Control"
 chars = "\u00029"
 key = "Key9"
 mods = "Control"
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"
 
 [terminal.shell]
 program = "/bin/zsh"
