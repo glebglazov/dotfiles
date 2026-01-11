@@ -28,6 +28,7 @@
   "daisydisk"
   "direnv"
   "eza"
+  "fabric-ai"
   "fd"
   "ffmpeg"
   "fonttools"
@@ -87,6 +88,7 @@
   "tmux"
   "unbound"
   "unixodbc"
+  "w3m"
   "watch"
   "wget"
   "zoxide"
@@ -184,4 +186,6 @@ brew install {{ $darwin_brew | join " " }}
 brew pin {{ $pin_list | join " " }}
 {{ end -}}
 
-brew uninstall {{ $cleanup_list | join " " }}
+{{ range $cleanup_list }}
+brew uninstall {{ . }} || echo "{{ . }} is already uninstalled"
+{{ end -}}
