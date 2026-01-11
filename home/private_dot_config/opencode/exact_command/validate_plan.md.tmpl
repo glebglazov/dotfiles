@@ -1,0 +1,7 @@
+---
+description: Validate implementation against plan, verify success criteria, identify issues
+agent: build
+model: anthropic/claude-sonnet-4-5-20250929
+---
+
+{{ template "shared/llm_prompts/commands/validate_plan.md.tmpl" . }}
