@@ -482,6 +482,7 @@ require('lazy').setup({
       { '<LEADER>gf', ':G fetch<CR>' }
     },
   },
+  { 'ThePrimeagen/git-worktree.nvim' },
   {
     'tpope/vim-rhubarb',
     config = function ()
@@ -579,6 +580,7 @@ require('lazy').setup({
       { 'nvim-lua/plenary.nvim' },
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
       { 'nvim-telescope/telescope-ui-select.nvim' },
+      { 'ThePrimeagen/git-worktree.nvim' },
     },
     config = function()
       require('telescope').setup({
@@ -607,6 +609,7 @@ require('lazy').setup({
       })
       require('telescope').load_extension('fzf')
       require('telescope').load_extension('ui-select')
+      require('telescope').load_extension('git_worktree')
     end,
   },
 
@@ -1232,6 +1235,9 @@ vim.keymap.set('n', '<LEADER>bd', ':bd<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>Bd', ':%bdelete | edit # | normal `', { silent = true })
 vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
+
+-- git worktrees
+vim.keymap.set('n', '<LEADER>gt', function() require('telescope').extensions.git_worktree.git_worktrees() end)
 
 -- git-pile (EXPERIMENTAL)
 vim.keymap.set('n', '<LEADER>gsp', run_in_tmux_fn('git submitpr', { with_pause = false }))
