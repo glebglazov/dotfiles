@@ -1238,6 +1238,45 @@ vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git worktrees
 vim.keymap.set('n', '<LEADER>gt', function() require('telescope').extensions.git_worktree.git_worktrees() end)
+vim.keymap.set('n', '<LEADER>gT', function()
+  local git_worktree = require('git-worktree')
+
+  -- Detect bare repo: .git is a file pointing to .bare, not a directory
+  local cwd = vim.fn.getcwd()
+  local git_path = cwd .. '/.git'
+  local is_bare = vim.fn.filereadable(git_path) == 1 and vim.fn.isdirectory(git_path) == 0
+
+  local git_root, repo_name
+  if is_bare then
+    -- In bare repo root: use cwd
+    git_root = cwd
+    repo_name = vim.fn.fnamemodify(cwd, ':t')
+  else
+    -- Normal repo or inside a worktree: use git to find root
+    git_root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+    repo_name = vim.fn.fnamemodify(git_root, ':t')
+  end
+
+  vim.ui.input({ prompt = 'Worktree name: ' }, function(worktree_name)
+    if not worktree_name or worktree_name == '' then return end
+
+    vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
+      local path
+      if is_bare then
+        -- Bare repo: create inside repo directory
+        path = worktree_name
+      else
+        -- Normal repo: create as sibling
+        path = '../' .. repo_name .. '-' .. worktree_name
+      end
+
+      -- Use worktree name as branch if not specified
+      branch = (branch and branch ~= '') and branch or worktree_name
+
+      git_worktree.create_worktree(path, branch, 'origin')
+    end)
+  end)
+end)
 
 -- git-pile (EXPERIMENTAL)
 vim.keymap.set('n', '<LEADER>gsp', run_in_tmux_fn('git submitpr', { with_pause = false }))

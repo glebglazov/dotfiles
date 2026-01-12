@@ -4,6 +4,57 @@ if [[ "$1" == "clone" ]]; then
   ssh_url=$(git-ssh-repo-name-from-any-link "$2")
   command git clone "$ssh_url" "${@:3}"
   zoxide-index
+elif [[ "$1" == "cloneb" ]]; then
+  ssh_url=$(git-ssh-repo-name-from-any-link "$2")
+
+  # Extract project name from URL
+  local project_name="${ssh_url:t}"
+  project_name="${project_name%.git}"
+
+  # Check if custom directory was provided
+  if [[ -n "$3" && "$3" != -* ]]; then
+    project_name="$3"
+    shift 3
+  else
+    shift 2
+  fi
+
+  # Create project directory and clone bare repo into .bare
+  mkdir -p "$project_name"
+  command git clone --bare "$ssh_url" "$project_name/.bare" "$@"
+
+  # Set up .git file pointing to .bare
+  echo "gitdir: ./.bare" > "$project_name/.git"
+
+  # Configure fetch refspec for proper remote tracking
+  command git -C "$project_name" config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+
+  # Enable reflog for bare repo
+  command git -C "$project_name" config core.logallrefupdates true
+
+  # Fetch to populate remote branches
+  command git -C "$project_name" fetch origin
+
+  # Detect default branch and create initial worktree
+  local default_branch=$(command git -C "$project_name" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  if [[ -z "$default_branch" ]]; then
+    # Fallback: try common default branch names
+    if command git -C "$project_name" show-ref --verify --quiet refs/remotes/origin/main; then
+      default_branch="main"
+    elif command git -C "$project_name" show-ref --verify --quiet refs/remotes/origin/master; then
+      default_branch="master"
+    fi
+  fi
+
+  if [[ -n "$default_branch" ]]; then
+    command git -C "$project_name" worktree add "$default_branch" "$default_branch"
+    echo "Bare repo ready in: $project_name/"
+    echo "Default worktree created: $project_name/$default_branch"
+  else
+    echo "Bare repo ready in: $project_name/"
+    echo "Create worktrees with: cd $project_name && git worktree add <path> <branch>"
+  fi
+  zoxide-index
 else
   command git "$@"
 fi
