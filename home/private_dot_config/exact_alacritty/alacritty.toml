@@ -177,12 +177,12 @@ mods = "Command"
 
 # Split panes
 [[keyboard.bindings]]
-chars = "\u0002%"
+chars = "\u0002d"
 key = "D"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u0002\""
+chars = "\u0002D"
 key = "D"
 mods = "Command|Shift"
 
