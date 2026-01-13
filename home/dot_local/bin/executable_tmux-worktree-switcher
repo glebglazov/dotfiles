@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Get list of worktrees (skip the first line which is the bare repo itself)
+worktrees=$(git worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
+
+if [[ -z $worktrees ]]; then
+    echo "No worktrees found (or not in a git repo with worktrees)"
+    exit 1
+fi
+
+# Show fzf picker in tmux popup
+selected=$(echo "$worktrees" | fzf-tmux -p 55%,60% \
+    --no-sort --border-label ' worktrees ' --prompt '🌳  ' \
+    --bind 'tab:down,btab:up')
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+# Get current tmux session name and worktree name
+current_session=$(tmux display-message -p '#S')
+worktree_name=$(basename "$selected")
+session_name="${current_session}/${worktree_name}"
+
+# Replace dots with underscores for tmux compatibility
+session_name=$(echo "$session_name" | tr . _)
+
+tmux_running=$(pgrep tmux)
+
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+    tmux new-session -s "$session_name" -c "$selected"
+    exit 0
+fi
+
+if ! tmux has-session -t="$session_name" 2>/dev/null; then
+    tmux new-session -ds "$session_name" -c "$selected"
+fi
+
+tmux switch-client -t "$session_name"

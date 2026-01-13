@@ -152,7 +152,7 @@ bind-key -r p run-shell "sesh connect \"$(
 		--bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
 		--bind 'ctrl-d:execute(tmux kill-session -t {})+change-prompt(⚡  )+reload(sesh list)'
 )\""
-bind-key -r P run-shell "tmux new-window ~/.local/bin/tmux-windowiser"
+bind-key -r P run-shell "tmux-worktree-switcher"
 
 # Create new session
 bind-key N command-prompt -p "New session name:" "new-session -s '%%'"
