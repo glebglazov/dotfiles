@@ -1,26 +1,47 @@
 #!/usr/bin/env bash
 
-# Get list of worktrees (skip the first line which is the bare repo itself)
-worktrees=$(git worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
+# Find project root (where .bare is located)
+# Works from project level or from inside any worktree
+find_project_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.bare" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    return 1
+}
 
-if [[ -z $worktrees ]]; then
-    echo "No worktrees found (or not in a git repo with worktrees)"
+project_root=$(find_project_root)
+if [[ -z $project_root ]]; then
+    echo "Not in a bare repo worktree structure (no .bare found)"
     exit 1
 fi
 
-# Show fzf picker in tmux popup
-selected=$(echo "$worktrees" | fzf-tmux -p 55%,60% \
+project_name=$(basename "$project_root")
+
+# Get list of worktrees (skip the .bare directory itself)
+worktrees=$(git -C "$project_root" worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
+
+if [[ -z $worktrees ]]; then
+    echo "No worktrees found"
+    exit 1
+fi
+
+# Show only worktree names in fzf, store full paths for lookup
+selected_name=$(echo "$worktrees" | xargs -n1 basename | fzf-tmux -p 55%,60% \
     --no-sort --border-label ' worktrees ' --prompt '🌳  ' \
     --bind 'tab:down,btab:up')
 
-if [[ -z $selected ]]; then
+if [[ -z $selected_name ]]; then
     exit 0
 fi
 
-# Get current tmux session name and worktree name
-current_session=$(tmux display-message -p '#S')
-worktree_name=$(basename "$selected")
-session_name="${current_session}/${worktree_name}"
+# Reconstruct full path
+selected="${project_root}/${selected_name}"
+session_name="${project_name}/${selected_name}"
 
 # Replace dots with underscores for tmux compatibility
 session_name=$(echo "$session_name" | tr . _)
