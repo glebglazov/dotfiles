@@ -17,6 +17,6 @@ function _askclaudequick {
             break
         fi
 
-        claude -p --continue "$followup"
+        claude --model sonnet -p --continue "$followup"
     done
 }
