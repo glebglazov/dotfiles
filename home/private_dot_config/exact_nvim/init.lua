@@ -987,6 +987,23 @@ autocmd('VimEnter', {
     end
 
     if not is_headless and not has_file_arg then
+      -- Check if we're in a bare repo root and cd to default worktree
+      local cwd = vim.fn.getcwd()
+      local git_file = cwd .. '/.git'
+      local bare_dir = cwd .. '/.bare'
+
+      if vim.fn.filereadable(git_file) == 1 and vim.fn.isdirectory(bare_dir) == 1 then
+        -- We're in a bare repo root, cd to default branch worktree
+        local default_branches = {'main', 'master'}
+        for _, branch in ipairs(default_branches) do
+          local worktree_path = cwd .. '/' .. branch
+          if vim.fn.isdirectory(worktree_path) == 1 then
+            vim.cmd('cd ' .. worktree_path)
+            break
+          end
+        end
+      end
+
       telescope_find_files()
     end
   end
@@ -1263,8 +1280,8 @@ vim.keymap.set('n', '<LEADER>gT', function()
     vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
       local path
       if is_bare then
-        -- Bare repo: create inside repo directory
-        path = worktree_name
+        -- Bare repo: create inside repo directory (relative to .bare)
+        path = '../' .. worktree_name
       else
         -- Normal repo: create as sibling
         path = '../' .. repo_name .. '-' .. worktree_name
