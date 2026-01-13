@@ -5,8 +5,9 @@ function _askclaudequick {
     fi
 
     local prompt="$*"
+    local session_id=$(uuidgen | tr '[:upper:]' '[:lower:]')
 
-    claude -p "$prompt"
+    claude -p --session-id "$session_id" "$prompt"
 
     while true; do
         echo ""
@@ -17,6 +18,6 @@ function _askclaudequick {
             break
         fi
 
-        claude --model haiku -p --continue "$followup"
+        claude --model haiku -p --resume "$session_id" "$followup"
     done
 }
