@@ -580,7 +580,12 @@ require('lazy').setup({
       { 'nvim-lua/plenary.nvim' },
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
       { 'nvim-telescope/telescope-ui-select.nvim' },
-      { 'ThePrimeagen/git-worktree.nvim' },
+      {
+        'ThePrimeagen/git-worktree.nvim',
+        config = {
+          update_on_change = false,
+        },
+      },
     },
     config = function()
       require('telescope').setup({
