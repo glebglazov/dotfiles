@@ -47,10 +47,10 @@ elif [[ "$1" == "cloneb" ]]; then
   fi
 
   if [[ -n "$default_branch" ]]; then
-    command git -C "$project_name" worktree add "$default_branch" "$default_branch"
+    command git -C "$project_name" worktree add "main" "$default_branch"
     command git -C "$project_name" branch --set-upstream-to="origin/$default_branch" "$default_branch"
     echo "Bare repo ready in: $project_name/"
-    echo "Default worktree created: $project_name/$default_branch"
+    echo "Default worktree created: $project_name/main (tracking $default_branch)"
   else
     echo "Bare repo ready in: $project_name/"
     echo "Create worktrees with: cd $project_name && git worktree add <path> <branch>"
