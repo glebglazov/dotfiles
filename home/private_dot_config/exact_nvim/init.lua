@@ -772,38 +772,54 @@ vim.keymap.set('n', '<LEADER>fp', telescope_find_files)
 -------------------------------------------------
 
 
-local servers = {
-  lua_ls = {
-    settings = {
-      Lua = {
-        diagnostics = {
-          globals = { 'vim' }
-        },
-      }
+-- Configure LSP servers using vim.lsp.config (Neovim 0.11+ API)
+-- Must be called BEFORE mason-lspconfig.setup()
+local capabilities = require('blink.cmp').get_lsp_capabilities()
+local on_init = function(client)
+  client.server_capabilities.semanticTokensProvider = nil
+end
+
+vim.lsp.config('*', {
+  capabilities = capabilities,
+  on_init = on_init,
+})
+
+vim.lsp.config('lua_ls', {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { 'vim' }
+      },
     }
-  },
-  yamlls = {
-    settings = {
-      yaml = {
-        keyOrdering = false,
-      }
-    }
-  },
-  gopls = {},
-  ruby_lsp = {
-    cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
-    init_options = {
-      addonSettings = {
-        ["Ruby LSP Rails"] = {
-          enablePendingMigrationsPrompt = false,
-        }
-      }
-    }
-  },
-  rubocop = {
-    cmd = { vim.fn.expand("~/.local/share/mise/shims/rubocop") },
   }
-}
+})
+
+vim.lsp.config('yamlls', {
+  settings = {
+    yaml = {
+      keyOrdering = false,
+    }
+  }
+})
+
+vim.lsp.config('gopls', {})
+
+vim.lsp.config('ts_ls', {})
+
+vim.lsp.config('ruby_lsp', {
+  cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
+  init_options = {
+    addonSettings = {
+      ["Ruby LSP Rails"] = {
+        enablePendingMigrationsPrompt = false,
+      }
+    }
+  }
+})
+
+vim.lsp.config('rubocop', {
+  cmd = { vim.fn.expand("~/.local/share/mise/shims/rubocop") },
+})
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -814,20 +830,6 @@ require('mason-lspconfig').setup({
     'gopls',
     'yamlls'
   },
-  handlers = {
-    function (server_name)
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-      local on_init = function(client)
-        client.server_capabilities.semanticTokensProvider = nil
-      end
-
-      local server = servers[server_name] or {}
-      server.capabilities = capabilities
-      server.on_init = on_init
-
-      require('lspconfig')[server_name].setup(server)
-    end,
-  }
 })
 
 require('blink.cmp').setup({
@@ -1223,8 +1225,12 @@ vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
 vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn())
 
 vim.keymap.set('v', '<LEADER>fy', function()
-  local start_line = vim.fn.line("'<")
-  local end_line = vim.fn.line("'>")
+  -- Use 'v' mark and cursor position to get current visual selection
+  -- ('< and '> are only updated after exiting visual mode)
+  local v_line = vim.fn.getpos('v')[2]
+  local cursor_line = vim.fn.getpos('.')[2]
+  local start_line = math.min(v_line, cursor_line)
+  local end_line = math.max(v_line, cursor_line)
 
   local path = vim.fn.expand('%:p')
   local range_path = path .. ':' .. start_line .. '-' .. end_line
