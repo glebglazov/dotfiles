@@ -1,5 +1,14 @@
 function dev {
     local cmds="$1"
+
+    # No args: try x, if fails try ux
+    if [ -z "$cmds" ]; then
+        devcontainer exec --workspace-folder . bash 2>/dev/null || {
+            devcontainer up --workspace-folder . && devcontainer exec --workspace-folder . bash
+        }
+        return $?
+    fi
+
     shift
 
     for cmd in $(echo "$cmds" | grep -o .); do
