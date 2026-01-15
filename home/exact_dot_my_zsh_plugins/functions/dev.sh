@@ -11,7 +11,11 @@ function dev {
                 devcontainer up --workspace-folder . "$@" || return 1
                 ;;
             x)
-                devcontainer exec --workspace-folder . "$@"
+                if [ $# -eq 0 ]; then
+                    devcontainer exec --workspace-folder . bash
+                else
+                    devcontainer exec --workspace-folder . "$@"
+                fi
                 return $?
                 ;;
             *)
