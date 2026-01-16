@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Find project root (where .bare is located)
+# Find project root (where bare .git is located)
 # Works from project level or from inside any worktree
 find_project_root() {
     local dir="$PWD"
     while [[ "$dir" != "/" ]]; do
-        if [[ -d "$dir/.bare" ]]; then
+        if [[ -d "$dir/.git" ]] && [[ "$(git -C "$dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
             echo "$dir"
             return 0
         fi
@@ -16,13 +16,13 @@ find_project_root() {
 
 project_root=$(find_project_root)
 if [[ -z $project_root ]]; then
-    echo "Not in a bare repo worktree structure (no .bare found)"
+    echo "Not in a bare repo worktree structure (no bare .git found)"
     exit 1
 fi
 
 project_name=$(basename "$project_root")
 
-# Get list of worktrees (skip the .bare directory itself)
+# Get list of worktrees (skip the bare repo entry)
 worktrees=$(git -C "$project_root" worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
 
 if [[ -z $worktrees ]]; then

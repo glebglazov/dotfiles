@@ -19,12 +19,9 @@ elif [[ "$1" == "cloneb" ]]; then
     shift 2
   fi
 
-  # Create project directory and clone bare repo into .bare
+  # Create project directory and clone bare repo into .git
   mkdir -p "$project_name"
-  command git clone --bare "$ssh_url" "$project_name/.bare" "$@"
-
-  # Set up .git file pointing to .bare
-  echo "gitdir: ./.bare" > "$project_name/.git"
+  command git clone --bare "$ssh_url" "$project_name/.git" "$@"
 
   # Configure fetch refspec for proper remote tracking
   command git -C "$project_name" config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
