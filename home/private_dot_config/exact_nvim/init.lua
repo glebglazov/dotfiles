@@ -1270,8 +1270,6 @@ vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 -- git worktrees
 vim.keymap.set('n', '<LEADER>gt', function() require('telescope').extensions.git_worktree.git_worktrees() end)
 vim.keymap.set('n', '<LEADER>gT', function()
-  local git_worktree = require('git-worktree')
-
   -- Detect bare repo: .git is a directory with bare = true config
   local cwd = vim.fn.getcwd()
   local git_path = cwd .. '/.git'
@@ -1293,19 +1291,39 @@ vim.keymap.set('n', '<LEADER>gT', function()
     if not worktree_name or worktree_name == '' then return end
 
     vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
-      local path
+      -- Replace "/" with "-" for directory name to avoid nested directories
+      local dir_name = worktree_name:gsub('/', '-')
+
+      local abs_path
       if is_bare then
-        -- Bare repo: create inside repo directory (relative to .git)
-        path = '../' .. worktree_name
+        abs_path = git_root .. '/' .. dir_name
       else
-        -- Normal repo: create as sibling
-        path = '../' .. repo_name .. '-' .. worktree_name
+        abs_path = vim.fn.fnamemodify(git_root .. '/../' .. repo_name .. '-' .. dir_name, ':p'):gsub('/$', '')
       end
 
-      -- Use worktree name as branch if not specified
+      -- Use worktree name as branch if not specified (keep original with slashes for branch)
       branch = (branch and branch ~= '') and branch or worktree_name
 
-      git_worktree.create_worktree(path, branch, 'origin')
+      -- Create worktree directly with git (bypasses plugin hooks)
+      -- Use -B to create or reset branch, run from git_root
+      local git_cmd = string.format(
+        'cd %s && git worktree add -B %s %s',
+        vim.fn.shellescape(git_root),
+        vim.fn.shellescape(branch),
+        vim.fn.shellescape(abs_path)
+      )
+      local output = vim.fn.system(git_cmd)
+      local exit_code = vim.v.shell_error
+
+      if exit_code ~= 0 then
+        vim.notify('Failed to create worktree: ' .. output, vim.log.levels.ERROR)
+        return
+      end
+
+      -- Create and switch to new tmux session for the worktree
+      local session_name = vim.fn.fnamemodify(abs_path, ':t'):gsub('[%.:]', '_')
+      vim.fn.system('tmux new-session -d -s ' .. vim.fn.shellescape(session_name) .. ' -c ' .. vim.fn.shellescape(abs_path))
+      vim.fn.system('tmux switch-client -t ' .. vim.fn.shellescape(session_name))
     end)
   end)
 end)
