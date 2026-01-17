@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Find project root (where bare .git is located)
-# Works from project level or from inside any worktree
-find_project_root() {
+# Find bare repo root (where .git dir with core.bare=true is located)
+find_bare_root() {
     local dir="$PWD"
     while [[ "$dir" != "/" ]]; do
         if [[ -d "$dir/.git" ]] && [[ "$(git -C "$dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
@@ -14,23 +13,33 @@ find_project_root() {
     return 1
 }
 
-project_root=$(find_project_root)
-if [[ -z $project_root ]]; then
-    echo "Not in a bare repo worktree structure (no bare .git found)"
-    exit 1
+bare_root=$(find_bare_root)
+is_bare=false
+if [[ -n $bare_root ]]; then
+    # Bare repo worktree structure
+    is_bare=true
+    project_root="$bare_root"
+    project_name=$(basename "$project_root")
+    # Skip the bare repo entry itself (first line)
+    worktrees=$(git -C "$project_root" worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
+else
+    # Normal git repo - check if we're in a git repo at all
+    git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [[ -z $git_root ]]; then
+        echo "Not in a git repository"
+        exit 1
+    fi
+    project_root="$git_root"
+    # Get all worktrees
+    worktrees=$(git -C "$project_root" worktree list 2>/dev/null | awk '{print $1}')
 fi
-
-project_name=$(basename "$project_root")
-
-# Get list of worktrees (skip the bare repo entry)
-worktrees=$(git -C "$project_root" worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
 
 if [[ -z $worktrees ]]; then
     echo "No worktrees found"
     exit 1
 fi
 
-# Show only worktree names in fzf, store full paths for lookup
+# Show only worktree names in fzf
 selected_name=$(echo "$worktrees" | xargs -n1 basename | fzf-tmux -p 55%,60% \
     --no-sort --border-label ' worktrees ' --prompt '🌳  ' \
     --bind 'tab:down,btab:up')
@@ -39,12 +48,18 @@ if [[ -z $selected_name ]]; then
     exit 0
 fi
 
-# Reconstruct full path
-selected="${project_root}/${selected_name}"
-session_name="${project_name}/${selected_name}"
+# Find the full path for the selected worktree
+selected=$(echo "$worktrees" | grep "/${selected_name}$")
 
-# Replace dots with underscores for tmux compatibility
-session_name=$(echo "$session_name" | tr . _)
+# Session naming: bare repos use project_name/worktree, normal repos just use worktree name
+if [[ $is_bare == true ]]; then
+    session_name="${project_name}/${selected_name}"
+else
+    session_name="$selected_name"
+fi
+
+# Replace dots and colons with underscores for tmux compatibility
+session_name=$(echo "$session_name" | tr '.:' '_')
 
 tmux_running=$(pgrep tmux)
 

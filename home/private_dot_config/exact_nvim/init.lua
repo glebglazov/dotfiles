@@ -1287,45 +1287,77 @@ vim.keymap.set('n', '<LEADER>gT', function()
     repo_name = vim.fn.fnamemodify(git_root, ':t')
   end
 
-  vim.ui.input({ prompt = 'Worktree name: ' }, function(worktree_name)
-    if not worktree_name or worktree_name == '' then return end
+  -- Find the main worktree to get the original repo name
+  local main_repo_name = repo_name
+  local worktree_list = vim.fn.systemlist('git worktree list')
+  if #worktree_list > 0 then
+    -- First entry is the main worktree (or bare repo)
+    local main_path = worktree_list[1]:match('^(%S+)')
+    if main_path then
+      main_repo_name = vim.fn.fnamemodify(main_path, ':t')
+    end
+  end
 
-    vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
-      -- Replace "/" with "-" for directory name to avoid nested directories
-      local dir_name = worktree_name:gsub('/', '-')
+  -- Function to create worktree with a given base name
+  local function create_worktree(base_name)
+    vim.ui.input({ prompt = 'Worktree name: ' }, function(worktree_name)
+      if not worktree_name or worktree_name == '' then return end
 
-      local abs_path
-      if is_bare then
-        abs_path = git_root .. '/' .. dir_name
-      else
-        abs_path = vim.fn.fnamemodify(git_root .. '/../' .. repo_name .. '-' .. dir_name, ':p'):gsub('/$', '')
-      end
+      vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
+        -- Replace "/" with "-" for directory name to avoid nested directories
+        local dir_name = worktree_name:gsub('/', '-')
 
-      -- Use worktree name as branch if not specified (keep original with slashes for branch)
-      branch = (branch and branch ~= '') and branch or worktree_name
+        local abs_path
+        if is_bare then
+          abs_path = git_root .. '/' .. dir_name
+        else
+          abs_path = vim.fn.fnamemodify(git_root .. '/../' .. base_name .. '-' .. dir_name, ':p'):gsub('/$', '')
+        end
 
-      -- Create worktree directly with git (bypasses plugin hooks)
-      -- Use -B to create or reset branch, run from git_root
-      local git_cmd = string.format(
-        'cd %s && git worktree add -B %s %s',
-        vim.fn.shellescape(git_root),
-        vim.fn.shellescape(branch),
-        vim.fn.shellescape(abs_path)
-      )
-      local output = vim.fn.system(git_cmd)
-      local exit_code = vim.v.shell_error
+        -- Use worktree name as branch if not specified (keep original with slashes for branch)
+        branch = (branch and branch ~= '') and branch or worktree_name
 
-      if exit_code ~= 0 then
-        vim.notify('Failed to create worktree: ' .. output, vim.log.levels.ERROR)
-        return
-      end
+        -- Create worktree directly with git (bypasses plugin hooks)
+        -- Use -B to create or reset branch, run from git_root
+        local git_cmd = string.format(
+          'cd %s && git worktree add -B %s %s',
+          vim.fn.shellescape(git_root),
+          vim.fn.shellescape(branch),
+          vim.fn.shellescape(abs_path)
+        )
+        local output = vim.fn.system(git_cmd)
+        local exit_code = vim.v.shell_error
 
-      -- Create and switch to new tmux session for the worktree
-      local session_name = vim.fn.fnamemodify(abs_path, ':t'):gsub('[%.:]', '_')
-      vim.fn.system('tmux new-session -d -s ' .. vim.fn.shellescape(session_name) .. ' -c ' .. vim.fn.shellescape(abs_path))
-      vim.fn.system('tmux switch-client -t ' .. vim.fn.shellescape(session_name))
+        if exit_code ~= 0 then
+          vim.notify('Failed to create worktree: ' .. output, vim.log.levels.ERROR)
+          return
+        end
+
+        -- Reindex zoxide to include the new worktree
+        vim.fn.jobstart('zoxide-index', { detach = true })
+
+        -- Create and switch to new tmux session for the worktree
+        local session_name = vim.fn.fnamemodify(abs_path, ':t'):gsub('[%.:]', '_')
+        vim.fn.system('tmux new-session -d -s ' .. vim.fn.shellescape(session_name) .. ' -c ' .. vim.fn.shellescape(abs_path))
+        vim.fn.system('tmux switch-client -t ' .. vim.fn.shellescape(session_name))
+      end)
     end)
-  end)
+  end
+
+  -- If current repo name differs from main repo name, offer choice
+  if not is_bare and repo_name ~= main_repo_name then
+    vim.ui.select(
+      { main_repo_name, repo_name },
+      { prompt = 'Base for new worktree:' },
+      function(choice)
+        if choice then
+          create_worktree(choice)
+        end
+      end
+    )
+  else
+    create_worktree(repo_name)
+  end
 end)
 
 -- git-pile (EXPERIMENTAL)

@@ -1,7 +1,20 @@
 #!/bin/zsh
 
 zoxide add ~/.local/share/chezmoi
-for d in $(find ~/private/Dev -type d -maxdepth 2)
-do
-  zoxide add $d
+
+# Add regular directories in ~/private/Dev (depth 2)
+for d in $(find ~/private/Dev -type d -maxdepth 2 2>/dev/null); do
+  zoxide add "$d"
+done
+
+# Find bare repos and add their worktrees
+for repo in ~/private/Dev/*/*; do
+  if [[ -d "$repo/.git" ]] && [[ "$(git -C "$repo" config --get core.bare 2>/dev/null)" == "true" ]]; then
+    # Add all worktree directories (direct subdirectories that are not .git)
+    for worktree in "$repo"/*/; do
+      if [[ -d "$worktree" ]] && [[ "$(basename "$worktree")" != ".git" ]]; then
+        zoxide add "${worktree%/}"
+      fi
+    done
+  fi
 done
