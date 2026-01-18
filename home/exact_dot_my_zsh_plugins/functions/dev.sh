@@ -32,6 +32,9 @@ function dev {
 
     for cmd in $(echo "$cmds" | grep -o .); do
         case "$cmd" in
+            o)
+                open "http://$DEVCONTAINER_DOMAIN:3000"
+                ;;
             r)
                 devcontainer up --workspace-folder . --remove-existing-container || return 1
                 ;;
