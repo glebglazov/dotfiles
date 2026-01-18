@@ -59,7 +59,7 @@ get_worktrees() {
         /^detached$/ { branch = "detached" }
         /^HEAD /     { }
         /^$/ {
-            if (path) {
+            if (path && name != ".bare") {
                 branches[n] = branch ? branch : "detached"
                 names[n] = name
                 paths[n] = path
@@ -69,7 +69,7 @@ get_worktrees() {
             path = ""; branch = ""
         }
         END {
-            if (path) {
+            if (path && name != ".bare") {
                 branches[n] = branch ? branch : "detached"
                 names[n] = name
                 paths[n] = path
