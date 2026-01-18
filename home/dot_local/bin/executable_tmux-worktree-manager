@@ -137,17 +137,9 @@ switch_to_worktree() {
 create_worktree() {
     detect_repo_context
 
-    # Get worktree name
-    echo -n "Worktree name: "
-    read -r worktree_name
-    if [[ -z "$worktree_name" ]]; then
-        echo "Cancelled"
-        return 1
-    fi
-
-    # Get branches with default (main/master) first
+    # Get all branches (local + remote), with main/master first
     local branches
-    branches=$(git branch --format="%(refname:short)" | awk '
+    branches=$(git branch -a --format="%(refname:short)" | grep -v '^origin/HEAD' | awk '
         /^(main|master)$/ { default = $0; next }
         { others[NR] = $0 }
         END {
@@ -162,23 +154,42 @@ create_worktree() {
         return 1
     fi
 
-    # Select base branch
-    local base_branch
-    base_branch=$(echo "$branches" | fzf \
-        --prompt="Base branch: " \
+    # Select branch to check out
+    local selected_branch
+    selected_branch=$(echo "$branches" | fzf \
+        --prompt="Branch: " \
         --no-sort \
-        --border-label ' select base branch ') || {
+        --border-label ' select branch ') || {
         echo "Cancelled"
         return 1
     }
 
-    if [[ -z "$base_branch" ]]; then
+    if [[ -z "$selected_branch" ]]; then
         echo "Cancelled"
         return 1
     fi
 
-    # Build path - replace / with - for directory name
-    local dir_name="${worktree_name//\//-}"
+    # Determine local branch name and directory name
+    local local_branch="$selected_branch"
+    local is_remote=false
+
+    if [[ "$selected_branch" == origin/* ]]; then
+        is_remote=true
+        # Strip origin/ prefix for local branch name
+        local_branch="${selected_branch#origin/}"
+    fi
+
+    # Default worktree name from branch (replace / with -)
+    local default_name="${local_branch//\//-}"
+
+    # Ask user for worktree name (empty = use default, Ctrl+C = cancel)
+    local dir_name
+    read -r -p "Worktree name (default: $default_name): " dir_name
+    if [[ -z "$dir_name" ]]; then
+        dir_name="$default_name"
+    fi
+
+    # Build worktree path
     local abs_path
 
     if [[ "$is_bare" == "true" ]]; then
@@ -191,9 +202,11 @@ create_worktree() {
         abs_path="$(dirname "$git_root")/${main_repo_name}-${dir_name}"
     fi
 
-    # Create worktree with new branch
+    # Create worktree with new branch named after worktree, based on selected branch
     echo "Creating worktree at $abs_path..."
-    if ! git -C "$git_root" worktree add -b "$worktree_name" "$abs_path" "$base_branch" 2>&1; then
+    echo "Creating branch '$dir_name' based on '$selected_branch'..."
+
+    if ! git -C "$git_root" worktree add -b "$dir_name" "$abs_path" "$selected_branch" 2>&1; then
         echo "Failed to create worktree" >&2
         read -n 1 -s -r -p "Press any key to continue..."
         return 1
@@ -249,12 +262,12 @@ main() {
         local selection
         selection=$(echo "$worktrees" | fzf \
             --prompt="Worktrees> " \
-            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new" \
+            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new  ctrl-l:cleanup" \
             --delimiter="\t" \
             --with-nth=1 \
             --preview='echo "Path: {2}"' \
             --preview-window=down,1 \
-            --expect="ctrl-d,ctrl-x,ctrl-n" \
+            --expect="ctrl-d,ctrl-x,ctrl-n,ctrl-l" \
             --no-sort \
             --border-label ' git worktrees ' \
         ) || break  # fzf returns non-zero on Esc/ctrl-c
@@ -285,6 +298,9 @@ main() {
             ctrl-n)
                 create_worktree
                 break  # Exit after create since we switch tmux session
+                ;;
+            ctrl-l)
+                exec tmux-branch-cleanup
                 ;;
             "")
                 # Enter pressed - switch to worktree

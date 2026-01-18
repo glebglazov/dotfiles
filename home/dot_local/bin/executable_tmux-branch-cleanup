@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+# tmux-branch-cleanup - fzf-based merged branch cleanup tool
+# Shows local branches that have been merged into the default branch
+# Keybindings:
+#   ctrl-d   - delete selected branch(es)
+#   ctrl-a   - select all branches
+#   esc      - close picker
+
+set -euo pipefail
+
+# Get the default remote branch (origin/main or origin/master)
+get_default_branch() {
+    local default_branch
+    default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/@@')
+
+    if [[ -z "$default_branch" ]]; then
+        # Fallback: check if origin/main or origin/master exists
+        if git rev-parse --verify origin/main &>/dev/null; then
+            default_branch="origin/main"
+        elif git rev-parse --verify origin/master &>/dev/null; then
+            default_branch="origin/master"
+        else
+            echo "Could not determine default branch" >&2
+            exit 1
+        fi
+    fi
+
+    echo "$default_branch"
+}
+
+# Get local branches merged into the default branch
+get_merged_branches() {
+    local default_branch="$1"
+    local default_local="${default_branch#origin/}"  # Strip origin/ prefix
+
+    # Get worktree branch names to exclude
+    local worktree_branches
+    worktree_branches=$(git worktree list --porcelain 2>/dev/null | grep "^branch " | sed 's/^branch refs\/heads\///')
+
+    # Get merged branches, excluding:
+    # - current branch (marked with *)
+    # - main/master branches
+    # - the default branch itself
+    # - branches with active worktrees
+    local merged
+    merged=$(git branch --merged "$default_branch" 2>/dev/null | \
+        grep -v "^\*" | \
+        grep -v "^[[:space:]]*${default_local}$" | \
+        grep -v "^[[:space:]]*main$" | \
+        grep -v "^[[:space:]]*master$" | \
+        sed 's/^[[:space:]]*//' | \
+        sort)
+
+    # Filter out worktree branches
+    if [[ -n "$worktree_branches" ]]; then
+        echo "$merged" | grep -v -F -x -f <(echo "$worktree_branches")
+    else
+        echo "$merged"
+    fi
+}
+
+# Delete branches (reads from stdin)
+delete_branches() {
+    local selected="$1"
+
+    # Convert newlines to spaces and delete all at once
+    local branch_list
+    branch_list=$(echo "$selected" | tr '\n' ' ')
+
+    echo "Running: git branch -d $branch_list"
+    eval "git branch -d $branch_list"
+
+    sleep 1
+}
+
+# Main picker loop
+main() {
+    # Check if we're in a git repo
+    if ! git rev-parse --git-dir &>/dev/null; then
+        echo "Not in a git repository" >&2
+        exit 1
+    fi
+
+    # Fetch latest to ensure we have up-to-date remote info
+    echo "Fetching latest..."
+    git fetch --prune 2>/dev/null || true
+
+    local default_branch
+    default_branch=$(get_default_branch)
+
+    while true; do
+        local branches
+        branches=$(get_merged_branches "$default_branch")
+
+        local branch_count=0
+        local header_msg
+        if [[ -z "$branches" ]]; then
+            header_msg="No merged branches found (compared to $default_branch)
+ctrl-w:worktrees  esc:quit"
+        else
+            branch_count=$(echo "$branches" | wc -l | tr -d ' ')
+            header_msg="Found $branch_count branch(es) merged into $default_branch
+tab:toggle  ctrl-a:select-all  ctrl-d/enter:confirm  ctrl-w:worktrees  esc:quit"
+        fi
+
+        local result
+        result=$(echo "$branches" | fzf \
+            --prompt="Merged branches> " \
+            --header="$header_msg" \
+            --multi \
+            --no-sort \
+            --border-label ' merged branches cleanup ' \
+            --bind="tab:toggle" \
+            --bind="ctrl-a:select-all" \
+            --bind="ctrl-d:accept" \
+            --expect="ctrl-w" \
+        ) || break  # fzf returns non-zero on Esc/ctrl-c
+
+        # Parse action (first line) and selection (rest)
+        local action
+        action=$(echo "$result" | head -1)
+        local selected
+        selected=$(echo "$result" | tail -n +2)
+
+        # Switch to worktree manager
+        if [[ "$action" == "ctrl-w" ]]; then
+            exec tmux-worktree-manager
+        fi
+
+        # If nothing selected, exit
+        [[ -z "$selected" ]] && break
+
+        # Count selected branches
+        local selected_count
+        selected_count=$(echo "$selected" | wc -l | tr -d ' ')
+
+        # Confirm deletion
+        echo "About to delete $selected_count branch(es):"
+        echo "$selected"
+        echo ""
+        read -r -p "Proceed? [y/N] " confirm </dev/tty
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            delete_branches "$selected"
+        fi
+    done
+}
+
+main "$@"

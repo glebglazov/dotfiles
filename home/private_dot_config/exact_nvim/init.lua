@@ -17,6 +17,21 @@ local function get_visual_selection()
   return vim.fn.getreg('v')
 end
 
+local function get_default_remote_branch()
+  local handle = io.popen("git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/@@'")
+  local default_branch = "origin/main"
+
+  if handle then
+    local result = handle:read("*a"):gsub("%s+", "")
+    handle:close()
+    if result ~= "" then
+      default_branch = result
+    end
+  end
+
+  return default_branch
+end
+
 local function run_in_tmux_fn(command, opts)
   return function ()
     opts = opts or {}
@@ -431,8 +446,6 @@ require('lazy').setup({
         end
       end
       },
-      { '<LEADER>gw', ':Gwrite' },
-      { '<LEADER>gW', ':Gwrite!' },
       {
         '<LEADER>gop', function()
           local target = vim.fn.expand("<cWORD>")
@@ -456,6 +469,15 @@ require('lazy').setup({
       { '<LEADER>grV', run_or_prompt_fn('G revert', { quick_execute = true }) },
       { '<LEADER>gco', ':G checkout<SPACE>' },
       { '<LEADER>gcb', ':G checkout -b<SPACE>' },
+      {
+        '<LEADER>gcB',
+        function()
+          local default_branch = get_default_remote_branch()
+          local cmd = ":G checkout -b  " .. default_branch
+          local left_moves = string.rep("<Left>", #default_branch + 1)
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd .. left_moves, true, false, true), "n", false)
+        end,
+      },
       { '<LEADER>gce', ':G commit --allow-empty -m \'\'<LEFT>' },
       { '<LEADER>gpl', ':G pull --rebase<CR>' },
       { '<LEADER>gpo', ':G push<CR>' },
@@ -479,7 +501,55 @@ require('lazy').setup({
         end
       },
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
-      { '<LEADER>gf', ':G fetch<CR>' }
+      { '<LEADER>gf', ':G fetch<CR>' },
+      {
+        '<LEADER>gwr',
+        function()
+          -- Step 1: Check for uncommitted changes
+          local status = vim.fn.system("git status --porcelain 2>/dev/null")
+          if status ~= "" then
+            vim.notify("Uncommitted changes present", vim.log.levels.ERROR)
+            return
+          end
+
+          -- Get worktree branch name (directory name)
+          local worktree_branch = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+
+          -- Get default remote branch
+          local default_branch = get_default_remote_branch()
+
+          -- Step 2: Git fetch
+          vim.notify("Fetching...", vim.log.levels.INFO)
+          local fetch_result = vim.fn.system("git fetch 2>&1")
+          if vim.v.shell_error ~= 0 then
+            vim.notify("git fetch failed: " .. fetch_result, vim.log.levels.ERROR)
+            return
+          end
+
+          -- Step 3: Checkout worktree branch
+          local checkout_result = vim.fn.system("git checkout " .. worktree_branch .. " 2>&1")
+          if vim.v.shell_error ~= 0 then
+            vim.notify("git checkout failed: " .. checkout_result, vim.log.levels.ERROR)
+            return
+          end
+
+          -- Step 4: Check for unpushed commits
+          local commits_ahead = vim.fn.system("git log " .. default_branch .. "..HEAD --oneline 2>/dev/null")
+          if commits_ahead ~= "" then
+            vim.notify("Branch has commits not in " .. default_branch .. ":\n" .. commits_ahead, vim.log.levels.ERROR)
+            return
+          end
+
+          -- Step 5: Reset hard to default branch
+          local reset_result = vim.fn.system("git reset --hard " .. default_branch .. " 2>&1")
+          if vim.v.shell_error ~= 0 then
+            vim.notify("git reset failed: " .. reset_result, vim.log.levels.ERROR)
+            return
+          end
+
+          vim.notify("Worktree reset to " .. default_branch, vim.log.levels.INFO)
+        end,
+      }
     },
   },
   {
