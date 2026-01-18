@@ -503,6 +503,13 @@ require('lazy').setup({
       { '<LEADER>gap', ':G commit --amend --no-edit | G push --force origin HEAD<CR>' },
       { '<LEADER>gf', ':G fetch<CR>' },
       {
+        '<LEADER>gpr',
+        function()
+          vim.cmd('G push -u origin HEAD')
+          vim.fn.jobstart('gh pr create --web', { detach = true })
+        end,
+      },
+      {
         '<LEADER>gwr',
         function()
           -- Step 1: Check for uncommitted changes
