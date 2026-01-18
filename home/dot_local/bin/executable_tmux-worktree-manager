@@ -1,0 +1,300 @@
+#!/usr/bin/env bash
+# tmux-worktree-manager - fzf-based git worktree manager
+# Keybindings:
+#   enter    - switch to worktree's tmux session
+#   ctrl-d   - delete worktree
+#   ctrl-x   - force delete worktree
+#   ctrl-n   - create new worktree
+#   esc      - close picker
+
+set -euo pipefail
+
+# Find bare repo root (where .git dir with core.bare=true is located)
+find_bare_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.git" ]] && [[ "$(git -C "$dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    return 1
+}
+
+# Detect repo context and set global variables
+detect_repo_context() {
+    bare_root=$(find_bare_root 2>/dev/null || echo "")
+    is_bare=false
+    git_root=""
+    repo_name=""
+
+    if [[ -n $bare_root ]]; then
+        is_bare=true
+        git_root="$bare_root"
+        repo_name=$(basename "$git_root")
+    else
+        git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null || echo "")
+        if [[ -n $git_common_dir ]] && [[ "$(git -C "$git_common_dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
+            is_bare=true
+            git_root=$(dirname "$git_common_dir")
+            repo_name=$(basename "$git_root")
+        else
+            git_root=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
+            if [[ -z $git_root ]]; then
+                echo "Not in a git repository" >&2
+                exit 1
+            fi
+            repo_name=$(basename "$git_root")
+        fi
+    fi
+}
+
+# Parse worktrees into tab-separated format: [branch] name\tpath (with aligned branches)
+get_worktrees() {
+    git worktree list --porcelain | awk '
+        BEGIN { n = 0; maxlen = 0 }
+        /^worktree / { path = substr($0, 10); name = path; gsub(/.*\//, "", name) }
+        /^branch /   { branch = substr($0, 8); gsub(/refs\/heads\//, "", branch) }
+        /^detached$/ { branch = "detached" }
+        /^HEAD /     { }
+        /^$/ {
+            if (path) {
+                branches[n] = branch ? branch : "detached"
+                names[n] = name
+                paths[n] = path
+                if (length(branches[n]) > maxlen) maxlen = length(branches[n])
+                n++
+            }
+            path = ""; branch = ""
+        }
+        END {
+            if (path) {
+                branches[n] = branch ? branch : "detached"
+                names[n] = name
+                paths[n] = path
+                if (length(branches[n]) > maxlen) maxlen = length(branches[n])
+                n++
+            }
+            for (i = 0; i < n; i++) {
+                padding = ""
+                for (j = 0; j < maxlen - length(branches[i]); j++) padding = padding " "
+                print "[" branches[i] "]" padding " " names[i] "\t" paths[i]
+            }
+        }
+    '
+}
+
+# Delete worktree
+delete_worktree() {
+    local path="$1"
+    local force="${2:-}"
+    local flag=""
+    [[ "$force" == "force" ]] && flag="--force"
+
+    local output
+    if output=$(git worktree remove $flag "$path" 2>&1); then
+        echo "Deleted: $path"
+        sleep 0.5
+    else
+        echo "Failed to delete: $path" >&2
+        echo "$output" >&2
+        read -n 1 -s -r -p "Press any key to continue..."
+    fi
+}
+
+# Switch to worktree's tmux session
+switch_to_worktree() {
+    local path="$1"
+    local worktree_name
+    worktree_name=$(basename "$path")
+
+    # Build session name based on repo context
+    local session_name
+    if [[ "$is_bare" == "true" ]]; then
+        session_name="${repo_name}/${worktree_name}"
+    else
+        session_name="$worktree_name"
+    fi
+
+    # Replace dots and colons with underscores for tmux compatibility
+    session_name="${session_name//[.:]/_}"
+
+    local tmux_running
+    tmux_running=$(pgrep tmux || echo "")
+
+    if [[ -z "${TMUX:-}" ]] && [[ -z "$tmux_running" ]]; then
+        tmux new-session -s "$session_name" -c "$path"
+    else
+        if ! tmux has-session -t="$session_name" 2>/dev/null; then
+            tmux new-session -ds "$session_name" -c "$path"
+        fi
+        tmux switch-client -t "$session_name"
+    fi
+}
+
+# Create new worktree
+create_worktree() {
+    detect_repo_context
+
+    # Get worktree name
+    echo -n "Worktree name: "
+    read -r worktree_name
+    if [[ -z "$worktree_name" ]]; then
+        echo "Cancelled"
+        return 1
+    fi
+
+    # Get branches with default (main/master) first
+    local branches
+    branches=$(git branch --format="%(refname:short)" | awk '
+        /^(main|master)$/ { default = $0; next }
+        { others[NR] = $0 }
+        END {
+            if (default) print default
+            for (i in others) print others[i]
+        }
+    ')
+
+    if [[ -z "$branches" ]]; then
+        echo "No branches found" >&2
+        read -n 1 -s -r -p "Press any key to continue..."
+        return 1
+    fi
+
+    # Select base branch
+    local base_branch
+    base_branch=$(echo "$branches" | fzf \
+        --prompt="Base branch: " \
+        --no-sort \
+        --border-label ' select base branch ') || {
+        echo "Cancelled"
+        return 1
+    }
+
+    if [[ -z "$base_branch" ]]; then
+        echo "Cancelled"
+        return 1
+    fi
+
+    # Build path - replace / with - for directory name
+    local dir_name="${worktree_name//\//-}"
+    local abs_path
+
+    if [[ "$is_bare" == "true" ]]; then
+        abs_path="$git_root/$dir_name"
+    else
+        local main_worktree_path
+        main_worktree_path=$(git worktree list | head -1 | awk '{print $1}')
+        local main_repo_name
+        main_repo_name=$(basename "$main_worktree_path")
+        abs_path="$(dirname "$git_root")/${main_repo_name}-${dir_name}"
+    fi
+
+    # Create worktree with new branch
+    echo "Creating worktree at $abs_path..."
+    if ! git -C "$git_root" worktree add -b "$worktree_name" "$abs_path" "$base_branch" 2>&1; then
+        echo "Failed to create worktree" >&2
+        read -n 1 -s -r -p "Press any key to continue..."
+        return 1
+    fi
+
+    # Reindex zoxide in background
+    if command -v zoxide-index &>/dev/null; then
+        zoxide-index &>/dev/null &
+    fi
+
+    # Create and switch tmux session
+    local worktree_dir_name
+    worktree_dir_name=$(basename "$abs_path")
+    local session_name
+
+    if [[ "$is_bare" == "true" ]]; then
+        session_name="${repo_name}/${worktree_dir_name}"
+    else
+        session_name="$worktree_dir_name"
+    fi
+
+    # Replace dots and colons with underscores for tmux compatibility
+    session_name="${session_name//[.:]/_}"
+
+    local tmux_running
+    tmux_running=$(pgrep tmux || echo "")
+
+    if [[ -z "${TMUX:-}" ]] && [[ -z "$tmux_running" ]]; then
+        tmux new-session -s "$session_name" -c "$abs_path"
+    else
+        if ! tmux has-session -t="$session_name" 2>/dev/null; then
+            tmux new-session -ds "$session_name" -c "$abs_path"
+        fi
+        tmux switch-client -t "$session_name"
+    fi
+
+    return 0
+}
+
+# Main picker loop
+main() {
+    detect_repo_context
+
+    while true; do
+        local worktrees
+        worktrees=$(get_worktrees)
+
+        if [[ -z "$worktrees" ]]; then
+            echo "No worktrees found"
+            exit 1
+        fi
+
+        local selection
+        selection=$(echo "$worktrees" | fzf \
+            --prompt="Worktrees> " \
+            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new" \
+            --delimiter="\t" \
+            --with-nth=1 \
+            --preview='echo "Path: {2}"' \
+            --preview-window=down,1 \
+            --expect="ctrl-d,ctrl-x,ctrl-n" \
+            --no-sort \
+            --border-label ' git worktrees ' \
+        ) || break  # fzf returns non-zero on Esc/ctrl-c
+
+        # Parse fzf output: first line is the key pressed, rest is selection
+        local action
+        action=$(echo "$selection" | head -1)
+        local entry
+        entry=$(echo "$selection" | tail -n +2 | head -1)
+
+        # If nothing selected and no action, exit
+        [[ -z "$entry" && -z "$action" ]] && break
+
+        local path
+        path=$(echo "$entry" | cut -f2)
+
+        case "$action" in
+            ctrl-d)
+                if [[ -n "$path" ]]; then
+                    delete_worktree "$path"
+                fi
+                ;;
+            ctrl-x)
+                if [[ -n "$path" ]]; then
+                    delete_worktree "$path" force
+                fi
+                ;;
+            ctrl-n)
+                create_worktree
+                break  # Exit after create since we switch tmux session
+                ;;
+            "")
+                # Enter pressed - switch to worktree
+                if [[ -n "$path" ]]; then
+                    switch_to_worktree "$path"
+                fi
+                break
+                ;;
+        esac
+    done
+}
+
+main "$@"
