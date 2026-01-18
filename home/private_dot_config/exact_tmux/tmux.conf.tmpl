@@ -31,7 +31,13 @@ set -g status-keys vi
 set -g mode-keys vi
 
 set -g set-titles on
-set -g set-titles-string "#S"
+set -g set-titles-string '#(tmux-title "#{pane_current_path}")'
+
+# Refresh title on session/window/pane changes
+set-hook -g pane-focus-in 'refresh-client'
+set-hook -g session-window-changed 'refresh-client'
+set-hook -g client-session-changed[0] 'set -g set-titles off'
+set-hook -g client-session-changed[1] 'set -g set-titles on'
 
 {{- if (eq .chezmoi.os "darwin") }}
 # macOS specific: disable key repeat delay
