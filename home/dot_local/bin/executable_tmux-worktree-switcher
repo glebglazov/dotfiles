@@ -15,23 +15,35 @@ find_bare_root() {
 
 bare_root=$(find_bare_root)
 is_bare=false
+
 if [[ -n $bare_root ]]; then
-    # Bare repo worktree structure
+    # Directly in bare repo root
     is_bare=true
     project_root="$bare_root"
     project_name=$(basename "$project_root")
     # Skip the bare repo entry itself (first line)
     worktrees=$(git -C "$project_root" worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
 else
-    # Normal git repo - check if we're in a git repo at all
-    git_root=$(git rev-parse --show-toplevel 2>/dev/null)
-    if [[ -z $git_root ]]; then
-        echo "Not in a git repository"
-        exit 1
+    # Check if we're in a worktree of a bare repo
+    git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null)
+    if [[ -n $git_common_dir ]] && [[ "$(git -C "$git_common_dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
+        # In a worktree of a bare repo
+        is_bare=true
+        project_root=$(dirname "$git_common_dir")
+        project_name=$(basename "$project_root")
+        # Skip the bare repo entry itself (first line)
+        worktrees=$(git worktree list 2>/dev/null | tail -n +2 | awk '{print $1}')
+    else
+        # Normal git repo - check if we're in a git repo at all
+        git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+        if [[ -z $git_root ]]; then
+            echo "Not in a git repository"
+            exit 1
+        fi
+        project_root="$git_root"
+        # Get all worktrees
+        worktrees=$(git -C "$project_root" worktree list 2>/dev/null | awk '{print $1}')
     fi
-    project_root="$git_root"
-    # Get all worktrees
-    worktrees=$(git -C "$project_root" worktree list 2>/dev/null | awk '{print $1}')
 fi
 
 if [[ -z $worktrees ]]; then

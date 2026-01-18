@@ -1268,34 +1268,65 @@ vim.keymap.set('n', '<LEADER>d', ':vsp | :wincmd l<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>D', ':sp | :wincmd j<CR>', { silent = true })
 
 -- git worktrees
-vim.keymap.set('n', '<LEADER>gt', function() require('telescope').extensions.git_worktree.git_worktrees() end)
-vim.keymap.set('n', '<LEADER>gT', function()
-  -- Detect bare repo: .git is a directory with bare = true config
+vim.keymap.set('n', '<LEADER>gT', function() require('telescope').extensions.git_worktree.git_worktrees() end)
+vim.keymap.set('n', '<LEADER>gt', function()
+  -- Detect bare repo context (either in bare repo root or in a worktree of a bare repo)
   local cwd = vim.fn.getcwd()
   local git_path = cwd .. '/.git'
-  local is_bare = vim.fn.isdirectory(git_path) == 1
+
+  -- Check if directly in bare repo root
+  local is_bare_root = vim.fn.isdirectory(git_path) == 1
     and vim.fn.system('git -C ' .. cwd .. ' config --get core.bare'):gsub('%s+', '') == 'true'
 
+  -- Check if in a worktree of a bare repo (git common dir points to bare repo)
+  local git_common_dir = vim.fn.systemlist('git rev-parse --git-common-dir 2>/dev/null')[1] or ''
+  local is_bare_worktree = not is_bare_root
+    and git_common_dir ~= ''
+    and vim.fn.system('git -C ' .. vim.fn.shellescape(git_common_dir) .. ' config --get core.bare 2>/dev/null'):gsub('%s+', '') == 'true'
+
+  local is_bare_context = is_bare_root or is_bare_worktree
+
   local git_root, repo_name
-  if is_bare then
+  if is_bare_root then
     -- In bare repo root: use cwd
     git_root = cwd
     repo_name = vim.fn.fnamemodify(cwd, ':t')
+  elseif is_bare_worktree then
+    -- In worktree of bare repo: find the bare repo root (parent of git common dir)
+    git_root = vim.fn.fnamemodify(git_common_dir, ':h')
+    repo_name = vim.fn.fnamemodify(git_root, ':t')
   else
-    -- Normal repo or inside a worktree: use git to find root
+    -- Normal repo or worktree of normal repo
     git_root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
     repo_name = vim.fn.fnamemodify(git_root, ':t')
   end
 
-  -- Find the main worktree to get the original repo name
+  -- For normal repos, find the main worktree name to offer as alternative base
   local main_repo_name = repo_name
-  local worktree_list = vim.fn.systemlist('git worktree list')
-  if #worktree_list > 0 then
-    -- First entry is the main worktree (or bare repo)
-    local main_path = worktree_list[1]:match('^(%S+)')
-    if main_path then
-      main_repo_name = vim.fn.fnamemodify(main_path, ':t')
+  if not is_bare_context then
+    local worktree_list = vim.fn.systemlist('git worktree list')
+    if #worktree_list > 0 then
+      local main_path = worktree_list[1]:match('^(%S+)')
+      if main_path then
+        main_repo_name = vim.fn.fnamemodify(main_path, ':t')
+      end
     end
+  end
+
+  -- Get local branches and find default branch
+  local branches_raw = vim.fn.systemlist('git branch --format="%(refname:short)"')
+  local default_branch = nil
+  local branches = {}
+  for _, b in ipairs(branches_raw) do
+    if b == 'main' or b == 'master' then
+      default_branch = b
+    else
+      table.insert(branches, b)
+    end
+  end
+  -- Put default branch first if found
+  if default_branch then
+    table.insert(branches, 1, default_branch)
   end
 
   -- Function to create worktree with a given base name
@@ -1303,27 +1334,26 @@ vim.keymap.set('n', '<LEADER>gT', function()
     vim.ui.input({ prompt = 'Worktree name: ' }, function(worktree_name)
       if not worktree_name or worktree_name == '' then return end
 
-      vim.ui.input({ prompt = 'Branch (empty for new branch): ' }, function(branch)
+      vim.ui.select(branches, { prompt = 'Base branch:' }, function(base_branch)
+        if not base_branch then return end
+
         -- Replace "/" with "-" for directory name to avoid nested directories
         local dir_name = worktree_name:gsub('/', '-')
 
         local abs_path
-        if is_bare then
+        if is_bare_context then
           abs_path = git_root .. '/' .. dir_name
         else
           abs_path = vim.fn.fnamemodify(git_root .. '/../' .. base_name .. '-' .. dir_name, ':p'):gsub('/$', '')
         end
 
-        -- Use worktree name as branch if not specified (keep original with slashes for branch)
-        branch = (branch and branch ~= '') and branch or worktree_name
-
-        -- Create worktree directly with git (bypasses plugin hooks)
-        -- Use -B to create or reset branch, run from git_root
+        -- Create worktree with new branch based on selected branch
         local git_cmd = string.format(
-          'cd %s && git worktree add -B %s %s',
+          'cd %s && git worktree add -b %s %s %s',
           vim.fn.shellescape(git_root),
-          vim.fn.shellescape(branch),
-          vim.fn.shellescape(abs_path)
+          vim.fn.shellescape(worktree_name),
+          vim.fn.shellescape(abs_path),
+          vim.fn.shellescape(base_branch)
         )
         local output = vim.fn.system(git_cmd)
         local exit_code = vim.v.shell_error
@@ -1337,26 +1367,25 @@ vim.keymap.set('n', '<LEADER>gT', function()
         vim.fn.jobstart('zoxide-index', { detach = true })
 
         -- Create and switch to new tmux session for the worktree
-        local session_name = vim.fn.fnamemodify(abs_path, ':t'):gsub('[%.:]', '_')
+        local worktree_dir_name = vim.fn.fnamemodify(abs_path, ':t')
+        local session_name
+        if is_bare_context then
+          session_name = repo_name .. '/' .. worktree_dir_name
+        else
+          session_name = worktree_dir_name
+        end
+        session_name = session_name:gsub('[%.:]', '_')
         vim.fn.system('tmux new-session -d -s ' .. vim.fn.shellescape(session_name) .. ' -c ' .. vim.fn.shellescape(abs_path))
         vim.fn.system('tmux switch-client -t ' .. vim.fn.shellescape(session_name))
       end)
     end)
   end
 
-  -- If current repo name differs from main repo name, offer choice
-  if not is_bare and repo_name ~= main_repo_name then
-    vim.ui.select(
-      { main_repo_name, repo_name },
-      { prompt = 'Base for new worktree:' },
-      function(choice)
-        if choice then
-          create_worktree(choice)
-        end
-      end
-    )
-  else
+  -- For normal repos, always use main repo name as base; for bare repos, use repo_name
+  if is_bare_context then
     create_worktree(repo_name)
+  else
+    create_worktree(main_repo_name)
   end
 end)
 
