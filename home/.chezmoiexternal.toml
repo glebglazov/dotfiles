@@ -9,20 +9,20 @@
 
 [".local/bin/try.rb"]
 	type = "file"
-	url = "https://raw.githubusercontent.com/tobi/try/9babc916eb199148c5949e7e8dee318a3f3a4770/try.rb"
-	checksum.sha256 = "8488dec02993b8dfe73f8af4bea798f54681315be455f137c0479c561d1e4475"
+	url = "https://raw.githubusercontent.com/tobi/try/559279c2687ad720fd9586846dfd3027795ccb80/try.rb"
+	checksum.sha256 = "a72a1acb344fcd325c982aff95402b25bace7c261ae81369fa53501325b6cebe"
 	executable = true
 
 [".local/bin/mise"]
 	type = "archive-file"
-	{{- $mise_version := "2025.12.6" }}
+	{{- $mise_version := "2026.1.4" }}
 	{{- $mise_checksum := "" }}
 	{{ if eq .chezmoi.os "darwin" -}}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
-	{{- $mise_checksum = "f865db319b70e56e24c2013d22f34b0b3d5a97e6ac3b03f894a5850a3e5824bb" }}
+	{{- $mise_checksum = "ec6b5f7062c0c15d137392eae642f75fff123860cc1f12aed02ff9ac628e73d2" }}
 	{{- else }}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-x64.tar.gz"
-	{{- $mise_checksum = "55503e81b3e8d655be1cbfbdf642345b2a3b60ffb76d094974f1a8cd60f0db49" }}
+	{{- $mise_checksum = "c19ba5e2f1ffe562655f0c1426b6844e45fe56daf6b796e11d8dca3e070a0698" }}
 	{{- end }}
 	checksum.sha256="{{ $mise_checksum }}"
 	path = "mise/bin/mise"
