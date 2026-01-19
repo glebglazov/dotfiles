@@ -105,7 +105,6 @@
   "claude"
   "chatgpt"
   "cleanshot"
-  "cursor"
   "font-hack-nerd-font"
   "ghostty@tip"
   "homerow"
@@ -117,29 +116,27 @@
   "obsidian"
   "orbstack"
   "raycast"
-  "slack"
   "spotify"
   "telegram"
   "todoist"
   "viber"
-  "visual-studio-code"
   "whatsapp"
-  "zen"
   "zoom"
 -}}
 
 {{- if (eq .personal true) -}}
   {{ $casks = concat $casks (list
        "figma"
-       "font-sf-pro"
        "rapidapi"
-       "sf-symbols"
     )
   }}
 {{- else if (eq .work true) -}}
   {{ $casks = concat $casks (list
+       "cursor"
        "postman"
+       "slack"
        "snowflake-snowsql"
+       "zen"
     )
   }}
 {{- end -}}
