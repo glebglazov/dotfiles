@@ -36,7 +36,13 @@ function dev {
                 open "http://$DEVCONTAINER_DOMAIN:3000"
                 ;;
             r)
-                devcontainer up --workspace-folder . --remove-existing-container || return 1
+                echo -n "Reset will remove existing container. Continue? [y/N] "
+                read -r answer
+                if [[ "$answer" =~ ^[Yy]$ ]]; then
+                    devcontainer up --workspace-folder . --remove-existing-container || return 1
+                else
+                    echo "Reset skipped."
+                fi
                 ;;
             u)
                 devcontainer up --workspace-folder . || return 1
