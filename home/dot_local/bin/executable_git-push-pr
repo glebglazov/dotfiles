@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+output=$(git push -u origin HEAD 2>&1)
+echo "$output"
+
+url=$(echo "$output" | grep -o 'https://github.com[^[:space:]]*' | head -1)
+if [ -n "$url" ]; then
+    open "$url"
+fi
