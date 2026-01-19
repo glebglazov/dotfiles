@@ -505,8 +505,7 @@ require('lazy').setup({
       {
         '<LEADER>gpr',
         function()
-          vim.cmd('G push -u origin HEAD')
-          vim.fn.jobstart('gh pr create --web', { detach = true })
+          vim.fn.system('tmux new-window -n "pr" git-push-pr')
         end,
       },
       {
