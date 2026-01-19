@@ -510,7 +510,7 @@ require('lazy').setup({
         end,
       },
       {
-        '<LEADER>gwr',
+        '<LEADER>gwp', -- "git worktree prinstine"
         function()
           -- Step 1: Check for uncommitted changes
           local status = vim.fn.system("git status --porcelain 2>/dev/null")
