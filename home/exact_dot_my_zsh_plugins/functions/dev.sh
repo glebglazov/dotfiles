@@ -47,6 +47,18 @@ function dev {
             u)
                 devcontainer up --workspace-folder . || return 1
                 ;;
+            v)
+                devcontainer exec --workspace-folder . bin/vite dev
+                return $?
+                ;;
+            s)
+                devcontainer exec --workspace-folder . bundle exec rails s
+                return $?
+                ;;
+            c)
+                devcontainer exec --workspace-folder . claude --dangerously-skip-permissions
+                return $?
+                ;;
             x)
                 if [ ${#exec_cmd[@]} -eq 0 ]; then
                     devcontainer exec --workspace-folder . bash
