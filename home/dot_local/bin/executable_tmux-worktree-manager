@@ -262,12 +262,12 @@ main() {
         local selection
         selection=$(echo "$worktrees" | fzf \
             --prompt="Worktrees> " \
-            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new  ctrl-l:cleanup" \
+            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new  ctrl-l:cleanup  ctrl-o:open" \
             --delimiter="\t" \
             --with-nth=1 \
             --preview='echo "Path: {2}"' \
             --preview-window=down,1 \
-            --expect="ctrl-d,ctrl-x,ctrl-n,ctrl-l" \
+            --expect="ctrl-d,ctrl-x,ctrl-n,ctrl-l,ctrl-o" \
             --no-sort \
             --border-label ' git worktrees ' \
         ) || break  # fzf returns non-zero on Esc/ctrl-c
@@ -301,6 +301,12 @@ main() {
                 ;;
             ctrl-l)
                 exec tmux-branch-cleanup
+                ;;
+            ctrl-o)
+                if [[ -n "$path" ]]; then
+                    tmux new-window -c "$path" "$SHELL -ic 'dev o'"
+                fi
+                break
                 ;;
             "")
                 # Enter pressed - switch to worktree
