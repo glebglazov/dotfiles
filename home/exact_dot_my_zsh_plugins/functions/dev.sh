@@ -36,6 +36,9 @@ function dev {
                 open "http://$DEVCONTAINER_DOMAIN:3000"
                 ;;
             r)
+                devcontainer exec --workspace-folder . .devcontainer/post-create.sh
+                ;;
+            R)
                 echo -n "Reset will remove existing container. Continue? [y/N] "
                 read -r answer
                 if [[ "$answer" =~ ^[Yy]$ ]]; then
