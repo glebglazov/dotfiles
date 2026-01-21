@@ -51,8 +51,19 @@ detect_repo_context() {
 }
 
 # Parse worktrees into tab-separated format: [branch] name\tpath (with aligned branches)
+# Sorted by tmux session activity (most recent first)
 get_worktrees() {
-    git worktree list --porcelain | awk '
+    # Get tmux session activities into associative array
+    declare -A sess_activity
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^(.+)\ ([0-9]+)$ ]]; then
+            sess_activity["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+        fi
+    done < <(tmux list-sessions -F '#{session_name} #{session_activity}' 2>/dev/null || true)
+
+    # Parse worktrees with awk, then add activity scores in bash
+    local worktree_data
+    worktree_data=$(git worktree list --porcelain | awk '
         BEGIN { n = 0; maxlen = 0 }
         /^worktree / { path = substr($0, 10); name = path; gsub(/.*\//, "", name) }
         /^branch /   { branch = substr($0, 8); gsub(/refs\/heads\//, "", branch) }
@@ -79,10 +90,25 @@ get_worktrees() {
             for (i = 0; i < n; i++) {
                 padding = ""
                 for (j = 0; j < maxlen - length(branches[i]); j++) padding = padding " "
-                print "[" branches[i] "]" padding " " names[i] "\t" paths[i]
+                # Output: name \t display \t path
+                print names[i] "\t[" branches[i] "]" padding " " names[i] "\t" paths[i]
             }
         }
-    '
+    ')
+
+    # Add activity scores and sort
+    while IFS=$'\t' read -r name display path; do
+        # Build session name (same logic as switch_to_worktree)
+        local session_name="$name"
+        if [[ "$is_bare" == "true" ]]; then
+            session_name="${repo_name}/${name}"
+        fi
+        # Replace dots and colons with underscores
+        session_name="${session_name//[.:]/_}"
+
+        local activity="${sess_activity[$session_name]:-0}"
+        printf '%s\t%s\t%s\n' "$activity" "$display" "$path"
+    done <<< "$worktree_data" | sort -t$'\t' -k1 -nr | cut -f2-
 }
 
 # Delete worktree
