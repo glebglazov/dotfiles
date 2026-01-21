@@ -3,7 +3,19 @@
 output=$(git push -u origin HEAD 2>&1)
 echo "$output"
 
-url=$(echo "$output" | grep -o 'https://github.com[^[:space:]]*' | head -1)
-if [ -n "$url" ]; then
+# Get the base branch (usually main/master)
+base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+if [ -z "$base_branch" ]; then
+    base_branch="main"
+fi
+
+# Create PR using gh CLI
+if url=$(gh pr create --fill --base "$base_branch" 2>&1 | grep github.com); then
     open "$url"
+else
+    # Fall back to opening the URL from push output
+    url=$(echo "$output" | grep -o 'https://github.com[^[:space:]]*' | head -1)
+    if [ -n "$url" ]; then
+        open "$url"
+    fi
 fi
