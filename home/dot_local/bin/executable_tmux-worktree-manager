@@ -262,7 +262,7 @@ main() {
         local selection
         selection=$(echo "$worktrees" | fzf \
             --prompt="Worktrees> " \
-            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new  ctrl-l:cleanup  ctrl-o:open" \
+            --header="enter:switch  ctrl-d:delete  ctrl-x:force-delete  ctrl-n:new  ctrl-l:cleanup  ctrl-o:'dev o'" \
             --delimiter="\t" \
             --with-nth=1 \
             --preview='echo "Path: {2}"' \
@@ -303,9 +303,8 @@ main() {
                 exec tmux-branch-cleanup
                 ;;
             ctrl-o)
-                if [[ -n "$path" ]]; then
-                    tmux new-window -c "$path" "$SHELL -ic 'dev o'"
-                fi
+                # Run 'dev o' in current workspace (not selected worktree)
+                tmux new-window "$SHELL -ic 'dev o'"
                 break
                 ;;
             "")
