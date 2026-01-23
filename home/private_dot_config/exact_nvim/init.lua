@@ -542,7 +542,7 @@ require('lazy').setup({
           -- Step 4: Check for unpushed commits
           local commits_ahead = vim.fn.system("git log " .. default_branch .. "..HEAD --oneline 2>/dev/null")
           if commits_ahead ~= "" then
-            vim.notify("Branch has commits not in " .. default_branch .. ":\n" .. commits_ahead, vim.log.levels.ERROR)
+            vim.notify("Branch " .. worktree_branch .. " has commits not in " .. default_branch .. ":\n" .. commits_ahead, vim.log.levels.ERROR)
             return
           end
 
@@ -787,7 +787,11 @@ vim.keymap.set('n', '<LEADER>cc', run_in_tmux_fn(
 ))
 
 vim.keymap.set('n', '<LEADER>bb',builtin.buffers)
-vim.keymap.set('n', '<LEADER>/', builtin.live_grep)
+vim.keymap.set('n', '<LEADER>/', function()
+  builtin.live_grep({
+    file_ignore_patterns = { "thoughts/" }
+  })
+end)
 vim.keymap.set('n', '<LEADER>?', builtin.resume)
 vim.keymap.set('v', '<LEADER>/',
   function()
