@@ -110,7 +110,7 @@ tab:toggle  ctrl-a:select-all  ctrl-d/enter:confirm  ctrl-w:worktrees  esc:quit"
             --multi \
             --no-sort \
             --border-label ' merged branches cleanup ' \
-            --bind="tab:toggle" \
+            --bind="tab:toggle+down" \
             --bind="ctrl-a:select-all" \
             --bind="ctrl-d:accept" \
             --expect="ctrl-w" \
