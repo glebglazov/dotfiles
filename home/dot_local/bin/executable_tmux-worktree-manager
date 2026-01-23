@@ -228,14 +228,24 @@ create_worktree() {
         abs_path="$(dirname "$git_root")/${main_repo_name}-${dir_name}"
     fi
 
-    # Create worktree with new branch named after worktree, based on selected branch
+    # Create worktree - use existing branch if it matches, otherwise create new one
     echo "Creating worktree at $abs_path..."
-    echo "Creating branch '$dir_name' based on '$selected_branch'..."
 
-    if ! git -C "$git_root" worktree add -b "$dir_name" "$abs_path" "$selected_branch" 2>&1; then
-        echo "Failed to create worktree" >&2
-        read -n 1 -s -r -p "Press any key to continue..."
-        return 1
+    # Check if a local branch with the target name already exists
+    if git -C "$git_root" show-ref --verify --quiet "refs/heads/$dir_name"; then
+        echo "Using existing branch '$dir_name'..."
+        if ! git -C "$git_root" worktree add "$abs_path" "$dir_name" 2>&1; then
+            echo "Failed to create worktree" >&2
+            read -n 1 -s -r -p "Press any key to continue..."
+            return 1
+        fi
+    else
+        echo "Creating branch '$dir_name' based on '$selected_branch'..."
+        if ! git -C "$git_root" worktree add -b "$dir_name" "$abs_path" "$selected_branch" 2>&1; then
+            echo "Failed to create worktree" >&2
+            read -n 1 -s -r -p "Press any key to continue..."
+            return 1
+        fi
     fi
 
     # Reindex zoxide in background
