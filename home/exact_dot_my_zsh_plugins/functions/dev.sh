@@ -1,4 +1,31 @@
 function dev {
+    # Handle --init option
+    if [ "$1" = "--init" ]; then
+        if [ -d ".devcontainer" ]; then
+            echo -n ".devcontainer already exists. Overwrite? [y/N] "
+            read -r answer
+            if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+                echo "Aborted."
+                return 1
+            fi
+        fi
+
+        local project_name=$(basename "$(pwd)")
+        local template_dir="$HOME/.local/share/glebglazov/dev.sh/templates"
+
+        mkdir -p .devcontainer
+
+        sed "s/__PROJECT_NAME__/${project_name}/g" "$template_dir/devcontainer.json" > .devcontainer/devcontainer.json
+
+        cp "$template_dir/post-create.sh" .devcontainer/post-create.sh
+        chmod +x .devcontainer/post-create.sh
+
+        echo "Initialized .devcontainer/ for '$project_name'"
+        echo "  - Edit .devcontainer/devcontainer.json to customize image and features"
+        echo "  - Edit .devcontainer/post-create.sh to add project-specific setup"
+        return 0
+    fi
+
     local cmds=""
     local exec_cmd=()
 

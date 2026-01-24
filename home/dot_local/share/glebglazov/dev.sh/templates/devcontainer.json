@@ -1,0 +1,26 @@
+{
+  "name": "__PROJECT_NAME__ Development",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/tmp/host-claude,type=bind,readonly",
+    "source=${localEnv:HOME}/.config/git/config,target=/tmp/host-gitconfig,type=bind,readonly"
+  ],
+
+  "containerEnv": {
+    "EDITOR": "nvim",
+    "VISUAL": "nvim"
+  },
+
+  "runArgs": [
+  ],
+
+  "postCreateCommand": ".devcontainer/post-create.sh",
+
+  "remoteUser": "vscode"
+}
