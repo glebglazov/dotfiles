@@ -43,16 +43,16 @@ function dev {
         fi
     fi
 
-    # No cmds: try x, if fails try ux
+    # No cmds: exec in container, starting it first if needed
     if [ -z "$cmds" ]; then
+        # Check if container is running first
+        if ! devcontainer exec --workspace-folder . true 2>/dev/null; then
+            devcontainer up --workspace-folder . || return 1
+        fi
         if [ ${#exec_cmd[@]} -eq 0 ]; then
-            devcontainer exec --workspace-folder . bash 2>/dev/null || {
-                devcontainer up --workspace-folder . && devcontainer exec --workspace-folder . bash
-            }
+            devcontainer exec --workspace-folder . bash
         else
-            devcontainer exec --workspace-folder . "${exec_cmd[@]}" 2>/dev/null || {
-                devcontainer up --workspace-folder . && devcontainer exec --workspace-folder . "${exec_cmd[@]}"
-            }
+            devcontainer exec --workspace-folder . "${exec_cmd[@]}"
         fi
         return $?
     fi
