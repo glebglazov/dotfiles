@@ -482,6 +482,7 @@ require('lazy').setup({
       { '<LEADER>gpl', ':G pull --rebase<CR>' },
       { '<LEADER>gpo', ':G push<CR>' },
       { '<LEADER>gpf', ':G push --force-with-lease origin HEAD<CR>' },
+      { '<LEADER>gpF', ':G push --force origin HEAD<CR>' },
       { '<LEADER>gpp', ':G push origin HEAD:' },
       { '<LEADER>gst', ':G stash<CR>' },
       { '<LEADER>gsa', ':G stash apply<CR>' },
