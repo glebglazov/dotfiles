@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# tmux-create-worktree - Create a new git worktree with fzf branch selection
+# Extracted from tmux-worktree-manager for standalone use
+
+set -euo pipefail
+
+# Find bare repo root (where .git dir with core.bare=true is located)
+find_bare_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.git" ]] && [[ "$(git -C "$dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    return 1
+}
+
+# Detect repo context and set global variables
+detect_repo_context() {
+    bare_root=$(find_bare_root 2>/dev/null || echo "")
+    is_bare=false
+    git_root=""
+    repo_name=""
+
+    if [[ -n $bare_root ]]; then
+        is_bare=true
+        git_root="$bare_root"
+        repo_name=$(basename "$git_root")
+    else
+        git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null || echo "")
+        if [[ -n $git_common_dir ]] && [[ "$(git -C "$git_common_dir" config --get core.bare 2>/dev/null)" == "true" ]]; then
+            is_bare=true
+            git_root=$(dirname "$git_common_dir")
+            repo_name=$(basename "$git_root")
+        else
+            git_root=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
+            if [[ -z $git_root ]]; then
+                echo "Not in a git repository" >&2
+                exit 1
+            fi
+            repo_name=$(basename "$git_root")
+        fi
+    fi
+}
+
+# Create new worktree
+create_worktree() {
+    detect_repo_context
+
+    # Get all branches (local + remote), with main/master first
+    local branches
+    branches=$(git branch -a --format="%(refname:short)" | grep -v '^origin/HEAD' | awk '
+        /^(main|master)$/ { default = $0; next }
+        { others[NR] = $0 }
+        END {
+            if (default) print default
+            for (i in others) print others[i]
+        }
+    ')
+
+    if [[ -z "$branches" ]]; then
+        echo "No branches found" >&2
+        read -n 1 -s -r -p "Press any key to continue..."
+        return 1
+    fi
+
+    # Select branch to check out
+    local selected_branch
+    selected_branch=$(echo "$branches" | fzf \
+        --prompt="Branch: " \
+        --no-sort \
+        --border-label ' select branch ') || {
+        echo "Cancelled"
+        return 1
+    }
+
+    if [[ -z "$selected_branch" ]]; then
+        echo "Cancelled"
+        return 1
+    fi
+
+    # Determine local branch name and directory name
+    local local_branch="$selected_branch"
+    local is_remote=false
+
+    if [[ "$selected_branch" == origin/* ]]; then
+        is_remote=true
+        # Strip origin/ prefix for local branch name
+        local_branch="${selected_branch#origin/}"
+    fi
+
+    # Default worktree name from branch (replace / with -)
+    local default_name="${local_branch//\//-}"
+
+    # Ask user for worktree name (empty = use default, Ctrl+C = cancel)
+    local dir_name
+    read -r -p "Worktree name (default: $default_name): " dir_name
+    if [[ -z "$dir_name" ]]; then
+        dir_name="$default_name"
+    fi
+
+    # Build worktree path
+    local abs_path
+
+    if [[ "$is_bare" == "true" ]]; then
+        abs_path="$git_root/$dir_name"
+    else
+        local main_worktree_path
+        main_worktree_path=$(git worktree list | head -1 | awk '{print $1}')
+        local main_repo_name
+        main_repo_name=$(basename "$main_worktree_path")
+        abs_path="$(dirname "$git_root")/${main_repo_name}-${dir_name}"
+    fi
+
+    # Create worktree - use existing branch if it matches, otherwise create new one
+    echo "Creating worktree at $abs_path..."
+
+    # Check if a local branch with the target name already exists
+    if git -C "$git_root" show-ref --verify --quiet "refs/heads/$dir_name"; then
+        echo "Using existing branch '$dir_name'..."
+        if ! git -C "$git_root" worktree add "$abs_path" "$dir_name" 2>&1; then
+            echo "Failed to create worktree" >&2
+            read -n 1 -s -r -p "Press any key to continue..."
+            return 1
+        fi
+    else
+        echo "Creating branch '$dir_name' based on '$selected_branch'..."
+        if ! git -C "$git_root" worktree add -b "$dir_name" "$abs_path" "$selected_branch" 2>&1; then
+            echo "Failed to create worktree" >&2
+            read -n 1 -s -r -p "Press any key to continue..."
+            return 1
+        fi
+    fi
+
+    # Reindex zoxide in background
+    if command -v zoxide-index &>/dev/null; then
+        zoxide-index &>/dev/null &
+    fi
+
+    # Create and switch tmux session
+    local worktree_dir_name
+    worktree_dir_name=$(basename "$abs_path")
+    local session_name
+
+    if [[ "$is_bare" == "true" ]]; then
+        session_name="${repo_name}/${worktree_dir_name}"
+    else
+        session_name="$worktree_dir_name"
+    fi
+
+    # Replace dots and colons with underscores for tmux compatibility
+    session_name="${session_name//[.:]/_}"
+
+    local tmux_running
+    tmux_running=$(pgrep tmux || echo "")
+
+    if [[ -z "${TMUX:-}" ]] && [[ -z "$tmux_running" ]]; then
+        tmux new-session -s "$session_name" -c "$abs_path"
+    else
+        if ! tmux has-session -t="$session_name" 2>/dev/null; then
+            tmux new-session -ds "$session_name" -c "$abs_path"
+        fi
+        tmux switch-client -t "$session_name"
+    fi
+
+    return 0
+}
+
+create_worktree "$@"

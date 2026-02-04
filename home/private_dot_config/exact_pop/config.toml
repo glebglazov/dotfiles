@@ -2,3 +2,21 @@ projects = [
     "~/.local/share/chezmoi",
     "~/Dev/*/*",
 ]
+
+[[worktree.commands]]
+key = "ctrl+l"
+label = "cleanup"
+command = "tmux-branch-cleanup"
+exit = true
+
+[[worktree.commands]]
+key = "ctrl+o"
+label = "dev o"
+command = "tmux new-window \"$SHELL -ic 'dev o'\""
+exit = true
+
+[[worktree.commands]]
+key = "ctrl+a"
+label = "new"
+command = "tmux-create-worktree"
+exit = true
