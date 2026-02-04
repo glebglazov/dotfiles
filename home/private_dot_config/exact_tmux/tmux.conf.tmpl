@@ -139,20 +139,9 @@ bind-key 7 run-shell "tmux-quickopen goto 7"
 bind-key 8 run-shell "tmux-quickopen goto 8"
 bind-key 9 run-shell "tmux-quickopen goto 9"
 
-# Session management with sesh
-bind-key -r p run-shell "sesh connect \"$(
-	sesh list | fzf-tmux -p 55%,60% \
-		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
-		--header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
-		--bind 'tab:down,btab:up' \
-		--bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list)' \
-		--bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t)' \
-		--bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c)' \
-		--bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z)' \
-		--bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
-		--bind 'ctrl-d:execute(tmux kill-session -t {})+change-prompt(⚡  )+reload(sesh list)'
-)\""
-bind-key -r P display-popup -E -w 80% -h 70% "tmux-worktree-manager"
+# Session management with pop
+bind-key -r p display-popup -E -w 60% -h 60% "pop select"
+bind-key -r P display-popup -E -w 60% -h 60% "pop worktree --switch"
 
 # Create new session
 bind-key N command-prompt -p "New session name:" "new-session -s '%%'"

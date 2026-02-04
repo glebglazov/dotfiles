@@ -1,0 +1,4 @@
+projects = [
+    "~/.local/share/chezmoi",
+    "~/Dev/*/*",
+]
