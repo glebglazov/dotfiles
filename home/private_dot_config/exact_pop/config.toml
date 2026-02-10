@@ -1,6 +1,6 @@
 projects = [
-    "~/.local/share/chezmoi",
-    "~/Dev/*/*",
+    { path = "~/.local/share/chezmoi" },
+    { path = "~/Dev/*/*" }
 ]
 
 [[worktree.commands]]
