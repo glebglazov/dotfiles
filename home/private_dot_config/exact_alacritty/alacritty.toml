@@ -139,12 +139,6 @@ chars = "\u0002}"
 key = "}"
 mods = "Command|Shift"
 
-# tmux-quickopen script
-[[keyboard.bindings]]
-chars = "\u0002o"
-key = "O"
-mods = "Command"
-
 # Projects
 [[keyboard.bindings]]
 chars = "\u0002p"
@@ -216,56 +210,51 @@ chars = "\u0002s"
 key = "S"
 mods = "Command"
 
-# Trigger CTRL+b+<number> in tmux
+# ctrl+digit: send alt+digit
 [[keyboard.bindings]]
-chars = "\u00020"
-key = "Key0"
+key = "1"
 mods = "Control"
+chars = "\u001B1"
 
 [[keyboard.bindings]]
-chars = "\u00021"
-key = "Key1"
+key = "2"
 mods = "Control"
+chars = "\u001B2"
 
 [[keyboard.bindings]]
-chars = "\u00022"
-key = "Key2"
+key = "3"
 mods = "Control"
+chars = "\u001B3"
 
 [[keyboard.bindings]]
-chars = "\u00023"
-key = "Key3"
+key = "4"
 mods = "Control"
+chars = "\u001B4"
 
 [[keyboard.bindings]]
-chars = "\u00024"
-key = "Key4"
+key = "5"
 mods = "Control"
+chars = "\u001B5"
 
 [[keyboard.bindings]]
-chars = "\u00025"
-key = "Key5"
+key = "6"
 mods = "Control"
+chars = "\u001B6"
 
 [[keyboard.bindings]]
-chars = "\u00026"
-key = "Key6"
+key = "7"
 mods = "Control"
+chars = "\u001B7"
 
 [[keyboard.bindings]]
-chars = "\u00027"
-key = "Key7"
+key = "8"
 mods = "Control"
+chars = "\u001B8"
 
 [[keyboard.bindings]]
-chars = "\u00028"
-key = "Key8"
+key = "9"
 mods = "Control"
-
-[[keyboard.bindings]]
-chars = "\u00029"
-key = "Key9"
-mods = "Control"
+chars = "\u001B9"
 
 [[keyboard.bindings]]
 key = "Return"

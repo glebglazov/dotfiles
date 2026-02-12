@@ -3,8 +3,6 @@ projects = [
     { path = "~/Dev/*/*" }
 ]
 
-quick_access_modifier = "ctrl"
-
 [[worktree.commands]]
 key = "ctrl+l"
 label = "cleanup"
