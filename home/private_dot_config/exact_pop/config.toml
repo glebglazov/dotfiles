@@ -1,3 +1,5 @@
+includes = ["~/private/.config/pop/config.toml"]
+
 projects = [
     { path = "~/.local/share/chezmoi" },
     { path = "~/Dev/*/*" }
