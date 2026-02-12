@@ -1,5 +1,3 @@
 function cdp {
-    sesh list -z | fzf-tmux -p 55%,60% \
-      --no-sort --border-label " sesh " --prompt "⚡  " \
-      --bind "enter:execute-silent(tmux send-keys -t $TMUX_PANE 'cd {} && clear' C-m)+abort"
+    tmux display-popup -E -w 60% -h 60% "pop select --tmux-cd $TMUX_PANE"
 }
