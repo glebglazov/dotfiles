@@ -1378,6 +1378,7 @@ vim.keymap.set('n', '<LEADER>ta', function() require("neotest").run.attach() end
 -- Files / Projects
 vim.keymap.set('n', '<LEADER>fs', ':up<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>fS', ':wq<CR>', { silent = true })
+vim.keymap.set('n', '<LEADER>fto', ':!sync-to-obsidian %<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
 
 vim.keymap.set('n', '<LEADER>pp', ':tcd ~/Dev/')
