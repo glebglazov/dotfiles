@@ -8,7 +8,7 @@ projects = [
 [[commands]]
 key = "ctrl+o"
 label = "dev o"
-command = "$SHELL -c 'dev o'"
+command = "$SHELL -ic 'dev o'"
 exit = true
 
 [[worktree.commands]]
