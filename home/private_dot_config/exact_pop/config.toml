@@ -5,16 +5,16 @@ projects = [
     { path = "~/Dev/*/*" }
 ]
 
+[[commands]]
+key = "ctrl+o"
+label = "dev o"
+command = "$SHELL -c 'dev o'"
+exit = true
+
 [[worktree.commands]]
 key = "ctrl+l"
 label = "cleanup"
 command = "tmux-branch-cleanup"
-exit = true
-
-[[worktree.commands]]
-key = "ctrl+o"
-label = "dev o"
-command = "tmux new-window \"$SHELL -ic 'dev o'\""
 exit = true
 
 [[worktree.commands]]
