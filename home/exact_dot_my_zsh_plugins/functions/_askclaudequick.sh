@@ -31,5 +31,8 @@ function _askclaudequick {
     done
 
     echo ""
-    echo "?? --resume $session_id"
+    echo "Resume this session with:"
+    echo "  claude --resume $session_id"
+    echo "or"
+    echo "  ?? --resume $session_id"
 }
