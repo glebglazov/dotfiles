@@ -9,15 +9,18 @@
 
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=/tmp/host-claude,type=bind,readonly",
-    "source=${localEnv:HOME}/.config/git/config,target=/tmp/host-gitconfig,type=bind,readonly"
+    "source=${localEnv:HOME}/.config/git/config,target=/tmp/host-gitconfig,type=bind,readonly",
+    "source=${localEnv:DEVCONTAINER_GIT_COMMON_DIR},target=${localEnv:DEVCONTAINER_GIT_COMMON_DIR},type=bind"
   ],
 
-  "containerEnv": {
-    "EDITOR": "nvim",
-    "VISUAL": "nvim"
+  "remoteEnv": {
+    "IN_DEVCONTAINER": "1"
   },
 
   "runArgs": [
+    "-p", "${localEnv:SERVER_PORT}:3000",
+    "-l", "dev.orbstack.domains=${localEnv:DEVCONTAINER_DOMAIN}",
+    "-l", "dev.orbstack.http-port=3000"
   ],
 
   "postCreateCommand": ".devcontainer/post-create.sh",

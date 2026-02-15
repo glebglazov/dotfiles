@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "==> Copying Claude config..."
-if [ -d /tmp/host-claude ]; then
-  cp -r /tmp/host-claude ~/.claude
-  echo "    Copied ~/.claude from host"
-else
-  echo "    No ~/.claude found on host, skipping"
-fi
-
 echo "==> Configuring git from host..."
 if [ -f /tmp/host-gitconfig ]; then
   GIT_USER_NAME=$(git config --file /tmp/host-gitconfig user.name 2>/dev/null || true)
@@ -25,8 +17,16 @@ else
   echo "    No ~/.gitconfig found on host, skipping"
 fi
 
-echo "==> Installing neovim..."
-sudo apt-get update && sudo apt-get install -y neovim
+echo "==> Installing neovim and direnv..."
+sudo apt-get update && sudo apt-get install -y neovim direnv
+
+echo "==> Configuring direnv..."
+grep -qF 'eval "$(direnv hook bash)"' ~/.bashrc 2>/dev/null || echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+mkdir -p ~/.config/direnv
+cat > ~/.config/direnv/direnv.toml << 'TOML'
+[whitelist]
+prefix = ["/workspaces"]
+TOML
 
 echo "==> Installing Claude Code..."
 curl -fsSL https://claude.ai/install.sh | bash

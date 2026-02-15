@@ -20,9 +20,15 @@ function dev {
         cp "$template_dir/post-create.sh" .devcontainer/post-create.sh
         chmod +x .devcontainer/post-create.sh
 
-        echo "Initialized .devcontainer/ for '$project_name'"
+        if [ ! -f .envrc ]; then
+            sed "s/__PROJECT_NAME__/${project_name}/g" "$template_dir/envrc" > .envrc
+            echo "Initialized .devcontainer/ and .envrc for '$project_name'"
+        else
+            echo "Initialized .devcontainer/ for '$project_name' (.envrc already exists, skipped)"
+        fi
         echo "  - Edit .devcontainer/devcontainer.json to customize image and features"
         echo "  - Edit .devcontainer/post-create.sh to add project-specific setup"
+        echo "  - Edit .envrc for host/container environment variables"
         return 0
     fi
 

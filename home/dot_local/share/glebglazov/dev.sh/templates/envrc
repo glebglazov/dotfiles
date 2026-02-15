@@ -1,0 +1,32 @@
+# ── Shared (host + container) ──────────────────────────────
+
+# ── Host-only: computed values for devcontainer setup ─────
+if [ -z "${IN_DEVCONTAINER:-}" ]; then
+  export SERVER_PORT=$(shuf -i 3000-9000 --random-source=<(yes $((0x$(echo -n "$(pwd)" | md5sum | cut -c1-8)))) -n 1)
+
+  # Generate OrbStack custom domain from directory name
+  # For bare repo worktrees: combines project name (parent of .bare) with worktree name
+  # For regular repos: just uses the current directory name
+  _git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"
+  if [[ -n "$_git_common_dir" && "$_git_common_dir" == *".bare"* ]]; then
+    _project_name=$(basename "$(dirname "$(realpath "$_git_common_dir")")")
+    _worktree_name=$(basename "$(pwd)")
+    export DEVCONTAINER_DOMAIN=$(echo "${_project_name}-${_worktree_name}" | tr '[:upper:]' '[:lower:]' | tr '_' '-').orb.local
+  else
+    export DEVCONTAINER_DOMAIN=$(basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr '_' '-').orb.local
+  fi
+  unset _git_common_dir _project_name _worktree_name
+
+  # Git common dir for worktree support in devcontainers
+  export DEVCONTAINER_GIT_COMMON_DIR="$(realpath "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null)"
+
+  [ -f .envrc.local.host ] && source .envrc.local.host
+fi
+
+# ── Container-only ─────────────────────────────────────────
+if [ -n "${IN_DEVCONTAINER:-}" ]; then
+  export EDITOR=nvim
+  export VISUAL=nvim
+
+  [ -f .envrc.local.devcontainer ] && source .envrc.local.devcontainer
+fi
