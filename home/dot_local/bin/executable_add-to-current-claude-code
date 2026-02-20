@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+  echo "Usage: add-to-current-claude-code <text>" >&2
+  exit 1
+fi
+
+# Find the pane in the current window running claude (match title or command)
+# Sort by pane_active descending so the current pane is preferred if it's claude
+claude_pane=$(tmux list-panes -F '#{pane_active} #{pane_id} #{pane_title} #{pane_current_command}' \
+  | grep "✳" | sort -rn | head -1 | awk '{print $2}')
+
+if [ -z "$claude_pane" ]; then
+  echo "No pane running claude found in current window" >&2
+  exit 1
+fi
+
+tmux send-keys -t "$claude_pane" "$*"
