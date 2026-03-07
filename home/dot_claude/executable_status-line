@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Reads Claude Code context window JSON from stdin and renders a visual status bar.
+# Output: [██████░░░░] 63% (200k)
+
+jq -r '
+  (.context_window.used_percentage // 0) as $p |
+  ([[($p / 10 | floor), 10] | min, 0] | max) as $f |
+  (10 - $f) as $e |
+  "[\("█" * $f)\("░" * $e)] \($p)%\(
+    if .context_window.context_window_size then
+      .context_window.context_window_size as $s |
+      if $s >= 1000000 then
+        " (\($s / 1000000 * 10 | floor / 10)M)"
+      else
+        " (\($s / 1000 | floor)k)"
+      end
+    else
+      ""
+    end
+  )"
+'
