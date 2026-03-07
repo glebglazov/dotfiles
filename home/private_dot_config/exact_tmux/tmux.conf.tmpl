@@ -4,8 +4,12 @@ set -g default-terminal "screen-256color"
 set -g default-command "${SHELL}"
 set -ga terminal-overrides ",xterm-256color:Tc"
 
-# Enable mouse support
+# Enable mouse support (scrolling, pane clicking) but disable drag-to-select
+# so the terminal handles text selection natively
 set -g mouse on
+unbind -n MouseDrag1Pane
+unbind -T copy-mode MouseDrag1Pane
+unbind -T copy-mode-vi MouseDrag1Pane
 
 # Start window and pane numbering at 1
 set -g base-index 1
