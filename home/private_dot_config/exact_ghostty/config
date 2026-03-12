@@ -1,25 +1,26 @@
-# initial-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
-# command         = /bin/zsh -l -i -c "tmux new-session -A -s main"
+command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
 auto-update = off
 
-theme = GruvboxDarkHard
+theme = "Gruvbox Dark Hard"
 
 confirm-close-surface   = false
 mouse-hide-while-typing = true
+macos-option-as-alt     = true
 window-colorspace       = display-p3
 
 font-family       = TX-02
 font-style-italic = Regular
 font-size         = 16
 font-thicken      = true
-adjust-cell-width = -5%
 
 # Tmux proxying
 
 keybind = cmd+s=text:\x02s
 
 keybind = cmd+backspace=text:\x15
+keybind = cmd+left=text:\x01
+keybind = cmd+right=text:\x05
 keybind = cmd+shift+up=text:\x02\x1B[A
 keybind = cmd+shift+down=text:\x02\x1B[B
 keybind = cmd+shift+left=text:\x02\x1B[D
@@ -42,17 +43,23 @@ keybind = cmd+shift+h=text:\x02h
 keybind = cmd+shift+j=text:\x02j
 keybind = cmd+shift+k=text:\x02k
 keybind = cmd+shift+l=text:\x02l
+keybind = cmd+m=unbind
 keybind = cmd+m=text:\x02m
 
+keybind = cmd+shift+left_bracket=text:\x02{
+keybind = cmd+shift+right_bracket=text:\x02}
+keybind = cmd+shift+p=text:\x02P
+keybind = cmd+shift+n=text:\x02N
 keybind = cmd+p=text:\x02p
-keybind = ctrl+1=text:\x021
-keybind = ctrl+2=text:\x022
-keybind = ctrl+3=text:\x023
-keybind = ctrl+4=text:\x024
-keybind = ctrl+5=text:\x025
-keybind = ctrl+6=text:\x026
-keybind = ctrl+7=text:\x027
-keybind = ctrl+8=text:\x028
-keybind = ctrl+9=text:\x029
-keybind = ctrl+0=text:\x020
+keybind = shift+enter=text:\x1B\x0D
+keybind = ctrl+digit_1=text:\x021
+keybind = ctrl+digit_2=text:\x022
+keybind = ctrl+digit_3=text:\x023
+keybind = ctrl+digit_4=text:\x024
+keybind = ctrl+digit_5=text:\x025
+keybind = ctrl+digit_6=text:\x026
+keybind = ctrl+digit_7=text:\x027
+keybind = ctrl+digit_8=text:\x028
+keybind = ctrl+digit_9=text:\x029
+keybind = ctrl+digit_0=text:\x020
 keybind = cmd+o=text:\x02o
