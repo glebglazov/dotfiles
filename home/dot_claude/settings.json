@@ -7,5 +7,18 @@
   "statusLine": {
     "type": "command",
     "command": "~/.claude/status-line"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/glebglazov/.claude/hooks/rtk-rewrite.sh"
+          }
+        ]
+      }
+    ]
   }
 }
