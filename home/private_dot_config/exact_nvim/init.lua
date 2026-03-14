@@ -838,6 +838,29 @@ end
 
 vim.keymap.set('n', '<LEADER>fb', require('telescope.builtin').buffers)
 vim.keymap.set('n', '<LEADER>fh', require('telescope.builtin').help_tags)
+vim.keymap.set('n', '<LEADER>ft', function()
+  local results = vim.fn.systemlist("fd --type f --no-ignore . thoughts 2>/dev/null | sort -r")
+  if #results == 0 then return end
+  local order = {}
+  for i, r in ipairs(results) do order[r] = i end
+
+  require('telescope.pickers').new({}, {
+    prompt_title = 'Thoughts',
+    finder = require('telescope.finders').new_table({
+      results = results,
+      entry_maker = function(line)
+        return { value = line, display = line, ordinal = line, path = vim.fn.getcwd() .. "/" .. line }
+      end,
+    }),
+    sorter = require('telescope.sorters').Sorter:new({
+      scoring_function = function(_, prompt, line)
+        if prompt ~= "" and not line:lower():find(prompt:lower(), 1, true) then return -1 end
+        return order[line] or 0
+      end,
+    }),
+    previewer = require('telescope.config').values.file_previewer({}),
+  }):find()
+end)
 vim.keymap.set('n', '<LEADER>fp', telescope_find_files)
 
 -------------------------------------------------
