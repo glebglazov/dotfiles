@@ -649,6 +649,26 @@ require('lazy').setup({
     dependencies = { { "echasnovski/mini.icons", opts = {} } },  -- use if prefer mini.icons
   },
 
+  -- Image preview
+  {
+    '3rd/image.nvim',
+    event = 'VeryLazy',
+    build = false,
+    opts = {
+      backend = 'kitty',
+      processor = 'magick_cli',
+      max_width_window_percentage = 100,
+      max_height_window_percentage = 100,
+      tmux_show_only_in_active_window = true,
+      integrations = {
+        markdown = { enabled = true },
+        neorg = { enabled = true },
+        html = { enabled = false },
+        css = { enabled = false },
+      },
+    },
+  },
+
   -- Telescope
   {
     'nvim-telescope/telescope.nvim',
@@ -658,7 +678,15 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
     },
     config = function()
+      local previewers = require('telescope.previewers')
+      local telescope_image_preview = require('telescope_image_preview')
+
       require('telescope').setup({
+        defaults = {
+          buffer_previewer_maker = telescope_image_preview.wrap_buffer_previewer_maker(
+            previewers.buffer_previewer_maker
+          ),
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
