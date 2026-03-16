@@ -48,8 +48,8 @@ keybind = cmd+shift+l=text:\x02l
 keybind = cmd+m=unbind
 keybind = cmd+m=text:\x02m
 
-keybind = cmd+shift+left_bracket=text:\x02[
-keybind = cmd+shift+right_bracket=text:\x02]
+keybind = cmd+shift+left_bracket=text:\x02{
+keybind = cmd+shift+right_bracket=text:\x02}
 keybind = cmd+shift+p=text:\x02P
 keybind = cmd+shift+n=text:\x02N
 keybind = cmd+p=text:\x02p
