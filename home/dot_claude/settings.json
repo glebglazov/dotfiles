@@ -1,24 +1,73 @@
 {
-  "enabledPlugins": {
-    "swift-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
-  },
   "effortLevel": "high",
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/status-line"
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "hooks": {
-    "PreToolUse": [
+    "Notification": [
       {
-        "matcher": "Bash",
         "hooks": [
           {
-            "type": "command",
-            "command": "/Users/glebglazov/.claude/hooks/rtk-rewrite.sh"
+            "command": "pop monitor set-status $TMUX_PANE needs_attention 2>/dev/null || true",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "/Users/glebglazov/.claude/hooks/rtk-rewrite.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "pop monitor set-status $TMUX_PANE working 2>/dev/null || true",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "pop monitor register $TMUX_PANE --source claude-code 2>/dev/null || true",
+            "type": "command"
+          }
+        ],
+        "matcher": "startup"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "pop monitor set-status $TMUX_PANE needs_attention 2>/dev/null || true",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "pop monitor set-status $TMUX_PANE working 2>/dev/null || true",
+            "type": "command"
           }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "command": "~/.claude/status-line",
+    "type": "command"
   }
 }
