@@ -5,6 +5,8 @@ projects = [
     { path = "~/Dev/*/*" }
 ]
 
+monitor = true
+
 [[commands]]
 key = "ctrl+o"
 label = "dev o"
