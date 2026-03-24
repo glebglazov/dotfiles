@@ -5,13 +5,17 @@ projects = [
     { path = "~/Dev/*/*" }
 ]
 
-monitor = true
-
 [[commands]]
 key = "ctrl+o"
 label = "dev o"
 command = "$SHELL -ic 'dev o'"
 exit = true
+
+[select]
+attention_notifications_enabled = true
+
+[worktree]
+attention_notifications_enabled = true
 
 [[worktree.commands]]
 key = "ctrl+l"
