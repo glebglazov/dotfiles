@@ -210,6 +210,12 @@ chars = "\u0002s"
 key = "S"
 mods = "Command"
 
+# Pop dashboard
+[[keyboard.bindings]]
+chars = "\u0002u"
+key = "U"
+mods = "Command"
+
 # ctrl+digit: send alt+digit
 [[keyboard.bindings]]
 key = "1"
