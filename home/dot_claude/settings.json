@@ -9,7 +9,7 @@
       {
         "hooks": [
           {
-            "command": "pop monitor set-status $TMUX_PANE needs_attention 2>/dev/null || true",
+            "command": "pop pane set-status needs_attention 2>/dev/null || true",
             "type": "command"
           }
         ]
@@ -28,7 +28,7 @@
       {
         "hooks": [
           {
-            "command": "pop monitor set-status $TMUX_PANE working 2>/dev/null || true",
+            "command": "pop pane set-status working 2>/dev/null || true",
             "type": "command"
           }
         ]
@@ -38,7 +38,7 @@
       {
         "hooks": [
           {
-            "command": "pop monitor set-status $TMUX_PANE needs_attention 2>/dev/null || true",
+            "command": "pop pane set-status needs_attention 2>/dev/null || true",
             "type": "command"
           }
         ]
@@ -48,7 +48,7 @@
       {
         "hooks": [
           {
-            "command": "pop monitor set-status $TMUX_PANE working 2>/dev/null || true",
+            "command": "pop pane set-status working 2>/dev/null || true",
             "type": "command"
           }
         ]
