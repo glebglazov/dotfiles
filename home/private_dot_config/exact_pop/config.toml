@@ -11,11 +11,11 @@ label = "dev o"
 command = "$SHELL -ic 'dev o'"
 exit = true
 
-[select]
-attention_notifications_enabled = true
-
-[worktree]
-attention_notifications_enabled = true
+# [select]
+# attention_notifications_enabled = false
+#
+# [worktree]
+# attention_notifications_enabled = false
 
 [[worktree.commands]]
 key = "ctrl+l"
