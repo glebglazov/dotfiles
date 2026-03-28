@@ -17,6 +17,10 @@ exit = true
 # [worktree]
 # attention_notifications_enabled = false
 
+[dashboard]
+# current_pane_always_under_cursor = true
+sort_criteria = ["status", "pane_last_visit_at"]
+
 [[worktree.commands]]
 key = "ctrl+l"
 label = "cleanup"
