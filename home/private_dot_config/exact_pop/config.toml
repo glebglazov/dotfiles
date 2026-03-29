@@ -21,6 +21,9 @@ exit = true
 # current_pane_always_under_cursor = true
 sort_criteria = ["status", "pane_last_visit_at"]
 
+[pane_monitoring]
+ignore_status_from = ["tmux-global"]
+
 [[worktree.commands]]
 key = "ctrl+l"
 label = "cleanup"
