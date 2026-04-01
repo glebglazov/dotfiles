@@ -329,17 +329,6 @@ require('lazy').setup({
     end
   },
   {
-    'echasnovski/mini.comment',
-    event = 'VeryLazy',
-    opts = {
-      options = {
-        custom_commentstring = function()
-          return require('ts_context_commentstring.internal').calculate_commentstring() or vim.bo.commentstring
-        end,
-      },
-    }
-  },
-  {
     'echasnovski/mini.ai',
     event = 'VeryLazy',
     opts = function()
@@ -371,7 +360,6 @@ require('lazy').setup({
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
       -- Runners
       "fredrikaverpil/neotest-golang",
@@ -394,21 +382,6 @@ require('lazy').setup({
   -------------------------------------------------
   -- Language plugins
   -------------------------------------------------
-  {
-    'fatih/vim-go',
-    config = function ()
-      -- copied from https://raw.githubusercontent.com/fatih/dotfiles/main/init.lua
-      vim.g['go_gopls_enabled'] = 0
-      vim.g['go_code_completion_enabled'] = 0
-      vim.g['go_fmt_autosave'] = 0
-      vim.g['go_imports_autosave'] = 0
-      vim.g['go_mod_fmt_autosave'] = 0
-      vim.g['go_doc_keywordprg_enabled'] = 0
-      vim.g['go_def_mapping_enabled'] = 0
-      vim.g['go_textobj_enabled'] = 0
-      vim.g['go_list_type'] = 'quickfix'
-    end,
-  },
   {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
@@ -719,73 +692,40 @@ require('lazy').setup({
   -- Treesitter
   {
     'nvim-treesitter/nvim-treesitter',
-    build = ':TSUpdate'
+    branch = 'main',
+    build = ':TSUpdate',
   },
-  { 'nvim-treesitter/nvim-treesitter-textobjects' },
+  { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' },
   { 'RRethy/nvim-treesitter-endwise' },
-  { 'windwp/nvim-ts-autotag' },
-  {
-    'JoosepAlviste/nvim-ts-context-commentstring',
-    lazy = true,
-    opts = {
-      enable_autocmd = false,
-    },
-  },
-  { 'nvim-treesitter/playground', lazy = true },
+  { 'windwp/nvim-ts-autotag', opts = {} },
 
-  -- Undotree
-  {
-    'mbbill/undotree',
-    keys = {
-      { '<LEADER>u', vim.cmd.UndotreeToggle }
-    }
-  }
 })
 
 -------------------------------------------------
 -- Configure Treesitter
 -------------------------------------------------
 vim.defer_fn(function() -- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
-  require('nvim-treesitter.configs').setup({
-    ensure_installed = {
-      'ruby',
-      'elixir',
-      'terraform',
-      'hcl',
-      'lua',
-      'vimdoc',
-      'vim',
-      'markdown',
-      'markdown_inline',
-      'clojure',
-      'javascript',
-    },
-    auto_install = true,
-    highlight = {
-      enable = true,
+  require('nvim-treesitter').install {
+    'ruby', 'elixir', 'terraform', 'hcl', 'lua', 'vimdoc', 'vim',
+    'markdown', 'markdown_inline', 'clojure', 'javascript',
+  }
 
-      disable = function(_, buf)
-        local max_filesize = 100 * 1024 -- 100 KB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+  vim.api.nvim_create_autocmd('FileType', {
+    callback = function(args)
+      local max_filesize = 100 * 1024 -- 100 KB
+      local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(args.buf))
+      if ok and stats and stats.size > max_filesize then
+        return
+      end
 
-        if ok and stats and stats.size > max_filesize then
-          return true
-        end
-      end,
-    },
-    indent = {
-      enable = true,
-      disable = { 'ruby' }
-    },
-    autotag = {
-      enable = true,
-    },
-    endwise = {
-      enable = true,
-    },
-    playground = {
-      enable = true
-    },
+      if not pcall(vim.treesitter.start, args.buf) then
+        return
+      end
+
+      if vim.bo[args.buf].filetype ~= 'ruby' then
+        vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end
+    end,
   })
 end, 0)
 
@@ -800,6 +740,8 @@ local search_and_replace_mappings_fn = function(_, map)
 
   return true
 end
+
+vim.keymap.set('n', '<LEADER>u', vim.cmd.Undotree)
 
 vim.keymap.set('n', '<LEADER>cf', function()
   vim.cmd('edit ~/.local/share/chezmoi/home/private_dot_config/exact_nvim/init.lua', { silent = true })
