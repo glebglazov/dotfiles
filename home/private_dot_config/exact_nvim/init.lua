@@ -249,7 +249,6 @@ require('lazy').setup({
     'saghen/blink.cmp',
     dependencies = {
       'rafamadriz/friendly-snippets',
-      'saghen/blink.compat',
       {
         'zbirenbaum/copilot.lua', -- credentials are stored in ~/.config/github-copilot/hosts.json
         cmd = 'Copilot',
@@ -259,7 +258,7 @@ require('lazy').setup({
           panel = { enabled = false },
         }
       },
-      {'zbirenbaum/copilot-cmp', config = true},
+      'fang2hou/blink-copilot',
     },
     version = '*',
   },
@@ -932,14 +931,9 @@ require('blink.cmp').setup({
     providers = {
       copilot = {
         name = "copilot",
-        module = "blink.compat.source",
+        module = "blink-copilot",
         score_offset = 100,
         async = true,
-        opts = {
-          get_source = function()
-            return require("copilot_cmp.source")
-          end,
-        },
       },
     },
   },
