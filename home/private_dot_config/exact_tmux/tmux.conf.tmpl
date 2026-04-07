@@ -32,6 +32,7 @@ set -g focus-events on
 
 # Extended keys: pass through modifier combos (Ctrl+Shift+X, etc.) via CSI u
 set -s extended-keys on
+set -g extended-keys-format csi-u
 set -as terminal-features ',xterm-256color:extkeys'
 
 # Allow kitty graphics protocol passthrough (for image.nvim)
