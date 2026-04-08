@@ -706,7 +706,7 @@ require('lazy').setup({
 vim.defer_fn(function() -- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
   require('nvim-treesitter').install {
     'ruby', 'elixir', 'terraform', 'hcl', 'lua', 'vimdoc', 'vim',
-    'markdown', 'markdown_inline', 'clojure', 'javascript',
+    'markdown', 'markdown_inline', 'clojure', 'javascript', 'python', 'go',
   }
 
   vim.api.nvim_create_autocmd('FileType', {
