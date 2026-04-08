@@ -800,6 +800,7 @@ vim.keymap.set('v', '<LEADER>fr',
 
 local telescope_find_files = function()
   require('telescope.builtin').find_files({
+    cwd = vim.fn.getcwd(),
     hidden = true,
     file_ignore_patterns = { "^.git/", "^node_modules/" },
   })
