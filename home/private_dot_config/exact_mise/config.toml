@@ -6,7 +6,7 @@ trusted_config_paths = [
 idiomatic_version_file_enable_tools = ["ruby"]
 
 [tools]
-rust      = '1.88.0'
+rust      = '1.91.0'
 go        = '1.24'
 nodejs    = '24'
 bun       = '1'
