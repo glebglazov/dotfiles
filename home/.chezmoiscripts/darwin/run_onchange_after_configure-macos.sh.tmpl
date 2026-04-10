@@ -18,6 +18,9 @@ osascript -e 'tell application "System Preferences" to quit'
 # Remove automatic spelling correction
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
 
+# Disable macOS Tahoe menu bar icons
+defaults write -g NSMenuEnableActionImages -bool NO
+
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
