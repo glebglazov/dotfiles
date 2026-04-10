@@ -27,8 +27,10 @@ keybind = cmd+shift+left=text:\x02\x1B[D
 keybind = cmd+shift+right=text:\x02\x1B[C
 
 keybind = cmd+t=text:\x02t
-keybind = cmd+left_bracket=text:\x02[
-keybind = cmd+right_bracket=text:\x02]
+keybind = cmd+[=unbind
+keybind = cmd+[=text:\x02[
+keybind = cmd+]=unbind
+keybind = cmd+]=text:\x02]
 keybind = cmd+,=unbind
 keybind = cmd+,=text:\x02,
 keybind = cmd+period=text:\x02.
