@@ -1,35 +1,40 @@
 {
-  "effortLevel": "high",
-  "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true
-  },
   "hooks": {
     "Notification": [
       {
         "hooks": [
           {
-            "command": "pop pane set-status needs_attention 2>/dev/null || true",
-            "type": "command"
+            "type": "command",
+            "command": "pop pane set-status unread 2>/dev/null || true"
           }
         ]
       }
     ],
     "PreToolUse": [
       {
+        "matcher": "Bash",
         "hooks": [
           {
             "command": "{{ .chezmoi.homeDir }}/.claude/hooks/rtk-rewrite.sh",
             "type": "command"
           }
-        ],
-        "matcher": "Bash"
+        ]
       },
       {
         "hooks": [
           {
-            "command": "pop pane set-status working 2>/dev/null || true",
-            "type": "command"
+            "type": "command",
+            "command": "pop pane set-status working 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pop pane set-status idle 2>/dev/null || true"
           }
         ]
       }
@@ -38,8 +43,8 @@
       {
         "hooks": [
           {
-            "command": "pop pane set-status needs_attention 2>/dev/null || true",
-            "type": "command"
+            "type": "command",
+            "command": "pop pane set-status unread 2>/dev/null || true"
           }
         ]
       }
@@ -48,15 +53,29 @@
       {
         "hooks": [
           {
-            "command": "pop pane set-status working 2>/dev/null || true",
-            "type": "command"
+            "type": "command",
+            "command": "pop pane set-status working 2>/dev/null || true"
           }
         ]
       }
     ]
   },
   "statusLine": {
-    "command": "~/.claude/status-line",
-    "type": "command"
-  }
+    "type": "command",
+    "command": "~/.claude/status-line"
+  },
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "caveman@caveman": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    }
+  },
+  "effortLevel": "high"
 }
