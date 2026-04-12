@@ -1280,26 +1280,26 @@ local function yank_file_path_fn(opts)
 end
 
 -- Git-relative paths
-vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
+vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn({
   path_manipulation_fn = function(path)
     local line_num = vim.api.nvim_win_get_cursor(0)[1]
     return git_relative_path(path) .. ':' .. line_num
   end
 }))
-vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn({
+vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
   path_manipulation_fn = git_relative_path
 }))
 
 -- Absolute paths
-vim.keymap.set('n', '<LEADER>fay', yank_file_path_fn({
+vim.keymap.set('n', '<LEADER>faY', yank_file_path_fn({
   path_manipulation_fn = function(path)
     local line_num = vim.api.nvim_win_get_cursor(0)[1]
     return path .. ':' .. line_num
   end
 }))
-vim.keymap.set('n', '<LEADER>faY', yank_file_path_fn())
+vim.keymap.set('n', '<LEADER>fay', yank_file_path_fn())
 
-vim.keymap.set('v', '<LEADER>fy', function()
+vim.keymap.set('v', '<LEADER>fY', function()
   local v_line = vim.fn.getpos('v')[2]
   local cursor_line = vim.fn.getpos('.')[2]
   local start_line = math.min(v_line, cursor_line)
