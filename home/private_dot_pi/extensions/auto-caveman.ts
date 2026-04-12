@@ -16,8 +16,17 @@ export default function (pi: ExtensionAPI) {
 	let activated = false;
 
 	// Auto-enable caveman once on first user message
-	pi.on("before_agent_start", async (_event, ctx) => {
+	pi.on("before_agent_start", async (event, ctx) => {
 		if (!autoEnabled || activated) return;
+
+		// Check if first message is explicitly turning caveman off
+		const userMessage = event.message?.content?.trim().toLowerCase();
+		if (userMessage === "/caveman off") {
+			autoEnabled = false;
+			activated = true;
+			return;
+		}
+
 		activated = true;
 
 		if (isCavemanInstalled()) {
