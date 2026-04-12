@@ -38,6 +38,7 @@ keybind = cmd+w=text:\x02w
 keybind = cmd+shift+comma=text:\x02,
 keybind = cmd+shift+period=text:\x02.
 
+keybind = cmd+n=unbind
 keybind = cmd+d=text:\x02d
 keybind = cmd+shift+d=text:\x02D
 keybind = cmd+h=text:\x02H
