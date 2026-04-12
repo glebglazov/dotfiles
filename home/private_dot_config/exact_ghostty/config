@@ -56,7 +56,6 @@ keybind = cmd+shift+right_bracket=text:\x02}
 keybind = cmd+shift+p=text:\x02P
 keybind = cmd+shift+n=text:\x02N
 keybind = cmd+p=text:\x02p
-keybind = shift+enter=text:\x1B\x0D
 keybind = ctrl+digit_1=text:\x021
 keybind = ctrl+digit_2=text:\x022
 keybind = ctrl+digit_3=text:\x023
