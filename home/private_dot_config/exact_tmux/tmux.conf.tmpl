@@ -144,10 +144,10 @@ bind-key -r L select-pane -R
 bind-key U run-shell "pop pane set-status #{pane_id} needs_attention 2>/dev/null || true"
 
 # Session management with pop
-bind-key -r p display-popup -E -w 70% -h 70% "pop select"
-bind-key -r P display-popup -E -w 70% -h 70% "pop worktree --switch"
-bind-key u display-popup -E -w 70% -h 70% "pop dashboard"
-bind-key g run-shell 'tmux display-popup -E -w 70% -h 70% "pop select --tmux-cd #{pane_id}"'
+bind-key -r p display-popup -E -w 80% -h 80% "pop select"
+bind-key -r P display-popup -E -w 80% -h 80% "pop worktree --switch"
+bind-key u display-popup -E -w 80% -h 80% "pop dashboard"
+bind-key g run-shell 'tmux display-popup -E -w 80% -h 80% "pop select --tmux-cd #{pane_id}"'
 
 #Createnew session
 bind-key N command-prompt -p "New session name:" "new-session -s '%%'"
