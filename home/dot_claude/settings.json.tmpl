@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$TMUX_PANE\" ] && printf '{\"cmd\":\"set-status\",\"pane_id\":\"%s\",\"status\":\"unread\"}\\n' \"$TMUX_PANE\" | nc -U -w1 \"${XDG_DATA_HOME:-$HOME/.local/share}/pop/run/pop.sock\" 2>/dev/null || true"
+            "command": "pop pane set-status unread 2>/dev/null || true"
           }
         ]
       }
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$TMUX_PANE\" ] && printf '{\"cmd\":\"set-status\",\"pane_id\":\"%s\",\"status\":\"working\"}\\n' \"$TMUX_PANE\" | nc -U -w1 \"${XDG_DATA_HOME:-$HOME/.local/share}/pop/run/pop.sock\" 2>/dev/null || true"
+            "command": "pop pane set-status working 2>/dev/null || true"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$TMUX_PANE\" ] && printf '{\"cmd\":\"set-status\",\"pane_id\":\"%s\",\"status\":\"idle\"}\\n' \"$TMUX_PANE\" | nc -U -w1 \"${XDG_DATA_HOME:-$HOME/.local/share}/pop/run/pop.sock\" 2>/dev/null || true"
+            "command": "pop pane set-status idle 2>/dev/null || true"
           }
         ]
       }
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$TMUX_PANE\" ] && printf '{\"cmd\":\"set-status\",\"pane_id\":\"%s\",\"status\":\"unread\"}\\n' \"$TMUX_PANE\" | nc -U -w1 \"${XDG_DATA_HOME:-$HOME/.local/share}/pop/run/pop.sock\" 2>/dev/null || true"
+            "command": "pop pane set-status unread 2>/dev/null || true"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$TMUX_PANE\" ] && printf '{\"cmd\":\"set-status\",\"pane_id\":\"%s\",\"status\":\"working\"}\\n' \"$TMUX_PANE\" | nc -U -w1 \"${XDG_DATA_HOME:-$HOME/.local/share}/pop/run/pop.sock\" 2>/dev/null || true"
+            "command": "pop pane set-status working 2>/dev/null || true"
           }
         ]
       }
