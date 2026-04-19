@@ -1285,10 +1285,10 @@ vim.keymap.set('n', '<LEADER>fY', yank_file_path_fn({
     local line_num = vim.api.nvim_win_get_cursor(0)[1]
     return git_relative_path(path) .. ':' .. line_num
   end
-}))
+}), { silent = true })
 vim.keymap.set('n', '<LEADER>fy', yank_file_path_fn({
   path_manipulation_fn = git_relative_path
-}))
+}), { silent = true })
 
 -- Absolute paths
 vim.keymap.set('n', '<LEADER>faY', yank_file_path_fn({
@@ -1296,8 +1296,8 @@ vim.keymap.set('n', '<LEADER>faY', yank_file_path_fn({
     local line_num = vim.api.nvim_win_get_cursor(0)[1]
     return path .. ':' .. line_num
   end
-}))
-vim.keymap.set('n', '<LEADER>fay', yank_file_path_fn())
+}), { silent = true })
+vim.keymap.set('n', '<LEADER>fay', yank_file_path_fn(), { silent = true })
 
 vim.keymap.set('v', '<LEADER>fY', function()
   local v_line = vim.fn.getpos('v')[2]
@@ -1310,7 +1310,7 @@ vim.keymap.set('v', '<LEADER>fY', function()
 
   vim.fn.setreg('+', range_path)
   print("Copied to clipboard: " .. range_path)
-end)
+end, { silent = true })
 
 vim.keymap.set('n', '<LEADER>by', 'ggVGy')
 
