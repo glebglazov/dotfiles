@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pop pane set-status unread 2>/dev/null || true"
+            "command": "~/.claude/hooks/pop-status.sh unread"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "matcher": "Bash",
         "hooks": [
           {
-            "command": "{{ .chezmoi.homeDir }}/.claude/hooks/rtk-rewrite.sh",
+            "command": "~/.claude/hooks/rtk-rewrite.sh",
             "type": "command"
           }
         ]
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pop pane set-status working 2>/dev/null || true"
+            "command": "~/.claude/hooks/pop-status.sh working"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pop pane set-status idle 2>/dev/null || true"
+            "command": "~/.claude/hooks/pop-status.sh idle"
           }
         ]
       }
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pop pane set-status unread 2>/dev/null || true"
+            "command": "~/.claude/hooks/pop-status.sh unread"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pop pane set-status working 2>/dev/null || true"
+            "command": "~/.claude/hooks/pop-status.sh working"
           }
         ]
       }
