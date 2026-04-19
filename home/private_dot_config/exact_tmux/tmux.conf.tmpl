@@ -1,8 +1,7 @@
 # -- General settings ----------------------------------------------------------
 
-set -g default-terminal "screen-256color"
+set -g default-terminal "tmux-256color"
 set -g default-command "${SHELL}"
-set -ga terminal-overrides ",xterm-256color:Tc"
 
 # Enable mouse support (scrolling, pane clicking) but disable drag-to-select
 # so the terminal handles text selection natively
@@ -31,9 +30,10 @@ set -g status-interval 5
 set -g focus-events on
 
 # Extended keys: pass through modifier combos (Ctrl+Shift+X, etc.) via CSI u
-set -s extended-keys on
+set -s extended-keys always
 set -g extended-keys-format csi-u
-set -as terminal-features ',xterm-256color:extkeys'
+set -as terminal-features ',xterm-256color:RGB:extkeys'
+set -as terminal-features ',xterm-ghostty:RGB:extkeys'
 
 # Allow kitty graphics protocol passthrough (for image.nvim)
 set -g allow-passthrough on
