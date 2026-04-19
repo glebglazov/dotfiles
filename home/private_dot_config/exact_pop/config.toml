@@ -22,6 +22,7 @@ exit = true
 sort_criteria = ["status", "pane_last_visit_at"]
 
 [pane_monitoring]
+tcp_server = true
 ignore_status_from = ["tmux-global"]
 
 [[worktree.commands]]
