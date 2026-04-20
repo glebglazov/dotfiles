@@ -1,0 +1,14 @@
+[[sandbox.dev.mounts]]
+source = "~/.config/git/config"
+destination = "/home/vscode/.gitconfig"
+read_only = true
+
+[[sandbox.dev.mounts]]
+source = "~/.ssh/signing_glebglazov"
+destination = "/home/vscode/.ssh/signing_glebglazov"
+read_only = true
+
+[[sandbox.dev.mounts]]
+source = "~/.ssh/signing_glebglazov.pub"
+destination = "/home/vscode/.ssh/signing_glebglazov.pub"
+read_only = true
