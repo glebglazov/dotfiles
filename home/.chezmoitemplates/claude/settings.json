@@ -15,7 +15,7 @@
         "matcher": "Bash",
         "hooks": [
           {
-            "command": "~/.claude/hooks/rtk-rewrite.sh",
+            "command": "rtk hook claude",
             "type": "command"
           }
         ]
