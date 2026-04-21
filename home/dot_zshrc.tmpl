@@ -17,6 +17,9 @@ zstyle ':completion:*' menu select
 # Set emacs key bindings mode (equivalent to oh-my-zsh default)
 bindkey -e
 
+# Treat /, -, _, . as word boundaries for backward-kill-word (ctrl+backspace via kanata)
+WORDCHARS='*?[]~=&;!#$%^(){}<>'
+
 # Initialize antidote
 source ~/.local/share/antidote/antidote.zsh
 antidote load
