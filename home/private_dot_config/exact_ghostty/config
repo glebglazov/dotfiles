@@ -9,6 +9,10 @@ mouse-hide-while-typing = true
 macos-option-as-alt     = true
 window-colorspace       = display-p3
 
+# Explicitly bind Escape so AppKit's responder chain treats it as handled
+# and skips NSBeep on macOS. Sends the usual ESC byte (\x1b) to the terminal.
+keybind = escape=text:\x1b
+
 font-family       = TX-02
 font-style-italic = Regular
 font-size         = 16
