@@ -21,6 +21,11 @@ defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
 # Disable macOS Tahoe menu bar icons
 defaults write -g NSMenuEnableActionImages -bool NO
 
+# Disable "Play user interface sound effects" (kills NSBeep on unhandled keys,
+# e.g. Escape in Ghostty) — equivalent to System Settings → Sound → uncheck
+# "Play user interface sound effects".
+defaults write -g com.apple.sound.uiaudio.enabled -int 0
+
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
