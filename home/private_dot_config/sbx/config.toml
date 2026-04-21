@@ -4,6 +4,10 @@ env = [
 	"LOCAL_NETWORK_HOST=host.docker.internal"
 ]
 
+init_append = """
+curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+"""
+
 [[sandbox.dev.mounts]]
 source = "~/.config/git/config"
 destination = "/home/vscode/.gitconfig"

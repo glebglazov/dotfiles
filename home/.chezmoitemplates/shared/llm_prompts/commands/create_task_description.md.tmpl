@@ -1,0 +1,41 @@
+You are tasked with writing a JIRA task description based on the conversation so far and any implementation plan that may exist.
+
+## Input Sources
+
+1. **Prior conversation**: Review the entire conversation history, including all clarifications, decisions, and context that was discussed
+2. **Implementation plan** (if exists): Check `thoughts/shared/plans/` for any related plan file created during planning. Read it fully if found
+
+## Output Format
+
+Write the task description using this exact structure:
+
+### Scope
+
+A concise 2-4 sentence paragraph that captures:
+- What we're building/changing
+- The core user-facing behavior and motivation
+- Key design decisions that emerged from our conversation
+
+Do NOT use bullet points in the Scope section — write it as flowing prose.
+
+### Acceptance Criteria
+
+A flat list of acceptance criteria. Use these rules:
+
+- Each criterion gets a unique ID: AC01, AC02, AC03, etc.
+- Each criterion is a single, testable statement
+- **Focus exclusively on new or changed behavior** — do not state that existing functionality continues to work
+- Merge related criteria that apply to the same concept across different areas into a single AC when the rule is the same (e.g., "sorted on load with active items first" can cover multiple pages in one AC with context prefixes)
+- Consolidate shared behavioral rules (like "sorting is frozen at load time") into a single AC rather than repeating per-area
+- Use sub-headers (bold text) to group only when there are genuinely distinct feature areas with different behavior — prefer a flat list when possible
+- Aim for the minimum number of ACs that fully describe what's new — typically 4-8
+
+## Writing Guidelines
+
+- Be precise and technical — avoid vague language like "works correctly" or "handles properly"
+- Use domain terminology consistent with the codebase and conversation
+- Do not include implementation details (file paths, method names, database columns) — keep it behavior-focused
+- Do not add requirements that were not discussed or agreed upon in the conversation
+- Do not add ACs about existing behavior being preserved — that's implied and tested by regression tests
+- If the plan contains phased implementation, collapse it into a flat list of acceptance criteria (the JIRA task describes the end state, not the implementation order)
+- If something was explicitly marked as out of scope during planning, do NOT include it

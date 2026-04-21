@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# rtk version: {{ output "rtk" "--version" }}
+set -euo pipefail
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+HOME="$tmp" rtk init --global >/dev/null 2>&1
+cat "$tmp/.claude/hooks/rtk-rewrite.sh"
