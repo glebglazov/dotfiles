@@ -1,3 +1,9 @@
+[sandbox.dev]
+env = [
+	"TMUX_PANE",
+	"LOCAL_NETWORK_HOST=host.docker.internal"
+]
+
 [[sandbox.dev.mounts]]
 source = "~/.config/git/config"
 destination = "/home/vscode/.gitconfig"
