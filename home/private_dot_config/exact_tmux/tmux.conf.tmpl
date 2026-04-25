@@ -143,6 +143,9 @@ bind-key -r L select-pane -R
 # Mark current pane as needs_attention in pop
 bind-key U run-shell "pop pane set-status #{pane_id} needs_attention 2>/dev/null || true"
 
+# Toggle follow status on current pane in pop
+bind-key f run-shell "pop pane follow #{pane_id} 2>/dev/null || true"
+
 # Session management with pop
 bind-key -r p display-popup -E -w 80% -h 80% "pop select"
 bind-key -r P display-popup -E -w 80% -h 80% "pop worktree --switch"

@@ -73,3 +73,5 @@ keybind = ctrl+digit_9=text:\x029
 keybind = ctrl+digit_0=text:\x020
 keybind = cmd+o=text:\x02o
 keybind = cmd+u=text:\x02u
+keybind = cmd+f=unbind
+keybind = cmd+f=text:\x02f
