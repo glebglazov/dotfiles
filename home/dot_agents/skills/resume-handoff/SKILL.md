@@ -1,3 +1,9 @@
+---
+name: resume-handoff
+description: Resume work from handoff document with context analysis and validation
+agent: plan
+---
+
 # Resume work from a handoff document
 
 You are tasked with resuming work from a handoff document through an interactive process. These handoffs contain critical context, learnings, and next steps from previous work sessions that need to be understood and continued.
@@ -30,9 +36,9 @@ I'll help you resume work from a handoff document. Let me find the available han
 
 Which handoff would you like to resume from?
 
-Tip: You can invoke this command directly with a handoff path: `/resume_handoff thoughts/shared/handoffs/YYYY-MM-DD_HH-MM-SS_GS_1234_description.md`
+Tip: You can invoke this command directly with a handoff path: `/resume-handoff thoughts/shared/handoffs/YYYY-MM-DD_HH-MM-SS_GS_1234_description.md`
 
-or using a ticket number to resume from the most recent handoff for that ticket: `/resume_handoff GS_1234`
+or using a ticket number to resume from the most recent handoff for that ticket: `/resume-handoff GS_1234`
 ```
 
 Then wait for the user's input.
@@ -193,7 +199,7 @@ Then wait for the user's input.
 ## Example Interaction Flow
 
 ```
-User: /resume_handoff specification/feature/handoffs/handoff-0.md
+User: /resume-handoff specification/feature/handoffs/handoff-0.md
 Assistant: Let me read and analyze that handoff document...
 
 [Reads handoff completely]

@@ -1,3 +1,10 @@
+---
+name: create-plan
+description: Create detailed implementation plans through interactive research and iteration
+model: opus
+agent: plan
+---
+
 # Implementation Plan
 
 You are tasked with creating detailed implementation plans through an interactive, iterative process. You should be skeptical, thorough, and work collaboratively with the user to produce high-quality technical specifications.
@@ -22,8 +29,8 @@ Please provide:
 
 I'll analyze this information and work with you to create a comprehensive plan.
 
-Tip: You can also invoke this command with a ticket file directly: `/create_plan thoughts/allison/tickets/gs_1234.md`
-For deeper analysis, try: `/create_plan think deeply about thoughts/allison/tickets/gs_1234.md`
+Tip: You can also invoke this command with a ticket file directly: `/create-plan thoughts/allison/tickets/gs_1234.md`
+For deeper analysis, try: `/create-plan think deeply about thoughts/allison/tickets/gs_1234.md`
 ```
 
 Then wait for the user's input.
@@ -419,7 +426,7 @@ tasks = [
 ## Example Interaction Flow
 
 ```
-User: /create_plan
+User: /create-plan
 Assistant: I'll help you create a detailed implementation plan...
 
 User: We need to add parent-child tracking for Claude sub-tasks. See thoughts/allison/tickets/gs_1478.md

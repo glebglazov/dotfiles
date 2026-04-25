@@ -1,3 +1,9 @@
+---
+name: create-handoff
+description: Create handoff document for transferring work to another session
+agent: plan
+---
+
 # Create Handoff
 
 You are tasked with writing a handoff document to hand off your work to another agent in a new session. You will create a handoff document that is thorough, but also **concise**. The goal is to compact and summarize your context without losing any of the key details of what you're working on.
@@ -66,7 +72,7 @@ Once this is completed, you should respond to the user with the template between
 Handoff created! You can resume from this handoff in a new session with the following command:
 
 ```bash
-/resume_handoff path/to/handoff.md
+/resume-handoff path/to/handoff.md
 ```
 </template_response>
 
@@ -76,7 +82,7 @@ for example (between <example_response></example_response> XML tags - do NOT inc
 Handoff created! You can resume from this handoff in a new session with the following command:
 
 ```bash
-/resume_handoff thoughts/shared/handoffs/2025-01-08_13-44-55_GS_2166_create-context-compaction.md
+/resume-handoff thoughts/shared/handoffs/2025-01-08_13-44-55_GS_2166_create-context-compaction.md
 ```
 </example_response>
 

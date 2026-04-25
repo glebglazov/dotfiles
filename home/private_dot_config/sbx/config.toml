@@ -22,3 +22,8 @@ read_only = true
 source = "~/.ssh/signing_glebglazov.pub"
 destination = "/home/vscode/.ssh/signing_glebglazov.pub"
 read_only = true
+
+[[sandbox.dev.mounts]]
+source = "~/.agents/skills"
+destination = "/home/vscode/.agents/skills"
+read_only = true

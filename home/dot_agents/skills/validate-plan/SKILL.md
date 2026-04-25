@@ -1,3 +1,9 @@
+---
+name: validate-plan
+description: Validate implementation against plan, verify success criteria, identify issues
+agent: build
+---
+
 # Validate Plan
 
 You are tasked with validating that an implementation plan was correctly executed, verifying all success criteria and identifying any deviations or issues.
@@ -152,9 +158,9 @@ Always verify:
 ## Relationship to Other Commands
 
 Recommended workflow:
-1. `/implement_plan` - Execute the implementation
+1. `/implement-plan` - Execute the implementation
 2. `/commit` - Create atomic commits for changes
-3. `/validate_plan` - Verify implementation correctness
+3. `/validate-plan` - Verify implementation correctness
 4. `/describe_pr` - Generate PR description
 
 The validation works best after commits are made, as it can analyze the git history to understand what was implemented.
