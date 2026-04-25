@@ -208,7 +208,6 @@ require('lazy').setup({
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true, -- requires blink.cmp
         },
       },
       -- you can enable a preset for easier configuration
@@ -953,7 +952,7 @@ require('blink.cmp').setup({
     },
     documentation = {
       auto_show = true,
-      auto_show_delay_ms = 200,
+      auto_show_delay_ms = 0,
     },
   },
 
