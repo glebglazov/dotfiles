@@ -1,7 +1,8 @@
 [sandbox.dev]
 env = [
 	"TMUX_PANE",
-	"LOCAL_NETWORK_HOST=host.docker.internal"
+	"LOCAL_NETWORK_HOST=host.docker.internal",
+	"BUNDLE_RUBYGEMS__PKG__GITHUB__COM"
 ]
 
 init_append = """
