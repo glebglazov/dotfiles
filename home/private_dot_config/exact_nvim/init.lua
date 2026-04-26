@@ -752,7 +752,7 @@ vim.keymap.set('n', '<LEADER>cs', function()
 end)
 
 vim.keymap.set('n', '<LEADER>cc', run_in_tmux_fn(
-  function() return 'chezmoi apply --source-path ' .. vim.fn.expand('%') end,
+  function() return 'chezmoi apply --force --source-path ' .. vim.fn.expand('%') end,
   { tmux_cmd = "split-window -h -p 25", with_pause = false }
 ))
 
