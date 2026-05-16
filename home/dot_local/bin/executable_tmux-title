@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Generate terminal title based on directory context
+# - Bare repo worktree: [branch] project-name/worktree-name
+# - Normal git repo: [branch] project-name
+# - Non-git folder: full path
+
+set -euo pipefail
+
+dir="${1:-$PWD}"
+
+# Check if in a git repo
+if ! git -C "$dir" rev-parse --git-dir &>/dev/null 2>&1; then
+    # Not a git repo - show full path
+    echo "$dir"
+    exit 0
+fi
+
+# Get branch name
+branch=$(git -C "$dir" symbolic-ref --short HEAD 2>/dev/null || git -C "$dir" rev-parse --short HEAD 2>/dev/null || echo "")
+
+# Check if this is a bare repo setup (worktree)
+git_common_dir=$(git -C "$dir" rev-parse --git-common-dir 2>/dev/null || echo "")
+
+if [[ -n "$git_common_dir" && "$git_common_dir" != ".git" && "$git_common_dir" != "$dir/.git" ]]; then
+    # We're in a worktree - check if parent is a bare repo
+    # git_common_dir points to the main .git or .bare directory
+    bare_root=$(dirname "$git_common_dir")
+
+    # Check if it's a bare repo
+    if [[ "$(git -C "$bare_root" config --get core.bare 2>/dev/null)" == "true" ]] || [[ -d "$bare_root/.bare" ]]; then
+        # Bare repo with worktrees
+        project_name=$(basename "$bare_root")
+        worktree_name=$(basename "$dir")
+
+        if [[ -n "$branch" ]]; then
+            echo "[$branch] $project_name/$worktree_name"
+        else
+            echo "$project_name/$worktree_name"
+        fi
+        exit 0
+    fi
+fi
+
+# Check if current dir itself is a bare repo root
+if [[ "$(git -C "$dir" config --get core.bare 2>/dev/null)" == "true" ]] || [[ -d "$dir/.bare" ]]; then
+    project_name=$(basename "$dir")
+    echo "$project_name"
+    exit 0
+fi
+
+# Normal git repo
+project_name=$(basename "$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null)")
+
+if [[ -n "$branch" ]]; then
+    echo "[$branch] $project_name"
+else
+    echo "$project_name"
+fi
