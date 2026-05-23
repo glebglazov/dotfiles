@@ -21,7 +21,7 @@ elixir    = '1.18'
 uv          = '0.8'
 lua         = '5.4'
 tree-sitter = '0.26'
-"npm:@mariozechner/pi-coding-agent" = 'latest'
+"npm:@earendil-works/pi-coding-agent" = 'latest'
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"
