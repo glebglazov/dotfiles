@@ -11,9 +11,8 @@
  * dashboard. For already-tracked panes it clears any stale "working" status
  * left over from a crashed previous run.
  *
- * Uses TCP API to pop monitor daemon (like Claude Code does), instead of
- * calling the pop binary directly. This matches the approach in:
- * ~/.claude/hooks/pop-status.sh
+ * Uses TCP API to pop monitor daemon, instead of calling the pop binary
+ * directly. This matches the approach in ~/.local/bin/pop-status.
  *
  * Installed to ~/.pi/agent/extensions/pop-status-sync.ts via chezmoi.
  */

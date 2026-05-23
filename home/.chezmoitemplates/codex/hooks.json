@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "Notification": [
+    "PermissionRequest": [
       {
         "hooks": [
           {
@@ -11,15 +11,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "command": "rtk hook claude",
-            "type": "command"
-          }
-        ]
-      },
       {
         "hooks": [
           {
@@ -59,24 +50,5 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/status-line"
-  },
-  "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true,
-    "caveman@caveman": true
-  },
-  "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    }
-  },
-  "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  }
 }

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# pop-status.sh — notify the pop monitor daemon of a pane status change.
+# pop-status — notify the pop monitor daemon of a pane status change.
 #
-# Usage: pop-status.sh <working|unread|idle>
+# Usage: pop-status <working|unread|idle>
 #
 # Reads POP_MONITOR_ADDR (host:port). Falls back to
 # ${LOCAL_NETWORK_HOST:-127.0.0.1}:${POP_MONITOR_PORT:-57341}. Override
-# POP_MONITOR_ADDR for cross-host usage (e.g. devcontainer →
+# POP_MONITOR_ADDR for cross-host usage (e.g. devcontainer ->
 # host.docker.internal:57341).
 #
 # Requires $TMUX_PANE. Fire-and-forget: errors are swallowed so a failed
