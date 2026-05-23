@@ -53,21 +53,6 @@
 	include = ["**/engineering/grill-with-docs/**"]
 	exact = true
 
-[".agents/skills/to-issues"]
-	type = "archive"
-	url = "{{ $mattpocock_skills_url }}"
-	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
-	stripComponents = 4
-	include = ["**/engineering/to-issues/**"]
-	exact = true
-
-[".agents/skills/to-prd"]
-	type = "archive"
-	url = "{{ $mattpocock_skills_url }}"
-	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
-	stripComponents = 4
-	include = ["**/engineering/to-prd/**"]
-	exact = true
 
 [".agents/skills/zoom-out"]
 	type = "archive"
