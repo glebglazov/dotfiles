@@ -1,3 +1,6 @@
+{{- $mattpocock_skills_commit := "b8be62ffacb0118fa3eaa29a0923c87c8c11985c" }}
+{{- $mattpocock_skills_url := printf "https://github.com/mattpocock/skills/archive/%s.tar.gz" $mattpocock_skills_commit }}
+{{- $mattpocock_skills_checksum := "f887335426bd5ef480e12830d3b12418285658a621eeb9feafec88ea796a3263" }}
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/kanata"]
 	type = "archive-file"
@@ -40,4 +43,36 @@
 	url = "https://github.com/keith/git-pile/archive/8a1c17fa632c29fc230acb2d0ee0cd183e22f793.tar.gz"
 	checksum.sha256="cb06cd00e43ee3d3640cc9e1ee266dfbf4cc34b4e596999902ac08daed45ed9d"
 	stripComponents = 1
+	exact = true
+
+[".agents/skills/grill-with-docs"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 4
+	include = ["**/engineering/grill-with-docs/**"]
+	exact = true
+
+[".agents/skills/to-issues"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 4
+	include = ["**/engineering/to-issues/**"]
+	exact = true
+
+[".agents/skills/to-prd"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 4
+	include = ["**/engineering/to-prd/**"]
+	exact = true
+
+[".agents/skills/zoom-out"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 4
+	include = ["**/engineering/zoom-out/**"]
 	exact = true
