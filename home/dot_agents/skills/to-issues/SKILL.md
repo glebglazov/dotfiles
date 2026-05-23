@@ -49,7 +49,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Write the work items to the local filesystem
 
-For each approved slice, write a markdown file to the project's `issues/` or `tasks/` directory (create it if it doesn't exist). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each approved slice, write a markdown file to the project's `docs/issues/<prd-name>/` directory (create it if it doesn't exist, inferring `<prd-name>` from context or asking the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
 
 <issue-template>
 ## Parent
@@ -76,6 +76,6 @@ Or "None - can start immediately" if no blockers.
 
 </issue-template>
 
-Use a consistent filename scheme: `<number>-<slug>.md`, e.g. `01-auth-login.md`.
+Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `docs/issues/user-auth/01-login-form.md`.
 
 Do NOT close or modify any parent file.
