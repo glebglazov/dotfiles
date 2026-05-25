@@ -66,7 +66,7 @@
 	type = "archive"
 	url = "{{ $mattpocock_skills_url }}"
 	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
-	stripComponents = 3
+	stripComponents = 4
 	include = ["**/productivity/handoff/**"]
 	exact = true
 
