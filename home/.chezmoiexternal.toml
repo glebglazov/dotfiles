@@ -54,6 +54,14 @@
 	exact = true
 
 
+[".agents/skills/handoff"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 3
+	include = ["**/productivity/handoff/**"]
+	exact = true
+
 [".agents/skills/zoom-out"]
 	type = "archive"
 	url = "{{ $mattpocock_skills_url }}"
