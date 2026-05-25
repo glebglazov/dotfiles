@@ -19,6 +19,7 @@ exit = true
 
 [dashboard]
 # current_pane_always_under_cursor = true
+cursor_position = "current_any"
 sort_criteria = ["status", "pane_last_visit_at"]
 
 [pane_monitoring]
