@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run_all_parallel.sh — wave-based parallel issue runner using git worktrees.
+# to-issues-run-all-parallel — wave-based parallel issue runner using git worktrees.
 #
 # Source of truth: <issues-folder>/index.json (see the to-issues skill).
 #
@@ -10,7 +10,7 @@
 # manifest never causes a merge conflict. On a code conflict, the issue is
 # retried sequentially.
 #
-# Usage: run_all_parallel.sh <issues-folder>
+# Usage: to-issues-run-all-parallel <issues-folder>
 # Env:   AGENT_CMD      default: "claude --dangerously-skip-permissions -p"
 #        MAX_TRIES      default: 3
 #        TRY_TIMEOUT    default: "45m"
@@ -19,7 +19,7 @@
 
 set -euo pipefail
 
-[[ $# -ge 1 ]] || { echo "usage: run_all_parallel.sh <issues-folder>" >&2; exit 3; }
+[[ $# -ge 1 ]] || { echo "usage: to-issues-run-all-parallel <issues-folder>" >&2; exit 3; }
 FOLDER=$1
 MANIFEST="$FOLDER/index.json"
 PROGRESS="$FOLDER/progress.txt"
@@ -29,18 +29,18 @@ MAX_PARALLEL=${MAX_PARALLEL:-4}
 export TRY_TIMEOUT
 
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-RUN_ONE="$DIR/run_one.sh"
-[[ -x $RUN_ONE ]] || { echo "run_all_parallel: $RUN_ONE not executable" >&2; exit 3; }
+RUN_ONE="$DIR/to-issues-run-one"
+[[ -x $RUN_ONE ]] || { echo "to-issues-run-all-parallel: $RUN_ONE not executable" >&2; exit 3; }
 
-command -v jq  >/dev/null || { echo "run_all_parallel: jq not found" >&2; exit 3; }
-command -v git >/dev/null || { echo "run_all_parallel: git not found" >&2; exit 3; }
-[[ -f $MANIFEST ]] || { echo "run_all_parallel: manifest not found: $MANIFEST" >&2; exit 3; }
+command -v jq  >/dev/null || { echo "to-issues-run-all-parallel: jq not found" >&2; exit 3; }
+command -v git >/dev/null || { echo "to-issues-run-all-parallel: git not found" >&2; exit 3; }
+[[ -f $MANIFEST ]] || { echo "to-issues-run-all-parallel: manifest not found: $MANIFEST" >&2; exit 3; }
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
 WT_DIR="$REPO_ROOT/.worktrees"
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-LOG() { echo "[$(date '+%H:%M:%S')] run_all_parallel: $*"; }
+LOG() { echo "[$(date '+%H:%M:%S')] to-issues-run-all-parallel: $*"; }
 TS()  { date -u +%Y-%m-%dT%H:%M:%SZ; }
 STARTED=$SECONDS
 
@@ -59,7 +59,7 @@ cleanup_worktrees() {
 trap cleanup_worktrees EXIT
 cleanup_worktrees 2>/dev/null || true
 
-# Eligibility query (same as run_one.sh): status=="open" and all blockers done.
+# Eligibility query (same as to-issues-run-one): status=="open" and all blockers done.
 eligible_files() {
   jq -r '
     .issues as $all
@@ -223,7 +223,7 @@ while :; do
   LOG "wave $wave completed in $((SECONDS - wave_start))s"
 done
 
-# Summary, identical accounting to run_all.sh.
+# Summary, identical accounting to to-issues-run-all.
 read -r total done_count failed_count other_count < <(jq -r '
   .issues as $a
   | [ ($a|length),

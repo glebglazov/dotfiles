@@ -114,13 +114,3 @@ Field rules:
 - `failed_after` — optional integer; the number of attempts after which a runner gave up. Written only when `status` becomes `failed`.
 
 The JSON is the source of truth for automation: a loop picks the next issue whose `status` is `open` and whose `blocked_by` are all `done`, then flips `status` to `done` when the markdown acceptance criteria are all checked. Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
-
-### 7. (optional) Autonomous execution
-
-The skill ships ralph-loop runners in its `scripts/` directory that consume `index.json`:
-
-- `run_one.sh <issues-folder>` — pick the next eligible issue (`status: open`, all `blocked_by` `done`), drive the agent until it emits a `TASK_COMPLETE` sentinel or `MAX_TRIES` is exhausted, then flip `status` to `done` (or `failed` + `failed_after`) and commit.
-- `run_all.sh <issues-folder>` — call `run_one.sh` in a loop until nothing is eligible. Exit 0 iff every issue is `done`.
-- `run_all_parallel.sh <issues-folder>` — wave-based runner; each wave runs all eligible issues concurrently in git worktrees, cherry-picks results back, and flips the manifest on the main branch. Worktree agents never touch `index.json` (they run with `DEFER_MANIFEST=1`), so the manifest never conflicts on merge.
-
-Runners require `jq` and `git`, expect a clean working tree (override with `ALLOW_DIRTY=1`), and append a human-readable trail to `<issues-folder>/progress.txt`. Tune via `AGENT_CMD`, `MAX_TRIES`, `TRY_TIMEOUT`, and `MAX_PARALLEL`. Agents are instructed not to modify `index.json` or other issue files — the runner owns all state transitions.
