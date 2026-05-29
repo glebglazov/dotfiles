@@ -83,3 +83,33 @@ Or "None - can start immediately" if no blockers.
 Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `docs/issues/user-auth/01-login-form.md`.
 
 Do NOT close or modify any parent file.
+
+### 6. Write the sidecar JSON manifest
+
+Alongside the markdown files, write `docs/issues/<prd-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
+
+<manifest-schema>
+```json
+{
+  "issues": [
+    {
+      "id": "01-login-form",
+      "file": "01-login-form.md",
+      "title": "Login form",
+      "type": "AFK",
+      "status": "open",
+      "blocked_by": []
+    }
+  ]
+}
+```
+</manifest-schema>
+
+Field rules:
+
+- `id` — the filename stem (`<number>-<issue-name>`), stable identifier referenced by `blocked_by`.
+- `status` — one of `open` | `in_progress` | `done`. Always initialize to `open`.
+- `blocked_by` — array of `id`s of blocking issues. Empty array if none.
+- `type` — `HITL` or `AFK`, matching the markdown.
+
+The JSON is the source of truth for automation: a loop picks the next issue whose `status` is `open` and whose `blocked_by` are all `done`, then flips `status` to `done` when the markdown acceptance criteria are all checked. Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
