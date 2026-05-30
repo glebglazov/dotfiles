@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Reads Claude Code context window JSON from stdin and renders a visual status bar.
-# Output: [██████░░░░] 63% (1M, Opus) | 45% - 2h12m | abc123
+# Output: [██████░░░░] 63% (1M, Opus) | 55% left - 2h12m | abc123
 
 jq -r '
   (.context_window.used_percentage // 0) as $p |
@@ -33,7 +33,7 @@ jq -r '
 
   # Format rate limits
   (if .rate_limits.five_hour then
-    "\(.rate_limits.five_hour.used_percentage | floor)% - \(fmt_remaining(.rate_limits.five_hour.resets_at))"
+    "\(100 - .rate_limits.five_hour.used_percentage | floor)% left - \(fmt_remaining(.rate_limits.five_hour.resets_at))"
   else null end) as $rl5 |
   ($rl5 // "") as $rate |
 
