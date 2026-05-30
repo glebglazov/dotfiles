@@ -113,4 +113,9 @@ Field rules:
 - `type` — `HITL` or `AFK`, matching the markdown.
 - `failed_after` — optional integer; the number of attempts after which a runner gave up. Written only when `status` becomes `failed`.
 
-The JSON is the source of truth for automation: a loop picks the next issue whose `status` is `open` and whose `blocked_by` are all `done`, then flips `status` to `done` when the markdown acceptance criteria are all checked. Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
+The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible issues), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `[<prd-name> <number>] <message>` — are the **contract** that two independent runners implement:
+
+- **In-context:** the **run-one** skill (`/run_one`), pure prose, where the live agent picks, implements, and commits one issue itself.
+- **Headless:** the standalone `issue` tool (`issue run-one` / `run-all` / `run-all-parallel`, also via the `to-issues-run-*` shims), which spawns an agent per issue with retry/timeout handling.
+
+Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
