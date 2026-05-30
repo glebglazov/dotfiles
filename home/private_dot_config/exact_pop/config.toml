@@ -11,16 +11,16 @@ label = "dev o"
 command = "$SHELL -ic 'dev o'"
 exit = true
 
-# [select]
-# attention_notifications_enabled = false
+# [project]
+# unread_notifications_enabled = false
 #
 # [worktree]
-# attention_notifications_enabled = false
+# unread_notifications_enabled = false
 
 [dashboard]
 # current_pane_always_under_cursor = true
 cursor_position = "current_any"
-sort_criteria = ["status", "pane_last_visit_at"]
+sort_criteria = ["status", "pane_last_active_at", "alphabetical"]
 
 [pane_monitoring]
 tcp_server = true
