@@ -1,13 +1,21 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
 const CAVEMAN_SKILL_PATH = join(homedir(), ".pi/agent/skills/caveman/SKILL.md");
-const CAVEMAN_REPO_URL = "https://github.com/glebglazov/pi-caveman-skill"; // Adjust to actual repo
+const CAVEMAN_REPO_URL = "https://github.com/glebglazov/pi-caveman-skill";
 
 function isCavemanInstalled(): boolean {
 	return existsSync(CAVEMAN_SKILL_PATH);
+}
+
+function getCavemanSystemPrompt(): string {
+	try {
+		return readFileSync(CAVEMAN_SKILL_PATH, "utf-8");
+	} catch {
+		return "Respond terse like smart caveman. All technical substance stay. Only fluff die.";
+	}
 }
 
 export default function (pi: ExtensionAPI) {
@@ -19,8 +27,9 @@ export default function (pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event, ctx) => {
 		if (!autoEnabled || activated) return;
 
+		const userMessage = event.prompt?.trim().toLowerCase() ?? "";
+
 		// Check if first message is explicitly turning caveman off
-		const userMessage = event.message?.content?.trim().toLowerCase();
 		if (userMessage === "/caveman off") {
 			autoEnabled = false;
 			activated = true;
@@ -29,24 +38,34 @@ export default function (pi: ExtensionAPI) {
 
 		activated = true;
 
-		if (isCavemanInstalled()) {
-			// Inject caveman activation message (hidden from UI)
-			return {
-				message: {
-					customType: "auto-caveman",
-					content: "caveman mode",
-					display: false,
-				},
-			};
-		} else if (!installNotified) {
-			// Show install hint once, on first message
-			installNotified = true;
-			ctx.ui.notify(
-				"💡 Caveman skill not installed. Run: git clone " + CAVEMAN_REPO_URL + " ~/.pi/agent/skills/caveman",
-				"info",
-				{ timeout: 15000 },
-			);
+		if (!isCavemanInstalled()) {
+			if (!installNotified) {
+				installNotified = true;
+				ctx.ui.notify(
+					"💡 Caveman skill not installed. Run: git clone " + CAVEMAN_REPO_URL + " ~/.pi/agent/skills/caveman",
+					"info",
+					{ timeout: 15000 },
+				);
+			}
+			return;
 		}
+
+		// If user invoked a skill/command via /, append caveman to system prompt
+		// instead of injecting a competing user message that overrides the skill
+		if (userMessage.startsWith("/")) {
+			return {
+				systemPrompt: event.systemPrompt + "\n\n" + getCavemanSystemPrompt(),
+			};
+		}
+
+		// Normal first message: inject trigger message so caveman skill auto-loads
+		return {
+			message: {
+				customType: "auto-caveman",
+				content: "caveman mode",
+				display: false,
+			},
+		};
 	});
 
 	// Manual toggle command
