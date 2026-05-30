@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status unread"
+            "command": "~/.local/bin/pop-status unread claude"
           }
         ]
       }
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status working"
+            "command": "~/.local/bin/pop-status working claude"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status idle"
+            "command": "~/.local/bin/pop-status idle claude"
           }
         ]
       }
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status unread"
+            "command": "~/.local/bin/pop-status unread claude"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status working"
+            "command": "~/.local/bin/pop-status working claude"
           }
         ]
       }

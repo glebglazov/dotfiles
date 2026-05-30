@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # pop-status — notify the pop monitor daemon of a pane status change.
 #
-# Usage: pop-status <working|unread|idle>
+# Usage: pop-status <working|unread|idle> [label]
+#
+# Optional label (e.g. cursor, claude) is stored on the pane so the
+# dashboard shows a friendly name instead of tmux pane_current_command.
 #
 # Reads POP_MONITOR_ADDR (host:port). Falls back to
 # ${LOCAL_NETWORK_HOST:-127.0.0.1}:${POP_MONITOR_PORT:-57341}. Override
@@ -14,5 +17,11 @@
 host=${LOCAL_NETWORK_HOST:-127.0.0.1}
 port=${POP_MONITOR_PORT:-57341}
 addr=${POP_MONITOR_ADDR:-${host}:${port}}
-payload='{"cmd":"set-status","pane_id":"'"$TMUX_PANE"'","status":"'"$1"'"}'
+status=$1
+label=${2:-}
+payload='{"cmd":"set-status","pane_id":"'"$TMUX_PANE"'","status":"'"$status"'"'
+if [[ -n $label ]]; then
+  payload+=',"label":"'"$label"'"'
+fi
+payload+='}'
 echo "$payload" | nc -w1 "${addr%:*}" "${addr##*:}" >/dev/null 2>&1 || true

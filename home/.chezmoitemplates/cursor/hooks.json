@@ -3,22 +3,22 @@
   "hooks": {
     "beforeSubmitPrompt": [
       {
-        "command": "~/.local/bin/pop-status working"
+        "command": "~/.local/bin/pop-status working cursor"
       }
     ],
     "preToolUse": [
       {
-        "command": "~/.local/bin/pop-status working"
+        "command": "~/.local/bin/pop-status working cursor"
       }
     ],
     "sessionStart": [
       {
-        "command": "~/.local/bin/pop-status idle"
+        "command": "~/.local/bin/pop-status idle cursor"
       }
     ],
     "stop": [
       {
-        "command": "~/.local/bin/pop-status unread"
+        "command": "~/.local/bin/pop-status unread cursor"
       }
     ]
   }

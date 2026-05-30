@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status unread"
+            "command": "~/.local/bin/pop-status unread codex"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status working"
+            "command": "~/.local/bin/pop-status working codex"
           }
         ]
       }
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status idle"
+            "command": "~/.local/bin/pop-status idle codex"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status unread"
+            "command": "~/.local/bin/pop-status unread codex"
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status working"
+            "command": "~/.local/bin/pop-status working codex"
           }
         ]
       }

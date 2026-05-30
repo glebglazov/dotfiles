@@ -29,11 +29,12 @@ export default function (pi: ExtensionAPI) {
 	const addr = process.env.POP_MONITOR_ADDR ?? `${host}:${port}`;
 
 	const setStatus = (status: "working" | "unread" | "idle") => {
-		// Build JSON payload matching Claude Code hook format
+		// Build JSON payload matching pop-status / Claude Code hook format
 		const payload = JSON.stringify({
 			cmd: "set-status",
 			pane_id: paneID,
 			status: status,
+			label: "pi",
 		});
 
 		// Parse host:port from addr
