@@ -13,7 +13,7 @@
     ],
     "sessionStart": [
       {
-        "command": "~/.local/bin/pop-status idle cursor"
+        "command": "~/.local/bin/pop-status clear cursor"
       }
     ],
     "stop": [

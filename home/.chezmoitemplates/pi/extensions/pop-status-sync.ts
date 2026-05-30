@@ -6,8 +6,8 @@
  *   - working → pi is busy (user submitted input, or a tool is running)
  *   - unread  → pi finished a turn, awaiting the user
  *
- * `idle` is also sent on `session_start`, but only as housekeeping: pop
- * ignores `set-status idle` for untracked panes, so it cannot pollute the
+ * `clear` is also sent on `session_start`, but only as housekeeping: pop
+ * ignores `set-status clear` for untracked panes, so it cannot pollute the
  * dashboard. For already-tracked panes it clears any stale "working" status
  * left over from a crashed previous run.
  *
@@ -28,7 +28,7 @@ export default function (pi: ExtensionAPI) {
 	const port = process.env.POP_MONITOR_PORT ?? "57341";
 	const addr = process.env.POP_MONITOR_ADDR ?? `${host}:${port}`;
 
-	const setStatus = (status: "working" | "unread" | "idle") => {
+	const setStatus = (status: "working" | "unread" | "clear") => {
 		// Build JSON payload matching pop-status / Claude Code hook format
 		const payload = JSON.stringify({
 			cmd: "set-status",
@@ -66,9 +66,9 @@ export default function (pi: ExtensionAPI) {
 
 	// Housekeeping: clear any stale "working" status left over from a
 	// previous run on session start, so a freshly resumed pane isn't stuck
-	// "working". Pop treats `idle` as a no-op for untracked panes, so this
+	// "working". Pop treats `clear` as a no-op for untracked panes, so this
 	// cannot register a brand-new pane and skew the dashboard sort.
 	pi.on("session_start", async () => {
-		setStatus("idle");
+		setStatus("clear");
 	});
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # pop-status — notify the pop monitor daemon of a pane status change.
 #
-# Usage: pop-status <working|unread|idle> [label]
+# Usage: pop-status <working|unread|clear> [label]
 #
 # Optional label (e.g. cursor, claude) is stored on the pane so the
 # dashboard shows a friendly name instead of tmux pane_current_command.

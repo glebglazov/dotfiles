@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/pop-status idle claude"
+            "command": "~/.local/bin/pop-status clear claude"
           }
         ]
       }
