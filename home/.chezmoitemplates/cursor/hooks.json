@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "~/.local/bin/pop-status working"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "~/.local/bin/pop-status working"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "~/.local/bin/pop-status idle"
+      }
+    ],
+    "stop": [
+      {
+        "command": "~/.local/bin/pop-status unread"
+      }
+    ]
+  }
+}
