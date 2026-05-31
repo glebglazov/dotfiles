@@ -16,6 +16,11 @@
         "command": "~/.local/bin/pop-status clear cursor"
       }
     ],
+    "afterAgentResponse": [
+      {
+        "command": "~/.local/bin/pop-status unread cursor"
+      }
+    ],
     "stop": [
       {
         "command": "~/.local/bin/pop-status unread cursor"
