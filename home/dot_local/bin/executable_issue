@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# issue — drive a to-issues manifest (thoughts/issues/<prd-name>/index.json).
+# issue — drive a to-issues manifest (thoughts/issues/<issue-set-name>/index.json).
 #
 # This is the standalone code implementation of the to-issues contract
 # documented in the `to-issues` skill (index.json schema, eligibility rule,
@@ -149,7 +149,7 @@ class Manifest
     @progress = File.join(folder, "progress.txt")
   end
 
-  def prd_name = File.basename(File.expand_path(folder))
+  def issue_set_name = File.basename(File.expand_path(folder))
 
   def data = JSON.parse(File.read(path))
 
@@ -233,7 +233,7 @@ def commit_success(m, id, summary, defer: DEFER_MANIFEST)
     m.append_progress(["#{ts} [#{file}] DONE", summary])
   end
   git!("add", "-A")
-  git!("commit", "-m", "[#{m.prd_name} #{num}] #{name}\n\n#{summary}")
+  git!("commit", "-m", "[#{m.issue_set_name} #{num}] #{name}\n\n#{summary}")
 end
 
 def commit_failed(m, id, reason, tries, defer: DEFER_MANIFEST)
@@ -247,7 +247,7 @@ def commit_failed(m, id, reason, tries, defer: DEFER_MANIFEST)
   m.append_progress(["#{ts} [#{file}] FAILED (after #{tries} tries)", reason])
   git!("add", "-A")
   # Failed commit may have nothing staged; tolerate that.
-  system("git", "commit", "-m", "[#{m.prd_name} #{num}] #{name} — failed after #{tries} tries")
+  system("git", "commit", "-m", "[#{m.issue_set_name} #{num}] #{name} — failed after #{tries} tries")
 end
 
 # --- preflight ----------------------------------------------------------------

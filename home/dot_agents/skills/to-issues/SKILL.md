@@ -49,7 +49,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Write the work items to the local filesystem
 
-For each approved slice, write a markdown file to the project's `thoughts/issues/<prd-name>/` directory (create it if it doesn't exist, inferring `<prd-name>` from context or asking the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each approved slice, write a markdown file to the project's `thoughts/issues/<issue-set-name>/` directory (create it if it doesn't exist). `<issue-set-name>` is either the source PRD name or a hyphen-delimited string summarising what you intend to do (infer from context or ask the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
 
 <issue-template>
 ## Parent
@@ -86,7 +86,7 @@ Do NOT close or modify any parent file.
 
 ### 6. Write the sidecar JSON manifest
 
-Alongside the markdown files, write `thoughts/issues/<prd-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
+Alongside the markdown files, write `thoughts/issues/<issue-set-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
 
 <manifest-schema>
 ```json
@@ -113,7 +113,7 @@ Field rules:
 - `type` — `HITL` or `AFK`, matching the markdown.
 - `failed_after` — optional integer; the number of attempts after which a runner gave up. Written only when `status` becomes `failed`.
 
-The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible issues), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `[<prd-name> <number>] <message>` — are the **contract** that two independent runners implement:
+The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible issues), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `[<issue-set-name> <number>] <message>` — are the **contract** that two independent runners implement:
 
 - **In-context:** the **run-one** skill (`/run_one`), pure prose, where the live agent picks, implements, and commits one issue itself.
 - **Headless:** the standalone `issue` tool (`issue run-one` / `run-all` / `run-all-parallel`, also via the `to-issues-run-*` shims), which spawns an agent per issue with retry/timeout handling.

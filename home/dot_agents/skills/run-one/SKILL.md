@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Run One
 
-Implement **exactly one** issue from a `thoughts/issues/<prd-name>/` folder, in this
+Implement **exactly one** issue from a `thoughts/issues/<issue-set-name>/` folder, in this
 agent's own context (no subprocess). Source of truth: `<issues-folder>/index.json`
 (see the **to-issues** skill for the full manifest contract).
 
@@ -73,8 +73,8 @@ On success:
    <one or more summary lines>
    ---
    ```
-3. `git add -A` and commit with subject **`[<prd-name> <number>] <name>`** and
-   the summary as the body, where `<prd-name>` is the issues-folder basename,
+3. `git add -A` and commit with subject **`[<issue-set-name> <number>] <name>`** and
+   the summary as the body, where `<issue-set-name>` is the issues-folder basename,
    `<number>` is the numeric prefix of the issue id, and `<name>` is the rest of
    the id (e.g. id `01-login-form` → `[user-auth 01] login-form`).
 
@@ -83,7 +83,7 @@ If abandoning (blocked, unclear, repeatedly failing):
 1. In `index.json`, set `status` to `"failed"` and add `failed_after` = number
    of attempts.
 2. Append a `FAILED` block to `progress.txt` with the reason.
-3. Commit with subject `[<prd-name> <number>] <name> — failed after N tries`.
+3. Commit with subject `[<issue-set-name> <number>] <name> — failed after N tries`.
 
 Keep `index.json` and the markdown in sync — every markdown file has exactly one
 manifest entry and vice versa.
