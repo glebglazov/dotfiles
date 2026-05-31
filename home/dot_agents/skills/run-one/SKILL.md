@@ -1,9 +1,9 @@
 ---
 name: run-one
 description: >-
-  Pick and implement the next eligible issue from a to-issues manifest
-  (index.json). Use when the user invokes /run_one, asks to run the next issue,
-  work one slice from thoughts/issues, or implement the next AFK tracer bullet.
+  Pick and implement exactly one issue from a to-issues manifest (index.json).
+  Explicit invocation only — use when the user types /run_one (Cursor) or
+  $run-one (Codex) with an issues folder.
 disable-model-invocation: true
 ---
 
@@ -20,6 +20,10 @@ batch runs there is a separate standalone tool, `issue run-all` /
 contract — do not call it from here.)
 
 ## Invocation
+
+**Explicit only.** Run this workflow only when the user typed `/run_one` (Cursor)
+or `$run-one` (Codex). Natural-language requests are not sufficient — tell the
+user to invoke it explicitly.
 
 `/run_one <issues-folder> [issue-file]`
 
