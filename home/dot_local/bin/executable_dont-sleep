@@ -1,0 +1,2 @@
+#!/bin/bash
+exec caffeinate -dimsu -t $((${1:-1} * 3600))
