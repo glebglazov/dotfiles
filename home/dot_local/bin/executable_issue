@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# issue — drive a to-issues manifest (docs/issues/<prd-name>/index.json).
+# issue — drive a to-issues manifest (thoughts/issues/<prd-name>/index.json).
 #
 # This is the standalone code implementation of the to-issues contract
 # documented in the `to-issues` skill (index.json schema, eligibility rule,
@@ -288,7 +288,8 @@ def build_prompt(folder, issue_path)
 
     Read the issue file in full. Read any parent or PRD it references (see the
     "## Parent" section) for context. Implement the work described under
-    "What to build" and satisfy every box under "Acceptance criteria".
+    "What to build" and satisfy every box under "Acceptance criteria". As you
+    complete each criterion, check its box (`- [ ]` → `- [x]`) in #{issue_path}.
 
     Do NOT modify #{folder}/index.json. Do NOT modify other issue files in #{folder}.
     Do NOT make git commits — the runner handles assessment and committing.

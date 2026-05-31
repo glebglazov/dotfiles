@@ -49,7 +49,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Write the work items to the local filesystem
 
-For each approved slice, write a markdown file to the project's `docs/issues/<prd-name>/` directory (create it if it doesn't exist, inferring `<prd-name>` from context or asking the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each approved slice, write a markdown file to the project's `thoughts/issues/<prd-name>/` directory (create it if it doesn't exist, inferring `<prd-name>` from context or asking the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
 
 <issue-template>
 ## Parent
@@ -80,13 +80,13 @@ Or "None - can start immediately" if no blockers.
 
 </issue-template>
 
-Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `docs/issues/user-auth/01-login-form.md`.
+Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `thoughts/issues/user-auth/01-login-form.md`.
 
 Do NOT close or modify any parent file.
 
 ### 6. Write the sidecar JSON manifest
 
-Alongside the markdown files, write `docs/issues/<prd-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
+Alongside the markdown files, write `thoughts/issues/<prd-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
 
 <manifest-schema>
 ```json

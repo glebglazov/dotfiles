@@ -3,13 +3,13 @@ name: run-one
 description: >-
   Pick and implement the next eligible issue from a to-issues manifest
   (index.json). Use when the user invokes /run_one, asks to run the next issue,
-  work one slice from docs/issues, or implement the next AFK tracer bullet.
+  work one slice from thoughts/issues, or implement the next AFK tracer bullet.
 disable-model-invocation: true
 ---
 
 # Run One
 
-Implement **exactly one** issue from a `docs/issues/<prd-name>/` folder, in this
+Implement **exactly one** issue from a `thoughts/issues/<prd-name>/` folder, in this
 agent's own context (no subprocess). Source of truth: `<issues-folder>/index.json`
 (see the **to-issues** skill for the full manifest contract).
 
@@ -23,7 +23,7 @@ contract — do not call it from here.)
 
 `/run_one <issues-folder> [issue-file]`
 
-`<issues-folder>` is e.g. `docs/issues/user-auth`. The optional `issue-file`
+`<issues-folder>` is e.g. `thoughts/issues/user-auth`. The optional `issue-file`
 forces a specific issue instead of picking the next eligible one.
 
 ## Workflow
