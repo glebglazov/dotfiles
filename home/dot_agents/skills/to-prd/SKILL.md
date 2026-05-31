@@ -17,7 +17,16 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then save it as a markdown file in the project's `thoughts/prds/` directory (create it if it doesn't exist). Use a descriptive filename, e.g. `<prd-name>.md`.
+3. Write the PRD using the template below, then save it as a markdown file in the project's `thoughts/prds/` directory (create it if it doesn't exist). Use `<timestamp>-<slug>.md`, where `<slug>` is a descriptive hyphen-delimited name (e.g. `2026-05-31-user-auth.md`).
+
+<naming-convention>
+`<timestamp>` is a human-readable local date/time prefix so PRDs sort chronologically:
+
+- Default: `YYYY-MM-DD` (e.g. `2026-05-31`)
+- If a file with the same date and slug already exists: `YYYY-MM-DD-HHMM` (24-hour local time, e.g. `2026-05-31-2036`)
+
+Examples: `2026-05-31-user-auth.md`, `2026-05-31-2036-user-auth.md`
+</naming-convention>
 
 <prd-template>
 

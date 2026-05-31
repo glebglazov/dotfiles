@@ -49,7 +49,16 @@ Iterate until the user approves the breakdown.
 
 ### 5. Write the work items to the local filesystem
 
-For each approved slice, write a markdown file to the project's `thoughts/issues/<issue-set-name>/` directory (create it if it doesn't exist). `<issue-set-name>` is either the source PRD name or a hyphen-delimited string summarising what you intend to do (infer from context or ask the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each approved slice, write a markdown file to the project's `thoughts/issues/<issue-set-name>/` directory (create it if it doesn't exist). `<issue-set-name>` is `<timestamp>-<slug>`, where `<slug>` is either the source PRD slug (without its timestamp prefix) or a hyphen-delimited string summarising what you intend to do (infer from context or ask the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+
+<naming-convention>
+`<timestamp>` is a human-readable local date/time prefix so issue sets sort chronologically:
+
+- Default: `YYYY-MM-DD` (e.g. `2026-05-31`)
+- If a folder with the same date and slug already exists: `YYYY-MM-DD-HHMM` (24-hour local time, e.g. `2026-05-31-2036`)
+
+Examples: `2026-05-31-user-auth`, `2026-05-31-2036-user-auth`
+</naming-convention>
 
 <issue-template>
 ## Parent
@@ -80,7 +89,7 @@ Or "None - can start immediately" if no blockers.
 
 </issue-template>
 
-Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `thoughts/issues/user-auth/01-login-form.md`.
+Use a consistent filename scheme: `<number>-<issue-name>.md`, e.g. `thoughts/issues/2026-05-31-user-auth/01-login-form.md`.
 
 Do NOT close or modify any parent file.
 
