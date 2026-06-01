@@ -1,0 +1,1 @@
+eval "$(pop completion zsh)"

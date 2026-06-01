@@ -24,6 +24,9 @@ WORDCHARS='*?[]~=&;!#$%^(){}<>'
 source ~/.local/share/antidote/antidote.zsh
 antidote load
 
+# Load custom zsh plugins (need compinit/compdef, so after it)
+for f in ~/.my_zsh_plugins/*; do source $f; done
+
 # Set up direnv hook after plugins are loaded to avoid console output during instant prompt
 (( ${+commands[direnv]} )) && emulate zsh -c "$(direnv hook zsh)"
 
