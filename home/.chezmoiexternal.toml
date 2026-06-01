@@ -70,6 +70,14 @@
 	include = ["**/productivity/handoff/**"]
 	exact = true
 
+[".agents/skills/grill-me"]
+	type = "archive"
+	url = "{{ $mattpocock_skills_url }}"
+	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
+	stripComponents = 4
+	include = ["**/productivity/grill-me/**"]
+	exact = true
+
 [".agents/skills/zoom-out"]
 	type = "archive"
 	url = "{{ $mattpocock_skills_url }}"
