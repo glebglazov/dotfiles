@@ -37,6 +37,17 @@ forces a specific issue instead of picking the next eligible one.
 - Confirm `<issues-folder>/index.json` exists and you are inside a git repo.
 - Confirm the working tree is clean (`git status --porcelain` is empty). If it
   is dirty, stop and tell the user (unless they say to proceed anyway).
+- Load domain knowledge. Check the repo root for `CONTEXT-MAP.md` and `CONTEXT.md`
+  (the docs produced by the **grill-with-docs** skill):
+  - If `CONTEXT-MAP.md` exists, the repo has multiple bounded contexts — read it,
+    then read the per-context `CONTEXT.md` it points at that is relevant to this
+    issue set.
+  - Else if a root `CONTEXT.md` exists, read it (single context).
+  - If neither exists, skip — there is no domain glossary to honour.
+
+  Use this as the project's glossary: match its terminology in code, names, and
+  commit messages. If the issue uses a term that conflicts with `CONTEXT.md`,
+  flag it rather than silently guessing.
 
 ### 2. Pick the next issue
 
@@ -44,10 +55,15 @@ Read `index.json`. Pick the target issue:
 
 - If `issue-file` was given, use that entry.
 - Otherwise pick the next eligible issue, where eligible means:
-  `status == "open"` **and** every id in `blocked_by` resolves to an issue whose
-  `status == "done"`. A missing blocker id counts as not-done. Among eligible
-  issues, prefer `AFK` over `HITL` (in manifest order within each group) so you
-  don't stall on a human-in-the-loop slice while an autonomous one is ready.
+  `status == "open"` **and** every id in `blocked_by` resolves to an issue that
+  is *satisfied* — i.e. its `status` is `"done"` **or** `"skipped"` (a skipped
+  issue is deliberately set aside, but it still unblocks its dependents). A
+  missing blocker id counts as not-satisfied. Among eligible issues, prefer
+  `AFK` over `HITL` (in manifest order within each group) so you don't stall on a
+  human-in-the-loop slice while an autonomous one is ready.
+
+Valid `status` values are `open`, `done`, `failed`, and `skipped`. Only `open`
+issues are runnable.
 
 If nothing is eligible, stop and report that there is nothing to do.
 
@@ -77,17 +93,22 @@ On success:
    <one or more summary lines>
    ---
    ```
-3. `git add -A` and commit with subject **`[<issue-set-name> <number>] <name>`** and
-   the summary as the body, where `<issue-set-name>` is the issues-folder basename,
-   `<number>` is the numeric prefix of the issue id, and `<name>` is the rest of
-   the id (e.g. id `01-login-form` → `[user-auth 01] login-form`).
+3. `git add -A` and commit. Subject must be **`workload(<issue-set-name>): <issue-id>`**
+   with the summary as the body, where `<issue-set-name>` is the issues-folder
+   basename and `<issue-id>` is the full manifest `id` (e.g. set `user-auth`, id
+   `01-login-form` → subject `workload(user-auth): 01-login-form`). This matches
+   the `pop` `workload` runner's commit contract exactly, so inline and batch runs
+   produce uniform history.
 
 If abandoning (blocked, unclear, repeatedly failing):
 
 1. In `index.json`, set `status` to `"failed"` and add `failed_after` = number
    of attempts.
 2. Append a `FAILED` block to `progress.txt` with the reason.
-3. Commit with subject `[<issue-set-name> <number>] <name> — failed after N tries`.
+3. **Do not commit.** Like the `pop` runner, a failed issue is *not* committed —
+   write the manifest and `progress.txt` updates to disk and leave the partial
+   work tree dirty for the user to inspect or discard. Report what was attempted
+   and why it failed.
 
 Keep `index.json` and the markdown in sync — every markdown file has exactly one
 manifest entry and vice versa.
