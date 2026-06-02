@@ -1,6 +1,9 @@
 {{- $mattpocock_skills_commit := "b8be62ffacb0118fa3eaa29a0923c87c8c11985c" }}
 {{- $mattpocock_skills_url := printf "https://github.com/mattpocock/skills/archive/%s.tar.gz" $mattpocock_skills_commit }}
 {{- $mattpocock_skills_checksum := "f887335426bd5ef480e12830d3b12418285658a621eeb9feafec88ea796a3263" }}
+{{- $playwright_cli_commit := "3a1bafc8b4e973c72d0364eb5b427d1ce0aa8317" }}
+{{- $playwright_cli_url := printf "https://github.com/microsoft/playwright-cli/archive/%s.tar.gz" $playwright_cli_commit }}
+{{- $playwright_cli_checksum := "4423c13dd0b86d3d2884f6a9fa67f10eb799d83c7e4ccbf7845ad3deb709de9a" }}
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/kanata"]
 	type = "archive-file"
@@ -84,4 +87,12 @@
 	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
 	stripComponents = 4
 	include = ["**/engineering/zoom-out/**"]
+	exact = true
+
+[".agents/skills/playwright-cli"]
+	type = "archive"
+	url = "{{ $playwright_cli_url }}"
+	checksum.sha256 = "{{ $playwright_cli_checksum }}"
+	stripComponents = 3
+	include = ["**/skills/playwright-cli/**"]
 	exact = true
