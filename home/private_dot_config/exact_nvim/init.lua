@@ -530,6 +530,39 @@ require('lazy').setup({
     },
   },
   {
+    'sindrets/diffview.nvim',
+    keys = {
+      {
+        '<LEADER>gd',
+        function()
+          local function resolve_base()
+            -- Prefer the remote's default branch when a remote HEAD is set.
+            local remote = vim.fn.systemlist('git symbolic-ref --short refs/remotes/origin/HEAD')[1]
+            if vim.v.shell_error == 0 and remote and remote ~= '' then
+              return remote
+            end
+            -- Fall back to a local default branch (no remote, or origin/HEAD unset).
+            for _, b in ipairs({ 'main', 'master' }) do
+              vim.fn.system({ 'git', 'rev-parse', '--verify', '--quiet', 'refs/heads/' .. b })
+              if vim.v.shell_error == 0 then
+                return b
+              end
+            end
+            return nil
+          end
+
+          local base = resolve_base()
+          if not base then
+            vim.notify('diffview: could not resolve a default branch', vim.log.levels.WARN)
+            return
+          end
+          vim.cmd('DiffviewOpen ' .. base .. '..HEAD')
+        end,
+        desc = 'Diffview vs default branch',
+      },
+    },
+  },
+  {
     'tpope/vim-rhubarb',
     config = function ()
       vim.keymap.set('n', '<LEADER>gbr', vim.cmd.GBrowse)
