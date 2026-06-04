@@ -139,31 +139,9 @@ create_worktree() {
         zoxide-index &>/dev/null &
     fi
 
-    # Create and switch tmux session
-    local worktree_dir_name
-    worktree_dir_name=$(basename "$abs_path")
-    local session_name
-
-    if [[ "$is_bare" == "true" ]]; then
-        session_name="${repo_name}/${worktree_dir_name}"
-    else
-        session_name="$worktree_dir_name"
-    fi
-
-    # Replace dots and colons with underscores for tmux compatibility
-    session_name="${session_name//[.:]/_}"
-
-    local tmux_running
-    tmux_running=$(pgrep tmux || echo "")
-
-    if [[ -z "${TMUX:-}" ]] && [[ -z "$tmux_running" ]]; then
-        tmux new-session -s "$session_name" -c "$abs_path"
-    else
-        if ! tmux has-session -t="$session_name" 2>/dev/null; then
-            tmux new-session -ds "$session_name" -c "$abs_path"
-        fi
-        tmux switch-client -t "$session_name"
-    fi
+    # Hand off to pop: derives the session name, creates/attaches the tmux
+    # session, and records the path in project history
+    pop project switch "$abs_path"
 
     return 0
 }
