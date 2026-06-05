@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Thin shim → `issue run-all`. The real implementation lives in `issue`
-# (same dir). See the to-issues skill for the manifest contract.
-exec "$(dirname "$0")/issue" run-all "$@"

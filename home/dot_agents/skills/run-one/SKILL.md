@@ -14,10 +14,7 @@ agent's own context (no subprocess). Source of truth: `<issues-folder>/index.jso
 (see the **to-issues** skill for the full manifest contract).
 
 This skill is pure prose by design — it depends on nothing on `$PATH`. You do the
-deterministic steps yourself by following the contract below. (For unattended
-batch runs there is a separate standalone tool, `issue run-all` /
-`issue run-all-parallel`, which is an independent implementation of the same
-contract — do not call it from here.)
+deterministic steps yourself by following the contract below.
 
 ## Invocation
 

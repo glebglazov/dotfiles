@@ -128,6 +128,6 @@ Field rules:
 The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible issues), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `[<issue-set-name> <number>] <message>` — are the **contract** that two independent runners implement:
 
 - **In-context:** the **run-one** skill (`/run_one`), pure prose, where the live agent picks, implements, and commits one issue itself.
-- **Headless:** the standalone `issue` tool (`issue run-one` / `run-all` / `run-all-parallel`, also via the `to-issues-run-*` shims), which spawns an agent per issue with retry/timeout handling.
+- **Headless:** the `pop` `workload` runner, an independent implementation of the same contract for unattended batch runs.
 
 Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
