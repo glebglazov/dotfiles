@@ -92,12 +92,13 @@ On success:
    <one or more summary lines>
    ---
    ```
-3. `git add -A` and commit. Subject must be **`task(<task-set-name>): <task-id>`**
-   with the summary as the body, where `<task-set-name>` is the task-set folder
-   basename and `<task-id>` is the full manifest `id` (e.g. set `user-auth`, id
-   `01-login-form` → subject `task(user-auth): 01-login-form`). This matches
-   the `pop tasks` runner's commit contract exactly, so inline and batch runs
-   produce uniform history.
+3. `git add -A` and commit. Subject must be **`tasks(<task-set-slug>): <task-id>`**
+   with the summary as the body, where `<task-set-slug>` is the task-set folder
+   basename without its leading timestamp prefix (`YYYY-MM-DD` or
+   `YYYY-MM-DD-HHMM` plus hyphen) and `<task-id>` is the full manifest `id`
+   (e.g. set `2026-06-06-user-auth`, id `01-login-form` → subject
+   `tasks(user-auth): 01-login-form`). This matches the `pop tasks` runner's
+   commit contract exactly, so inline and batch runs produce uniform history.
 
 If abandoning (blocked, unclear, repeatedly failing):
 

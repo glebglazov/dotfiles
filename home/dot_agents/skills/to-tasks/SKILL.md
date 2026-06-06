@@ -127,7 +127,7 @@ Field rules:
 - `type` — `HITL` or `AFK`, matching the markdown.
 - `failed_after` — optional integer; the number of attempts after which a runner gave up. Written only when `status` becomes `failed`.
 
-The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible tasks), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `task(<task-set-name>): <id>` — are the **contract** that two independent runners implement:
+The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible tasks), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `tasks(<task-set-slug>): <id>` (set name without its timestamp prefix) — are the **contract** that two independent runners implement:
 
 - **In-context:** the **run-task** skill, pure prose, where the live agent picks, implements, and commits one task itself.
 - **Headless:** the `pop tasks` runner (`pop tasks run` for one eligible task, `pop tasks drain` for the whole set), an independent implementation of the same contract for unattended batch runs.
