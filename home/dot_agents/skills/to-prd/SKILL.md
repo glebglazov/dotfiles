@@ -17,7 +17,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then save it as a markdown file in the project's `thoughts/prds/` directory (create it if it doesn't exist). Use `<timestamp>-<slug>.md`, where `<slug>` is a descriptive hyphen-delimited name (e.g. `2026-05-31-user-auth.md`).
+3. Write the PRD using the template below, then save it as a markdown file in the PRDs directory: the `prds/` sibling of the `pop tasks show-path` output — `"$(dirname "$(pop tasks show-path)")/prds"` — which keeps PRDs in pop's per-repository storage outside the repo tree (create the `prds/` subdirectory if it doesn't exist). Use `<timestamp>-<slug>.md`, where `<slug>` is a descriptive hyphen-delimited name (e.g. `2026-05-31-user-auth.md`); the slug carries over to the task set name when this PRD is later broken down with to-tasks.
 
 <naming-convention>
 `<timestamp>` is a human-readable local date/time prefix so PRDs sort chronologically:
