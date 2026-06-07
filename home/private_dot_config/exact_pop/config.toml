@@ -2,7 +2,8 @@ includes = ["~/private/.config/pop/config.toml"]
 
 projects = [
     { path = "~/.local/share/chezmoi" },
-    { path = "~/Dev/*/*" }
+    { path = "~/Dev/*/*" },
+    { path = "~/Dev/mixed/obsidian_vaults/*", display_depth = 2 }
 ]
 
 [[commands]]
