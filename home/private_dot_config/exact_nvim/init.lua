@@ -394,7 +394,15 @@ require('lazy').setup({
   -------------------------------------------------
   {
     'lewis6991/gitsigns.nvim',
-    config = true
+    opts = {
+      signcolumn = false, -- off by default; toggle with <LEADER>tg
+    },
+    keys = {
+      { '<LEADER>tg', function() require('gitsigns').toggle_signs() end, desc = 'Toggle git signs' },
+      { '<LEADER>td', function() require('gitsigns').toggle_deleted() end, desc = 'Toggle deleted lines inline' },
+      { '<LEADER>tp', function() require('gitsigns').preview_hunk() end, desc = 'Preview hunk (added + removed)' },
+      { '<LEADER>tb', function() require('gitsigns').change_base(get_default_remote_branch(), true) end, desc = 'Gitsigns base → default branch' },
+    },
   },
   {
     'tpope/vim-fugitive',
@@ -1241,6 +1249,303 @@ autocmd('FileType', {
       sh -c 'input=$(cat); jq_output=$(echo "$input" | jq . 2>/dev/null); [[ $? -eq 0 ]] && echo "$jq_output" || echo "$input"'
     ]=]
   end
+})
+
+-------------------------------------------------
+-- Changeset → QuickFix
+-------------------------------------------------
+-- Populate the quickfix list with files changed vs the default branch.
+vim.api.nvim_create_user_command('Review', function()
+  local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+  if vim.v.shell_error ~= 0 or not root or root == '' then
+    vim.notify('Review: not in a git repo', vim.log.levels.WARN)
+    return
+  end
+
+  local base = get_default_remote_branch()
+  local files = vim.fn.systemlist('git -C ' .. root .. ' diff --name-only ' .. base .. '...HEAD')
+  vim.fn.setqflist(vim.tbl_map(function(f)
+    return { filename = root .. '/' .. f, lnum = 1, text = f }
+  end, files))
+  vim.cmd('copen')
+end, { desc = 'Quickfix: files changed vs default branch' })
+
+-------------------------------------------------
+-- Local code review (own state, agent-facing export)
+-------------------------------------------------
+-- Annotate changed buffers with comments, then export them all as a single
+-- Markdown block for pasting into an AI agent. State lives here, NOT in the
+-- quickfix list, so it never collides with :Changes above.
+local review = {
+  comments = {}, -- comments[abs_path] = { { lnum, end_lnum, text }, ... }
+  active = false, -- whether a review session is in progress (drives statusline)
+}
+local review_ns = vim.api.nvim_create_namespace('glebglazov-review')
+local review_default_statusline = vim.o.statusline
+
+vim.fn.sign_define('ReviewComment', { text = '󰆉', texthl = 'DiffAdd' })
+
+local function review_repo_root()
+  local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+  if vim.v.shell_error ~= 0 or not root or root == '' then
+    return nil
+  end
+  return root
+end
+
+-- Render inline virtual text for a loaded buffer (only when toggled on).
+local function review_render_buf(bufnr)
+  vim.api.nvim_buf_clear_namespace(bufnr, review_ns, 0, -1)
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  for _, c in ipairs(review.comments[path] or {}) do
+    local first = c.text:match('[^\n]*') or c.text
+    local label = first
+    if c.text:find('\n') then label = first .. ' …' end
+    pcall(vim.api.nvim_buf_set_extmark, bufnr, review_ns, c.lnum - 1, 0, {
+      virt_text = { { '󰆉 ' .. label, 'DiagnosticVirtualTextInfo' } },
+      virt_text_pos = 'eol',
+    })
+  end
+end
+
+-- Re-render every loaded buffer that has comments (and the current one).
+local function review_render_all()
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) then
+      review_render_buf(bufnr)
+    end
+  end
+end
+
+local function review_resign(path)
+  vim.fn.sign_unplace('ReviewGroup', { buffer = path })
+  for _, c in ipairs(review.comments[path] or {}) do
+    vim.fn.sign_place(0, 'ReviewGroup', 'ReviewComment', path, { lnum = c.lnum })
+  end
+  local bufnr = vim.fn.bufnr(path)
+  if bufnr ~= -1 then review_render_buf(bufnr) end
+end
+
+-- Reorder the quickfix list so files with comments float to the top (with a
+-- marker + comment count). Only acts during a review session.
+local function review_qf_sort()
+  if not review.active then return end
+  local qf = vim.fn.getqflist({ items = 0, title = 0 })
+  local items = qf.items or {}
+  if #items == 0 then return end
+  local root = review_repo_root()
+  local commented, rest = {}, {}
+  for _, it in ipairs(items) do
+    local name = (it.bufnr and it.bufnr > 0) and vim.api.nvim_buf_get_name(it.bufnr) or ''
+    local rel = (root and name ~= '' and name:sub(1, #root) == root) and name:sub(#root + 2) or name
+    local list = review.comments[name]
+    if list and #list > 0 then
+      it.text = ('● (%d) %s'):format(#list, rel)
+      table.insert(commented, it)
+    else
+      it.text = rel
+      table.insert(rest, it)
+    end
+  end
+  vim.list_extend(commented, rest)
+  vim.fn.setqflist({}, 'r', { items = commented, title = qf.title })
+end
+
+local function review_add(start_line, end_line)
+  local path = vim.fn.expand('%:p')
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].bufhidden = 'wipe'
+  vim.bo[buf].filetype = 'markdown'
+  local width = math.min(80, math.floor(vim.o.columns * 0.6))
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'cursor',
+    row = 1,
+    col = 0,
+    width = width,
+    height = 8,
+    border = 'rounded',
+    title = ' Review comment  (<CR> save · q cancel) ',
+    title_pos = 'center',
+    style = 'minimal',
+  })
+  vim.cmd('startinsert')
+
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end
+  local function confirm()
+    local text = vim.trim(table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), '\n'))
+    close()
+    if text == '' then return end
+    review.comments[path] = review.comments[path] or {}
+    table.insert(review.comments[path], { lnum = start_line, end_line = end_line, text = text })
+    review_resign(path)
+    review_qf_sort()
+  end
+  vim.keymap.set('n', '<CR>', confirm, { buffer = buf, nowait = true })
+  vim.keymap.set('n', 'q', close, { buffer = buf, nowait = true })
+end
+
+local function review_add_normal()
+  local lnum = vim.fn.line('.')
+  review_add(lnum, lnum)
+end
+
+local function review_add_visual()
+  local s = vim.fn.getpos('v')[2]
+  local e = vim.fn.getpos('.')[2]
+  review_add(math.min(s, e), math.max(s, e))
+  vim.api.nvim_input('<ESC>')
+end
+
+local function review_delete_at_cursor()
+  local path = vim.fn.expand('%:p')
+  local list = review.comments[path]
+  if not list then return end
+  local cur = vim.fn.line('.')
+  for i = #list, 1, -1 do
+    local c = list[i]
+    if cur >= c.lnum and cur <= (c.end_line or c.lnum) then
+      table.remove(list, i)
+    end
+  end
+  review_resign(path)
+  review_qf_sort()
+end
+
+local function review_clear()
+  for path, _ in pairs(review.comments) do
+    vim.fn.sign_unplace('ReviewGroup', { buffer = path })
+  end
+  review.comments = {}
+  review_render_all()
+  vim.notify('Review comments cleared', vim.log.levels.INFO)
+end
+
+local function review_set_statusline()
+  if review.active then
+    vim.o.statusline = '%#DiffAdd# 󰆉 REVIEW %* %f %m%r%=%l:%c '
+  else
+    vim.o.statusline = review_default_statusline
+  end
+end
+
+-- Lazy-load gitsigns and run a function against it (keys-lazy plugin).
+local function review_with_gitsigns(fn)
+  pcall(function()
+    require('lazy').load({ plugins = { 'gitsigns.nvim' } })
+    fn(require('gitsigns'))
+  end)
+end
+
+-- Start a review: changeset → quickfix, gitsigns base→default branch + signs on,
+-- inline comments on, statusline badge.
+local function review_start()
+  review.active = true
+  review_with_gitsigns(function(gs)
+    gs.change_base(get_default_remote_branch(), true)
+    gs.toggle_signs(true)
+  end)
+  vim.cmd('Review')
+  review_render_all()
+  review_set_statusline()
+  vim.notify('Review started', vim.log.levels.INFO)
+end
+
+-- Build the Markdown review body and a count of comments.
+local function review_build()
+  local root = review_repo_root()
+  local out, n = {}, 0
+  for path, list in pairs(review.comments) do
+    local rel = (root and path:sub(1, #root) == root) and path:sub(#root + 2) or path
+    for _, c in ipairs(list) do
+      n = n + 1
+      local loc = c.end_line and c.end_line ~= c.lnum
+        and ('%s:%d-%d'):format(rel, c.lnum, c.end_line)
+        or ('%s:%d'):format(rel, c.lnum)
+      if c.text:find('\n') then
+        -- Multi-line: header line, then the comment body indented underneath.
+        table.insert(out, ('%d. `%s`:\n   %s'):format(n, loc, c.text:gsub('\n', '\n   ')))
+      else
+        table.insert(out, ('%d. `%s` - %s'):format(n, loc, c.text))
+      end
+    end
+  end
+  return out, n
+end
+
+local function review_export()
+  local out, n = review_build()
+  if n == 0 then
+    vim.notify('No review comments to export', vim.log.levels.WARN)
+    return false
+  end
+  vim.fn.setreg('+', table.concat(out, '\n'))
+  vim.notify(('Exported %d review comment(s) to clipboard'):format(n), vim.log.levels.INFO)
+  return true
+end
+
+-- Finish a review: export to clipboard, then clear comments, gitsigns off, badge off.
+local function review_finish()
+  review_export() -- copies to clipboard (warns if empty); we tear down regardless
+  review_with_gitsigns(function(gs) gs.toggle_signs(false) end)
+  review_clear()
+  review.active = false
+  review_set_statusline()
+  vim.notify('Review finished', vim.log.levels.INFO)
+end
+
+-- Preview the assembled review in a floating scratch buffer (no clipboard write).
+local function review_preview()
+  local out, n = review_build()
+  if n == 0 then
+    vim.notify('No review comments to preview', vim.log.levels.WARN)
+    return
+  end
+  local lines = {}
+  for _, block in ipairs(out) do
+    vim.list_extend(lines, vim.split(block, '\n', { plain = true }))
+  end
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].bufhidden = 'wipe'
+  vim.bo[buf].filetype = 'markdown'
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  local width = math.min(100, math.floor(vim.o.columns * 0.7))
+  local height = math.min(#lines + 1, math.floor(vim.o.lines * 0.7))
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    row = math.floor((vim.o.lines - height) / 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    width = width,
+    height = height,
+    border = 'rounded',
+    title = ' Review preview  (q close) ',
+    title_pos = 'center',
+    style = 'minimal',
+  })
+  vim.keymap.set('n', 'q', function()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end, { buffer = buf, nowait = true })
+end
+
+vim.keymap.set('n', '<LEADER>rc', review_add_normal, { silent = true, desc = 'Review: add comment' })
+vim.keymap.set('v', '<LEADER>rc', review_add_visual, { silent = true, desc = 'Review: add comment (range)' })
+vim.keymap.set('n', '<LEADER>rd', review_delete_at_cursor, { silent = true, desc = 'Review: delete comment at cursor' })
+vim.keymap.set('n', '<LEADER>re', review_export, { silent = true, desc = 'Review: export comments to clipboard' })
+vim.keymap.set('n', '<LEADER>rf', vim.cmd.Review, { silent = true, desc = 'Review: changed files to quickfix' })
+vim.keymap.set('n', '<LEADER>rs', review_start, { silent = true, desc = 'Review: start session' })
+vim.keymap.set('n', '<LEADER>rS', review_finish, { silent = true, desc = 'Review: finish (export + clear + signs off)' })
+vim.keymap.set('n', '<LEADER>rp', review_preview, { silent = true, desc = 'Review: preview in float' })
+
+vim.api.nvim_create_user_command('ReviewClear', review_clear, { desc = 'Review: clear all comments' })
+
+-- Re-render inline comments when a buffer is shown (e.g. after jumping via quickfix).
+vim.api.nvim_create_autocmd('BufWinEnter', {
+  group = vim.api.nvim_create_augroup('glebglazov-review-render', { clear = true }),
+  callback = function(args)
+    review_render_buf(args.buf)
+  end,
 })
 
 -------------------------------------------------
