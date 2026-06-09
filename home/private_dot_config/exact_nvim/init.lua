@@ -1356,6 +1356,7 @@ local function review_add(start_line, end_line)
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].bufhidden = 'wipe'
   vim.bo[buf].filetype = 'markdown'
+  vim.b[buf].completion = false -- blink.cmp honours this: no autocomplete popup in the comment box
   local width = math.min(80, math.floor(vim.o.columns * 0.6))
   local win = vim.api.nvim_open_win(buf, true, {
     relative = 'cursor',
@@ -1368,7 +1369,12 @@ local function review_add(start_line, end_line)
     title_pos = 'center',
     style = 'minimal',
   })
-  vim.cmd('startinsert')
+  vim.schedule(function()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_set_current_win(win)
+      vim.cmd('startinsert')
+    end
+  end)
 
   local function close()
     if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
@@ -1394,8 +1400,10 @@ end
 local function review_add_visual()
   local s = vim.fn.getpos('v')[2]
   local e = vim.fn.getpos('.')[2]
+  -- leave visual mode synchronously BEFORE opening the float; a queued nvim_input('<ESC>')
+  -- would otherwise land after startinsert and kick us back to normal mode
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
   review_add(math.min(s, e), math.max(s, e))
-  vim.api.nvim_input('<ESC>')
 end
 
 local function review_delete_at_cursor()
