@@ -140,8 +140,21 @@ vim.opt.cursorcolumn = false
 -- Decrease update time
 vim.opt.updatetime = 250
 
--- For not, dark background only
+-- Follow macOS light/dark appearance.
+-- AppleInterfaceStyle is "Dark" in dark mode and absent (error) in light mode.
+local function sync_macos_background()
+  local out = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' })
+  local want = (vim.v.shell_error == 0 and out:match('Dark')) and 'dark' or 'light'
+  if vim.o.background ~= want then
+    vim.opt.background = want
+    -- Re-apply once the colorscheme is loaded so the palette swaps live.
+    pcall(vim.cmd.colorscheme, 'gruvbox')
+  end
+end
+
 vim.opt.background = 'dark'
+sync_macos_background()
+vim.api.nvim_create_autocmd('FocusGained', { callback = sync_macos_background })
 
 -- Comment these two for now: I remember those causing some issues, but let's try again
 -- vim.o.swapfile = false
@@ -592,6 +605,7 @@ require('lazy').setup({
       local gruvbox = require('gruvbox')
 
       gruvbox.setup({
+        contrast = "hard",
         overrides = {
           DiffAdd = { fg = "#b8bb26", bg = "NONE" },
           DiffDelete = { fg = "#fb4934", bg = "NONE" },
@@ -1283,6 +1297,8 @@ local review = {
 local review_ns = vim.api.nvim_create_namespace('glebglazov-review')
 local review_default_statusline = vim.o.statusline
 
+-- Muted, easy-on-the-eyes review statusline badge (gruvbox neutral aqua on bg1).
+vim.api.nvim_set_hl(0, 'ReviewStatus', { fg = '#83a598', bg = '#3c3836', bold = true })
 vim.fn.sign_define('ReviewComment', { text = '󰆉', texthl = 'DiffAdd' })
 
 local function review_repo_root()
@@ -1301,8 +1317,11 @@ local function review_render_buf(bufnr)
     local first = c.text:match('[^\n]*') or c.text
     local label = first
     if c.text:find('\n') then label = first .. ' …' end
+    local resolved = c.status == 'resolved'
+    local icon = resolved and '󰄬' or '󰆉'
+    local hl = resolved and 'Comment' or 'DiagnosticVirtualTextInfo'
     pcall(vim.api.nvim_buf_set_extmark, bufnr, review_ns, c.lnum - 1, 0, {
-      virt_text = { { '󰆉 ' .. label, 'DiagnosticVirtualTextInfo' } },
+      virt_text = { { icon .. ' ' .. label, hl } },
       virt_text_pos = 'eol',
     })
   end
@@ -1353,10 +1372,21 @@ end
 
 local function review_add(start_line, end_line)
   local path = vim.fn.expand('%:p')
+  -- if a comment already covers exactly this line/range, edit it instead of adding a new one
+  local existing
+  for _, c in ipairs(review.comments[path] or {}) do
+    if c.lnum == start_line and (c.end_line or c.lnum) == end_line then
+      existing = c
+      break
+    end
+  end
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].bufhidden = 'wipe'
   vim.bo[buf].filetype = 'markdown'
   vim.b[buf].completion = false -- blink.cmp honours this: no autocomplete popup in the comment box
+  if existing then
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(existing.text, '\n', { plain = true }))
+  end
   local width = math.min(80, math.floor(vim.o.columns * 0.6))
   local win = vim.api.nvim_open_win(buf, true, {
     relative = 'cursor',
@@ -1365,7 +1395,7 @@ local function review_add(start_line, end_line)
     width = width,
     height = 8,
     border = 'rounded',
-    title = ' Review comment  (<CR> save · q cancel) ',
+    title = (existing and ' Edit comment' or ' Review comment') .. '  (<CR> save · q cancel) ',
     title_pos = 'center',
     style = 'minimal',
   })
@@ -1382,11 +1412,22 @@ local function review_add(start_line, end_line)
   local function confirm()
     local text = vim.trim(table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), '\n'))
     close()
-    if text == '' then return end
-    review.comments[path] = review.comments[path] or {}
-    table.insert(review.comments[path], { lnum = start_line, end_line = end_line, text = text })
+    if existing then
+      if text == '' then
+        -- emptied → drop the comment
+        local list = review.comments[path]
+        for i = #list, 1, -1 do
+          if list[i] == existing then table.remove(list, i) end
+        end
+      else
+        existing.text = text
+      end
+    else
+      if text == '' then return end
+      review.comments[path] = review.comments[path] or {}
+      table.insert(review.comments[path], { lnum = start_line, end_line = end_line, text = text, status = 'unresolved' })
+    end
     review_resign(path)
-    review_qf_sort()
   end
   vim.keymap.set('n', '<CR>', confirm, { buffer = buf, nowait = true })
   vim.keymap.set('n', 'q', close, { buffer = buf, nowait = true })
@@ -1418,7 +1459,6 @@ local function review_delete_at_cursor()
     end
   end
   review_resign(path)
-  review_qf_sort()
 end
 
 local function review_clear()
@@ -1431,10 +1471,12 @@ local function review_clear()
 end
 
 local function review_set_statusline()
+  -- setglobal only: a bare `vim.o`/`:set` on this global-local option also resets the
+  -- CURRENT window's local statusline, which would clobber the qf-local one we set.
   if review.active then
-    vim.o.statusline = '%#DiffAdd# 󰆉 REVIEW %* %f %m%r%=%l:%c '
+    vim.go.statusline = '%#ReviewStatus# 󰆉 REVIEW %* %f %m%r%=%l:%c '
   else
-    vim.o.statusline = review_default_statusline
+    vim.go.statusline = review_default_statusline
   end
 end
 
@@ -1460,17 +1502,36 @@ local function review_start()
   vim.notify('Review started', vim.log.levels.INFO)
 end
 
--- Build the Markdown review body and a count of comments.
-local function review_build()
+-- Flatten all comments into a stable, path-sorted list of { path, rel, c }.
+local function review_entries()
   local root = review_repo_root()
-  local out, n = {}, 0
-  for path, list in pairs(review.comments) do
+  local paths = {}
+  for p in pairs(review.comments) do table.insert(paths, p) end
+  table.sort(paths)
+  local entries = {}
+  for _, path in ipairs(paths) do
     local rel = (root and path:sub(1, #root) == root) and path:sub(#root + 2) or path
-    for _, c in ipairs(list) do
+    for _, c in ipairs(review.comments[path]) do
+      table.insert(entries, { path = path, rel = rel, c = c })
+    end
+  end
+  return entries
+end
+
+local function review_loc(rel, c)
+  return (c.end_line and c.end_line ~= c.lnum)
+    and ('%s:%d-%d'):format(rel, c.lnum, c.end_line)
+    or ('%s:%d'):format(rel, c.lnum)
+end
+
+-- Build the Markdown review body and a count of comments (resolved are skipped).
+local function review_build()
+  local out, n = {}, 0
+  for _, e in ipairs(review_entries()) do
+    local c = e.c
+    if c.status ~= 'resolved' then
       n = n + 1
-      local loc = c.end_line and c.end_line ~= c.lnum
-        and ('%s:%d-%d'):format(rel, c.lnum, c.end_line)
-        or ('%s:%d'):format(rel, c.lnum)
+      local loc = review_loc(e.rel, c)
       if c.text:find('\n') then
         -- Multi-line: header line, then the comment body indented underneath.
         table.insert(out, ('%d. `%s`:\n   %s'):format(n, loc, c.text:gsub('\n', '\n   ')))
@@ -1504,23 +1565,47 @@ local function review_finish()
 end
 
 -- Preview the assembled review in a floating scratch buffer (no clipboard write).
+-- Shows ALL comments (incl. resolved) with a [ ]/[x] status checkbox; `t` toggles
+-- the comment under the cursor. Only unresolved comments are exported.
 local function review_preview()
-  local out, n = review_build()
-  if n == 0 then
+  local entries = review_entries()
+  if #entries == 0 then
     vim.notify('No review comments to preview', vim.log.levels.WARN)
     return
-  end
-  local lines = {}
-  for _, block in ipairs(out) do
-    vim.list_extend(lines, vim.split(block, '\n', { plain = true }))
   end
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].bufhidden = 'wipe'
   vim.bo[buf].filetype = 'markdown'
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  vim.bo[buf].modifiable = false
+
+  local line_to_comment = {}
+  local function render()
+    line_to_comment = {}
+    local lines = {}
+    for i, e in ipairs(entries) do
+      local c = e.c
+      local mark = c.status == 'resolved' and '[x]' or '[ ]'
+      local loc = review_loc(e.rel, c)
+      if c.text:find('\n') then
+        table.insert(lines, ('%d. %s `%s`:'):format(i, mark, loc))
+        line_to_comment[#lines] = c
+        for _, l in ipairs(vim.split(c.text, '\n', { plain = true })) do
+          table.insert(lines, '   ' .. l)
+          line_to_comment[#lines] = c
+        end
+      else
+        table.insert(lines, ('%d. %s `%s` - %s'):format(i, mark, loc, c.text))
+        line_to_comment[#lines] = c
+      end
+    end
+    vim.bo[buf].modifiable = true
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].modifiable = false
+  end
+  render()
+
+  local nlines = vim.api.nvim_buf_line_count(buf)
   local width = math.min(100, math.floor(vim.o.columns * 0.7))
-  local height = math.min(#lines + 1, math.floor(vim.o.lines * 0.7))
+  local height = math.min(nlines + 1, math.floor(vim.o.lines * 0.7))
   local win = vim.api.nvim_open_win(buf, true, {
     relative = 'editor',
     row = math.floor((vim.o.lines - height) / 2),
@@ -1528,10 +1613,19 @@ local function review_preview()
     width = width,
     height = height,
     border = 'rounded',
-    title = ' Review preview  (q close) ',
+    title = ' Review preview  (t toggle resolved · q close) ',
     title_pos = 'center',
     style = 'minimal',
   })
+  vim.keymap.set('n', 't', function()
+    local c = line_to_comment[vim.fn.line('.')]
+    if not c then return end
+    c.status = (c.status == 'resolved') and 'unresolved' or 'resolved'
+    local pos = vim.api.nvim_win_get_cursor(win)
+    render()
+    pcall(vim.api.nvim_win_set_cursor, win, pos)
+    review_render_all() -- reflect status in inline virt_text on source buffers
+  end, { buffer = buf, nowait = true })
   vim.keymap.set('n', 'q', function()
     if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
   end, { buffer = buf, nowait = true })
@@ -1564,6 +1658,10 @@ autocmd('FileType', {
   pattern = 'qf',
   callback = function ()
     vim.api.nvim_buf_set_keymap(0, '', 'dd', ':.Reject<cr>', { silent = true })
+    -- on demand: float files with comments to the top (no longer automatic on add/delete)
+    vim.keymap.set('n', 'gs', review_qf_sort, { buffer = 0, silent = true, desc = 'Review: sort commented files to top' })
+    -- window-local statusline so the global REVIEW badge doesn't duplicate into qf
+    vim.wo.statusline = ' %t%{exists("w:quickfix_title") ? " " . w:quickfix_title : ""} %=%-14(%l,%c%V%) %P'
   end
 })
 
