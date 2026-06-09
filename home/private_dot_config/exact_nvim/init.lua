@@ -1273,21 +1273,31 @@ autocmd('FileType', {
 -------------------------------------------------
 -- Changeset → QuickFix
 -------------------------------------------------
--- Populate the quickfix list with files changed vs the default branch.
-vim.api.nvim_create_user_command('Review', function()
+-- Resolve a base spec into (base_rev, uncommitted). '--uncommitted' reviews the
+-- working tree (staged + unstaged) against HEAD; a bare ref is used as the base;
+-- nil/'' falls back to the default remote branch.
+local function review_resolve_base(arg)
+  if arg == '--uncommitted' then return 'HEAD', true end
+  return (arg and arg ~= '') and arg or get_default_remote_branch(), false
+end
+
+-- Populate the quickfix list with files changed against `base`. Committed reviews
+-- use `base...HEAD` (merge-base); --uncommitted uses the working tree vs HEAD.
+local function review_files(base, uncommitted)
   local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
   if vim.v.shell_error ~= 0 or not root or root == '' then
     vim.notify('Review: not in a git repo', vim.log.levels.WARN)
-    return
+    return false
   end
 
-  local base = get_default_remote_branch()
-  local files = vim.fn.systemlist('git -C ' .. root .. ' diff --name-only ' .. base .. '...HEAD')
+  local range = uncommitted and 'HEAD' or (base .. '...HEAD')
+  local files = vim.fn.systemlist('git -C ' .. root .. ' diff --name-only ' .. range)
   vim.fn.setqflist(vim.tbl_map(function(f)
     return { filename = root .. '/' .. f, lnum = 1, text = f }
   end, files))
   vim.cmd('copen')
-end, { desc = 'Quickfix: files changed vs default branch' })
+  return true
+end
 
 -------------------------------------------------
 -- Local code review (own state, agent-facing export)
@@ -1493,18 +1503,20 @@ local function review_with_gitsigns(fn)
   end)
 end
 
--- Start a review: changeset → quickfix, gitsigns base→default branch + signs on,
--- inline comments on, statusline badge.
-local function review_start()
+-- Start a review: changeset → quickfix, gitsigns base→<base> + signs on, inline
+-- comments on, statusline badge. `base` is a resolved rev; `uncommitted` reviews
+-- the working tree vs HEAD.
+local function review_start(base, uncommitted)
+  base = base or get_default_remote_branch()
   review.active = true
   review_with_gitsigns(function(gs)
-    gs.change_base(get_default_remote_branch(), true)
+    gs.change_base(base, true)
     gs.toggle_signs(true)
   end)
-  vim.cmd('Review')
+  review_files(base, uncommitted)
   review_render_all()
   review_set_statusline()
-  vim.notify('Review started', vim.log.levels.INFO)
+  vim.notify(('Review started (base: %s)'):format(uncommitted and 'working tree' or base), vim.log.levels.INFO)
 end
 
 -- Flatten all comments into a stable, path-sorted list of { path, rel, c }.
@@ -1640,10 +1652,51 @@ vim.keymap.set('n', '<LEADER>rc', review_add_normal, { silent = true, desc = 'Re
 vim.keymap.set('v', '<LEADER>rc', review_add_visual, { silent = true, desc = 'Review: add comment (range)' })
 vim.keymap.set('n', '<LEADER>rd', review_delete_at_cursor, { silent = true, desc = 'Review: delete comment at cursor' })
 vim.keymap.set('n', '<LEADER>re', review_export, { silent = true, desc = 'Review: export comments to clipboard' })
-vim.keymap.set('n', '<LEADER>rf', vim.cmd.Review, { silent = true, desc = 'Review: changed files to quickfix' })
-vim.keymap.set('n', '<LEADER>rs', review_start, { silent = true, desc = 'Review: start session' })
-vim.keymap.set('n', '<LEADER>rS', review_finish, { silent = true, desc = 'Review: finish (export + clear + signs off)' })
+vim.keymap.set('n', '<LEADER>rf', function() review_files(review_resolve_base(nil)) end, { silent = true, desc = 'Review: changed files to quickfix' })
+vim.keymap.set('n', '<LEADER>rs', function() review_start() end, { silent = true, desc = 'Review: start session' })
+vim.keymap.set('n', '<LEADER>rS', function() review_start(review_resolve_base('--uncommitted')) end, { silent = true, desc = 'Review: start session (uncommitted)' })
+vim.keymap.set('n', '<LEADER>rQ', review_finish, { silent = true, desc = 'Review: finish (export + clear + signs off)' })
 vim.keymap.set('n', '<LEADER>rp', review_preview, { silent = true, desc = 'Review: preview in float' })
+
+-- :Review [start|finish|files] [<ref>|--uncommitted]
+--   start  — begin a session against <ref> (default branch if omitted)
+--   finish — export + clear + signs off
+--   files  — quickfix-only, no session
+local review_subcommands = { 'start', 'finish', 'files' }
+
+vim.api.nvim_create_user_command('Review', function(opts)
+  local sub = opts.fargs[1] or 'start'
+  if sub == 'finish' then
+    review_finish()
+  elseif sub == 'start' then
+    review_start(review_resolve_base(opts.fargs[2]))
+  elseif sub == 'files' then
+    review_files(review_resolve_base(opts.fargs[2]))
+  else
+    vim.notify('Review: unknown subcommand ' .. sub, vim.log.levels.WARN)
+  end
+end, {
+  nargs = '*',
+  desc = 'Local code review session (start/finish/files)',
+  complete = function(arglead, cmdline, _)
+    local args = vim.split(vim.trim(cmdline), '%s+')
+    local function pick(cands)
+      return vim.tbl_filter(function(s) return s:find(arglead, 1, true) == 1 end, cands)
+    end
+    -- Completing the subcommand (args = {'Review'} or {'Review', partial}).
+    if #args <= 1 or (#args == 2 and arglead ~= '') then
+      return pick(review_subcommands)
+    end
+    -- Completing the base spec for start/files.
+    if args[2] == 'start' or args[2] == 'files' then
+      local cands = { '--uncommitted' }
+      vim.list_extend(cands, vim.fn.systemlist(
+        'git for-each-ref --format="%(refname:short)" refs/heads refs/remotes refs/tags'))
+      return pick(cands)
+    end
+    return {}
+  end,
+})
 
 vim.api.nvim_create_user_command('ReviewClear', review_clear, { desc = 'Review: clear all comments' })
 
