@@ -142,17 +142,15 @@ vim.opt.updatetime = 250
 
 -- Follow macOS light/dark appearance.
 -- AppleInterfaceStyle is "Dark" in dark mode and absent (error) in light mode.
+-- Setting background fires OptionSet, which re-applies gruvbox (see below).
 local function sync_macos_background()
   local out = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' })
   local want = (vim.v.shell_error == 0 and out:match('Dark')) and 'dark' or 'light'
   if vim.o.background ~= want then
     vim.opt.background = want
-    -- Re-apply once the colorscheme is loaded so the palette swaps live.
-    pcall(vim.cmd.colorscheme, 'gruvbox')
   end
 end
 
-vim.opt.background = 'dark'
 sync_macos_background()
 vim.api.nvim_create_autocmd('FocusGained', { callback = sync_macos_background })
 
@@ -604,15 +602,22 @@ require('lazy').setup({
     config = function ()
       local gruvbox = require('gruvbox')
 
-      gruvbox.setup({
-        contrast = "hard",
-        overrides = {
-          DiffAdd = { fg = "#b8bb26", bg = "NONE" },
-          DiffDelete = { fg = "#fb4934", bg = "NONE" },
-        },
-      })
+      -- Dark uses hard contrast (matches Ghostty "Gruvbox Dark Hard");
+      -- light uses medium (matches Ghostty "Gruvbox Light").
+      local function apply()
+        gruvbox.setup({
+          contrast = vim.o.background == 'dark' and 'hard' or '',
+          overrides = {
+            DiffAdd = { fg = "#b8bb26", bg = "NONE" },
+            DiffDelete = { fg = "#fb4934", bg = "NONE" },
+          },
+        })
+        vim.cmd([[colorscheme gruvbox]])
+      end
 
-      vim.cmd([[colorscheme gruvbox]])
+      apply()
+      -- Re-apply whenever the background flips (set by the macOS-appearance sync).
+      vim.api.nvim_create_autocmd('OptionSet', { pattern = 'background', callback = apply })
     end
   },
 

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Watch macOS light/dark appearance and re-apply tmux border colors when it
+# flips. macOS emits no theme-change CLI event, so we poll cheaply. Runs as a
+# single detached instance and exits once the tmux server is gone.
+set -euo pipefail
+
+pidfile="${TMPDIR:-/tmp}/tmux-theme-watch.pid"
+if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile" 2>/dev/null)" 2>/dev/null; then
+  exit 0
+fi
+echo $$ >"$pidfile"
+trap 'rm -f "$pidfile"' EXIT
+
+last=""
+while tmux has-session 2>/dev/null; do
+  current=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light)
+  if [ "$current" != "$last" ]; then
+    "$HOME/.local/bin/tmux-theme"
+    last="$current"
+  fi
+  sleep 2
+done

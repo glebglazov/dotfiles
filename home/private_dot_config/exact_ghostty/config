@@ -2,7 +2,7 @@ command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 
 auto-update = off
 
-theme = "Gruvbox Dark Hard"
+theme = light:Gruvbox Light,dark:Gruvbox Dark Hard
 
 confirm-close-surface   = false
 mouse-hide-while-typing = true

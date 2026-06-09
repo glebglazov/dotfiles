@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Apply tmux pane border colors based on macOS light/dark appearance.
+# Dark mode keeps the original look (subtle gray border, cyan active border).
+# Light mode lifts the inactive border off the beige bg and uses a vivid
+# orange active border so the focused pane is unmistakable.
+set -euo pipefail
+
+if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi dark; then
+  border=colour238
+  active='fg=colour31,bg=default'
+else
+  border=colour243
+  active='fg=colour208,bg=default,bold'
+fi
+
+tmux set -g pane-border-style "fg=${border},bg=default"
+tmux set -g pane-active-border-style "${active}"
