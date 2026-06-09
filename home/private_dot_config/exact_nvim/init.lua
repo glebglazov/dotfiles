@@ -1292,6 +1292,11 @@ local function review_files(base, uncommitted)
 
   local range = uncommitted and 'HEAD' or (base .. '...HEAD')
   local files = vim.fn.systemlist('git -C ' .. root .. ' diff --name-only ' .. range)
+  -- Close any open qf window first: setqflist into an open window reloads its
+  -- buffer and fires `FileType qf` while we're still focused elsewhere, which
+  -- trips qf_helper's set_qf_defaults (get_win_type() → nil). copen below opens
+  -- a fresh window with the qf window focused, so the FileType fires cleanly.
+  pcall(vim.cmd, 'cclose')
   vim.fn.setqflist(vim.tbl_map(function(f)
     return { filename = root .. '/' .. f, lnum = 1, text = f }
   end, files))
