@@ -913,7 +913,7 @@ vim.lsp.config('gopls', {})
 vim.lsp.config('ts_ls', {})
 
 vim.lsp.config('ruby_lsp', {
-  cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
+  cmd = { vim.fn.expand("~/.local/bin/mise-gem-exec"), "ruby-lsp" },
   init_options = {
     addonSettings = {
       ["Ruby LSP Rails"] = {
@@ -924,7 +924,7 @@ vim.lsp.config('ruby_lsp', {
 })
 
 vim.lsp.config('rubocop', {
-  cmd = { vim.fn.expand("~/.local/share/mise/shims/rubocop") },
+  cmd = { vim.fn.expand("~/.local/bin/mise-gem-exec"), "rubocop" },
 })
 
 require('mason').setup({})

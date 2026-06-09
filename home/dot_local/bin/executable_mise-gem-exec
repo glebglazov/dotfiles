@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Self-healing launcher for a global Ruby CLI gem under mise.
+#
+# Resolves the Ruby that mise selects for the current project (cwd), ensures the
+# gem's executable exists under THAT Ruby (installing it if missing), then execs
+# it inside a mise-constructed environment pinned to that exact Ruby.
+#
+# Pinning the whole subprocess tree (via `mise exec ruby@<ver>`) is the crucial
+# part: ruby-lsp re-execs a nested `ruby`/`bundle` off PATH, and if nvim was
+# launched from a session pinned to a different Ruby, that nested call resolves
+# to the wrong Ruby and ruby-lsp's composed bundle fails Bundler's exact-version
+# gate (Bundler::RubyVersionMismatch) even when the outer process is correct.
+#
+# Usage: mise-gem-exec <executable> [args...]   (executable name == gem name)
+set -euo pipefail
+
+exe="${1:?usage: mise-gem-exec <executable> [args...]}"
+shift
+
+ruby_bin="$(mise which ruby 2>/dev/null || true)"
+if [ -z "$ruby_bin" ]; then
+  # No mise-resolved Ruby (e.g. untrusted config) — fall back to PATH.
+  exec "$exe" "$@"
+fi
+
+bindir="$(dirname "$ruby_bin")"
+ver="$(basename "$(dirname "$bindir")")" # .../installs/ruby/<ver>/bin/ruby -> <ver>
+
+if [ ! -x "$bindir/$exe" ]; then
+  # Install into the resolved Ruby. stdout is the LSP's JSON-RPC channel, so
+  # send install chatter to stderr to avoid corrupting the protocol.
+  mise exec "ruby@${ver}" -- gem install "$exe" --no-document 1>&2
+fi
+
+exec mise exec "ruby@${ver}" -- "$exe" "$@"
