@@ -1415,7 +1415,7 @@ local function review_add(start_line, end_line)
     width = width,
     height = 8,
     border = 'rounded',
-    title = (existing and ' Edit comment' or ' Review comment') .. '  (<CR> save · q cancel) ',
+    title = (existing and ' Edit comment' or ' Review comment') .. '  (<CR> save · <Esc> cancel) ',
     title_pos = 'center',
     style = 'minimal',
   })
@@ -1450,7 +1450,7 @@ local function review_add(start_line, end_line)
     review_resign(path)
   end
   vim.keymap.set('n', '<CR>', confirm, { buffer = buf, nowait = true })
-  vim.keymap.set('n', 'q', close, { buffer = buf, nowait = true })
+  vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true })
 end
 
 local function review_add_normal()
