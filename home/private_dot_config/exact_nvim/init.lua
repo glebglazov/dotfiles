@@ -1405,7 +1405,9 @@ local function review_add(start_line, end_line)
   vim.bo[buf].filetype = 'markdown'
   vim.b[buf].completion = false -- blink.cmp honours this: no autocomplete popup in the comment box
   if existing then
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(existing.text, '\n', { plain = true }))
+    local lines = vim.split(existing.text, '\n', { plain = true })
+    table.insert(lines, '') -- fresh trailing line so the cursor lands ready to keep typing
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   end
   local width = math.min(80, math.floor(vim.o.columns * 0.6))
   local win = vim.api.nvim_open_win(buf, true, {
@@ -1422,7 +1424,8 @@ local function review_add(start_line, end_line)
   vim.schedule(function()
     if vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_set_current_win(win)
-      vim.cmd('startinsert')
+      vim.api.nvim_win_set_cursor(win, { vim.api.nvim_buf_line_count(buf), 0 })
+      vim.cmd('startinsert!')
     end
   end)
 
