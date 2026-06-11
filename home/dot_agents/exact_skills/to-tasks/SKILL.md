@@ -122,14 +122,11 @@ Alongside the markdown files, write `<tasks-dir>/<task-set-name>/index.json` —
 Field rules:
 
 - `id` — the filename stem (`<number>-<task-name>`), stable identifier referenced by `blocked_by`.
-- `status` — one of `open` | `in_progress` | `done` | `failed`. Always initialize to `open`.
+- `status` — one of `open` | `done` | `failed` | `skipped`. Always initialize to `open`. Do not write `in_progress`; persisted `in_progress` is malformed.
 - `blocked_by` — array of `id`s of blocking tasks. Empty array if none.
 - `type` — `HITL` or `AFK`, matching the markdown.
 - `failed_after` — optional integer; the number of attempts after which a runner gave up. Written only when `status` becomes `failed`.
 
-The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id `done`, preferring `AFK` over `HITL` among eligible tasks), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `tasks(<task-set-slug>): <id>` (set name without its timestamp prefix) — are the **contract** that two independent runners implement:
-
-- **In-context:** the **run-task** skill, pure prose, where the live agent picks, implements, and commits one task itself.
-- **Headless:** the `pop tasks` runner (`pop tasks run` for one eligible task, `pop tasks drain` for the whole set), an independent implementation of the same contract for unattended batch runs.
+The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id is satisfied by a task whose status is `done` or `skipped`, preferring `AFK` over `HITL` among eligible tasks), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `tasks(<task-set-slug>): <id>` (set name without its timestamp prefix) — are the **contract** that the **run-task** skill implements in context, where the live agent picks, implements, and commits one task itself.
 
 Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.

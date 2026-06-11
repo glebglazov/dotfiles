@@ -61,8 +61,8 @@ Read `index.json`. Pick the target task:
   `AFK` over `HITL` (in manifest order within each group) so you don't stall on a
   human-in-the-loop slice while an autonomous one is ready.
 
-Valid `status` values are `open`, `done`, `failed`, and `skipped`. Only `open`
-tasks are runnable.
+Valid `status` values are `open`, `done`, `failed`, and `skipped`. Persisted
+`in_progress` is malformed. Only `open` tasks are runnable.
 
 If nothing is eligible, stop and report that there is nothing to do.
 
