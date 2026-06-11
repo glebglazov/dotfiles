@@ -625,24 +625,6 @@ require('lazy').setup({
   -- Navigation
   -------------------------------------------------
   {
-    'theprimeagen/harpoon',
-    branch = 'harpoon2',
-    keys = {
-      { '<LEADER>a', function() require('harpoon'):list():add() end },
-      { '<LEADER>m', function() require('harpoon').ui:toggle_quick_menu(require('harpoon'):list()) end },
-      { '<LEADER>1', function() require('harpoon'):list():select(1) end },
-      { '<LEADER>2', function() require('harpoon'):list():select(2) end },
-      { '<LEADER>3', function() require('harpoon'):list():select(3) end },
-      { '<LEADER>4', function() require('harpoon'):list():select(4) end },
-      { '<LEADER>5', function() require('harpoon'):list():select(5) end },
-    },
-    opts = {
-      settings = {
-        save_on_toggle = true,
-      }
-    }
-  },
-  {
     'declancm/windex.nvim',
     lazy = true,
     keys = {
