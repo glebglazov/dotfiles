@@ -1626,8 +1626,9 @@ local function review_preview()
   render()
 
   local nlines = vim.api.nvim_buf_line_count(buf)
-  local width = math.min(100, math.floor(vim.o.columns * 0.7))
-  local height = math.min(nlines + 1, math.floor(vim.o.lines * 0.7))
+  local width = math.min(140, math.floor(vim.o.columns * 0.9))
+  local max_height = math.floor(vim.o.lines * 0.9)
+  local height = math.max(math.min(nlines + 1, max_height), math.min(20, max_height))
   local win = vim.api.nvim_open_win(buf, true, {
     relative = 'editor',
     row = math.floor((vim.o.lines - height) / 2),
