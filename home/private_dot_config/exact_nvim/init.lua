@@ -1814,10 +1814,14 @@ local function agent_map_text_send(buf, close, empty_message, success_message)
       return
     end
 
+    -- On a type (no Enter) leave the cursor on a fresh line so a follow-up
+    -- type lands below instead of being glued onto this one.
+    local paste_text = press_enter and text or (text .. '\n')
+
     pending = true
     agent_pick_pane(function(pane_id)
       pending = false
-      local send_err = agent_paste_to_pane(pane_id, text, press_enter)
+      local send_err = agent_paste_to_pane(pane_id, paste_text, press_enter)
       if send_err then
         vim.notify(send_err, vim.log.levels.ERROR)
         return
