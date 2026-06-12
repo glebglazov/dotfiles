@@ -1750,7 +1750,7 @@ local function agent_paste_to_pane(pane_id, text, press_enter)
     return 'Failed to load tmux paste buffer'
   end
 
-  local paste = vim.system({ 'tmux', 'paste-buffer', '-d', '-t', pane_id }, { text = true }):wait()
+  local paste = vim.system({ 'tmux', 'paste-buffer', '-p', '-d', '-t', pane_id }, { text = true }):wait()
   if paste.code ~= 0 then
     local stderr = vim.trim(paste.stderr or '')
     if stderr ~= '' then
