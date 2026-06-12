@@ -76,11 +76,12 @@ set -g status-position bottom
 
 # Colors
 set -g status-style bg=default,fg=colour245
-# Pane border colors follow macOS light/dark appearance. A detached watcher
-# polls the OS appearance and re-applies on change; the focus hook covers
-# the case where the watcher isn't running yet.
+# Pane border colors follow terminal light/dark appearance (tmux 3.6+).
+# client-*-theme hooks fire when the terminal reports a theme change; the
+# focus hook covers attach/reload before the first theme event.
 run-shell -b "$HOME/.local/bin/tmux-theme"
-run-shell -b "$HOME/.local/bin/tmux-theme-watch"
+set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme"'
+set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme"'
 set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme"'
 set -g message-style fg=colour0,bg=colour245
 set -g mode-style fg=colour0,bg=colour11,bold
