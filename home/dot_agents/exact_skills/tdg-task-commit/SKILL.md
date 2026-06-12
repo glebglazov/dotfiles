@@ -1,25 +1,17 @@
 ---
 name: tdg-task-commit
 description: >-
-  Turn the work in the current conversation into a single git commit whose
-  message is purpose-built to be picked up by a Tripledot backend repo's "create
-  JIRA task from PR" GitHub Action (the synced `maybe_create_jira_task_from_pr`
-  workflow that fires on PR titles containing [TASK]). Use this only in repos that
-  ship that automation, and whenever the user wants to commit the change they just
-  made AND have a JIRA issue created from it — phrases like "commit this and create
-  a jira task", "make a [TASK] commit", "commit this for jira", "wrap this up as a
-  task", or any time they reference the [TASK] PR automation. The skill reads the
-  automation workflow to learn the target project, studies recent human-written
-  Stories to match the house description format, and writes the commit body in
-  JIRA wiki markup (NOT Markdown) so it renders correctly once the Action posts it.
-  Reach for this even when the user just says "commit this as a task" without
-  naming JIRA — the [TASK] prefix is the tell. Do NOT use it in repos without the
-  [TASK] PR→JIRA workflow; there it would produce a commit nothing acts on. Stay
-  DORMANT when the work is already tied to a ticket — the branch is named with a
-  ticket key (e.g. GS-1234-...), already has commits ahead of its base, or already
-  has an open PR. The automation builds the task from the FIRST commit on the
-  branch, so a later [TASK] commit would do nothing or create a duplicate. This
-  skill fits a fresh branch where the [TASK] commit will be the first one.
+  Turn conversation work into a git commit for Tripledot backend repos' [TASK]
+  PR→JIRA GitHub Action (`maybe_create_jira_task_from_pr`). Use when the user
+  wants to commit changes AND auto-create a JIRA task — e.g. "commit this and
+  create a jira task", "make a [TASK] commit", "commit this for jira", "wrap
+  this up as a task", or any [TASK] automation reference; also when they say
+  "commit this as a task" without naming JIRA. Reads the workflow for the target
+  project, matches house Story format, writes the commit body in JIRA wiki markup
+  (not Markdown). Only for repos that ship this automation. Stay DORMANT if the
+  branch already has a ticket key (e.g. GS-1234-...), commits ahead of base, or
+  an open PR — the Action uses the FIRST commit only; later [TASK] commits noop
+  or duplicate. For fresh branches where the [TASK] commit is first.
 ---
 
 # TDG task commit
