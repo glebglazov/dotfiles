@@ -29,8 +29,11 @@ set -g status-interval 5
 # Focus events enabled for terminals that support them
 set -g focus-events on
 
-# Extended keys: pass through modifier combos (Ctrl+Shift+X, etc.) via CSI u
-set -s extended-keys always
+# Extended keys: pass through modifier combos (Ctrl+Shift+X, etc.) via CSI u.
+# `on` (not `always`) so tmux only forwards CSI-u to apps that negotiate the
+# protocol; under `always` zsh's ZLE gets raw `ESC[13;2u` and prints junk like
+# `3;2u` at the prompt for Shift+Enter.
+set -s extended-keys on
 set -g extended-keys-format csi-u
 set -as terminal-features ',xterm-256color:RGB:extkeys'
 set -as terminal-features ',xterm-ghostty:RGB:extkeys'
