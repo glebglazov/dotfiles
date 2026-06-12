@@ -79,11 +79,16 @@ Note: the MCP renders stored content as Markdown for display, so the examples
 will *look* like Markdown (`# Context`). That's the display format, not what you
 write — see Step 4. What you're harvesting from them is the **structure and
 voice**: which sections they use (typically Context / Scope / Acceptance
-criteria), how the summary is phrased (`[Area] Sub-area: imperative action`), how
+criteria), how the summary reads (a sub-area plus an imperative action), how
 granular the scope bullets and `AC01`-style acceptance criteria are.
 
-Do not name individuals in the commit you produce, even if the examples mention
-who requested something.
+Two things the examples do that you should NOT copy:
+
+- **No bracketed tags in the summary.** Many existing Stories start with a
+  `[Area]` / `[Game]` prefix. Don't add one — write the summary as a plain
+  imperative line. (Harvest their *structure and voice*, not the prefix.)
+- **No individuals named** in the commit you produce, even if the examples
+  mention who requested something.
 
 ## Step 2.5 — Check this commit can actually become the task (else stay dormant)
 
@@ -133,8 +138,18 @@ Compose the message to match the Stories you read, translated into wiki markup.
 
 **Subject line:** `[TASK] <Summary in the house style>`. The `[TASK] ` prefix is
 what the PR title needs and what gets stripped for the JIRA summary, so the
-remainder must read well on its own as a title. Mirror the example summaries
-(e.g. `[Social Login] Add public_id to handshake response`). Keep it tight.
+remainder must read well on its own as a title. Keep it tight, imperative, and
+**without a bracketed `[Area]`/`[Game]` tag** (e.g. `Add public_id to handshake
+response` — not `[Social Login] Add ...`).
+
+**Audience — write for product/BA, not engineers.** The body becomes the JIRA
+description, read by people who don't know the codebase. Describe the change in
+terms of behaviour and intent, not implementation. Avoid framework- and
+language-specific jargon (e.g. `dependent: :destroy`, `RecordNotFound`, model or
+method names, ORM/Rails internals) — they confuse non-dev readers. Name the
+user-visible endpoint, the observed symptom, and the outcome instead. The one
+exception worth keeping verbatim is a **production error string** being fixed —
+that's the searchable signal, so quote it as-is.
 
 **Body:** JIRA wiki markup, mirroring the sections the Stories use. Wiki markup
 cheat sheet (this is the part people get wrong):
@@ -160,7 +175,7 @@ everywhere).
 Skeleton (adapt sections to whatever the example Stories actually use):
 
 ```
-[TASK] <Area>: <imperative summary>
+[TASK] <imperative summary, no bracketed tag>
 
 <One plain sentence: what this change does and why, in a nutshell.>
 
@@ -190,7 +205,7 @@ Write the message with a heredoc so formatting is exact:
 
 ```bash
 git commit -F - <<'EOF'
-[TASK] <Area>: <summary>
+[TASK] <imperative summary, no bracketed tag>
 
 <lead sentence>
 
@@ -206,8 +221,9 @@ equivalent to `git log %b`):
 git log -1 --format=%b | head -5
 ```
 
-Check the first line is your plain lead sentence (not a heading), and that
-headings/bullets use wiki markup.
+Check the first line is your plain lead sentence (not a heading), that
+headings/bullets use wiki markup, that the subject carries no bracketed
+`[Area]` tag, and that the body is free of framework/language jargon.
 
 ## Step 6 — Hand back to the user
 
