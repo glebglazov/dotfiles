@@ -109,13 +109,8 @@ Overlay rules:
 - **Two fragments touching the same term = collision.** Render both, marked `⚠ contested — needs consolidation`. Do *not* silently pick one. This is where a genuine semantic conflict announces itself instead of hiding.
 - A `+` term whose `under:` matches an existing heading slots there; with no hint or a novel heading, it renders under `## Unfiled (pending consolidation)`.
 
-### Consolidate: manual, single-writer
+### Consolidate with `consolidate-context`
 
-Folding fragments into the base is the **only** operation that mutates `CONTEXT.md`, so it must have exactly one writer. Run it on demand — when fragments pile up, or before a release — as a deliberate grill-with-docs-concurrent session, never automatically and never in parallel. In that session:
-
-1. Apply each `+`/`~`/`-` op into the base `CONTEXT.md`.
-2. File `## Unfiled` terms into their real sections.
-3. Resolve every `⚠ contested` term — these are semantic conflicts, so grill the human for the canonical definition.
-4. Delete the fragments you folded in.
+Folding fragments into the base is the **only** operation that mutates `CONTEXT.md`, so it belongs to the `consolidate-context` skill. Run that skill on demand — when fragments pile up, or before a release — as a deliberate single-writer maintenance pass, never automatically and never in parallel.
 
 `CONTEXT-MAP.md` is **not** fragmented — adding or rewiring a context is rare and structural, so tolerate the occasional conflict or settle it during consolidation.

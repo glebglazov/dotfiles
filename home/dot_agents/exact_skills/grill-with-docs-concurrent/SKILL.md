@@ -71,11 +71,11 @@ When the user states how something works, check whether the code agrees. If you 
 
 ### Update the glossary inline
 
-When a term is resolved, capture it right there — don't batch. But to stay safe under parallel agents and team use, **don't write the base `CONTEXT.md`**: write a delta op to your own session fragment, and treat the glossary you challenge terms against as the union of base + fragments. The fragment scheme, read-union, and the manual consolidation that folds fragments back into the base are all in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) — read it before your first write.
+When a term is resolved, capture it right there — don't batch. But to stay safe under parallel agents and team use, **don't write the base `CONTEXT.md`**: write a delta op to your own session fragment, and treat the glossary you challenge terms against as the union of base + fragments. The fragment scheme and read-union behavior are in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) — read it before your first write.
 
 `CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
 
-If the user asks you to **consolidate** (fold accumulated fragments into the base), run it as a single-writer session per the consolidation steps in CONTEXT-FORMAT.md — this is the one time you mutate the base file.
+If the user asks you to **consolidate** (fold accumulated fragments into the base), use the `consolidate-context` skill. Consolidation is a separate single-writer maintenance pass, not part of the grilling session.
 
 ### Offer ADRs sparingly
 
