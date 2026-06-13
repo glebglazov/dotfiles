@@ -130,3 +130,16 @@ Field rules:
 The JSON is the source of truth for automation. The rules above — the eligibility condition (`status == "open"` and every `blocked_by` id is satisfied by a task whose status is `done` or `skipped`, preferring `AFK` over `HITL` among eligible tasks), the done-condition (all `## Acceptance criteria` boxes checked), and the commit format `tasks(<task-set-slug>): <id>` (set name without its timestamp prefix) — are the **contract** that the **run-task** skill implements in context, where the live agent picks, implements, and commits one task itself.
 
 Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
+
+### 7. Verify registration
+
+Run `pop tasks status <task-set-name>` to trigger pop's lazy discovery and confirm the set registered correctly. Pop prints `Registered new task set(s): <task-set-name>` on first sighting.
+
+Check the output:
+
+- The task set appears in the table with status `READY` (or `DEFERRED` if every open task is HITL).
+- It is **not** `MALFORMED` or `MISSING`.
+
+If `MALFORMED`, read the diagnostics, fix the markdown/manifest issues they name, and re-run `pop tasks status <task-set-name>` until the set is `READY` or `DEFERRED`.
+
+Tell the user the task-set name, its status, and how many tasks are open.
