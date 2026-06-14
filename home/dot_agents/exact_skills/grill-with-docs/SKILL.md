@@ -75,7 +75,7 @@ When a term is resolved, capture it right there — don't batch. But to stay saf
 
 `CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
 
-If the user asks you to **consolidate** (fold accumulated fragments into the base), use the `consolidate-context` skill. Consolidation is a separate single-writer maintenance pass, not part of the grilling session.
+If the user asks you to **consolidate** (fold accumulated fragments into the base), use the `grill-consolidate` skill. Consolidation is a separate single-writer maintenance pass, not part of the grilling session.
 
 ### Offer ADRs sparingly
 

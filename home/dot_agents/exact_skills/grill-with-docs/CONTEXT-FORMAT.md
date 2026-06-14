@@ -113,8 +113,8 @@ Overlay rules:
 - **Two fragments in the same generation touching the same term = collision.** Render both, marked `⚠ contested — needs consolidation`. Do *not* silently pick one. This is where a genuine parallel semantic conflict announces itself instead of hiding.
 - A `+` term whose `under:` matches an existing heading slots there; with no hint or a novel heading, it renders under `## Unfiled (pending consolidation)`.
 
-### Consolidate with `consolidate-context`
+### Consolidate with `grill-consolidate`
 
-Folding fragments into the base is the **only** operation that mutates `CONTEXT.md`, so it belongs to the `consolidate-context` skill. Run that skill on demand — when fragments pile up, or before a release — as a deliberate single-writer maintenance pass, never automatically and never in parallel.
+Folding fragments into the base is the **only** operation that mutates `CONTEXT.md`, so it belongs to the `grill-consolidate` skill. Run that skill on demand — when fragments pile up, or before a release — as a deliberate single-writer maintenance pass, never automatically and never in parallel.
 
 `CONTEXT-MAP.md` is **not** fragmented — adding or rewiring a context is rare and structural, so tolerate the occasional conflict or settle it during consolidation.
