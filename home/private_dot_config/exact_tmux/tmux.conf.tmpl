@@ -48,7 +48,8 @@ set -g status-keys vi
 set -g mode-keys vi
 
 set -g set-titles on
-set -g set-titles-string "#S"
+set -g set-titles-string "#S · #W (#{session_windows})"
+set -g automatic-rename off
 
 {{- if (eq .chezmoi.os "darwin") }}
 # macOS specific: disable key repeat delay
@@ -118,7 +119,7 @@ bind -T copy-mode-vi L send -X end-of-line
 bind-key v paste-buffer
 
 # Window and pane management
-bind-key t new-window
+bind-key t new-window -n shell
 bind-key s copy-mode
 bind-key b set-option status
 bind-key -r w confirm-before -p "kill-pane #P? (y/n)" kill-pane
