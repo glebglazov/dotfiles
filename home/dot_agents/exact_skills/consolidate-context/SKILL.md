@@ -1,6 +1,6 @@
 ---
 name: consolidate-context
-description: Fold accumulated CONTEXT.<counter>.<uuid>.md glossary fragments into canonical CONTEXT.md files as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments produced by grill-with-docs-concurrent.
+description: Fold accumulated CONTEXT.<counter>.<uuid>.md glossary fragments into canonical CONTEXT.md files as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments produced by grill-with-docs.
 ---
 
 # Consolidate Context

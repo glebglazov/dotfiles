@@ -1,6 +1,6 @@
 ---
-name: grill-with-docs-concurrent
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise — conflict-free under parallel agents and teams via generation-numbered glossary fragments and datetime-id ADRs. Use when user wants to stress-test a plan against their project's language and documented decisions while many agents or teammates write docs concurrently.
+name: grill-with-docs-legacy
+description: Legacy grilling session that writes glossary updates directly to CONTEXT.md (no fragment-based concurrent writes). Use only when you need the older single-writer inline update model instead of the default grill-with-docs skill.
 ---
 
 <what-to-do>
@@ -69,13 +69,11 @@ When domain relationships are being discussed, stress-test them with specific sc
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
 
-### Update the glossary inline
+### Update CONTEXT.md inline
 
-When a term is resolved, capture it right there — don't batch. But to stay safe under parallel agents and team use, **don't write the base `CONTEXT.md`**: write a delta op to your own session fragment, and treat the glossary you challenge terms against as the union of base + fragments. The fragment scheme and read-union behavior are in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) — read it before your first write.
+When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
 
 `CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
-
-If the user asks you to **consolidate** (fold accumulated fragments into the base), use the `consolidate-context` skill. Consolidation is a separate single-writer maintenance pass, not part of the grilling session.
 
 ### Offer ADRs sparingly
 

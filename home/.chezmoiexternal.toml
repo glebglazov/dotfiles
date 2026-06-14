@@ -48,14 +48,6 @@
 	stripComponents = 1
 	exact = true
 
-[".agents/skills/grill-with-docs"]
-	type = "archive"
-	url = "{{ $mattpocock_skills_url }}"
-	checksum.sha256 = "{{ $mattpocock_skills_checksum }}"
-	stripComponents = 4
-	include = ["**/engineering/grill-with-docs/**"]
-	exact = true
-
 [".agents/skills/improve-codebase-architecture"]
 	type = "archive"
 	url = "{{ $mattpocock_skills_url }}"
