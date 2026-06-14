@@ -1,6 +1,6 @@
 ---
 name: grill-with-docs-concurrent
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise — conflict-free under parallel agents and teams via per-session glossary fragments and datetime-id ADRs. Use when user wants to stress-test a plan against their project's language and documented decisions while many agents or teammates write docs concurrently.
+description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise — conflict-free under parallel agents and teams via generation-numbered glossary fragments and datetime-id ADRs. Use when user wants to stress-test a plan against their project's language and documented decisions while many agents or teammates write docs concurrently.
 ---
 
 <what-to-do>

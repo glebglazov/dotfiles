@@ -68,16 +68,19 @@ When multiple contexts exist, infer which one the current topic relates to. If u
 The first time a session resolves a term, create one fragment beside the base it deltas:
 
 ```
-<dir>/CONTEXT.<uuid>.md      # uuid from: uuidgen | head -c8
+<dir>/CONTEXT.<counter>.<uuid>.md
 ```
 
-Reuse that one file for every term you resolve this session. It's co-located with its base `CONTEXT.md` (same directory — in multi-context repos, the context's own dir). Because every session writes a *different* file, parallel work never collides.
+`counter` is a zero-padded, context-directory generation such as `0001`, `0002`, `0003`. Pick it by scanning the colocated `CONTEXT.*.*.md` fragments and using `max(counter) + 1`; if no numbered fragments exist, use `0001`. `uuid` comes from `uuidgen | head -c8`.
+
+Reuse that one file for every term you resolve this session. It's co-located with its base `CONTEXT.md` (same directory — in multi-context repos, the context's own dir). Because every session writes a different uuid, parallel work never collides at the file level. If two agents both start from the same visible fragments, they may create the same counter with different uuids; that is fine.
 
 A fragment is a list of **delta ops**, not a full glossary:
 
 ```md
 ---
 fragment: 8f3a2c1d
+generation: 0002
 branch: feat/settlement      # or task id — where this came from
 ---
 
@@ -94,10 +97,10 @@ branch: feat/settlement      # or task id — where this came from
 ```
 
 - `+ Term` — **add** a new term. Body is the definition; optional `avoid:` and optional `under: <heading>` placement hint.
-- `~ Term` — **redefine** an existing term. New definition, plus a `was:` snapshot of the base definition *at the moment you edited it* — so a later consolidation can tell if the base drifted underneath.
+- `~ Term` — **redefine** an existing term. New definition, plus a `was:` snapshot of the effective definition *at the moment you edited it* (base plus visible lower-generation fragments) — so a later consolidation can tell if the meaning drifted underneath.
 - `- Term` — **retire** a term.
 
-Provenance is just `fragment:` (= the uuid) and `branch:`/task. Don't track commit SHAs — the fragment rides in the same commit as the change that motivated it, so `git log --follow` is your index for free.
+Provenance is just `fragment:` (= the uuid), `generation:` (= the filename counter), and `branch:`/task. Don't track commit SHAs — the fragment rides in the same commit as the change that motivated it, so `git log --follow` is your index for free.
 
 ### Read = union, in memory
 
@@ -106,7 +109,8 @@ The effective glossary is **base `CONTEXT.md` overlaid with every `CONTEXT.*.md`
 Overlay rules:
 
 - A fragment op beats the base (`~` redefinition wins over the base definition; `-` removes it).
-- **Two fragments touching the same term = collision.** Render both, marked `⚠ contested — needs consolidation`. Do *not* silently pick one. This is where a genuine semantic conflict announces itself instead of hiding.
+- Higher generations beat lower generations for the same term. This means `CONTEXT.0002.<uuid>.md` can intentionally override a delta from `CONTEXT.0001.<other-uuid>.md` that was visible when the later session started.
+- **Two fragments in the same generation touching the same term = collision.** Render both, marked `⚠ contested — needs consolidation`. Do *not* silently pick one. This is where a genuine parallel semantic conflict announces itself instead of hiding.
 - A `+` term whose `under:` matches an existing heading slots there; with no hint or a novel heading, it renders under `## Unfiled (pending consolidation)`.
 
 ### Consolidate with `consolidate-context`

@@ -1,11 +1,11 @@
 ---
 name: consolidate-context
-description: Fold accumulated CONTEXT.<uuid>.md glossary fragments into canonical CONTEXT.md files as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments produced by grill-with-docs-concurrent.
+description: Fold accumulated CONTEXT.<counter>.<uuid>.md glossary fragments into canonical CONTEXT.md files as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments produced by grill-with-docs-concurrent.
 ---
 
 # Consolidate Context
 
-Use this skill to merge colocated `CONTEXT.*.md` fragments into their base `CONTEXT.md`.
+Use this skill to merge colocated `CONTEXT.<counter>.<uuid>.md` fragments into their base `CONTEXT.md`.
 
 This is a single-writer operation. Do not run it speculatively, automatically, or in parallel with another consolidation pass. If contested terms require a semantic decision, ask the user and wait.
 
@@ -26,11 +26,15 @@ For each context directory:
 
 1. Read the base `CONTEXT.md`, if present.
 2. Read every colocated fragment matching `CONTEXT.*.md`.
-3. Parse fragment ops:
+3. Parse each fragment filename as `CONTEXT.<counter>.<uuid>.md`.
+   - `counter` is a numeric generation. Sort it numerically, not lexicographically.
+   - `uuid` identifies the writer/session, but does not decide precedence.
+   - Legacy `CONTEXT.<uuid>.md` fragments, if present, have no ordering metadata; treat same-term overlap involving them as contested.
+4. Parse fragment ops:
    - `+ Term` adds a term.
    - `~ Term` redefines a term and should include `was:`.
    - `- Term` retires a term.
-4. Treat `avoid:` and `under:` as optional metadata.
+5. Treat `avoid:` and `under:` as optional metadata.
 
 Do not silently ignore malformed ops. If the intended meaning is obvious, preserve it and mention the cleanup. If it is ambiguous, ask.
 
@@ -38,8 +42,10 @@ Do not silently ignore malformed ops. If the intended meaning is obvious, preser
 
 - Apply `+`, `~`, and `-` ops into the base glossary.
 - A fragment op beats the base definition.
-- Two or more fragments touching the same term are contested. Do not pick a winner without the user.
-- For `~ Term`, compare `was:` to the current base definition. If the base drifted materially, treat it as contested.
+- Higher generations beat lower generations for the same term. A later generation means the author had the earlier generation available and is intentionally refining or overriding it.
+- Two or more fragments in the same generation touching the same term are contested. Do not pick a winner without the user.
+- A legacy unnumbered fragment touching the same term as any other fragment is contested.
+- For `~ Term`, compare `was:` to the effective definition at that point in generation order. If the underlying meaning drifted materially, treat it as contested.
 - File terms with a valid `under:` hint into that section.
 - Put terms without a clear home into the best existing section when obvious; otherwise ask the user.
 - Preserve the `CONTEXT.md` contract: it is a glossary only, not a spec or implementation notes file.
