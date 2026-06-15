@@ -15,3 +15,17 @@ fi
 
 tmux set -g pane-border-style "fg=${border},bg=default"
 tmux set -g pane-active-border-style "${active}"
+
+# Ghostty's light/dark theme switch can leave the cursor color from the
+# previous theme while inside tmux. Reset it through tmux passthrough so the
+# terminal re-applies its active cursor defaults.
+target_client=${1:-}
+if [[ -n "$target_client" ]]; then
+  pane_tty=$(tmux display-message -p -c "$target_client" '#{pane_tty}' 2>/dev/null || true)
+else
+  pane_tty=$(tmux display-message -p '#{pane_tty}' 2>/dev/null || true)
+fi
+
+if [[ -n "$pane_tty" && -w "$pane_tty" ]]; then
+  printf '\033Ptmux;\033\033]112\007\033\\' >"$pane_tty"
+fi

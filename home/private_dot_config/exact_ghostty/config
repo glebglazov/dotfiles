@@ -3,6 +3,8 @@ command = /bin/zsh -l -i -c "tmux new-session -A -s main"
 auto-update = off
 
 theme = light:Gruvbox Light,dark:Gruvbox Dark Hard
+cursor-color = cell-foreground
+cursor-text = cell-background
 
 confirm-close-surface   = false
 mouse-hide-while-typing = true
