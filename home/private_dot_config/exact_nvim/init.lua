@@ -1272,17 +1272,42 @@ local function review_files(base, uncommitted)
     return false
   end
 
+  -- Buffer we started from; dropped below so the session opens on a clean,
+  -- single-file view (just the first changed file) instead of whatever was open.
+  local prev_buf = vim.api.nvim_get_current_buf()
   local range = uncommitted and 'HEAD' or (base .. '...HEAD')
-  local files = vim.fn.systemlist('git -C ' .. root .. ' diff --name-only ' .. range)
+  -- --name-status so we can flag added/deleted/renamed files in the qf text;
+  -- gitsigns only marks hunks within a file (and shows nothing for files absent
+  -- from the base), so the per-file "new" indicator has to live in the list.
+  local status_label = { A = '[new] ', D = '[del] ', R = '[ren] ', C = '[cpy] ' }
+  local lines = vim.fn.systemlist('git -C ' .. root .. ' diff --name-status ' .. range)
+  local items = {}
+  for _, line in ipairs(lines) do
+    -- "A\tpath", "M\tpath", "R100\told\tnew" — status is the first char, the
+    -- path we want is the last tab-separated field.
+    local parts = vim.split(line, '\t', { plain = true })
+    local status = parts[1]:sub(1, 1)
+    local f = parts[#parts]
+    table.insert(items, {
+      filename = root .. '/' .. f,
+      lnum = 1,
+      text = (status_label[status] or '') .. f,
+    })
+  end
   -- Close any open qf window first: setqflist into an open window reloads its
   -- buffer and fires `FileType qf` while we're still focused elsewhere, which
   -- trips qf_helper's set_qf_defaults (get_win_type() → nil). copen below opens
   -- a fresh window with the qf window focused, so the FileType fires cleanly.
   pcall(vim.cmd, 'cclose')
-  vim.fn.setqflist(vim.tbl_map(function(f)
-    return { filename = root .. '/' .. f, lnum = 1, text = f }
-  end, files))
+  vim.fn.setqflist(items)
   vim.cmd('copen')
+  -- Jump to the first changed file, then drop the buffer we came from.
+  if #vim.fn.getqflist() > 0 then
+    vim.cmd('cfirst')
+    if vim.api.nvim_buf_is_valid(prev_buf) and vim.api.nvim_get_current_buf() ~= prev_buf then
+      pcall(vim.cmd, 'bdelete ' .. prev_buf)
+    end
+  end
   return true
 end
 
@@ -1866,12 +1891,28 @@ local function review_send_preview()
   agent_map_text_send(buf, close, 'No review text to send', 'Sent review to %s')
 end
 
+-- Start a review of the selected ref's content: take the visual selection (a
+-- commit hash, branch name, anything) as <slug> and run `:Review start <slug>^`,
+-- i.e. base = <slug>^ so the changeset is what <slug> introduced.
+local function review_start_from_selection()
+  local mode = vim.fn.mode()
+  local sel = vim.fn.getregion(vim.fn.getpos('v'), vim.fn.getpos('.'), { type = mode })
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
+  local slug = vim.trim(table.concat(sel, ' '))
+  if slug == '' then
+    vim.notify('Review: empty selection', vim.log.levels.WARN)
+    return
+  end
+  vim.cmd('Review start ' .. slug .. '^')
+end
+
 vim.keymap.set('n', '<LEADER>rc', review_add_normal, { silent = true, desc = 'Review: add comment' })
 vim.keymap.set('v', '<LEADER>rc', review_add_visual, { silent = true, desc = 'Review: add comment (range)' })
 vim.keymap.set('n', '<LEADER>rd', review_delete_at_cursor, { silent = true, desc = 'Review: delete comment at cursor' })
 vim.keymap.set('n', '<LEADER>re', review_export, { silent = true, desc = 'Review: export comments to clipboard' })
 vim.keymap.set('n', '<LEADER>rf', function() review_files(review_resolve_base(nil)) end, { silent = true, desc = 'Review: changed files to quickfix' })
 vim.keymap.set('n', '<LEADER>rs', function() review_start() end, { silent = true, desc = 'Review: start session' })
+vim.keymap.set('v', '<LEADER>rs', review_start_from_selection, { silent = true, desc = 'Review: start session for selected ref' })
 vim.keymap.set('n', '<LEADER>rS', function() review_start(review_resolve_base('--uncommitted')) end, { silent = true, desc = 'Review: start session (uncommitted)' })
 vim.keymap.set('n', '<LEADER>rQ', review_finish, { silent = true, desc = 'Review: finish (export + clear + signs off)' })
 vim.keymap.set('n', '<LEADER>rp', review_preview, { silent = true, desc = 'Review: preview in float' })
