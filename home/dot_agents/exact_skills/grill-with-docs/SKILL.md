@@ -87,4 +87,23 @@ Only offer to create an ADR when all three are true:
 
 If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
 
+## Closing the session
+
+Once you've proposed the final glossary updates and any ADRs, and the user signals the design is settled (or asks to wrap up), **offer to commit the artifacts this session produced**. Offer this once, at the natural close — don't nag mid-grill, and don't offer after every individual fragment.
+
+Why this matters: these artifacts often get carried into downstream work via a fresh git worktree forked from the current branch's HEAD (for example when `to-tasks` later turns the plan into work items). Anything not committed to HEAD is left behind. The session that produced the artifacts is the right place to commit them, so don't defer this to a later skill.
+
+When the user accepts:
+
+1. **Skip if nothing to do.** If the working directory is not a git repository, or this session created/modified no committable repository files, say so and skip.
+2. **Identify session paths.** From this conversation's history, list *exactly* the repository files this session created or modified — CONTEXT base/fragments (`CONTEXT*.md`), ADRs (`docs/adr/**`), `CONTEXT-MAP.md`, and any code or prototype the session touched. Commit CONTEXT fragments **as-is** — do not consolidate them (consolidation is a separate pass). Do **not** include files this session never touched, even if dirty; prior-session artifacts are intentionally out of scope.
+3. **Confirm.** Show the user the exact file list to be staged and the proposed commit subject. Separately, report any dirty files this session did *not* touch as "left alone — not staged" so nothing is silently swept or split. Wait for approval.
+4. **Stage exactly those paths** (never `git add -A`) and create a **single commit**. Derive a short `<topic-slug>` from the subject of the grilling session (the term or area discussed). The type follows content:
+   - docs-only → `docs(<topic-slug>): <summary> (ADR-NNNN + glossary)` (drop whichever parenthetical part doesn't apply)
+   - mixed code + docs → a fitting conventional type (`feat`, `chore`, …), still scoped `(<topic-slug>)`
+
+   Write a short human `<summary>` of what the artifacts cover (e.g. `effort-model-resolution glossary + ADR-0032`), matching the repo's existing commit style.
+
+After the commit, the plan is settled and persisted; the user will typically move on to a separate step (such as `to-tasks`) themselves.
+
 </supporting-info>

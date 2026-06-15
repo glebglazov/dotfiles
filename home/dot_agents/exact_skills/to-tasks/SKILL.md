@@ -59,28 +59,13 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Commit this session's artifacts
+> **Artifacts must already be committed.** Task sets are often worked in a fresh git worktree forked from the current branch's HEAD, so any CONTEXT/ADR/code a prior session generated must already be on HEAD for the worktree to carry it. This skill does **not** commit — committing belongs to the session that produced the artifacts (e.g. `grill-with-docs` offers it at the close of a grilling session). Assume that has happened; if you spot uncommitted session artifacts, flag them, but don't commit here.
 
-Before creating the task set, commit the repository artifacts **this agent session** produced. The motivation is the worktree strategy: tasks are often worked in a fresh git worktree forked from the current branch's HEAD, so any CONTEXT/ADR/code this session generated must be on HEAD for the worktree to carry it.
-
-First, decide the **task-set name** `<task-set-name>` = `<timestamp>-<slug>` now (naming rules are in step 6 — `<slug>` is either the source PRD slug without its timestamp prefix, or a hyphen-delimited summary of the work). The commit reuses `<slug>` as its scope, and the same `<task-set-name>` is used when writing the work items in step 6.
-
-Then:
-
-1. **Skip if nothing to do.** If the working directory is not a git repository, or this session created/modified no committable repository files, skip this step silently and proceed to step 6.
-2. **Identify session paths.** From this conversation's history, list *exactly* the repository files this agent session created or modified — CONTEXT base/fragments (`CONTEXT*.md`), ADRs (`docs/adr/**`), `CONTEXT-MAP.md`, and any code or prototype the session touched. Commit CONTEXT fragments **as-is** — do not consolidate them. Do **not** include files this session never touched, even if dirty; prior-session artifacts are intentionally out of scope.
-3. **Confirm.** Show the user the exact file list to be staged and the proposed commit subject. Separately, report any dirty files this session did *not* touch as "left alone — not staged" so nothing is silently swept or split. Wait for approval.
-4. **Stage exactly those paths** (never `git add -A`) and create a **single commit**. The subject reuses `<slug>` as scope; the type follows content:
-   - docs-only → `docs(<slug>): <summary> (ADR-NNNN + glossary)` (drop whichever parenthetical part doesn't apply)
-   - mixed code + docs → a fitting conventional type (`feat`, `chore`, …), still scoped `(<slug>)`
-
-   Write a short human `<summary>` of what the artifacts cover (e.g. `effort-model-resolution glossary + ADR-0032`), matching the repo's existing commit style.
-
-### 6. Write the work items to the local filesystem
+### 5. Write the work items to the local filesystem
 
 Resolve the tasks base directory, `<tasks-dir>`, by running `pop tasks show-path` — it prints the absolute path to this repository's task storage (in pop's data dir, outside the repo tree) and creates it on demand.
 
-For each approved slice, write a markdown file to the `<tasks-dir>/<task-set-name>/` directory (create the subdirectory if it doesn't exist), using the `<task-set-name>` decided in step 5. Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each approved slice, write a markdown file to the `<tasks-dir>/<task-set-name>/` directory (create the subdirectory if it doesn't exist). `<task-set-name>` is `<timestamp>-<slug>`, where `<slug>` is either the source PRD slug (without its timestamp prefix) or a hyphen-delimited string summarising what you intend to do (infer from context or ask the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
 
 <naming-convention>
 `<timestamp>` is a human-readable local date/time prefix so task sets sort chronologically:
@@ -124,7 +109,7 @@ Use a consistent filename scheme: `<number>-<task-name>.md`, e.g. `01-login-form
 
 Do NOT close or modify any parent file.
 
-### 7. Write the sidecar JSON manifest
+### 6. Write the sidecar JSON manifest
 
 Alongside the markdown files, write `<tasks-dir>/<task-set-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
 
@@ -160,7 +145,7 @@ The JSON is the source of truth for automation. The rules above — the eligibil
 
 Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
 
-### 8. Verify registration
+### 7. Verify registration
 
 Run `pop tasks status <task-set-name>` to trigger pop's lazy discovery and confirm the set registered correctly. Pop prints `Registered new task set(s): <task-set-name>` on first sighting.
 
