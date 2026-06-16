@@ -1319,6 +1319,7 @@ end
 -- quickfix list, so it never collides with :Changes above.
 local review = {
   comments = {}, -- comments[abs_path] = { { lnum, end_lnum, text }, ... }
+  general = nil, -- at most one session-wide note: { text, status }
   active = false, -- whether a review session is in progress (drives statusline)
 }
 local review_ns = vim.api.nvim_create_namespace('glebglazov-review')
@@ -1463,6 +1464,58 @@ local function review_add(start_line, end_line)
   vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true })
 end
 
+-- Session-wide note not tied to any file. Only one allowed; reopens for edit if present
+-- and unresolved. A resolved note stays in preview but rC opens a fresh editor instead.
+local function review_add_general()
+  local existing = review.general
+  if existing and existing.status == 'resolved' then
+    existing = nil
+  end
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].bufhidden = 'wipe'
+  vim.bo[buf].filetype = 'markdown'
+  vim.b[buf].completion = false
+  if existing then
+    local lines = vim.split(existing.text, '\n', { plain = true })
+    table.insert(lines, '')
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  end
+  local width = math.min(80, math.floor(vim.o.columns * 0.6))
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    row = math.floor(vim.o.lines * 0.3),
+    col = math.floor((vim.o.columns - width) / 2),
+    width = width,
+    height = 8,
+    border = 'rounded',
+    title = (existing and ' Edit general note' or ' General review note') .. '  (<CR> save · <Esc> cancel) ',
+    title_pos = 'center',
+    style = 'minimal',
+  })
+  vim.schedule(function()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_set_current_win(win)
+      vim.api.nvim_win_set_cursor(win, { vim.api.nvim_buf_line_count(buf), 0 })
+      vim.cmd('startinsert!')
+    end
+  end)
+
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end
+  local function confirm()
+    local text = vim.trim(table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), '\n'))
+    close()
+    if text == '' then
+      review.general = nil
+    else
+      review.general = { text = text, status = existing and existing.status or 'unresolved' }
+    end
+  end
+  vim.keymap.set('n', '<CR>', confirm, { buffer = buf, nowait = true })
+  vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true })
+end
+
 local function review_add_normal()
   local lnum = vim.fn.line('.')
   review_add(lnum, lnum)
@@ -1496,6 +1549,7 @@ local function review_clear()
     vim.fn.sign_unplace('ReviewGroup', { buffer = path })
   end
   review.comments = {}
+  review.general = nil
   review_render_all()
   vim.notify('Review comments cleared', vim.log.levels.INFO)
 end
@@ -1556,21 +1610,25 @@ local function review_loc(rel, c)
     or ('%s:%d'):format(rel, c.lnum)
 end
 
+local function review_append_export(out, n, label, c)
+  if c.status == 'resolved' then return n end
+  n = n + 1
+  if c.text:find('\n') then
+    table.insert(out, ('%d. `%s`:\n   %s'):format(n, label, c.text:gsub('\n', '\n   ')))
+  else
+    table.insert(out, ('%d. `%s` - %s'):format(n, label, c.text))
+  end
+  return n
+end
+
 -- Build the Markdown review body and a count of comments (resolved are skipped).
 local function review_build()
   local out, n = {}, 0
+  if review.general then
+    n = review_append_export(out, n, 'General', review.general)
+  end
   for _, e in ipairs(review_entries()) do
-    local c = e.c
-    if c.status ~= 'resolved' then
-      n = n + 1
-      local loc = review_loc(e.rel, c)
-      if c.text:find('\n') then
-        -- Multi-line: header line, then the comment body indented underneath.
-        table.insert(out, ('%d. `%s`:\n   %s'):format(n, loc, c.text:gsub('\n', '\n   ')))
-      else
-        table.insert(out, ('%d. `%s` - %s'):format(n, loc, c.text))
-      end
-    end
+    n = review_append_export(out, n, review_loc(e.rel, e.c), e.c)
   end
   return out, n
 end
@@ -1601,7 +1659,7 @@ end
 -- the comment under the cursor. Only unresolved comments are exported.
 local function review_preview()
   local entries = review_entries()
-  if #entries == 0 then
+  if not review.general and #entries == 0 then
     vim.notify('No review comments to preview', vim.log.levels.WARN)
     return
   end
@@ -1610,24 +1668,33 @@ local function review_preview()
   vim.bo[buf].filetype = 'markdown'
 
   local line_to_comment = {}
+  local function append_preview(lines, i, mark, label, c)
+    if c.text:find('\n') then
+      table.insert(lines, ('%d. %s `%s`:'):format(i, mark, label))
+      line_to_comment[#lines] = c
+      for _, l in ipairs(vim.split(c.text, '\n', { plain = true })) do
+        table.insert(lines, '   ' .. l)
+        line_to_comment[#lines] = c
+      end
+    else
+      table.insert(lines, ('%d. %s `%s` - %s'):format(i, mark, label, c.text))
+      line_to_comment[#lines] = c
+    end
+  end
   local function render()
     line_to_comment = {}
     local lines = {}
-    for i, e in ipairs(entries) do
+    local i = 0
+    if review.general then
+      i = i + 1
+      local mark = review.general.status == 'resolved' and '[x]' or '[ ]'
+      append_preview(lines, i, mark, 'General', review.general)
+    end
+    for _, e in ipairs(entries) do
+      i = i + 1
       local c = e.c
       local mark = c.status == 'resolved' and '[x]' or '[ ]'
-      local loc = review_loc(e.rel, c)
-      if c.text:find('\n') then
-        table.insert(lines, ('%d. %s `%s`:'):format(i, mark, loc))
-        line_to_comment[#lines] = c
-        for _, l in ipairs(vim.split(c.text, '\n', { plain = true })) do
-          table.insert(lines, '   ' .. l)
-          line_to_comment[#lines] = c
-        end
-      else
-        table.insert(lines, ('%d. %s `%s` - %s'):format(i, mark, loc, c.text))
-        line_to_comment[#lines] = c
-      end
+      append_preview(lines, i, mark, review_loc(e.rel, c), c)
     end
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -1906,6 +1973,7 @@ local function review_start_from_selection()
   vim.cmd('Review start ' .. slug .. '^')
 end
 
+vim.keymap.set('n', '<LEADER>rC', review_add_general, { silent = true, desc = 'Review: general note' })
 vim.keymap.set('n', '<LEADER>rc', review_add_normal, { silent = true, desc = 'Review: add comment' })
 vim.keymap.set('v', '<LEADER>rc', review_add_visual, { silent = true, desc = 'Review: add comment (range)' })
 vim.keymap.set('n', '<LEADER>rd', review_delete_at_cursor, { silent = true, desc = 'Review: delete comment at cursor' })
