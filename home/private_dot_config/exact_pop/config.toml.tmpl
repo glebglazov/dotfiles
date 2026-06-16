@@ -28,7 +28,11 @@ tcp_server = true
 ignore_status_from = ["tmux-global"]
 
 [queue]
+{{ if .work -}}
+agents = ["claude"]
+{{ else }}
 agents = ["codex", "cursor", "claude"]
+{{ end }}
 
 [[worktree.commands]]
 key = "ctrl+l"
