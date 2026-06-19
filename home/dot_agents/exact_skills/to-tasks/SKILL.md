@@ -39,33 +39,13 @@ Write an explicit effort value for each task. Default to `standard` when no name
 - Prefer many thin slices over few thick ones
 </vertical-slice-rules>
 
-### 4. Quiz the user
-
-Present the proposed breakdown as a numbered list. For each slice, show:
-
-- **Title**: short descriptive name
-- **Type**: HITL / AFK
-- **Effort**: light / standard / heavy
-- **Blocked by**: which other slices (if any) must complete first
-- **User stories covered**: which user stories this addresses (if the source material has them)
-
-Ask the user:
-
-- Does the granularity feel right? (too coarse / too fine)
-- Are the dependency relationships correct?
-- Should any slices be merged or split further?
-- Are the correct slices marked as HITL and AFK?
-- Does any HITL slice contain agent-doable work that should be split into an AFK blocker?
-
-Iterate until the user approves the breakdown.
-
 > **Artifacts must already be committed.** Task sets are often worked in a fresh git worktree forked from the current branch's HEAD, so any CONTEXT/ADR/code a prior session generated must already be on HEAD for the worktree to carry it. This skill does **not** commit — committing belongs to the session that produced the artifacts (e.g. `grill-with-docs` offers it at the close of a grilling session). Assume that has happened; if you spot uncommitted session artifacts, flag them, but don't commit here.
 
-### 5. Write the work items to the local filesystem
+### 4. Write the work items to the local filesystem
 
 Resolve the tasks base directory, `<tasks-dir>`, by running `pop tasks show-path` — it prints the absolute path to this repository's task storage (in pop's data dir, outside the repo tree) and creates it on demand.
 
-For each approved slice, write a markdown file to the `<tasks-dir>/<task-set-name>/` directory (create the subdirectory if it doesn't exist). `<task-set-name>` is `<timestamp>-<slug>`, where `<slug>` is either the source PRD slug (without its timestamp prefix) or a hyphen-delimited string summarising what you intend to do (infer from context or ask the user). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
+For each slice, write a markdown file to the `<tasks-dir>/<task-set-name>/` directory (create the subdirectory if it doesn't exist). `<task-set-name>` is `<timestamp>-<slug>`, where `<slug>` is either the source PRD slug (without its timestamp prefix) or a hyphen-delimited string summarising what you intend to do (infer from context). Use the following template. Write them in dependency order (blockers first) so you can reference real identifiers in the "Blocked by" field.
 
 <naming-convention>
 `<timestamp>` is a human-readable local date/time prefix so task sets sort chronologically:
@@ -109,7 +89,7 @@ Use a consistent filename scheme: `<number>-<task-name>.md`, e.g. `01-login-form
 
 Do NOT close or modify any parent file.
 
-### 6. Write the sidecar JSON manifest
+### 5. Write the sidecar JSON manifest
 
 Alongside the markdown files, write `<tasks-dir>/<task-set-name>/index.json` — a machine-readable manifest that a ralph loop (or any automation) can rely on to track completion and unblock ordering. Each entry mirrors one markdown file.
 
@@ -145,7 +125,7 @@ The JSON is the source of truth for automation. The rules above — the eligibil
 
 Keep `index.json` and the markdown files in sync — every markdown file has exactly one manifest entry and vice versa.
 
-### 7. Verify registration
+### 6. Verify registration
 
 Run `pop tasks status <task-set-name>` to trigger pop's lazy discovery and confirm the set registered correctly. Pop prints `Registered new task set(s): <task-set-name>` on first sighting.
 
