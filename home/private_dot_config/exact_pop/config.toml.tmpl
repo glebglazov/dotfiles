@@ -27,13 +27,6 @@ sort_criteria = ["status", "pane_last_active_at", "alphabetical"]
 tcp_server = true
 ignore_status_from = ["tmux-global"]
 
-[queue]
-{{ if .work -}}
-agents = ["claude"]
-{{ else }}
-agents = ["codex", "cursor", "claude"]
-{{ end }}
-
 [[worktree.commands]]
 key = "ctrl+l"
 label = "cleanup"
