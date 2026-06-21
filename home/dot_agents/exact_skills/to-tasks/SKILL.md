@@ -111,10 +111,30 @@ Alongside the markdown files, write `<tasks-dir>/<task-set-name>/index.json` —
   ]
 }
 ```
+
+When the human explicitly requests auto-drain in the planning session, add a top-level `"auto_drain": true` key (omit it by default):
+
+```json
+{
+  "auto_drain": true,
+  "tasks": [
+    {
+      "id": "01-login-form",
+      "file": "01-login-form.md",
+      "title": "Login form",
+      "type": "AFK",
+      "effort": "standard",
+      "status": "open",
+      "blocked_by": []
+    }
+  ]
+}
+```
 </manifest-schema>
 
 Field rules:
 
+- `auto_drain` — optional top-level boolean. **Omit by default.** Write `"auto_drain": true` only when the human explicitly requests auto-drain in that session (e.g. "with auto-drain", "queue should pick this up"). Never infer it from task content; do not write `"auto_drain": false` unless the human explicitly asks to disable. Pop seeds the Auto-drain bit in Task state once at first registration; the Queue dashboard toggle remains authoritative afterward.
 - `id` — the filename stem (`<number>-<task-name>`), stable identifier referenced by `blocked_by`.
 - `status` — one of `open` | `done` | `failed` | `skipped`. Always initialize to `open`. Do not write `in_progress`; persisted `in_progress` is malformed.
 - `blocked_by` — array of `id`s of blocking tasks. Empty array if none.
@@ -139,3 +159,5 @@ Check the output:
 If `MALFORMED`, read the diagnostics, fix the markdown/manifest issues they name, and re-run `pop tasks status <task-set-name>` until the set is `READY` or `DEFERRED`.
 
 Tell the user the task-set name, its status, and how many tasks are open.
+
+Then suggest draining the **whole set**: `pop tasks implement <task-set-name>` (no file target). Do not suggest implementing a single task such as the first file in the list — `pop tasks implement` drains the entire set in dependency order on its own, and that whole-set drain is the intended entry point. The targeted single-task form (`<task-set-name>/<file>.md`) exists only for re-running one specific task, not for kicking off the set.

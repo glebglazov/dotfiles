@@ -1,10 +1,14 @@
 # ADR Format
 
-ADRs live in `docs/adr/` and use **datetime ids**: `YYYYMMDD-HHMM-slug.md` (e.g. `20260613-1432-settlement-escrow.md`).
+ADRs live in `docs/adr/` and use **sequential ids**: `NNNN-slug.md`, zero-padded to four digits (e.g. `0001-event-sourced-orders.md`, `0002-postgres-for-write-model.md`).
 
 Create the `docs/adr/` directory lazily — only when the first ADR is needed.
 
-Get the timestamp from `date +%Y%m%d-%H%M`. Datetime ids need no central counter, so parallel agents and teammates never collide on a number — drop your ADR and move on, no merge step. Lexicographic sort = chronological order.
+## Ids
+
+Pick the next number naively: scan the target `docs/adr/`, take the highest existing `NNNN`, add 1, and zero-pad to four digits. The very first ADR in a directory is `0001`. Numbering is **per directory** — each `docs/adr/` (the system-wide one plus any per-context ones) has its own independent sequence.
+
+Don't lock, and don't hunt for gaps to fill — just take max+1. Under parallel agents or teammates, two ADRs **may** land on the same number. That's expected and fine: `grill-consolidate` resolves clashes later (re-sequencing the loser and fixing links). Drop your ADR and move on.
 
 ## Template
 
@@ -24,9 +28,9 @@ Only include these when they add genuine value. Most ADRs won't need them.
 - **Considered Options** — only when the rejected alternatives are worth remembering
 - **Consequences** — only when non-obvious downstream effects need to be called out
 
-## Ids
+## Cross-references
 
-Name the file `$(date +%Y%m%d-%H%M)-slug.md`. No scanning, no incrementing — the timestamp is unique by construction. If you ever expect two ADRs in the same minute (you shouldn't — offer them sparingly), add seconds: `%Y%m%d-%H%M%S`.
+Reference another ADR by its number as `ADR-NNNN` (e.g. `superseded by ADR-0007`), or link to its file (`[...](0007-slug.md)`). Filename links are the most robust — the slug survives a renumber, so consolidate can always rewrite them unambiguously. A bare `ADR-NNNN` reference becomes ambiguous if that number was ever involved in a clash, so prefer filename links where you can.
 
 ## When to offer an ADR
 

@@ -1,13 +1,16 @@
 ---
 name: grill-consolidate
-description: Fold accumulated CONTEXT.<counter>.<uuid>.md glossary fragments into canonical CONTEXT.md files as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments produced by grill-with-docs.
+description: Fold accumulated CONTEXT.<counter>.<uuid>.md glossary fragments into canonical CONTEXT.md files, and reconcile clashing sequential ADR numbers (re-sequencing duplicates and fixing the links that pointed at them), as a deliberate single-writer maintenance pass. Use when the user asks to consolidate, fold, merge, reconcile, clean up, or resolve concurrent context/glossary fragments or duplicate ADR numbers produced by grill-with-docs.
 ---
 
 # Grill Consolidate
 
-Use this skill to merge colocated `CONTEXT.<counter>.<uuid>.md` fragments into their base `CONTEXT.md`.
+Use this skill for the single-writer maintenance pass over the artifacts `grill-with-docs` produces under parallel use:
 
-This is a single-writer operation. Do not run it speculatively, automatically, or in parallel with another consolidation pass. If contested terms require a semantic decision, ask the user and wait.
+1. Merge colocated `CONTEXT.<counter>.<uuid>.md` glossary fragments into their base `CONTEXT.md`.
+2. Reconcile sequential ADR numbers under `docs/adr/` — detect duplicate `NNNN`, re-sequence the clash losers, and fix the links that referenced them.
+
+This is a single-writer operation. Do not run it speculatively, automatically, or in parallel with another consolidation pass. If a contested term or an ambiguous link requires a semantic decision, ask the user and wait.
 
 ## Find Contexts
 
@@ -74,16 +77,36 @@ Rules:
 - Include only project-specific domain language.
 - Use subheadings under `## Language` only when natural clusters exist.
 
+## Reconcile ADR Numbers
+
+ADRs are named `NNNN-slug.md` (four-digit sequence) and live in `docs/adr/`. Because creation picks the next number naively (`max+1`, no locking), parallel agents and teammates can land two ADRs on the **same** number. This pass detects those clashes, re-sequences, and repairs links.
+
+Process each `docs/adr/` directory **independently** — the system-wide one plus any per-context ones (find them via `CONTEXT-MAP.md` and by searching `rg --files -g 'docs/adr/*.md'`). Each directory has its own sequence.
+
+For each directory:
+
+1. **Detect clashes.** Parse every `NNNN-slug.md` filename and group by `NNNN`. A group with two or more files is a clash. If there are no clashes, this directory needs nothing — leave it untouched.
+2. **Pick the keeper.** Within a clashing group, the **chronologically older** ADR keeps the number. Determine age by git add-date (`git log --diff-filter=A --format=%at -1 -- <file>`); fall back to file mtime when a file is untracked or git is unavailable. The keeper is never renamed.
+3. **Renumber the losers — minimally.** Every other file in the group is a loser. Give each loser the next free number = current `max(NNNN across the directory) + 1`, in keeper-age order (oldest loser first), incrementing `max` as you assign. Do **not** fill gaps and do **not** compact non-colliding ADRs to a contiguous run — gaps are harmless, but every rename risks breaking a link. Touch only the losers. (Example: a clash at `0003` with `0004` and `0005` already present sends the loser to `0006`.)
+4. **Rename the loser file** from `NNNN-slug.md` to `MMMM-slug.md` (slug unchanged) with `git mv` when tracked.
+5. **Fix the links** to each renamed loser, repo-wide (search beyond `docs/adr/` — ADRs get cited from CONTEXT files, code comments, READMEs):
+   - **Filename / path links** (`[...](NNNN-slug.md)`, bare `NNNN-slug.md`): the slug disambiguates which ADR is meant, so rewrite the number to `MMMM` unambiguously.
+   - **Bare `ADR-NNNN` references** (the `superseded by ADR-NNNN` style): after a clash these are ambiguous — `ADR-NNNN` could mean the keeper or the bumped loser. Resolve **best-effort** using context (proximity to the loser's slug or title, which document the reference sits in, what the surrounding text discusses) and rewrite the ones that clearly point at the loser to `ADR-MMMM`.
+   - **Report every bare-`ADR-NNNN` rewrite** you made (file, line, old → new, and the cue you used) so the user can audit the guesses, and call out any bare references you left alone because the target was genuinely unclear.
+
+Do not invent ADR content, merge ADRs, or change their bodies beyond the cross-reference fixes above. This pass only reconciles numbers and links.
+
 ## Finish
 
 After all conflicts are resolved:
 
 1. Update the base `CONTEXT.md`.
 2. Delete only the fragments that were folded in.
-3. Inspect `git status --short` and identify only the base `CONTEXT.md` files and folded fragment deletions produced by this consolidation pass.
-4. Stage exactly those files. Do not stage unrelated existing work.
-5. Commit immediately with a concise message in the form `Consolidate context fragments`.
-6. Show the user the commit hash, the changed files, and any terms that were added, redefined, retired, or manually resolved.
+3. Apply the ADR renumbering: the loser renames (`git mv`) and every link edit they required.
+4. Inspect `git status --short` and identify only the artifacts produced by this consolidation pass — the base `CONTEXT.md` files, folded fragment deletions, ADR renames, and ADR link edits.
+5. Stage exactly those files. Do not stage unrelated existing work.
+6. Commit immediately with a concise message in the form `Consolidate context fragments` (mention `+ reconcile ADR numbers` when this pass renumbered any ADRs).
+7. Show the user the commit hash, the changed files, any terms that were added, redefined, retired, or manually resolved, and any ADRs renumbered (old → new) with the link rewrites that followed.
 
 Never delete a fragment that was not fully applied.
 Never commit if any folded output is ambiguous, contested, only partially applied, or mixed with unrelated edits that cannot be staged separately.
