@@ -80,6 +80,10 @@ After all conflicts are resolved:
 
 1. Update the base `CONTEXT.md`.
 2. Delete only the fragments that were folded in.
-3. Show the user the changed files and any terms that were added, redefined, retired, or manually resolved.
+3. Inspect `git status --short` and identify only the base `CONTEXT.md` files and folded fragment deletions produced by this consolidation pass.
+4. Stage exactly those files. Do not stage unrelated existing work.
+5. Commit immediately with a concise message in the form `Consolidate context fragments`.
+6. Show the user the commit hash, the changed files, and any terms that were added, redefined, retired, or manually resolved.
 
 Never delete a fragment that was not fully applied.
+Never commit if any folded output is ambiguous, contested, only partially applied, or mixed with unrelated edits that cannot be staged separately.
