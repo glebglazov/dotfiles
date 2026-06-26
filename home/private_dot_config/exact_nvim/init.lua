@@ -1264,8 +1264,10 @@ local function review_resolve_base(arg)
 end
 
 -- Populate the quickfix list with files changed against `base`. Committed reviews
--- use `base...HEAD` (merge-base); --uncommitted uses the working tree vs HEAD.
-local function review_files(base, uncommitted)
+-- use `base...<head>` (merge-base), where <head> defaults to HEAD but may be a
+-- single commit (e.g. base=<c>^, head=<c> → just that commit); --uncommitted
+-- uses the working tree vs HEAD.
+local function review_files(base, uncommitted, head)
   local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
   if vim.v.shell_error ~= 0 or not root or root == '' then
     vim.notify('Review: not in a git repo', vim.log.levels.WARN)
@@ -1275,7 +1277,7 @@ local function review_files(base, uncommitted)
   -- Buffer we started from; dropped below so the session opens on a clean,
   -- single-file view (just the first changed file) instead of whatever was open.
   local prev_buf = vim.api.nvim_get_current_buf()
-  local range = uncommitted and 'HEAD' or (base .. '...HEAD')
+  local range = uncommitted and 'HEAD' or (base .. '...' .. ((head and head ~= '') and head or 'HEAD'))
   -- --name-status so we can flag added/deleted/renamed files in the qf text;
   -- gitsigns only marks hunks within a file (and shows nothing for files absent
   -- from the base), so the per-file "new" indicator has to live in the list.
@@ -1327,7 +1329,9 @@ local review_default_statusline = vim.o.statusline
 
 -- Muted, easy-on-the-eyes review statusline badge (gruvbox neutral aqua on bg1).
 vim.api.nvim_set_hl(0, 'ReviewStatus', { fg = '#83a598', bg = '#3c3836', bold = true })
-vim.fn.sign_define('ReviewComment', { text = '󰆉', texthl = 'DiffAdd' })
+-- Left-margin range bars: aqua while unresolved, muted grey once resolved.
+vim.api.nvim_set_hl(0, 'ReviewBar', { fg = '#83a598' })
+vim.api.nvim_set_hl(0, 'ReviewBarResolved', { fg = '#665c54' })
 
 local function review_repo_root()
   local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
@@ -1341,11 +1345,23 @@ end
 local function review_render_buf(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, review_ns, 0, -1)
   local path = vim.api.nvim_buf_get_name(bufnr)
+  local total = vim.api.nvim_buf_line_count(bufnr)
   for _, c in ipairs(review.comments[path] or {}) do
+    local resolved = c.status == 'resolved'
+    -- Left bar spanning every line of the commented range (priority above
+    -- gitsigns so the range wins the sign cell on its own lines).
+    local bar_hl = resolved and 'ReviewBarResolved' or 'ReviewBar'
+    for l = c.lnum, math.min(c.end_line or c.lnum, total) do
+      pcall(vim.api.nvim_buf_set_extmark, bufnr, review_ns, l - 1, 0, {
+        sign_text = '▌',
+        sign_hl_group = bar_hl,
+        priority = 100,
+      })
+    end
+    -- Inline label at the head line.
     local first = c.text:match('[^\n]*') or c.text
     local label = first
     if c.text:find('\n') then label = first .. ' …' end
-    local resolved = c.status == 'resolved'
     local icon = resolved and '󰄬' or '󰆉'
     local hl = resolved and 'Comment' or 'DiagnosticVirtualTextInfo'
     pcall(vim.api.nvim_buf_set_extmark, bufnr, review_ns, c.lnum - 1, 0, {
@@ -1364,11 +1380,8 @@ local function review_render_all()
   end
 end
 
-local function review_resign(path)
-  vim.fn.sign_unplace('ReviewGroup', { buffer = path })
-  for _, c in ipairs(review.comments[path] or {}) do
-    vim.fn.sign_place(0, 'ReviewGroup', 'ReviewComment', path, { lnum = c.lnum })
-  end
+-- Re-render the buffer for `path` (signs + inline labels both come from extmarks).
+local function review_refresh(path)
   local bufnr = vim.fn.bufnr(path)
   if bufnr ~= -1 then review_render_buf(bufnr) end
 end
@@ -1400,10 +1413,20 @@ end
 
 local function review_add(start_line, end_line)
   local path = vim.fn.expand('%:p')
-  -- if a comment already covers exactly this line/range, edit it instead of adding a new one
+  -- Reuse an existing comment instead of stacking a new one. A single-line
+  -- request (cursor, no range) edits whatever comment covers that line; an
+  -- explicit range edits only a comment with the exact same span.
+  local single = start_line == end_line
   local existing
   for _, c in ipairs(review.comments[path] or {}) do
-    if c.lnum == start_line and (c.end_line or c.lnum) == end_line then
+    local cs, ce = c.lnum, (c.end_line or c.lnum)
+    local match
+    if single then
+      match = start_line >= cs and start_line <= ce
+    else
+      match = cs == start_line and ce == end_line
+    end
+    if match then
       existing = c
       break
     end
@@ -1458,7 +1481,7 @@ local function review_add(start_line, end_line)
       review.comments[path] = review.comments[path] or {}
       table.insert(review.comments[path], { lnum = start_line, end_line = end_line, text = text, status = 'unresolved' })
     end
-    review_resign(path)
+    review_refresh(path)
   end
   vim.keymap.set('n', '<CR>', confirm, { buffer = buf, nowait = true })
   vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true })
@@ -1541,13 +1564,10 @@ local function review_delete_at_cursor()
       table.remove(list, i)
     end
   end
-  review_resign(path)
+  review_refresh(path)
 end
 
 local function review_clear()
-  for path, _ in pairs(review.comments) do
-    vim.fn.sign_unplace('ReviewGroup', { buffer = path })
-  end
   review.comments = {}
   review.general = nil
   review_render_all()
@@ -1575,17 +1595,19 @@ end
 -- Start a review: changeset → quickfix, gitsigns base→<base> + signs on, inline
 -- comments on, statusline badge. `base` is a resolved rev; `uncommitted` reviews
 -- the working tree vs HEAD.
-local function review_start(base, uncommitted)
+local function review_start(base, uncommitted, head)
   base = base or get_default_remote_branch()
   review.active = true
   review_with_gitsigns(function(gs)
     gs.change_base(base, true)
     gs.toggle_signs(true)
   end)
-  review_files(base, uncommitted)
+  review_files(base, uncommitted, head)
   review_render_all()
   review_set_statusline()
-  vim.notify(('Review started (base: %s)'):format(uncommitted and 'working tree' or base), vim.log.levels.INFO)
+  local target = uncommitted and 'working tree'
+    or ((head and head ~= '') and (base .. '...' .. head) or ('base: ' .. base))
+  vim.notify(('Review started (%s)'):format(target), vim.log.levels.INFO)
 end
 
 -- Flatten all comments into a stable, path-sorted list of { path, rel, c }.
@@ -1958,19 +1980,38 @@ local function review_send_preview()
   agent_map_text_send(buf, close, 'No review text to send', 'Sent review to %s')
 end
 
--- Start a review of the selected ref's content: take the visual selection (a
--- commit hash, branch name, anything) as <slug> and run `:Review start <slug>^`,
--- i.e. base = <slug>^ so the changeset is what <slug> introduced.
-local function review_start_from_selection()
+-- Resolve the commit ref to review: the visual selection in any visual mode,
+-- otherwise the word under the cursor (a hash/branch/tag in e.g. a git log).
+local function review_target_ref()
   local mode = vim.fn.mode()
-  local sel = vim.fn.getregion(vim.fn.getpos('v'), vim.fn.getpos('.'), { type = mode })
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
-  local slug = vim.trim(table.concat(sel, ' '))
-  if slug == '' then
-    vim.notify('Review: empty selection', vim.log.levels.WARN)
-    return
+  local ref
+  if mode == 'v' or mode == 'V' or mode == '\22' then
+    local sel = vim.fn.getregion(vim.fn.getpos('v'), vim.fn.getpos('.'), { type = mode })
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'nx', false)
+    ref = vim.trim(table.concat(sel, ' '))
+  else
+    ref = vim.trim(vim.fn.expand('<cword>'))
   end
-  vim.cmd('Review start ' .. slug .. '^')
+  if ref == '' then
+    vim.notify('Review: no commit ref under cursor/selection', vim.log.levels.WARN)
+    return nil
+  end
+  return ref
+end
+
+-- "Review start commit": review only <ref>'s own content (base=<ref>^, head=<ref>).
+local function review_start_commit()
+  local ref = review_target_ref()
+  if not ref then return end
+  review_start(ref .. '^', false, ref)
+end
+
+-- "Review start range": review the whole span from <ref> through HEAD,
+-- <ref> included (base=<ref>^, head=HEAD). Mirrors the old visual <leader>rs.
+local function review_start_range()
+  local ref = review_target_ref()
+  if not ref then return end
+  review_start(ref .. '^', false)
 end
 
 vim.keymap.set('n', '<LEADER>rC', review_add_general, { silent = true, desc = 'Review: general note' })
@@ -1980,8 +2021,10 @@ vim.keymap.set('n', '<LEADER>rd', review_delete_at_cursor, { silent = true, desc
 vim.keymap.set('n', '<LEADER>re', review_export, { silent = true, desc = 'Review: export comments to clipboard' })
 vim.keymap.set('n', '<LEADER>rf', function() review_files(review_resolve_base(nil)) end, { silent = true, desc = 'Review: changed files to quickfix' })
 vim.keymap.set('n', '<LEADER>rs', function() review_start() end, { silent = true, desc = 'Review: start session' })
-vim.keymap.set('v', '<LEADER>rs', review_start_from_selection, { silent = true, desc = 'Review: start session for selected ref' })
+vim.keymap.set({ 'n', 'v' }, '<LEADER>rsc', review_start_commit, { silent = true, desc = 'Review: start session for commit (just its content)' })
+vim.keymap.set({ 'n', 'v' }, '<LEADER>rsr', review_start_range, { silent = true, desc = 'Review: start session for range (commit..HEAD)' })
 vim.keymap.set('n', '<LEADER>rS', function() review_start(review_resolve_base('--uncommitted')) end, { silent = true, desc = 'Review: start session (uncommitted)' })
+vim.keymap.set('n', '<LEADER>rX', review_clear, { silent = true, desc = 'Review: clear all comments' })
 vim.keymap.set('n', '<LEADER>rQ', review_finish, { silent = true, desc = 'Review: finish (export + clear + signs off)' })
 vim.keymap.set('n', '<LEADER>rp', review_preview, { silent = true, desc = 'Review: preview in float' })
 vim.keymap.set('n', '<LEADER>rE', review_send_preview, { silent = true, desc = 'Review: send comments to Pop pane' })
