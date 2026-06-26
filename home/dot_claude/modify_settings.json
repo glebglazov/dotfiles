@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# chezmoi modify_ script for ~/.claude/settings.json
+#
+# Why a modify_ script instead of a static template: this file has two owners.
+# pop owns its status hooks (pop pane set-status / set-topic), installed and
+# kept current by `pop integrate claude` — never hand-maintained here, so they
+# can't drift. chezmoi owns everything else (the rtk Bash hook + editor
+# settings). A modify_ script lets chezmoi merge ONLY its keys into whatever is
+# on disk, leaving pop's hooks untouched. Both sides are non-destructive
+# mergers, so neither clobbers the other regardless of who writes last.
+#
+# chezmoi pipes the current file to stdin; our stdout becomes the new file.
+set -euo pipefail
+
+input="$(cat)"
+[ -z "$input" ] && input='{}'
+
+printf '%s' "$input" | jq '
+    # ---- chezmoi-owned editor settings (authoritative) ----
+      .effortLevel = "high"
+    | .model = "claude-opus-4-8"
+    | .theme = "auto"
+    | .skipDangerousModePermissionPrompt = true
+    | .statusLine = {"type": "command", "command": "~/.claude/status-line"}
+    | .enabledPlugins = {
+        "caveman@caveman": true,
+        "skill-creator@claude-plugins-official": true,
+        "swift-lsp@claude-plugins-official": true
+      }
+    | .extraKnownMarketplaces = {
+        "caveman": {"source": {"source": "github", "repo": "JuliusBrussee/caveman"}}
+      }
+    # ---- chezmoi-owned rtk Bash hook: ensure present exactly once, leave pop hooks intact ----
+    | .hooks.PreToolUse = (
+        (.hooks.PreToolUse // []) as $pre
+        | if ([$pre[].hooks[]?.command] | index("rtk hook claude"))
+          then $pre
+          else $pre + [{"matcher": "Bash", "hooks": [{"type": "command", "command": "rtk hook claude"}]}]
+          end
+      )
+'
