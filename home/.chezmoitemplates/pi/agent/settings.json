@@ -1,5 +1,6 @@
 {
   "packages": [
     "npm:pi-web-access"
-  ]
+  ],
+  "theme": "dynamic"
 }
