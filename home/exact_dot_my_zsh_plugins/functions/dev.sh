@@ -66,7 +66,7 @@ function dev {
     for cmd in $(echo "$cmds" | grep -o .); do
         case "$cmd" in
             o)
-                open "http://${APP_HOST:-$DEVCONTAINER_DOMAIN}:3000"
+                open "http://${APP_HOST:-$DEVCONTAINER_DOMAIN}"
                 ;;
             r)
                 devcontainer exec --workspace-folder . .devcontainer/post-create.sh
