@@ -1,4 +1,7 @@
-includes = ["~/private/.config/pop/config.toml"]
+includes = [
+    "~/private/.config/pop/config.toml",
+    "~/private/.config/pop/session_templates.toml"
+]
 
 projects = [
     { path = "~/.local/share/chezmoi" },
@@ -31,7 +34,7 @@ tcp_server = true
 ignore_status_from = ["tmux-global"]
 topic_agents = [
     { type = "truncate", set_if = "empty" },
-    { type = "agent", model = "ollama:gemma4:e4b", set_if = "empty_or_seed", timeout = 60 }
+    { type = "agent", command = "ollama:gemma4:e4b", set_if = "empty_or_seed", timeout = 60 }
 ]
 
 [[worktree.commands]]
