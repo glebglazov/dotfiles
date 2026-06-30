@@ -1,6 +1,6 @@
 includes = [
     "~/private/.config/pop/config.toml",
-    "~/private/.config/pop/session_templates.toml"
+    "~/private/.config/pop/workbenches.toml"
 ]
 
 projects = [
@@ -8,6 +8,9 @@ projects = [
     { path = "~/Dev/*/*" },
     { path = "~/Dev/mixed/obsidian_vaults/*", display_depth = 2 }
 ]
+
+[workbench]
+pick_on_create = true
 
 [integrations]
 skills_prefix = ""
