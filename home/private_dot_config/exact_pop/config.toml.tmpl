@@ -21,12 +21,6 @@ label = "dev o"
 command = "$SHELL -ic 'dev o'"
 exit = true
 
-# [project]
-# unread_notifications_enabled = false
-#
-# [worktree]
-# unread_notifications_enabled = false
-
 [dashboard]
 # current_pane_always_under_cursor = true
 cursor_position = "current_any"
@@ -51,3 +45,27 @@ key = "ctrl+a"
 label = "new"
 command = "tmux-create-worktree"
 exit = true
+
+[workload]
+{{ if .work -}}
+default_agents = ["claude"]
+{{ else }}
+default_agents = ["codex", "cursor", "claude"]
+{{ end }}
+
+{{ if .work -}}
+[effort.claude]
+heavy = [{ model = "opus", reasoning = "xhigh" }]
+standard = [{ model = "opus", reasoning = "high" }]
+light = [{ model = "sonnet", reasoning = "high" }]
+{{ else }}
+[effort.claude]
+heavy = [{ model = "sonnet", reasoning = "max" }]
+standard = [{ model = "opus", reasoning = "xhigh" }]
+light = [{ model = "haiku", reasoning = "high" }]
+{{ end }}
+
+[effort.pi]
+heavy = [{ model = "opencode-go/qwen3.7-max" }]
+standard = [{ model = "opencode-go/kimi-k2.7-code" }]
+light = [{ model = "opencode-go/deepseek-v4-flash" }]
