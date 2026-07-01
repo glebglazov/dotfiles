@@ -40,12 +40,6 @@ label = "cleanup"
 command = "tmux-branch-cleanup"
 exit = true
 
-[[worktree.commands]]
-key = "ctrl+a"
-label = "new"
-command = "tmux-create-worktree"
-exit = true
-
 [workload]
 {{- if .work -}}
 default_agents = ["claude"]
