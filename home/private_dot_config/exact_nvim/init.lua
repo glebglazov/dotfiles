@@ -413,6 +413,8 @@ require('lazy').setup({
       { '<LEADER>td', function() require('gitsigns').toggle_deleted() end, desc = 'Toggle deleted lines inline' },
       { '<LEADER>tp', function() require('gitsigns').preview_hunk() end, desc = 'Preview hunk (added + removed)' },
       { '<LEADER>tb', function() require('gitsigns').change_base(get_default_remote_branch(), true) end, desc = 'Gitsigns base → default branch' },
+      { ']h', function() require('gitsigns').nav_hunk('next') end, desc = 'Next hunk' },
+      { '[h', function() require('gitsigns').nav_hunk('prev') end, desc = 'Previous hunk' },
     },
   },
   {
