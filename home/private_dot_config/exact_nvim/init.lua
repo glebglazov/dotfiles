@@ -470,7 +470,30 @@ require('lazy').setup({
         end,
       },
       { '<LEADER>gce', ':G commit --allow-empty -m \'\'<LEFT>' },
-      { '<LEADER>gpl', ':G pull --rebase<CR>' },
+      {
+        '<LEADER>gpl',
+        function()
+          vim.system({ 'git', 'pull', '--rebase' }, { text = true }, function(pull)
+            vim.schedule(function()
+              if pull.code ~= 0 then
+                vim.notify((pull.stderr or '') .. (pull.stdout or ''), vim.log.levels.ERROR)
+                return
+              end
+              vim.system(
+                { 'git', 'submodule', 'update', '--init', '--recursive' },
+                { text = true },
+                function(sub)
+                  vim.schedule(function()
+                    local out = (pull.stdout or '') .. (sub.stdout or '') .. (sub.stderr or '')
+                    vim.notify(out, sub.code == 0 and vim.log.levels.INFO or vim.log.levels.ERROR)
+                    vim.cmd('checktime')
+                  end)
+                end
+              )
+            end)
+          end)
+        end,
+      },
       { '<LEADER>gpo', ':G push<CR>' },
       { '<LEADER>gpf', ':G push --force-with-lease origin HEAD<CR>' },
       { '<LEADER>gpF', ':G push --force origin HEAD<CR>' },
@@ -784,6 +807,10 @@ local search_and_replace_mappings_fn = function(_, map)
 end
 
 vim.keymap.set('n', '<LEADER>u', vim.cmd.Undotree)
+
+vim.keymap.set('n', '<LEADER>nd', function()
+  require('notify').dismiss({ silent = true, pending = true })
+end, { desc = 'Dismiss all notifications' })
 
 vim.keymap.set('n', '<LEADER>cf', function()
   vim.cmd('edit ~/.local/share/chezmoi/home/private_dot_config/exact_nvim/init.lua', { silent = true })
