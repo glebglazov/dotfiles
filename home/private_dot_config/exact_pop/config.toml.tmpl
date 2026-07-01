@@ -47,11 +47,11 @@ command = "tmux-create-worktree"
 exit = true
 
 [workload]
-{{ if .work -}}
+{{- if .work -}}
 default_agents = ["claude"]
-{{ else }}
+{{- else }}
 default_agents = ["codex", "cursor", "claude"]
-{{ end }}
+{{- end }}
 
 {{ if .work -}}
 [effort.claude]
@@ -61,7 +61,7 @@ light = [{ model = "sonnet", reasoning = "high" }]
 {{ else }}
 [effort.claude]
 heavy = [{ model = "sonnet", reasoning = "max" }]
-standard = [{ model = "opus", reasoning = "xhigh" }]
+standard = [{ model = "sonnet", reasoning = "xhigh" }]
 light = [{ model = "haiku", reasoning = "high" }]
 {{ end }}
 
