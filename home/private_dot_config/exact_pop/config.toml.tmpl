@@ -40,11 +40,19 @@ label = "cleanup"
 command = "tmux-branch-cleanup"
 exit = true
 
-[workload]
+[tasks.implement]
 {{- if .work -}}
-default_agents = ["claude"]
+agents = ["claude"]
 {{- else }}
-default_agents = ["codex", "cursor", "claude"]
+agents = ["pi", "cursor", "claude"]
+{{- end }}
+
+[tasks.verify]
+enabled = true
+{{- if .work }}
+agents = ["claude --model opus --effort xhigh"]
+{{- else }}
+agents = ["claude --model opus --effort high", "pi --model qwen3.7-max"]
 {{- end }}
 
 {{ if .work -}}
