@@ -41,7 +41,7 @@ command = "tmux-branch-cleanup"
 exit = true
 
 [tasks.implement]
-{{- if .work -}}
+{{- if .work }}
 agents = ["claude"]
 {{- else }}
 agents = ["pi", "cursor", "claude"]
