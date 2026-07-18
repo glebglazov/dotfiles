@@ -4,10 +4,11 @@
 # Why a modify_ script instead of a static template: this file has two owners.
 # pop owns its status hooks (pop pane set-status / set-topic), installed and
 # kept current by `pop integrate claude` — never hand-maintained here, so they
-# can't drift. chezmoi owns everything else (the rtk Bash hook + editor
-# settings). A modify_ script lets chezmoi merge ONLY its keys into whatever is
-# on disk, leaving pop's hooks untouched. Both sides are non-destructive
-# mergers, so neither clobbers the other regardless of who writes last.
+# can't drift. chezmoi owns everything else (the rtk Bash hook, editor
+# settings, permission denies, and disable flags). A modify_ script lets chezmoi
+# merge ONLY its keys into whatever is on disk, leaving pop's hooks untouched.
+# Both sides are non-destructive mergers, so neither clobbers the other
+# regardless of who writes last.
 #
 # chezmoi pipes the current file to stdin; our stdout becomes the new file.
 set -euo pipefail
@@ -30,6 +31,25 @@ printf '%s' "$input" | jq '
     | .extraKnownMarketplaces = {
         "caveman": {"source": {"source": "github", "repo": "JuliusBrussee/caveman"}}
       }
+    | .permissions.deny = [
+        "EnterPlanMode",
+        "ExitPlanMode",
+        "DesignSync",
+        "NotebookEdit",
+        "SendMessage",
+        "PushNotification",
+        "RemoteTrigger",
+        "ReportFindings",
+        "ScheduleWakeup",
+        "AskUserQuestion",
+        "CronCreate",
+        "CronDelete",
+        "CronList"
+      ]
+    | .disableBundledSkills = true
+    | .disableWorkflows = true
+    | .disableClaudeAiConnectors = true
+    | .disableArtifact = true
     # ---- chezmoi-owned rtk Bash hook: ensure present exactly once, leave pop hooks intact ----
     | .hooks.PreToolUse = (
         (.hooks.PreToolUse // []) as $pre
