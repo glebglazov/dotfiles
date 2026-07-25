@@ -39,7 +39,7 @@ exit = true
 
 [tasks.implement]
 {{- if .work }}
-agents = ["claude"]
+agents = ["claude", "codex"]
 {{- else }}
 agents = ["pi", "cursor", "claude"]
 {{- end }}
@@ -47,15 +47,15 @@ agents = ["pi", "cursor", "claude"]
 [tasks.verify]
 enabled = true
 {{- if .work }}
-agents = ["claude --model opus --effort xhigh"]
+agents = ["claude --model claude-opus-5 --effort xhigh"]
 {{- else }}
-agents = ["claude --model opus --effort high", "pi --model qwen3.7-max"]
+agents = ["claude --model claude-opus-5 --effort high", "pi --model qwen3.7-max"]
 {{- end }}
 
 {{ if .work -}}
 [effort.claude]
-heavy = [{ model = "opus", reasoning = "xhigh" }]
-standard = [{ model = "opus", reasoning = "high" }]
+heavy = [{ model = "claude-opus-5", reasoning = "xhigh" }]
+standard = [{ model = "claude-opus-5", reasoning = "high" }]
 light = [{ model = "sonnet", reasoning = "high" }]
 {{ else }}
 [effort.claude]
@@ -63,6 +63,11 @@ heavy = [{ model = "sonnet", reasoning = "max" }]
 standard = [{ model = "sonnet", reasoning = "xhigh" }]
 light = [{ model = "haiku", reasoning = "high" }]
 {{ end }}
+
+[effort.codex]
+heavy = [{ model = "gpt-5.6-sol", reasoning = "xhigh" }]
+standard = [{ model = "gpt-5.6-sol", reasoning = "medium" }]
+light = [{ model = "gpt-5.6-terra", reasoning = "low" }]
 
 [effort.pi]
 heavy = [{ model = "opencode-go/qwen3.7-max" }]
