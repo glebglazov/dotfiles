@@ -23,6 +23,7 @@ printf '%s' "$input" | jq '
     | .theme = "auto"
     | .skipDangerousModePermissionPrompt = true
     | .statusLine = {"type": "command", "command": "~/.claude/status-line"}
+    | .autoEnableMemory = false
     | .enabledPlugins = {
         "caveman@caveman": true,
         "skill-creator@claude-plugins-official": true,
