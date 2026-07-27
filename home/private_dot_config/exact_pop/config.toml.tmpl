@@ -47,15 +47,15 @@ agents = ["pi", "cursor", "claude"]
 [tasks.verify]
 enabled = true
 {{- if .work }}
-agents = ["claude --model claude-opus-5 --effort xhigh"]
+agents = ["claude --model opus --effort xhigh"]
 {{- else }}
-agents = ["claude --model claude-opus-5 --effort high", "pi --model qwen3.7-max"]
+agents = ["claude --model opus --effort high", "pi --model qwen3.7-max"]
 {{- end }}
 
 {{ if .work -}}
 [effort.claude]
-heavy = [{ model = "claude-opus-5", reasoning = "xhigh" }]
-standard = [{ model = "claude-opus-5", reasoning = "high" }]
+heavy = [{ model = "opus reasoning = "xhigh" }]
+standard = [{ model = "opus reasoning = "high" }]
 light = [{ model = "sonnet", reasoning = "high" }]
 {{ else }}
 [effort.claude]
