@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "afterAgentResponse": [
+      {
+        "command": "pop pane set-status unread --label cursor 2>/dev/null || true"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "pop pane set-status working --label cursor 2>/dev/null || true"
+      },
+      {
+        "command": "pop pane set-topic --derive --label cursor 2>/dev/null || true"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "pop pane set-status working --label cursor 2>/dev/null || true"
+      },
+      {
+        "command": "rtk hook cursor",
+        "matcher": "Shell"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "pop pane set-status clear --label cursor 2>/dev/null || true"
+      },
+      {
+        "command": "pop pane set-topic --clear 2>/dev/null || true"
+      }
+    ],
+    "stop": [
+      {
+        "command": "pop pane set-status unread --label cursor 2>/dev/null || true"
+      }
+    ]
+  },
+  "version": 1
+}
