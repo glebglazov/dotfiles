@@ -1,0 +1,118 @@
+# Gruvbox Light skin for k9s — pairs with Ghostty's "Gruvbox Light" theme.
+# Backgrounds are `default` so the terminal's own background shows through,
+# which keeps k9s in step with Ghostty's light/dark auto-switch.
+#
+# Key point vs the stock skin: stock sets views.yaml.valueColor to papayawhip
+# (#ffefd5) and colonColor to white, both invisible on the #fbf1c7 light
+# background. Here values use the palette foreground instead.
+k9s:
+  body:
+    fgColor: "#3c3836"
+    bgColor: default
+    logoColor: "#b57614"
+    logoColorMsg: "#3c3836"
+    logoColorInfo: "#79740e"
+    logoColorWarn: "#8f3f71"
+    logoColorError: "#9d0006"
+  prompt:
+    fgColor: "#3c3836"
+    bgColor: default
+    suggestColor: "#076678"
+    border:
+      command: "#427b58"
+      default: "#689d6a"
+  help:
+    fgColor: "#3c3836"
+    bgColor: default
+    sectionColor: "#79740e"
+    keyColor: "#076678"
+    numKeyColor: "#8f3f71"
+  frame:
+    title:
+      fgColor: "#427b58"
+      bgColor: default
+      highlightColor: "#8f3f71"
+      counterColor: "#b57614"
+      filterColor: "#427b58"
+    border:
+      fgColor: "#928374"
+      focusColor: "#076678"
+    menu:
+      fgColor: "#3c3836"
+      keyColor: "#076678"
+      numKeyColor: "#8f3f71"
+    crumbs:
+      fgColor: "#fbf1c7"
+      bgColor: "#427b58"
+      activeColor: "#b57614"
+    status:
+      newColor: "#076678"
+      modifyColor: "#79740e"
+      addColor: "#427b58"
+      pendingColor: "#b57614"
+      errorColor: "#9d0006"
+      highlightColor: "#8f3f71"
+      killColor: "#7c6f64"
+      completedColor: "#928374"
+  info:
+    sectionColor: "#3c3836"
+    fgColor: "#b57614"
+  views:
+    table:
+      fgColor: "#3c3836"
+      bgColor: default
+      cursorFgColor: "#fbf1c7"
+      cursorBgColor: "#076678"
+      markColor: "#8f3f71"
+      header:
+        fgColor: "#076678"
+        bgColor: default
+        sorterColor: "#9d0006"
+    xray:
+      fgColor: "#3c3836"
+      bgColor: default
+      cursorColor: "#076678"
+      cursorTextColor: "#fbf1c7"
+      graphicColor: "#427b58"
+    charts:
+      bgColor: default
+      dialBgColor: default
+      chartBgColor: default
+      defaultDialColors:
+        - "#79740e"
+        - "#9d0006"
+      defaultChartColors:
+        - "#79740e"
+        - "#9d0006"
+      resourceColors:
+        cpu:
+          - "#076678"
+          - "#458588"
+        mem:
+          - "#b57614"
+          - "#d79921"
+    yaml:
+      keyColor: "#076678"
+      colonColor: "#928374"
+      valueColor: "#3c3836"
+    picker:
+      mainColor: "#3c3836"
+      focusColor: "#427b58"
+      shortcutColor: "#b57614"
+    logs:
+      fgColor: "#3c3836"
+      bgColor: default
+      indicator:
+        fgColor: "#076678"
+        bgColor: default
+        toggleOnColor: "#79740e"
+        toggleOffColor: "#928374"
+  dialog:
+    fgColor: "#3c3836"
+    bgColor: default
+    buttonFgColor: "#fbf1c7"
+    buttonBgColor: "#7c6f64"
+    buttonFocusFgColor: "#fbf1c7"
+    buttonFocusBgColor: "#076678"
+    labelFgColor: "#b57614"
+    fieldFgColor: "#3c3836"

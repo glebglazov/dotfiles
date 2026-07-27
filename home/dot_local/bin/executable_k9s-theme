@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Point k9s at the Gruvbox skin matching macOS light/dark appearance.
+#
+# k9s resolves k9s.ui.skin to skins/<name>.yaml, so config.yaml pins the name
+# "dynamic" and this script rewrites that one file's contents. k9s runs a
+# SkinWatcher over the active skin file, so a running k9s repaints on a theme
+# flip -- overwriting in place (rather than swapping a symlink or renaming)
+# keeps the inode that watcher holds.
+set -euo pipefail
+
+config_dir=${K9S_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/k9s}
+skins_dir=$config_dir/skins
+
+if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi dark; then
+  source_skin=$skins_dir/gruvbox-dark.yaml
+else
+  source_skin=$skins_dir/gruvbox-light.yaml
+fi
+
+if [[ ! -f $source_skin ]]; then
+  echo "k9s-theme: missing $source_skin" >&2
+  exit 1
+fi
+
+target=$skins_dir/dynamic.yaml
+
+# client-focus-in fires constantly, so only touch the file when the appearance
+# actually changed. Otherwise every pane focus would wake the SkinWatcher and
+# make a running k9s repaint.
+if [[ -f $target ]] && cmp -s "$source_skin" "$target"; then
+  exit 0
+fi
+
+cat "$source_skin" >"$target"

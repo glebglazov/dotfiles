@@ -83,10 +83,14 @@ set -g status-style bg=default,fg=colour245
 # Pane border colors follow terminal light/dark appearance (tmux 3.6+).
 # client-*-theme hooks fire when the terminal reports a theme change; the
 # focus hook covers attach/reload before the first theme event.
-run-shell -b "$HOME/.local/bin/tmux-theme"
-set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\""'
-set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\""'
-set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\""'
+# k9s-theme rides the same hooks: k9s' stock skin is tuned for a dark
+# background, and k9s watches its skin file, so a running k9s repaints too.
+# Both run from one run-shell so the hooks stay `set-hook -g` (overwrite) and
+# re-sourcing this config can't stack duplicate invocations.
+run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"
+set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
+set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
+set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set -g message-style fg=colour0,bg=colour245
 set -g mode-style fg=colour0,bg=colour11,bold
 
