@@ -41,7 +41,7 @@ exit = true
 {{- if .work }}
 agents = ["claude", "codex"]
 {{- else }}
-agents = ["pi", "cursor", "claude"]
+agents = ["cursor", "pi", "claude"]
 {{- end }}
 
 [tasks.verify]
@@ -49,7 +49,7 @@ enabled = true
 {{- if .work }}
 agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
 {{- else }}
-agents = ["claude --model opus --effort high", "pi --model qwen3.7-max"]
+agents = ["claude --model opus --effort high", "pi --model kimi-k3"]
 {{- end }}
 
 {{ if .work -}}
@@ -70,7 +70,7 @@ standard = [{ model = "gpt-5.6-sol", reasoning = "medium" }]
 light = [{ model = "gpt-5.6-terra", reasoning = "low" }]
 
 [effort.pi]
-heavy = [{ model = "opencode-go/qwen3.7-max" }]
+heavy = [{ model = "opencode-go/kimi-k3" }]
 standard = [{ model = "opencode-go/kimi-k2.7-code" }]
 light = [{ model = "opencode-go/deepseek-v4-flash" }]
 
