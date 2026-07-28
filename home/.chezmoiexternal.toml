@@ -7,9 +7,9 @@
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/kanata"]
 	type = "archive-file"
-	url = "https://github.com/jtroo/kanata/releases/download/v1.10.0/macos-binaries-arm64-v1.10.0.zip"
+	url = "https://github.com/jtroo/kanata/releases/download/v1.12.0/macos-binaries-arm64.zip"
 	path = "kanata_macos_cmd_allowed_arm64"
-	checksum.sha256="19fdeb89087b83cd6c1ac8f49612206acbb5134f5b14154966dcb3fa80dc9150"
+	checksum.sha256="839769d189911b5881e11550eaa2039705213fb725865d088f5a2e3a6c10de32"
 	executable = true
 {{- end }}
 

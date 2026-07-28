@@ -1,0 +1,44 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+
+#!/bin/bash
+set -euo pipefail
+
+# kanata talks only to Karabiner-DriverKit-VirtualHIDDevice v6.x. Newer drivers
+# (v8, shipped by Karabiner-Elements 16.x) move the daemon socket, so kanata
+# loops on "connect_failed asio.system:2". Pin the driver kanata expects.
+DRIVER_VERSION="6.2.0"
+DRIVER_SHA256="9e8c46239f0748161241e42444857901224e5c82f5b58a1731df4c70bf0736a8"
+PKG_URL="https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/releases/download/v${DRIVER_VERSION}/Karabiner-DriverKit-VirtualHIDDevice-${DRIVER_VERSION}.pkg"
+
+DAEMON_PLIST="/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/Applications/Karabiner-VirtualHIDDevice-Daemon.app/Contents/Info.plist"
+MANAGER="/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager"
+
+installed=""
+if [ -f "$DAEMON_PLIST" ]; then
+    installed="$(defaults read "$DAEMON_PLIST" CFBundleVersion 2>/dev/null || true)"
+fi
+
+if [ "$installed" = "$DRIVER_VERSION" ]; then
+    exit 0
+fi
+
+# installer(8) rejects paths that don't end in .pkg, so name the file inside a temp dir.
+TMPDIR_PKG="$(mktemp -d -t karabiner-vhid)"
+PKG="${TMPDIR_PKG}/Karabiner-DriverKit-VirtualHIDDevice-${DRIVER_VERSION}.pkg"
+trap 'rm -rf "$TMPDIR_PKG"' EXIT
+curl -fsSL -o "$PKG" "$PKG_URL"
+echo "${DRIVER_SHA256}  ${PKG}" | shasum -a 256 -c -
+
+# A different driver version is active; unload it before installing over it.
+if [ -n "$installed" ] && [ -x "$MANAGER" ]; then
+    echo "Deactivating driver ${installed}"
+    sudo "$MANAGER" forceDeactivate || true
+fi
+
+sudo installer -pkg "$PKG" -target /
+sudo "$MANAGER" activate
+
+echo "Karabiner VirtualHIDDevice ${DRIVER_VERSION} installed"
+echo "Approve it in System Settings > General > Login Items & Extensions > Driver Extensions"
+
+{{- end }}
