@@ -1707,45 +1707,61 @@ end
 
 -- Preview the assembled review in a floating scratch buffer (no clipboard write).
 -- Shows ALL comments (incl. resolved) with a [ ]/[x] status checkbox; `t` toggles
--- the comment under the cursor. Only unresolved comments are exported.
+-- the comment under the cursor, `<CR>` jumps to its source line. Only unresolved
+-- comments are exported.
 local function review_preview()
   local entries = review_entries()
   if not review.general and #entries == 0 then
     vim.notify('No review comments to preview', vim.log.levels.WARN)
     return
   end
+  -- Window <CR> jumps into: the one we came from, unless that's the quickfix
+  -- list (an :edit there would replace the changeset window), in which case the
+  -- first ordinary window wins.
+  local origin_win = vim.api.nvim_get_current_win()
+  if vim.bo[vim.api.nvim_win_get_buf(origin_win)].buftype ~= '' then
+    for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      if vim.bo[vim.api.nvim_win_get_buf(w)].buftype == '' then
+        origin_win = w
+        break
+      end
+    end
+  end
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].bufhidden = 'wipe'
   vim.bo[buf].filetype = 'markdown'
 
-  local line_to_comment = {}
-  local function append_preview(lines, i, mark, label, c)
+  -- line → { c = comment, path = abs path or nil for the general note }; every
+  -- line of a multi-line comment maps back to the same entry.
+  local line_to_entry = {}
+  local function append_preview(lines, i, mark, label, c, path)
+    local entry = { c = c, path = path }
     if c.text:find('\n') then
       table.insert(lines, ('%d. %s `%s`:'):format(i, mark, label))
-      line_to_comment[#lines] = c
+      line_to_entry[#lines] = entry
       for _, l in ipairs(vim.split(c.text, '\n', { plain = true })) do
         table.insert(lines, '   ' .. l)
-        line_to_comment[#lines] = c
+        line_to_entry[#lines] = entry
       end
     else
       table.insert(lines, ('%d. %s `%s` - %s'):format(i, mark, label, c.text))
-      line_to_comment[#lines] = c
+      line_to_entry[#lines] = entry
     end
   end
   local function render()
-    line_to_comment = {}
+    line_to_entry = {}
     local lines = {}
     local i = 0
     if review.general then
       i = i + 1
       local mark = review.general.status == 'resolved' and '[x]' or '[ ]'
-      append_preview(lines, i, mark, 'General', review.general)
+      append_preview(lines, i, mark, 'General', review.general, nil)
     end
     for _, e in ipairs(entries) do
       i = i + 1
       local c = e.c
       local mark = c.status == 'resolved' and '[x]' or '[ ]'
-      append_preview(lines, i, mark, review_loc(e.rel, c), c)
+      append_preview(lines, i, mark, review_loc(e.rel, c), c, e.path)
     end
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -1764,22 +1780,40 @@ local function review_preview()
     width = width,
     height = height,
     border = 'rounded',
-    title = ' Review preview  (t toggle resolved · q close) ',
+    title = ' Review preview  (<CR> jump · t toggle resolved · <Esc> close) ',
     title_pos = 'center',
     style = 'minimal',
   })
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end
   vim.keymap.set('n', 't', function()
-    local c = line_to_comment[vim.fn.line('.')]
-    if not c then return end
+    local entry = line_to_entry[vim.fn.line('.')]
+    if not entry then return end
+    local c = entry.c
     c.status = (c.status == 'resolved') and 'unresolved' or 'resolved'
     local pos = vim.api.nvim_win_get_cursor(win)
     render()
     pcall(vim.api.nvim_win_set_cursor, win, pos)
     review_render_all() -- reflect status in inline virt_text on source buffers
   end, { buffer = buf, nowait = true })
-  vim.keymap.set('n', 'q', function()
-    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  vim.keymap.set('n', '<CR>', function()
+    local entry = line_to_entry[vim.fn.line('.')]
+    if not entry then return end
+    if not entry.path then
+      vim.notify('General note has no location', vim.log.levels.INFO)
+      return
+    end
+    local path, lnum = entry.path, entry.c.lnum
+    close()
+    if vim.api.nvim_win_is_valid(origin_win) then
+      vim.api.nvim_set_current_win(origin_win)
+    end
+    vim.cmd('edit ' .. vim.fn.fnameescape(path))
+    pcall(vim.api.nvim_win_set_cursor, 0, { math.min(lnum, vim.api.nvim_buf_line_count(0)), 0 })
+    vim.cmd('normal! zz')
   end, { buffer = buf, nowait = true })
+  vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true })
 end
 
 local function agent_message_lines(buf)
