@@ -19,7 +19,7 @@ input="$(cat)"
 printf '%s' "$input" | jq '
     # ---- chezmoi-owned editor settings (authoritative) ----
       .model = "claude-opus-5"
-    | .effortLevel = "high"
+    | .effortLevel = "medium"
     | .theme = "auto"
     | .skipDangerousModePermissionPrompt = true
     | .statusLine = {"type": "command", "command": "~/.claude/status-line"}
