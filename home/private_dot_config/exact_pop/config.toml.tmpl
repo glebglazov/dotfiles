@@ -54,13 +54,13 @@ agents = ["claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 
 {{ if .work -}}
 [effort.claude]
-heavy = [{ model = "opus", reasoning = "xhigh" }]
-standard = [{ model = "opus", reasoning = "high" }]
+heavy = [{ model = "opus", reasoning = "high" }]
+standard = [{ model = "opus", reasoning = "medium" }]
 light = [{ model = "sonnet", reasoning = "high" }]
 {{ else }}
 [effort.claude]
-heavy = [{ model = "sonnet", reasoning = "max" }]
-standard = [{ model = "sonnet", reasoning = "xhigh" }]
+heavy = [{ model = "opus", reasoning = "medium" }]
+standard = [{ model = "opus", reasoning = "low" }]
 light = [{ model = "haiku", reasoning = "high" }]
 {{ end }}
 
