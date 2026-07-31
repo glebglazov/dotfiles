@@ -14,8 +14,34 @@ there, invoke `rtk <cmd>` yourself when output is likely to be large.
   `rtk gain`, `rtk gain --history`, `rtk discover`.
 - `rtk proxy <cmd>` runs a command unfiltered. Use it when rtk's filtering is
   hiding output you need.
+- `rtk find` rejects compound predicates and actions (`-not`, `-exec`, …). Don't
+  retry variations — reach for `rg --files` or `rtk proxy find` instead.
 - Do not run `rtk init`. This file and every agent's rtk wiring are managed by
   chezmoi; `rtk init` rewrites them out from under it.
+
+## Tool economy
+
+Context is billed on every turn and only grows, so a session's cost rises with
+the square of how many tool calls it takes. Fewer, fatter calls beat many thin
+ones.
+
+- **Absolute paths, one shell call.** Shell state doesn't carry between calls.
+  Don't `cd` somewhere and `cd` back next call; don't re-export the same env line
+  repeatedly — chain setup and command together, or put the setup in a script and
+  run that.
+- **Probe wide once.** One `rg` across the tree beats a ladder of narrowing greps.
+  If two searches for the same symbol come back empty, the search shape is wrong —
+  switch to LSP go-to-definition or read the file that owns the type, don't try a
+  third pattern.
+- **Never re-run for output already in context.** Re-reading a file you just read
+  or re-running a build whose output you have pays twice for one fact.
+- **Images are permanent context.** A screenshot read at turn 60 is re-billed for
+  every turn after it. Read one when visual judgment is genuinely the question;
+  don't hold variant pairs side by side.
+- **Drive interactive tools from a script, not from the prompt.** A browser or
+  REPL session stepped one statement per shell call spends hundreds of turns on
+  work one file would do in a single run. Write the script to a temp file, run it
+  once, print every assertion.
 
 ## Opinions
 
