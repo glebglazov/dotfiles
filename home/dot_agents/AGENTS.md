@@ -43,6 +43,12 @@ ones.
   work one file would do in a single run. Write the script to a temp file, run it
   once, print every assertion.
 
+## Git
+
+Never create a branch unless I ask for one. Work on the branch that is already
+checked out, even if it is the default branch. If you think the change belongs on
+its own branch, say so and let me decide — do not switch or create anything first.
+
 ## Opinions
 
 ### Assessing solutions
