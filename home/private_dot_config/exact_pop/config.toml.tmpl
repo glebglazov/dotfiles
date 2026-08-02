@@ -49,7 +49,7 @@ enabled = true
 {{- if .work }}
 agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
 {{- else }}
-agents = ["claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
+agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
 {{ if .work -}}
@@ -74,7 +74,13 @@ heavy = [{ model = "opencode-go/kimi-k3" }]
 standard = [{ model = "opencode-go/deepseek-v4-flash" }]
 light = [{ model = "opencode-go/kimi-k2.7-code" }]
 
+# Cursor encodes reasoning in the model name (ADR-0066), so a tier is a bare
+# token. Heads are all Anthropic on purpose: one vendor allowance gates every
+# tier, so exhausting it is a single observable event rather than three. The
+# grok/composer tails are cursor-branded models that allowance does not gate —
+# the floor that still runs once the vendor is spent.
+# Tail entries are inert until the intra-tier model skip ships (ADR-0168).
 [effort.cursor]
-heavy = [{ model = "cursor-grok-4.5-high" }]
-standard = [{ model = "composer-2.5" }]
-light = [{ model = "composer-2.5-fast" }]
+heavy = [{ model = "claude-opus-5-thinking-medium" }, { model = "cursor-grok-4.5-high" }, { model = "composer-2.5" }]
+standard = [{ model = "claude-opus-5-thinking-low" }, { model = "cursor-grok-4.5-medium" }, { model = "composer-2.5" }]
+light = [{ model = "claude-sonnet-5-thinking-high" }, { model = "composer-2.5-fast" }]
