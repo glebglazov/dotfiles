@@ -5,11 +5,24 @@ major version of it. Both pieces are managed by this repo:
 
 - `home/.chezmoiexternal.toml` — pins the kanata binary (`.local/bin/kanata`)
 - `home/.chezmoiscripts/darwin/run_onchange_after_install-karabiner-vhid-driver.sh.tmpl`
-  — installs the standalone driver at the version kanata expects
+  — installs the standalone driver at the version kanata expects, and registers the
+  launchd job for its daemon
 
 Karabiner-Elements is deliberately **not** installed: it was dropped from the cask
 list and added to `$cleanup_list` in `run_onchange_install-packages.sh.tmpl`. Its
 16.x releases bundle driver v8, which kanata cannot talk to.
+
+## The daemon needs a launchd job
+
+Two separate things must run: the **dext** (system extension, started by macOS once
+approved) and the **VirtualHIDDevice-Daemon**, which creates the socket kanata connects
+to. The driver pkg ships the daemon binary but *no* launchd job — Karabiner-Elements
+normally installs one, and it isn't installed here.
+
+So the driver script writes
+`/Library/LaunchDaemons/org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon.plist`
+(`RunAtLoad` + `KeepAlive`) and bootstraps it. Without it the daemon never starts and
+kanata loops forever on `connect_failed asio.system:2`.
 
 ---
 
@@ -64,15 +77,26 @@ Escape hatch while kanata runs: `lctl+spc+esc` (in `defsrc` terms, i.e. pre-rema
 
 - A few lines at startup followed by normal operation is just kanata retrying while
   the daemon comes up — harmless.
-- Endless repetition means **driver version mismatch** (e.g. v8 installed while
-  kanata wants v6) or a dead daemon. Compare versions as above, then restart the
-  daemon:
+- Endless repetition means the **daemon isn't running** or a **driver version
+  mismatch** (e.g. v8 installed while kanata wants v6).
+
+Check the daemon first — an activated dext is not enough, the daemon is a separate
+process:
+
+```bash
+pgrep -fl VirtualHIDDevice-Daemon
+launchctl print system/org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon
+```
+
+`Could not find service` means the launchd job is missing; re-run `chezmoi apply` to
+install it. If the job exists but the daemon is down:
 
 ```bash
 sudo launchctl kickstart -k system/org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon
 ```
 
-Upgrading kanata does not fix a mismatch — downgrade the driver instead.
+If the daemon is up, compare versions as above. Upgrading kanata does not fix a
+mismatch — downgrade the driver instead.
 
 ### `Karabiner-VirtualHIDDevice driver is not activated`
 

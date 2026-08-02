@@ -10,35 +10,72 @@ DRIVER_VERSION="6.2.0"
 DRIVER_SHA256="9e8c46239f0748161241e42444857901224e5c82f5b58a1731df4c70bf0736a8"
 PKG_URL="https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/releases/download/v${DRIVER_VERSION}/Karabiner-DriverKit-VirtualHIDDevice-${DRIVER_VERSION}.pkg"
 
-DAEMON_PLIST="/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/Applications/Karabiner-VirtualHIDDevice-Daemon.app/Contents/Info.plist"
+DAEMON_APP="/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/Applications/Karabiner-VirtualHIDDevice-Daemon.app"
+DAEMON_BIN="${DAEMON_APP}/Contents/MacOS/Karabiner-VirtualHIDDevice-Daemon"
+DAEMON_INFO_PLIST="${DAEMON_APP}/Contents/Info.plist"
 MANAGER="/Applications/.Karabiner-VirtualHIDDevice-Manager.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Manager"
 
+LAUNCH_LABEL="org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon"
+LAUNCH_PLIST="/Library/LaunchDaemons/${LAUNCH_LABEL}.plist"
+
 installed=""
-if [ -f "$DAEMON_PLIST" ]; then
-    installed="$(defaults read "$DAEMON_PLIST" CFBundleVersion 2>/dev/null || true)"
+if [ -f "$DAEMON_INFO_PLIST" ]; then
+    installed="$(defaults read "$DAEMON_INFO_PLIST" CFBundleVersion 2>/dev/null || true)"
 fi
 
-if [ "$installed" = "$DRIVER_VERSION" ]; then
-    exit 0
+if [ "$installed" != "$DRIVER_VERSION" ]; then
+    # installer(8) rejects paths that don't end in .pkg, so name the file inside a temp dir.
+    TMPDIR_PKG="$(mktemp -d -t karabiner-vhid)"
+    PKG="${TMPDIR_PKG}/Karabiner-DriverKit-VirtualHIDDevice-${DRIVER_VERSION}.pkg"
+    trap 'rm -rf "$TMPDIR_PKG"' EXIT
+    curl -fsSL -o "$PKG" "$PKG_URL"
+    echo "${DRIVER_SHA256}  ${PKG}" | shasum -a 256 -c -
+
+    # A different driver version is active; unload it before installing over it.
+    if [ -n "$installed" ] && [ -x "$MANAGER" ]; then
+        echo "Deactivating driver ${installed}"
+        sudo "$MANAGER" forceDeactivate || true
+    fi
+
+    sudo installer -pkg "$PKG" -target /
+    sudo "$MANAGER" activate
+
+    echo "Karabiner VirtualHIDDevice ${DRIVER_VERSION} installed"
+    echo "Approve it in System Settings > General > Login Items & Extensions > Driver Extensions"
 fi
 
-# installer(8) rejects paths that don't end in .pkg, so name the file inside a temp dir.
-TMPDIR_PKG="$(mktemp -d -t karabiner-vhid)"
-PKG="${TMPDIR_PKG}/Karabiner-DriverKit-VirtualHIDDevice-${DRIVER_VERSION}.pkg"
-trap 'rm -rf "$TMPDIR_PKG"' EXIT
-curl -fsSL -o "$PKG" "$PKG_URL"
-echo "${DRIVER_SHA256}  ${PKG}" | shasum -a 256 -c -
+# The driver pkg ships the daemon binary but no launchd job — Karabiner-Elements
+# normally installs one, and this setup deliberately omits Karabiner-Elements. Without
+# the daemon running there is no socket under vhidd_server/, and kanata loops forever
+# on "connect_failed asio.system:2". Own the launchd job here instead.
+sudo tee "$LAUNCH_PLIST" > /dev/null <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>${LAUNCH_LABEL}</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>${DAEMON_BIN}</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>
+PLIST
 
-# A different driver version is active; unload it before installing over it.
-if [ -n "$installed" ] && [ -x "$MANAGER" ]; then
-    echo "Deactivating driver ${installed}"
-    sudo "$MANAGER" forceDeactivate || true
-fi
+sudo chown root:wheel "$LAUNCH_PLIST"
+sudo chmod 644 "$LAUNCH_PLIST"
 
-sudo installer -pkg "$PKG" -target /
-sudo "$MANAGER" activate
+# bootstrap fails if the job is already loaded, so replace it unconditionally.
+sudo launchctl bootout "system/${LAUNCH_LABEL}" 2>/dev/null || true
+sudo launchctl bootstrap system "$LAUNCH_PLIST"
 
-echo "Karabiner VirtualHIDDevice ${DRIVER_VERSION} installed"
-echo "Approve it in System Settings > General > Login Items & Extensions > Driver Extensions"
+echo "VirtualHIDDevice daemon registered as ${LAUNCH_LABEL}"
 
 {{- end }}
