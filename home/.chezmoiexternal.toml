@@ -21,14 +21,14 @@
 
 [".local/bin/mise"]
 	type = "archive-file"
-	{{- $mise_version := "2026.1.4" }}
+	{{- $mise_version := "2026.8.0" }}
 	{{- $mise_checksum := "" }}
 	{{ if eq .chezmoi.os "darwin" -}}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-macos-arm64.tar.gz"
-	{{- $mise_checksum = "ec6b5f7062c0c15d137392eae642f75fff123860cc1f12aed02ff9ac628e73d2" }}
+	{{- $mise_checksum = "94ee46ec22b05560728b89d22792cb51cdd01c174911c0795989d19e3212311a" }}
 	{{- else }}
 	url = "https://github.com/jdx/mise/releases/download/v{{ $mise_version }}/mise-v{{ $mise_version }}-linux-x64.tar.gz"
-	{{- $mise_checksum = "c19ba5e2f1ffe562655f0c1426b6844e45fe56daf6b796e11d8dca3e070a0698" }}
+	{{- $mise_checksum = "64183603854f319b78658305c545aacae935e0959a3a894b77a0f9416eab047b" }}
 	{{- end }}
 	checksum.sha256="{{ $mise_checksum }}"
 	path = "mise/bin/mise"
