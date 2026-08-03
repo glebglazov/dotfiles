@@ -24,7 +24,8 @@ printf '%s' "$input" | jq '
     | .theme = "auto"
     | .skipDangerousModePermissionPrompt = true
     | .statusLine = {"type": "command", "command": "~/.claude/status-line"}
-    | .autoEnableMemory = false
+    | .autoMemoryEnabled = false
+    | del(.autoEnableMemory)   # no such setting; was a silent no-op
     | .enabledPlugins = {
         "caveman@caveman": true,
         "skill-creator@claude-plugins-official": true,
