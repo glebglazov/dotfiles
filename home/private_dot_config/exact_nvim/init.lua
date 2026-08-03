@@ -1099,7 +1099,7 @@ autocmd('BufWritePre', {
 })
 
 autocmd('VimEnter', {
-  group = augroup('glebglazov-open-file-browser-at-startup', {clear = true}),
+  group = augroup('glebglazov-open-git-status-at-startup', {clear = true}),
   callback = function()
     local is_headless = false
     local has_file_arg = false
@@ -1136,7 +1136,20 @@ autocmd('VimEnter', {
         end
       end
 
-      telescope_find_files()
+      -- Land on the fugitive status window. Outside a work tree :G has nothing
+      -- to show, so the file picker stays the fallback there.
+      local in_work_tree = vim.fn.systemlist({'git', 'rev-parse', '--is-inside-work-tree'})[1] == 'true'
+
+      if in_work_tree then
+        -- Scheduled: at VimEnter fugitive's status buffer renders empty, it
+        -- needs the event loop to spin once before it can populate.
+        vim.schedule(function()
+          vim.cmd.G()
+          vim.cmd.only()
+        end)
+      else
+        telescope_find_files()
+      end
     end
   end
 })
