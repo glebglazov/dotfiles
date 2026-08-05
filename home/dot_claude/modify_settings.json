@@ -27,12 +27,8 @@ printf '%s' "$input" | jq '
     | .autoMemoryEnabled = false
     | del(.autoEnableMemory)   # no such setting; was a silent no-op
     | .enabledPlugins = {
-        "caveman@caveman": true,
         "skill-creator@claude-plugins-official": true,
         "swift-lsp@claude-plugins-official": true
-      }
-    | .extraKnownMarketplaces = {
-        "caveman": {"source": {"source": "github", "repo": "JuliusBrussee/caveman"}}
       }
     | .permissions.deny = [
         "EnterPlanMode",
