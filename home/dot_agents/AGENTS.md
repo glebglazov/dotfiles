@@ -1,5 +1,7 @@
 # Global Instructions
 
+Always talk in ASD-STE100 Simplified Technical English. Always read CONTEXT.md or CONTEXT-MAP.md files, and use their ubiquitous language.
+
 ## RTK
 
 `rtk` is a token-optimizing CLI proxy — it filters verbose command output down to
