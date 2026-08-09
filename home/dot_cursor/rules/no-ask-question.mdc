@@ -1,0 +1,12 @@
+---
+description: Do not open interactive choice menus
+alwaysApply: true
+---
+
+Never call the `AskQuestion` tool on your own. Its menu takes over the terminal,
+and I do not want it.
+
+When you need a decision from me, write the options as plain text in your
+message, then stop and wait for my answer.
+
+If I name the tool myself, you can use it.
