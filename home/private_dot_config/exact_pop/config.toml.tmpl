@@ -40,14 +40,14 @@ label = "cleanup"
 command = "tmux-branch-cleanup"
 exit = true
 
-[tasks.implement]
+[work.implement]
 {{- if .work }}
 agents = ["claude", "codex"]
 {{- else }}
 agents = ["cursor", "pi", "claude"]
 {{- end }}
 
-[tasks.verify]
+[work.verify]
 enabled = true
 {{- if .work }}
 agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
