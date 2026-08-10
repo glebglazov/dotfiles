@@ -55,6 +55,32 @@ agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
 agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
+[work.routine]
+{{- if .work }}
+agents = ["claude", "codex"]
+{{- else }}
+agents = ["claude", "pi", "cursor"]
+{{- end }}
+
+# Attended entries are the whole invocation: the cmd reaches the launched
+# agent as written, and display_name is what pop calls it in a pane title,
+# an action-menu row and the override picker. A bare string is sugar for a
+# cmd with no display name, and pins no model — the agent decides.
+[work.attended]
+{{- if .work }}
+agents = [
+    { display_name = "Claude Opus", cmd = "claude --model opus" },
+    { display_name = "Codex Sol", cmd = "codex --model gpt-5.6-sol" },
+    "claude",
+]
+{{- else }}
+agents = [
+    { display_name = "Claude Opus", cmd = "claude --model opus" },
+    { display_name = "Cursor Opus", cmd = "cursor --model claude-opus-5-thinking-high" },
+    "pi",
+]
+{{- end }}
+
 {{ if .work -}}
 [effort.claude]
 heavy = [{ model = "opus", reasoning = "high" }]
