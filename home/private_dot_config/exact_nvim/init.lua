@@ -1022,7 +1022,11 @@ require('blink.cmp').setup({
     },
     documentation = {
       auto_show = true,
-      auto_show_delay_ms = 0,
+      -- A zero delay opens the doc window on every keystroke, so the menu and the
+      -- doc window are reconfigured together while the text is still changing. That
+      -- race is what leaves stale menu rows on the screen (blink.cmp #1932). Any
+      -- non-zero delay lets the menu settle before the doc window moves.
+      auto_show_delay_ms = 200,
     },
   },
 
