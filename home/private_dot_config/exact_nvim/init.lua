@@ -1417,6 +1417,19 @@ local function review_render_buf(bufnr)
   end
 end
 
+-- Pending comments across every file plus the general note — the same set
+-- `review_build` exports, so the badge count matches what a finish would send.
+-- Global because the statusline reaches it through `v:lua` on each redraw.
+function _G.ReviewCommentCount()
+  local n = (review.general and review.general.status ~= 'resolved') and 1 or 0
+  for _, list in pairs(review.comments) do
+    for _, c in ipairs(list) do
+      if c.status ~= 'resolved' then n = n + 1 end
+    end
+  end
+  return n
+end
+
 -- Re-render every loaded buffer that has comments (and the current one).
 local function review_render_all()
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
@@ -1424,12 +1437,14 @@ local function review_render_all()
       review_render_buf(bufnr)
     end
   end
+  vim.cmd('redrawstatus!')
 end
 
 -- Re-render the buffer for `path` (signs + inline labels both come from extmarks).
 local function review_refresh(path)
   local bufnr = vim.fn.bufnr(path)
   if bufnr ~= -1 then review_render_buf(bufnr) end
+  vim.cmd('redrawstatus!')
 end
 
 -- Reorder the quickfix list so files with comments float to the top (with a
@@ -1624,7 +1639,7 @@ local function review_set_statusline()
   -- setglobal only: a bare `vim.o`/`:set` on this global-local option also resets the
   -- CURRENT window's local statusline, which would clobber the qf-local one we set.
   if review.active then
-    vim.go.statusline = '%#ReviewStatus# 󰆉 REVIEW %* %f %m%r%=%l:%c '
+    vim.go.statusline = '%#ReviewStatus# 󰆉 %{v:lua.ReviewCommentCount()} REVIEW %* %f %m%r%=%l:%c '
   else
     vim.go.statusline = review_default_statusline
   end
