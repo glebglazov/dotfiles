@@ -1,4 +1,7 @@
-export PATH=/opt/homebrew/bin:$PATH
+# mise shims must precede Homebrew: mise activate only runs in interactive
+# shells, so without this a script or agent shell resolves `node` to Homebrew's
+# and every native module built against mise's Node fails to load.
+export PATH="$HOME/.local/share/mise/shims:/opt/homebrew/bin:$PATH"
 
 {{ if eq .chezmoi.os "darwin" -}}
 export BREW_PREFIX=/opt/homebrew/opt
