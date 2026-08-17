@@ -23,6 +23,7 @@ uv          = '0.8'
 lua         = '5.4'
 tree-sitter = '0.26'
 "npm:@earendil-works/pi-coding-agent" = 'latest'
+"npm:@tobilu/qmd" = 'latest'
 "npm:pi-opencode-bridge" = "latest"
 "npm:openai" = "latest"
 
