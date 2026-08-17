@@ -1,0 +1,16 @@
+global_context: "Gleb's personal Obsidian vault: notes and project efforts, mostly in Russian, some English."
+models:
+  embed: hf:Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf
+  generate: hf:tobil/qmd-query-expansion-1.7B-gguf/qmd-query-expansion-1.7B-q4_k_m.gguf
+  rerank: hf:ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF/qwen3-reranker-0.6b-q8_0.gguf
+collections:
+  notes:
+    path: /Users/glebglazov/private/Dev/mixed/obsidian_vaults/glebglazov/Notes
+    pattern: "**/*.md"
+    context:
+      /: "Gleb's notes: ideas, references, people, facts (flat, tag-organized)"
+  efforts:
+    path: /Users/glebglazov/private/Dev/mixed/obsidian_vaults/glebglazov/Efforts
+    pattern: "**/*.md"
+    context:
+      /: "Gleb's efforts: targeted undertakings with historical findings and thoughts"
