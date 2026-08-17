@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# launchd starts jobs with a minimal PATH, so qmd's mise shim is not on it.
+export PATH="$HOME/.local/share/mise/shims:/opt/homebrew/bin:/usr/bin:/bin"
+
+# No index config means qmd is not set up on this machine.
+[[ -f "$HOME/.config/qmd/index.yml" ]] || exit 0
+command -v qmd >/dev/null || exit 0
+
+echo "--- $(date '+%Y-%m-%d %H:%M:%S') qmd reindex"
+
+# update picks up the changed files; embed vectorizes only the new content
+# hashes, so a run with nothing pending is cheap.
+qmd update
+qmd embed

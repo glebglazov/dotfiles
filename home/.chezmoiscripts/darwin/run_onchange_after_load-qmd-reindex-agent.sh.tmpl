@@ -1,0 +1,19 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+#!/bin/bash
+set -euo pipefail
+
+# plist hash: {{ include "private_Library/LaunchAgents/com.glebglazov.qmd-reindex.plist" | sha256sum }}
+# script hash: {{ include "dot_local/bin/executable_qmd-reindex" | sha256sum }}
+
+PLIST="$HOME/Library/LaunchAgents/com.glebglazov.qmd-reindex.plist"
+DOMAIN="gui/$(id -u)"
+
+mkdir -p "$HOME/.cache/qmd"
+
+# bootout removes the old definition; launchd keeps serving the loaded copy
+# until then, so a changed interval or path would otherwise never take effect.
+launchctl bootout "$DOMAIN/com.glebglazov.qmd-reindex" 2>/dev/null || true
+launchctl bootstrap "$DOMAIN" "$PLIST"
+
+echo "qmd reindex agent loaded (every 10 min)"
+{{ end -}}
