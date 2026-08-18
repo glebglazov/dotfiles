@@ -39,7 +39,7 @@ exit = true
 
 [work.implement]
 {{- if .work }}
-agents = ["claude", "codex"]
+agents = ["claude", "codex", "kimi"]
 {{- else }}
 agents = ["cursor", "pi", "claude"]
 {{- end }}
@@ -47,7 +47,7 @@ agents = ["cursor", "pi", "claude"]
 [work.verify]
 enabled = true
 {{- if .work }}
-agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
+agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
 {{- else }}
 agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
@@ -57,14 +57,14 @@ agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model op
 [work.review]
 enabled = true
 {{- if .work }}
-agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol"]
+agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
 {{- else }}
 agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
 [work.routine]
 {{- if .work }}
-agents = ["claude", "codex"]
+agents = ["claude", "codex", "kimi"]
 {{- else }}
 agents = ["claude", "pi", "cursor"]
 {{- end }}
@@ -78,6 +78,7 @@ agents = ["claude", "pi", "cursor"]
 agents = [
     { display_name = "Claude Opus", cmd = "claude --model opus" },
     { display_name = "Codex Sol", cmd = "codex --model gpt-5.6-sol" },
+    "kimi",
     "claude",
 ]
 {{- else }}
@@ -104,6 +105,11 @@ light = [{ model = "haiku", reasoning = "high" }]
 heavy = [{ model = "gpt-5.6-sol", reasoning = "xhigh" }]
 standard = [{ model = "gpt-5.6-sol", reasoning = "medium" }]
 light = [{ model = "gpt-5.6-terra", reasoning = "low" }]
+
+[effort.kimi]
+heavy = [{ model = "moonshot-ai/kimi-k3", reasoning = "high" }]
+standard = [{ model = "moonshot-ai/kimi-k3", reasoning = "low" }]
+light = [{ model = "moonshot-ai/kimi-k2.7-code-highspeed" }]
 
 [effort.pi]
 heavy = [{ model = "opencode-go/kimi-k3" }]
