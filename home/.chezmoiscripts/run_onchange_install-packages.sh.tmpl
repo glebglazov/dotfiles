@@ -158,6 +158,15 @@
   "karabiner-elements"
 -}}
 
+{{- /* Optional package lists from the private submodule's .chezmoidata.
+       Absent on a clone made without --recurse-submodules, so guard the key. */ -}}
+{{- $private := dict -}}
+{{- if hasKey . "private_packages" -}}{{ $private = .private_packages }}{{- end -}}
+{{- $taps         = concat $taps         (dig "taps"    (list) $private) -}}
+{{- $mass_brew    = concat $mass_brew    (dig "brew"    (list) $private) -}}
+{{- $casks        = concat $casks        (dig "casks"   (list) $private) -}}
+{{- $cleanup_list = concat $cleanup_list (dig "cleanup" (list) $private) -}}
+
 #!/bin/bash
 
 # brew update
