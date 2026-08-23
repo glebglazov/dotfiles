@@ -1,3 +1,11 @@
+# Kept from ohmyzsh common-aliases, which we no longer load. directories.zsh
+# defines these three too, but with different flags; pinning them here keeps
+# `ll` and friends listing exactly what they always have.
+alias l="ls -lFh"
+alias la="ls -lAFh"
+alias ll="ls -l"
+alias grep="grep --color"
+
 alias vim="nvim"
 alias tf="terraform"
 alias ide="tmux-ide-layout"

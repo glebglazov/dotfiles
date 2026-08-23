@@ -7,5 +7,8 @@ zsh-users/zsh-autosuggestions
 zsh-users/zsh-completions
 
 # Common aliases and utilities
+# plugins/common-aliases deliberately omitted: it claimed short names we want
+# (`t`), shipped global aliases that expand mid-line (`T`, `G`, `H`), and mapped
+# file suffixes to X11-era binaries we don't have. The few aliases we used from
+# it are defined in .my_zsh_plugins/setup_aliases_and_commands.sh instead.
 ohmyzsh/ohmyzsh path:lib/directories.zsh
-ohmyzsh/ohmyzsh path:plugins/common-aliases
