@@ -26,6 +26,17 @@ tree-sitter = '0.26'
 "npm:@tobilu/qmd" = 'latest'
 "npm:pi-opencode-bridge" = "latest"
 "npm:openai" = "latest"
+{{- /* Tools listed in the private submodule's .chezmoidata. Absent on a clone
+       made without --recurse-submodules, so guard the key. */}}
+{{- $private := dict }}
+{{- if hasKey . "private_packages" }}{{ $private = .private_packages }}{{ end }}
+{{- range dig "mise" (list) $private }}
+{{- if kindIs "string" . }}
+"{{ . }}" = 'latest'
+{{- else }}
+"{{ .tool }}" = { version = 'latest', trust_policy_excludes = [{{ range $i, $e := .excludes }}{{ if $i }}, {{ end }}'{{ $e }}'{{ end }}] }
+{{- end }}
+{{- end }}
 
 [settings.ruby]
 ruby_build_opts = "--enable-yjit"
