@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if lookPath "td" }}
+# The Todoist skill is not a file we author — `td` generates it from the CLI
+# version that is installed, so a stale skill documents commands that no longer
+# exist. This version line changes when brew upgrades the CLI, which is what
+# makes chezmoi run the script again.
+#
+# td version: {{ output "td" "--version" | trim }}
+
+AGENTS_SKILL="{{ .chezmoi.homeDir }}/.agents/skills/todoist-cli/SKILL.md"
+CLAUDE_SKILL="{{ .chezmoi.homeDir }}/.claude/skills/todoist-cli/SKILL.md"
+
+echo "Installing Todoist skill..."
+
+# The universal target writes into ~/.agents/skills, which is the one store
+# every agent here reads from.
+td skill install universal --force
+
+if [ ! -f "$AGENTS_SKILL" ]; then
+  echo "td reported success but $AGENTS_SKILL is missing" >&2
+  exit 1
+fi
+
+# ~/.claude/skills is a symlink to ~/.agents/skills (see dot_claude/symlink_skills.tmpl),
+# so the universal install is already visible to Claude Code. Should that symlink
+# ever not be in place, Claude Code needs its own copy of the skill.
+if [ "$(readlink -f "$CLAUDE_SKILL" 2>/dev/null)" != "$(readlink -f "$AGENTS_SKILL")" ]; then
+  echo "~/.claude/skills does not resolve to ~/.agents/skills; installing the claude-code skill too"
+  td skill install claude-code --force
+fi
+{{- else }}
+echo "td is not on PATH yet — skipping the Todoist skill." >&2
+echo "Brew installs it as todoist-cli; run chezmoi apply again afterwards." >&2
+{{- end }}
