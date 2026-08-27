@@ -1,3 +1,3 @@
 function _execute-with-aws-envrc {
-    zsh -i -l -c "_cd-to-aws-envrc; eval \"\$*\"" -- "$@"
+    zsh -i -l -c '_cd-to-aws-envrc; _op_run "$@"' -- "$@"
 }
