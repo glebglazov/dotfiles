@@ -1,0 +1,17 @@
+# op-cache reads this path via the `directories` crate, which on macOS means
+# ~/Library/Application Support rather than ~/.config.
+
+# 72 hours. The cache is memory-only, so the daemon's lifetime is the real upper
+# bound; a longer TTL just means fewer biometric prompts within one uptime.
+ttl_seconds: 259200
+
+# A vault lives in exactly one account, so `op read` needs to be told which.
+# Without this, every reference outside the default account fails, and a single
+# `op-cache run` cannot resolve secrets that span both accounts.
+#
+# Only Backend needs naming: it is the one vault referenced here that the work
+# account owns. Private and TDS both live in the default account.
+accounts:
+  default: {{ .onepasswordPersonalAccount }}
+  vaults:
+    Backend: {{ .onepasswordWorkAccount }}
