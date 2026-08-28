@@ -66,3 +66,20 @@ would then mean two different things — "this commit" and "the span ending here
 — and the export would file feedback about three commits under one of them with
 nothing saying so. A Comment shows exactly when the span it was written against
 is the one being read; the Comment Picker reaches the rest.
+
+## Amendment — the range half is reassignable
+
+This ADR says a Comment *is identified by* the range it was written against,
+which reads as an immutable key. It is not one, and
+[ADR-0006](0006-a-rewrite-rebinds-comments-to-head-rather-than-ending-the-review.md)
+is why: when what a Comment is filed under stops being a member of the Review
+Range, the range half is overwritten with HEAD and the Comment is marked as
+rebound. A Comment is therefore **filed under** `(range, path)` rather than
+identified by it.
+
+Nothing above changes for a Comment whose commits are still there, which is every
+Comment in a review that has not been rewritten underneath. What changes is that
+the key is the review's to reassign, once, on a rewrite — and that reassigning it
+is how a rewrite stops throwing review work away. The path half stays immutable
+and stays the reader's anchor: the rebind moves the range and never the path, even
+when the path no longer resolves at HEAD.

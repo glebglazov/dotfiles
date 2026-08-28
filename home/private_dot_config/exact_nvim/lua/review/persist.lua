@@ -3,10 +3,13 @@
 -- the current commit and every comment are written to the repository's own git
 -- dir as they change, and read back when nvim next opens in that repository.
 --
--- Deliberately absent: carrying comments over onto rewritten commits. A rebase
--- that changed the very lines a comment is about cannot be followed, so the
--- session only notices that its commits are gone, says so, and offers the
--- comments up while they still mean something.
+-- A rewrite is not the end of a session. An amend, a rebase or a git-pile
+-- restack takes the commits the session was reading; the range is resolved
+-- again from the base it was resolved from, and every comment filed under
+-- something the range no longer holds is refiled onto HEAD. Carrying comments
+-- onto the commits that replaced the rewritten ones was rejected -- no mapping
+-- is right often enough to be trusted (docs/adr/0006) -- so nothing is matched
+-- here and nothing is asked of the reader.
 local buffers = require('review.buffers')
 local state = require('review.state')
 
@@ -85,17 +88,38 @@ local function migrate_spans(comments)
   return comments
 end
 
+-- Sessions written while the working tree was a kind of session rather than a
+-- member of the range held no range at all, no current commit, and comments
+-- filed under no commit. Such a session is exactly a range holding the
+-- Uncommitted Tip alone, targeted, with every comment made against that tip --
+-- so it converts into one, and comes back as the review it was with every
+-- comment intact. Same house rule as the three above: convert on read, because
+-- a discarded session loses review work that cannot be recovered.
+local function migrate_worktree(data)
+  local spec = data.spec or {}
+  if not spec.uncommitted then return data end
+  local sentinel = state.UNCOMMITTED
+  data.spec = { base = require('review.session').rev('HEAD') or 'HEAD' }
+  data.range = { state.uncommitted_entry() }
+  data.current, data.targeted_from = sentinel, sentinel
+  for _, c in ipairs(data.comments or {}) do
+    if c.scope ~= 'session' and c.commit == nil then
+      c.commit, c.commit_from = sentinel, sentinel
+    end
+  end
+  return data
+end
+
 function M.load()
   local path = M.path()
   if not path or vim.fn.filereadable(path) == 0 then return nil end
   local ok, data = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), '\n'),
-    -- Absent fields (a working-tree session has no range, a session comment no
-    -- commit) come back as nil, not as vim.NIL sentinels every reader would
-    -- have to know about.
+    -- Absent fields (a session comment has no commit) come back as nil, not as
+    -- vim.NIL sentinels every reader would have to know about.
     { luanil = { object = true, array = true } })
   if not ok or type(data) ~= 'table' or data.version ~= VERSION then return nil end
   data.comments = migrate_spans(migrate(data.comments))
-  return migrate_targeted(data)
+  return migrate_worktree(migrate_targeted(data))
 end
 
 function M.clear()
@@ -109,6 +133,11 @@ end
 -- nothing: what matters is reachability. A rewritten commit stops being an
 -- ancestor of the branch the session was started on, and `--is-ancestor`
 -- answers for a vanished object too (it simply fails).
+--
+-- The Uncommitted Tip is passed over: it is not a commit, git has no such
+-- object, and asking would report a rewrite of every session that has one. Work
+-- that stops being uncommitted has not been lost -- `session.refresh_range`
+-- takes the tip out of the range when that happens.
 function M.missing(range)
   local root = state.repo_root()
   if not root then return {} end
@@ -116,55 +145,74 @@ function M.missing(range)
   local head = (spec.head and spec.head ~= '') and spec.head or 'HEAD'
   local gone = {}
   for _, c in ipairs(range or {}) do
-    vim.fn.system({ 'git', '-C', root, 'merge-base', '--is-ancestor', c.hash, head })
-    if vim.v.shell_error ~= 0 then table.insert(gone, c) end
+    if not state.is_uncommitted(c.hash) then
+      vim.fn.system({ 'git', '-C', root, 'merge-base', '--is-ancestor', c.hash, head })
+      if vim.v.shell_error ~= 0 then table.insert(gone, c) end
+    end
   end
   return gone
 end
 
--- What a stale session tells the reader: which commits went, and that the
--- comments outlived them.
-function M.stale_message(missing)
-  missing = missing or {}
-  local lines = {
-    ('Review session is stale: %d of %d commit(s) under review no longer exist — the stack was amended or rebased.')
-      :format(#missing, #state.range),
-  }
-  for _, c in ipairs(missing) do
-    table.insert(lines, ('  %s %s'):format(c.hash, c.subject or ''))
-  end
-  table.insert(lines,
-    ('%d comment(s) are still here, but they point at commits that are gone. Export them before the state is lost.')
-      :format(#state.comments))
-  return table.concat(lines, '\n')
+-- Whether the range no longer holds a home for `c`. A comment is filed under
+-- the span it was written against, and a span the range has lost is a span
+-- nothing can be drawn against: a rewritten commit, or the Uncommitted Tip once
+-- the work is committed. One rule covers both, because both are the same thing
+-- said about membership.
+--
+-- A comment already sitting on `head` is left alone even when the range does not
+-- hold it -- a range resolved to an explicit head need not reach HEAD at all --
+-- so that a refile happens once rather than on every check.
+local function orphaned(c, head)
+  if c.scope == 'session' or c.commit == nil then return false end
+  if c.commit == head and c.commit_from == head then return false end
+  return state.index_of(c.commit) == nil or state.index_of(c.commit_from) == nil
 end
 
--- The way out of a stale session: take the comments now, keep reading anyway,
--- or drop it. Asked rather than assumed -- with git-pile and jj a mid-review
--- rewrite is the normal case, and the reader often still wants what is on
--- screen.
-function M.offer_export()
-  local choices = { 'Export comments to clipboard', 'Keep the stale session', 'Discard the session' }
-  vim.ui.select(choices, { prompt = 'Review session is stale — its commits were rewritten:' }, function(choice)
-    if choice == choices[1] then
-      require('review.export').export()
-    elseif choice == choices[3] then
-      M.discard()
+-- Every orphaned comment refiled onto HEAD; the number moved. This is the whole
+-- of what a rewrite costs a session. Nothing is matched -- carrying a comment
+-- onto the commit that replaced the one it was written against cannot be done
+-- reliably (docs/adr/0006) -- so the move is unconditional, and everything but
+-- the span survives it: the scope, the path and the line numbers arrive exactly
+-- as they were, knowingly describing lines that have since moved, which is what
+-- `rebound` is on the comment to say.
+--
+-- HEAD is the target rather than the newest member of the range, because the
+-- newest member may be the tip: the tip joins and leaves the range as the reader
+-- works, so a comment refiled onto it would be orphaned again by the next
+-- commit.
+function M.refile(head)
+  head = head or require('review.session').rev('HEAD')
+  if not head then return 0 end
+  local moved = 0
+  for _, c in ipairs(state.comments) do
+    if orphaned(c, head) then
+      c.commit, c.commit_from = head, head
+      c.rebound = true
+      moved = moved + 1
     end
-  end)
+  end
+  if moved > 0 then M.save() end
+  return moved
 end
 
--- Look for a rewrite; if there was one, mark the session, say what happened and
--- offer the comments up. Runs on restore and on demand (`:Review check`).
--- `opts.quiet` reports without prompting.
-function M.check(opts)
+-- Look for a rewrite and carry the session across it: the range is resolved
+-- again, the comments it lost are refiled onto HEAD, and the changeset is
+-- rebuilt around whatever the reader is left reading. Runs on restore and on
+-- demand (`:Review check`); the tip leaving the range reaches the same refile
+-- through `session.refresh_range`. Returns whether there was a rewrite to
+-- absorb -- never that the session ended, because it does not.
+function M.check()
   if not state.active or #state.range == 0 then return false end
-  local missing = M.missing(state.range)
-  state.stale = (#missing > 0) and missing or nil
-  require('review.render').set_statusline()
-  if not state.stale then return false end
-  vim.notify(M.stale_message(missing), vim.log.levels.WARN)
-  if not (opts and opts.quiet) then M.offer_export() end
+  if #M.missing(state.range) == 0 then return false end
+  local session = require('review.session')
+  session.reresolve_range()
+  local moved = M.refile()
+  local render = require('review.render')
+  require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
+  render.all()
+  render.set_statusline()
+  vim.notify(('Review: the stack was rewritten — reading %s%s'):format(session.span_label(),
+    (moved > 0) and (', %d comment(s) refiled onto HEAD'):format(moved) or ''), vim.log.levels.INFO)
   return true
 end
 
@@ -177,15 +225,8 @@ end
 
 -- How a restored session announces itself.
 local function restored_message()
-  local span = state.targeted()
-  local where = 'working tree'
-  if #span > 1 then
-    where = ('%d commit(s), reading %s..%s as one diff'):format(
-      #state.range, span[1].hash, span[#span].hash)
-  elseif span[1] then
-    where = ('%d commit(s), at %s %s'):format(#state.range, span[1].hash, span[1].subject)
-  end
-  return ('Review session restored (%s, %d comment(s))'):format(where, #state.comments)
+  return ('Review session restored (%d member(s), reading %s, %d comment(s))'):format(
+    #state.range, require('review.session').span_label(), #state.comments)
 end
 
 -- Pick the saved session back up: comments, range, targeted span and the
@@ -199,36 +240,37 @@ function M.restore()
   state.current = data.current
   state.targeted_from = data.targeted_from
   state.spec = data.spec
-  state.stale = nil
   if data.auto_form ~= nil then state.auto_form = data.auto_form end
   if data.show_resolved ~= nil then state.show_resolved = data.show_resolved end
   state.active = true
 
   local render = require('review.render')
-  -- What a start would have handed gitsigns: the session's base, or HEAD for a
-  -- working-tree session.
+  -- The working tree has been worked in since the session was saved, so what it
+  -- holds is asked again before anything is drawn: the tip joins the range or
+  -- leaves it, and a target that ended at a tip now committed follows the work
+  -- onto the commit that holds it.
+  require('review.session').refresh_range()
+
   local spec = state.spec or {}
-  local base = spec.base or (spec.uncommitted and 'HEAD' or nil)
-  if base then
-    require('review.session').with_gitsigns(function(gs)
-      gs.change_base(base, true)
-      gs.toggle_signs(true)
-    end)
+  if spec.base then
+    require('review.session').dress(spec.base)
   end
   render.all()
   render.set_statusline()
   vim.notify(restored_message(), vim.log.levels.INFO)
-  -- A stale session gets the warning and the offer instead of a walk: its hunks
-  -- would have to be read out of commits that no longer exist.
+  -- A rewrite met while the editor was closed is absorbed here rather than
+  -- ending the session, and the changeset it rebuilds around the refile is the
+  -- walk -- so only a session that met no rewrite needs one built.
   if not M.check() then
     -- The walk comes back with the session, but quietly: the reader opened this
     -- editor on a file of their own, not on the quickfix list.
-    if state.current then
-      require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
-    elseif spec.uncommitted then
-      require('review.hunks').worktree_hunks({ quiet = true })
-    end
+    require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
   end
+  -- Tab ids do not survive quitting nvim, so the restored session adopts the tab
+  -- it came back in -- the one whose signs it just dressed and whose changeset
+  -- list it just filled. That tab is the review's home in every respect but the
+  -- name it was saved under.
+  require('review.buffers').set_review_tab()
   return true
 end
 

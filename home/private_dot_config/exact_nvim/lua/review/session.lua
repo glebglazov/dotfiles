@@ -1,5 +1,7 @@
--- The lifecycle of a review: what is being reviewed (base, head, working tree),
--- turning that into a changeset, and tearing everything down again.
+-- The lifecycle of a review: what is being reviewed -- the range of commits
+-- from a base, with the working tree as its last member while anything is
+-- uncommitted -- turning that into a changeset, and tearing everything down
+-- again.
 local export = require('review.export')
 local hunks = require('review.hunks')
 local render = require('review.render')
@@ -13,19 +15,26 @@ function M.default_base()
   return 'origin/main'
 end
 
--- Normalize a session spec into the three values the git commands take.
--- `uncommitted` reviews the working tree (staged + unstaged) against HEAD; a
--- bare `base` is used as the base; nothing at all falls back to the default
--- remote branch.
-function M.resolve(spec)
-  spec = spec or {}
-  if spec.uncommitted then return 'HEAD', true, nil end
-  local base = (spec.base and spec.base ~= '') and spec.base or M.default_base()
-  return base, false, spec.head
+-- A ref as the short hash it names right now.
+function M.rev(ref)
+  local out = vim.fn.systemlist({ 'git', 'rev-parse', '--short', '--verify', '--quiet', ref })
+  if vim.v.shell_error ~= 0 or not out[1] or out[1] == '' then return nil end
+  return out[1]
 end
 
--- The commits of `base..head`, oldest first: the range a committed session
--- covers.
+-- Normalize a session spec into the two values the git commands take.
+-- `uncommitted` reviews the working tree alone -- a range whose only member is
+-- the Uncommitted Tip -- so its base is HEAD, resolved to a hash so that the
+-- range goes on meaning the same thing once the reader commits. A bare `base`
+-- is used as the base; nothing at all falls back to the default remote branch.
+function M.resolve(spec)
+  spec = spec or {}
+  if spec.uncommitted then return M.rev('HEAD') or 'HEAD', nil end
+  local base = (spec.base and spec.base ~= '') and spec.base or M.default_base()
+  return base, spec.head
+end
+
+-- The commits of `base..head`, oldest first: the committed part of the range.
 function M.commits(base, head)
   local out = vim.fn.systemlist({
     'git', '--no-pager', 'log', '--reverse', '--date=short',
@@ -42,6 +51,44 @@ function M.commits(base, head)
   return commits
 end
 
+-- Whether the working tree holds anything uncommitted -- staged, unstaged or
+-- untracked. This one question is the whole of what makes the Uncommitted Tip
+-- a member of the range.
+function M.dirty()
+  local root = state.repo_root() or vim.fn.getcwd()
+  local out = vim.fn.systemlist({ 'git', '-C', root, 'status', '--porcelain' })
+  return vim.v.shell_error == 0 and #out > 0
+end
+
+-- Whether a range that runs to `head` holds the Uncommitted Tip right now. Only
+-- a range ending at HEAD carries it -- one ending at an older commit has nothing
+-- to do with what is on disk -- and then only while there is something
+-- uncommitted to carry.
+function M.carries_tip(head)
+  return (head == nil or head == '' or head == 'HEAD') and M.dirty()
+end
+
+-- The members of `base..head`, oldest first: its commits, and the Uncommitted
+-- Tip past them while the range carries it.
+function M.members(base, head)
+  local members = M.commits(base, head)
+  if M.carries_tip(head) then table.insert(members, state.uncommitted_entry()) end
+  return members
+end
+
+-- What the span being read is called, in a line the reader is told. The tip
+-- names itself rather than a hash, because `uncommitted` is not a hash anything
+-- else in the editor can be asked about.
+function M.span_label()
+  local span = state.targeted()
+  if #span == 0 then return 'nothing — the span being read has left the range' end
+  if #span > 1 then
+    return ('%d member(s), %s..%s, as one diff'):format(#span, span[1].hash, span[#span].hash)
+  end
+  if state.is_uncommitted(span[1].hash) then return 'the working tree' end
+  return ('1 commit, %s %s'):format(span[1].hash, span[1].subject)
+end
+
 -- Lazy-load gitsigns and run a function against it (keys-lazy plugin).
 function M.with_gitsigns(fn)
   pcall(function()
@@ -50,53 +97,168 @@ function M.with_gitsigns(fn)
   end)
 end
 
--- Start a review: changeset → quickfix, gitsigns base→<base> + signs on, inline
--- comments on, statusline badge. `spec` is { base, head, uncommitted }; an
--- omitted base means the default remote branch, which is the whole branch.
--- Returns false without touching anything when a committed range holds no
--- commits: there is nothing to read, and saying so beats opening a session that
--- looks like a review of nothing.
-function M.start(spec)
-  local base, uncommitted, head = M.resolve(spec)
-  local commits = not uncommitted and M.commits(base, head) or nil
-  if commits and #commits == 0 then
-    vim.notify(('Review: no commits in %s..%s — nothing to review against %s; review the working tree instead'):format(
-      base, (head and head ~= '') and head or 'HEAD', base), vim.log.levels.WARN)
-    return false
-  end
-  state.active = true
-  -- A working-tree session has no commits to switch between, so it has no
-  -- current commit either.
-  if uncommitted then
-    state.clear_range()
-    state.spec = { uncommitted = true }
-    state.save()
-  else
-    state.set_range(commits, { base = base, head = head })
-  end
+-- The three things gitsigns does for a review, applied as one: it diffs against
+-- the session's base rather than the index, its signs are visible, and removed
+-- lines are shown inline so a deletion can be read where it happened. Both
+-- entry points -- a fresh start and a restored session -- dress the editor
+-- through here, so a fourth switch cannot reach one of them and miss the other.
+function M.dress(base)
   M.with_gitsigns(function(gs)
     gs.change_base(base, true)
     gs.toggle_signs(true)
+    gs.toggle_deleted(true)
   end)
-  -- With commits targeted the changeset is the whole range read as one diff --
-  -- the branch as a pull request would show it -- in revision buffers; a
-  -- working-tree session's are its own hunks against HEAD, read on disk.
-  if state.current then
-    hunks.range_hunks(state.targeted_from, state.current)
-  else
-    hunks.worktree_hunks()
+end
+
+-- The dressing taken off again. `toggle_deleted` writes gitsigns' global config,
+-- not anything buffer-local, so leaving it on would follow the reader into every
+-- file they open after the review.
+function M.undress()
+  M.with_gitsigns(function(gs)
+    gs.toggle_signs(false)
+    gs.toggle_deleted(false)
+  end)
+end
+
+-- Start a review: changeset → quickfix, the gitsigns dressing for <base>, inline
+-- comments on, statusline badge. `spec` is { base, head, uncommitted } -- see
+-- session.resolve. An omitted base means the default remote branch, which is the
+-- whole branch. Returns false without touching anything when the range holds no
+-- members at all: there is nothing to read, and saying so beats opening a
+-- session that looks like a review of nothing.
+function M.start(spec)
+  local base, head = M.resolve(spec)
+  local members = M.members(base, head)
+  if #members == 0 then
+    vim.notify(('Review: nothing to review — %s..%s holds no commits and nothing is uncommitted'):format(
+      base, (head and head ~= '') and head or 'HEAD'), vim.log.levels.WARN)
+    return false
   end
+  state.active = true
+  state.set_range(members, { base = base, head = head })
+  -- The range opens on its committed part, the same span the switcher's reset
+  -- key puts back: uncommitted work is a row to target, not something the review
+  -- shows you before you asked for it.
+  state.set_targeted(members[1].hash, (M.newest_commit() or members[#members]).hash)
+  M.dress(base)
+  -- The whole range as one diff, the way a pull request shows a branch --
+  -- revision buffers for its commits, the files on disk when the span ends at
+  -- the tip. One path, whatever the range is made of.
+  hunks.range_hunks(state.targeted_from, state.current)
+  -- The review's home from here on: the tab the changeset was just laid out in.
+  -- Recorded at the start rather than on the way out, so one key leads back to
+  -- it from anywhere for as long as the session lasts.
+  require('review.buffers').set_review_tab()
   render.all()
   render.set_statusline()
-  local target = uncommitted and 'working tree'
-    or ((head and head ~= '') and (base .. '...' .. head) or ('base: ' .. base))
-  local span = state.targeted()
-  if #span > 1 then
-    target = ('%d commit(s) %s..%s as one diff'):format(#span, span[1].hash, span[#span].hash)
-  elseif span[1] then
-    target = ('1 commit, %s %s'):format(span[1].hash, span[1].subject)
+  vim.notify(('Review started (%s)'):format(M.span_label()), vim.log.levels.INFO)
+  return true
+end
+
+-- Show me my uncommitted work. Outside a session it starts one on the tip
+-- alone; inside a session it targets the tip, which is a move within the review
+-- rather than the end of it -- no keypress of this plugin destroys a running
+-- review.
+function M.uncommitted()
+  if not state.active then
+    if not M.carries_tip(nil) then
+      vim.notify('Review: nothing uncommitted to read', vim.log.levels.WARN)
+      return false
+    end
+    return M.start({ uncommitted = true })
   end
-  vim.notify(('Review started (%s)'):format(target), vim.log.levels.INFO)
+  M.refresh_range()
+  if not state.index_of(state.UNCOMMITTED) then
+    vim.notify('Review: nothing uncommitted to read', vim.log.levels.WARN)
+    return false
+  end
+  if not M.set_current(state.UNCOMMITTED) then return false end
+  vim.notify('Review: reading the working tree', vim.log.levels.INFO)
+  return true
+end
+
+-- Bring the range's membership up to date with the working tree: the tip joins
+-- it as soon as there is something uncommitted and leaves as soon as there is
+-- not. Called where docs/adr/0004 says membership is recomputed -- at a start
+-- (which builds the range anyway), at a restore, and whenever the switcher
+-- opens. Returns whether anything on the screen had to change: the span being
+-- read moving, or comments being refiled out from under it.
+--
+-- The tip leaving the range is a rewrite like any other, so the comments made
+-- against it are refiled onto HEAD along with everyone else's: their lines are
+-- not the lines that were committed, and the rebound mark on them is what says
+-- so (docs/adr/0006). The *target* follows too, so the screen after the commit
+-- shows what the screen before it showed.
+function M.refresh_range()
+  if not state.active then return false end
+  local at = state.index_of(state.UNCOMMITTED)
+  local carries = M.carries_tip((state.spec or {}).head)
+  if carries == (at ~= nil) then return false end
+  if carries then
+    table.insert(state.range, state.uncommitted_entry())
+    state.save()
+    return false
+  end
+  table.remove(state.range, at)
+  local was_targeted = state.is_uncommitted(state.current) or state.is_uncommitted(state.targeted_from)
+  -- Whatever was uncommitted is a commit now, and that commit is past the range
+  -- as it was resolved -- so the range is asked for again whether or not the tip
+  -- was the thing being read: the commit holding the work has to be a member
+  -- before the target can fall back onto it or a comment can be refiled onto it.
+  local spec = state.spec or {}
+  for _, c in ipairs(M.commits(spec.base or M.default_base(), spec.head)) do
+    if not state.index_of(c.hash) then table.insert(state.range, c) end
+  end
+  local moved = require('review.persist').refile()
+  state.save()
+  if not was_targeted then
+    if moved > 0 then
+      vim.notify(('Review: the uncommitted work is committed — %d comment(s) refiled onto HEAD'):format(moved),
+        vim.log.levels.INFO)
+    end
+    return moved > 0
+  end
+  -- Only the end that vanished falls back. A span that began at a commit keeps
+  -- that commit, so `c3..the working tree` becomes `c3..HEAD` -- the same lines,
+  -- now committed -- while the tip on its own becomes HEAD on its own.
+  local newest = state.range[#state.range]
+  local oldest = state.index_of(state.targeted_from) and state.targeted_from
+    or (newest and newest.hash)
+  if not newest or not state.set_targeted(oldest, newest.hash) then
+    vim.notify('Review: the uncommitted work is gone, and there is nothing to read in its place',
+      vim.log.levels.WARN)
+    state.save()
+    return false
+  end
+  state.save()
+  vim.notify(('Review: the uncommitted work is committed — reading %s instead%s'):format(M.span_label(),
+    (moved > 0) and (', %d comment(s) refiled onto HEAD'):format(moved) or ''), vim.log.levels.INFO)
+  return true
+end
+
+-- The range asked for again from what it was resolved from, and the span being
+-- read repaired around whatever came back. A rewrite replaces commits rather
+-- than editing them, so every hash the session holds may be gone and only the
+-- base survives -- which is enough, because the range was only ever
+-- `base..head` of it. Refuses when that resolves to nothing at all, leaving the
+-- range as it was: a review of no members is not a review.
+--
+-- The target is kept whenever the new range still holds both of its ends, and
+-- falls back to the whole range when it does not -- a rewrite that took the very
+-- commit being read leaves the reader on the branch as it now stands rather than
+-- on nothing.
+function M.reresolve_range()
+  if not state.active then return false end
+  local spec = state.spec or {}
+  local members = M.members(spec.base or M.default_base(), spec.head)
+  if #members == 0 then return false end
+  local oldest, newest = state.targeted_from, state.current
+  state.range = members
+  if not state.set_targeted(oldest, newest) then
+    local last = M.newest_commit() or members[#members]
+    state.set_targeted(members[1].hash, last.hash)
+  end
+  state.save()
   return true
 end
 
@@ -167,16 +329,16 @@ function M.finish()
   vim.notify('Review finished', vim.log.levels.INFO)
 end
 
--- Everything a session leaves behind, taken down: comments, range, signs, badge
--- and the file on disk. Shared with `persist.discard`, which drops a stale
--- session without exporting it -- and the persisted state goes first, so a
--- crash mid-teardown cannot resurrect a session that was being ended.
+-- Everything a session leaves behind, taken down: comments, range, the gitsigns
+-- dressing, badge and the file on disk. Shared with `persist.discard`, which
+-- drops a session without exporting it -- and the persisted state goes first, so
+-- a crash mid-teardown cannot resurrect a session that was being ended.
 function M.teardown()
   require('review.persist').clear()
   -- The review's own keys come off every buffer they were put on: `]f` and
   -- `<Tab>` mean what the editor means again the moment the session ends.
   require('review.buffers').detach_all()
-  M.with_gitsigns(function(gs) gs.toggle_signs(false) end)
+  M.undress()
   state.active = false
   state.clear()
   state.clear_range()
@@ -199,17 +361,30 @@ function M.target(oldest, newest)
   return true
 end
 
--- One commit of the range, targeted on its own: a targeted range of one, which
--- is the review of a single commit.
+-- One member of the range, targeted on its own: a targeted range of one, which
+-- is the review of a single commit -- or of the working tree.
 function M.set_current(hash)
   return M.target(hash, hash)
 end
 
--- The whole range targeted again, as the session opened on it: one diff of the
--- branch. This is where the switcher's reset key puts the reader back.
+-- The newest committed member of the range: where "the whole range" ends. Nil
+-- for a range that holds nothing but the Uncommitted Tip.
+function M.newest_commit()
+  for i = #state.range, 1, -1 do
+    if not state.is_uncommitted(state.range[i].hash) then return state.range[i] end
+  end
+  return nil
+end
+
+-- The whole range targeted again: one diff of the branch, which is one diff of
+-- what is committed on it. The tip is left out on purpose -- the uncommitted key
+-- is what targets it, and a reset that swept it in would leave no way back to
+-- the branch as it stands. A session holding nothing but the tip resets onto the
+-- tip, because there is nothing else to put back.
 function M.target_whole_range()
-  local oldest, newest = state.range[1], state.range[#state.range]
+  local oldest = state.range[1]
   if not oldest then return false end
+  local newest = M.newest_commit() or state.range[#state.range]
   return M.target(oldest.hash, newest.hash)
 end
 
@@ -218,23 +393,32 @@ end
 -- by any of the three, because a stack ends as one body of feedback however it
 -- was read.
 function M.switch_from_picker()
+  -- The switcher is the list of what the range holds, so it is one of the three
+  -- places membership is recomputed: it must not offer commits a rewrite has
+  -- taken, nor work that has since been committed, nor hide work that has since
+  -- been done. A rewrite redraws the changeset around its own refile, so only
+  -- the tip's departure is left to answer for here.
+  require('review.persist').check()
+  if M.refresh_range() then
+    hunks.range_hunks(state.targeted_from, state.current)
+    render.all()
+  end
   require('review.pickers').switch_commit({
     choose = function(commit)
       if M.set_current(commit.hash) then
-        vim.notify(('Review: at %s %s (%d/%d)'):format(
-          commit.hash, commit.subject, state.current_index() or 0, #state.range), vim.log.levels.INFO)
+        vim.notify(('Review: reading %s (%d/%d)'):format(
+          M.span_label(), state.current_index() or 0, #state.range), vim.log.levels.INFO)
       end
     end,
     span = function(oldest, newest)
       if M.target(oldest, newest) then
-        vim.notify(('Review: reading %d commit(s), %s..%s, as one diff'):format(
-          #state.targeted(), oldest, newest), vim.log.levels.INFO)
+        vim.notify(('Review: reading %s'):format(M.span_label()), vim.log.levels.INFO)
       end
     end,
     reset = function()
       if M.target_whole_range() then
-        vim.notify(('Review: reading the whole range, %d commit(s), as one diff'):format(
-          #state.range), vim.log.levels.INFO)
+        vim.notify(('Review: reading the whole range, %d member(s), as one diff'):format(
+          #state.targeted()), vim.log.levels.INFO)
       end
     end,
   })

@@ -5,7 +5,9 @@
 local buffers = require('review.buffers')
 local comments = require('review.comments')
 local export = require('review.export')
+local help = require('review.help')
 local hunks = require('review.hunks')
+local landing = require('review.landing')
 local persist = require('review.persist')
 local render = require('review.render')
 local session = require('review.session')
@@ -18,6 +20,11 @@ local M = {}
 function M.start(spec)
   return session.start(spec)
 end
+
+-- "Show me my uncommitted work": a session on the working tree alone outside a
+-- session, and the working tree targeted inside one — the same range member
+-- either way, so this can never end or convert a review that is running.
+M.uncommitted = session.uncommitted
 
 -- The same start, with the base taken from a highlighted commit.
 M.start_from_selection = session.start_from_selection
@@ -40,12 +47,12 @@ end
 -- The changeset window back, without rebuilding the list behind it.
 M.changeset = hunks.reopen
 
--- Staleness: re-check the range against git (`refresh`), and drop a session
--- whose commits are gone without exporting it (`discard`).
+-- Rewrites: resolve the range against git again and refile the comments a
+-- rewrite took (`check`), and drop a session without exporting it (`discard`).
 M.check = persist.check
 M.discard = persist.discard
 
--- Move the review to another commit of the current range: a targeted range of
+-- Move the review to another member of the current range: a targeted range of
 -- one.
 function M.set_current(hash)
   return session.set_current(hash)
@@ -69,8 +76,12 @@ M.next_comment = comments.next_comment
 M.prev_comment = comments.prev_comment
 M.pick_comment = comments.pick
 
+-- What the review's keys do, listed from the table that binds them.
+M.help = help.toggle
+
 M.open = buffers.open
 M.investigate = buffers.investigate
+M.home = buffers.home
 M.export = export.export
 M.preview = export.preview
 M.send = export.send_preview
@@ -103,9 +114,17 @@ local actions = {
         return M.files()
       end, desc = 'Review: reopen the changeset (no session: changed files)' },
   },
+  -- The way back to the review from anywhere in the editor: another tab, a file
+  -- opened over the review by a search, a fresh editor after a restart. Nothing
+  -- has to have survived -- when the review's tab is gone the key builds it
+  -- again out of the session (see docs/adr/0005), which is why nothing in the
+  -- plugin defends that tab.
+  home = {
+    { mode = 'n', fn = buffers.home, desc = 'Review: back to the review (rebuilt if its tab is gone)' },
+  },
   -- Out to the Investigation Tab and back again, on the one key: the working
   -- tree copy of this file opens in a tab of its own, and pressing it there
-  -- returns to the review, which was never disturbed.
+  -- goes home -- to the review, which was never disturbed.
   investigate = {
     { mode = 'n', fn = buffers.investigate, desc = 'Review: investigate this file in its own tab (and back)' },
   },
@@ -123,8 +142,13 @@ local actions = {
   switch = {
     { mode = 'n', fn = session.switch_from_picker, desc = 'Review: target a commit or a marked span of the range' },
   },
+  -- The working tree, which is a member of the range like any commit: outside a
+  -- session this starts one on that member alone, and inside a session it
+  -- targets it. Never a session of another kind, and never the end of the one
+  -- running (see docs/adr/0004).
   start_uncommitted = {
-    { mode = 'n', fn = function() M.start({ uncommitted = true }) end, desc = 'Review: start session (uncommitted)' },
+    { mode = 'n', fn = function() session.uncommitted() end,
+      desc = 'Review: read my uncommitted work' },
   },
   clear = {
     { mode = 'n', fn = state.clear, desc = 'Review: clear all comments' },
@@ -217,23 +241,43 @@ local actions = {
   toggle_resolved = {
     { mode = 'n', fn = state.toggle_resolved, desc = 'Review: toggle resolved comments' },
   },
+  -- Every key above, said out loud, built from this very table (see
+  -- review.help). Bound twice because the reader needs it from both sides: a
+  -- short key where the review is being read, and a leader key from the comment
+  -- form and from a file opened for a closer look, where the short one is not
+  -- bound.
+  help = {
+    scoped = true,
+    { mode = 'n', fn = help.toggle, desc = "Review: what the review's keys do" },
+  },
+  help_anywhere = {
+    { mode = 'n', fn = help.toggle, desc = "Review: what the review's keys do" },
+  },
 }
 
 function M.setup(opts)
   opts = opts or {}
   if opts.default_base then session.default_base = opts.default_base end
+  -- How far down the window every jump the review makes lands, 0..1.
+  if opts.landing_fraction then landing.fraction = opts.landing_fraction end
   buffers.setup()
 
   -- Two halves: the keys that answer anywhere are set here and for good, and
   -- the review-local ones are handed to `buffers`, which puts them on a
   -- session's buffers and the changeset window as they are met.
   local scoped = {}
+  -- The help is the bindings themselves, so it is filled here rather than
+  -- written down anywhere: a key that was asked for and bound is a row, and a
+  -- key that was not is not.
+  local bound = {}
   for name, lhs in pairs(opts.keys or {}) do
     local action = actions[name]
     if not action then
       vim.notify('review.setup: unknown key action ' .. name, vim.log.levels.WARN)
     else
       for _, map in ipairs(action) do
+        table.insert(bound,
+          { lhs = lhs, mode = map.mode, desc = map.desc, scoped = action.scoped or false })
         if action.scoped then
           table.insert(scoped, { mode = map.mode, lhs = lhs, fn = map.fn, desc = map.desc })
         else
@@ -243,11 +287,12 @@ function M.setup(opts)
     end
   end
   buffers.set_local_keys(scoped)
+  help.record(bound)
 
   -- :Review [start [<ref>] | finish | check | discard]
   --   start   — begin a session against <ref> (default remote branch if omitted)
   --   finish  — export + clear + signs off
-  --   check   — re-test the range against git and report a rewritten stack
+  --   check   — resolve the range against git again, refiling what a rewrite took
   --   discard — drop the session (and its saved state) without exporting
   vim.api.nvim_create_user_command('Review', function(cmd)
     local sub = cmd.fargs[1] or 'start'
@@ -257,7 +302,8 @@ function M.setup(opts)
       M.start({ base = cmd.fargs[2] })
     elseif sub == 'check' then
       if not persist.check() then
-        vim.notify('Review: every commit under review still exists', vim.log.levels.INFO)
+        vim.notify('Review: no rewrite — every commit under review is still in the range',
+          vim.log.levels.INFO)
       end
     elseif sub == 'discard' then
       persist.discard()

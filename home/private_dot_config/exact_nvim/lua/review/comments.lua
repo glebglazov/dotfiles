@@ -6,6 +6,7 @@
 -- review in one order and nothing said in it can be walked past. It wraps at
 -- both ends, the way the hunk walk does.
 local buffers = require('review.buffers')
+local landing = require('review.landing')
 local hunks = require('review.hunks')
 local state = require('review.state')
 
@@ -52,9 +53,10 @@ end
 
 -- Whether a group is the span on screen. Only that span's comments have a place
 -- relative to the cursor: every other one is about a diff that is not being
--- shown.
+-- shown -- including a group filed under no member at all, which can only come
+-- from a session saved before the working tree was one.
 local function on_screen(group)
-  if group.hash == nil then return state.current == nil end
+  if group.hash == nil then return false end
   return group.from == state.targeted_from and group.hash == state.current
 end
 
@@ -193,9 +195,9 @@ local function position(list)
 end
 
 -- Put the reader on `rel` at `lnum`. The changeset is the way in: jumping
--- through its entry opens the file the same buffer the hunk walk would, which
--- for a commit under review is its revision buffer and never the working tree's
--- copy. A file no longer in the list is opened directly.
+-- through its entry opens the file in the same buffer the hunk walk would,
+-- which for a commit under review is its revision buffer and never the working
+-- tree's copy. A file no longer in the list is opened directly.
 local function goto_location(rel, lnum)
   local landed = false
   for i, item in ipairs(vim.fn.getqflist({ items = 0 }).items or {}) do
@@ -206,7 +208,10 @@ local function goto_location(rel, lnum)
     end
   end
   if not landed then
-    if state.current then
+    -- Off the list: a span of commits opens its own content again, while a span
+    -- ending at the Uncommitted Tip is the file on disk -- no revision buffer
+    -- can hold what was never committed.
+    if state.current and not state.is_uncommitted(state.current) then
       landed = buffers.open(state.current, rel, state.repo_root()) ~= nil
     else
       local root = state.repo_root()
@@ -223,7 +228,7 @@ local function goto_location(rel, lnum)
   end
   pcall(vim.api.nvim_win_set_cursor, 0,
     { math.max(1, math.min(lnum, vim.api.nvim_buf_line_count(0))), 0 })
-  vim.cmd('normal! zz')
+  landing.land()
   return true
 end
 
@@ -294,9 +299,12 @@ function M.goto_comment(c)
   return M.arrive(c)
 end
 
--- The comment picker: the one list of everything said, and a jump to any of it.
-function M.pick()
-  return require('review.pickers').comment(function(c) M.goto_comment(c) end)
+-- The comment picker: the list of what was said, and a jump to any of it. With
+-- no `opts` it is everything in the review; the switcher passes `opts.member` to
+-- narrow it to one member of the range, and `opts.on_dismiss` to be handed the
+-- reader back when they chose nothing.
+function M.pick(opts)
+  return require('review.pickers').comment(function(c) M.goto_comment(c) end, opts)
 end
 
 return M

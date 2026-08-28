@@ -640,6 +640,23 @@ require('lazy').setup({
         vim.cmd([[colorscheme gruvbox]])
       end
 
+      -- gruvbox gives NormalFloat a background but leaves FloatTitle pointing
+      -- at Title (fg only), so both draw on the editor's background instead
+      -- of the float's. `:colorscheme` resets highlight groups on every call,
+      -- so a one-shot nvim_set_hl here would be dropped on the next re-apply;
+      -- hooking ColorScheme (which fires on every `:colorscheme` call below,
+      -- including the first) is what survives.
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        callback = function()
+          local bg = vim.api.nvim_get_hl(0, { name = 'NormalFloat' }).bg
+          for _, name in ipairs({ 'FloatTitle', 'FloatFooter' }) do
+            local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+            hl.bg = bg
+            vim.api.nvim_set_hl(0, name, hl)
+          end
+        end,
+      })
+
       apply()
       -- Re-apply whenever the background flips (set by the macOS-appearance sync).
       vim.api.nvim_create_autocmd('OptionSet', { pattern = 'background', callback = apply })
@@ -1321,17 +1338,23 @@ require('review').setup {
   keys = {
     add_comment       = '<LEADER>rc',
     delete_comment    = '<LEADER>rd',
-    export            = '<LEADER>re',
+    export            = '<LEADER>ree',
     files             = '<LEADER>rf',
     investigate       = '<LEADER>rg',
     start             = '<LEADER>rs',
     start_uncommitted = '<LEADER>rS',
-    switch            = '<LEADER>rr',
+    home              = '<LEADER>rr',
+    switch            = '<LEADER>rll',
     clear             = '<LEADER>rX',
     finish            = '<LEADER>rQ',
-    preview           = '<LEADER>rp',
-    pick_comment      = '<LEADER>rl',
-    send              = '<LEADER>rE',
+    preview           = '<LEADER>rep',
+    pick_comment      = '<LEADER>rlc',
+    send              = '<LEADER>reE',
+    -- What the review's keys do. Two ways in: `?` where the review is being
+    -- read, and the leader key from everywhere else -- the comment form, a file
+    -- opened for a closer look.
+    help              = '?',
+    help_anywhere     = '<LEADER>r?',
     -- Short, and bound only on the review's own buffers and its changeset
     -- window -- which is what lets them shadow `]f`, `]c` and `<C-i>` there and
     -- mean nothing anywhere else.

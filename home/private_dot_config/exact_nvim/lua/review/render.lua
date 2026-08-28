@@ -12,6 +12,16 @@ vim.api.nvim_set_hl(0, 'ReviewStatus', { fg = '#83a598', bg = '#3c3836', bold = 
 -- Left-margin range bars: aqua while unresolved, muted grey once resolved.
 vim.api.nvim_set_hl(0, 'ReviewBar', { fg = '#83a598' })
 vim.api.nvim_set_hl(0, 'ReviewBarResolved', { fg = '#665c54' })
+-- A comment a rewrite carried onto HEAD gets a colour of its own rather than the
+-- resolved grey: being rebound is not being read, a comment can be both at once,
+-- and the reader has to be able to tell which of the two they are looking at.
+vim.api.nvim_set_hl(0, 'ReviewBarRebound', { fg = '#d79921' })
+vim.api.nvim_set_hl(0, 'ReviewRebound', { fg = '#d79921', italic = true })
+
+-- What says "these line numbers were written against a commit that no longer
+-- exists". Drawn beside the comment everywhere the reader meets it, never in the
+-- exported body: it is a warning about the pointer, not part of the feedback.
+M.rebound_mark = '↷'
 
 -- A file comment is about no line, so it is drawn as lines of its own above the
 -- first: the reader meets it on opening the file, before anything in it.
@@ -20,7 +30,11 @@ local function file_lines(c, resolved)
   local out = {}
   for i, line in ipairs(vim.split(c.text, '\n', { plain = true })) do
     local prefix = (i == 1) and ((resolved and '󰄬' or '󰆉') .. ' file: ') or '        '
-    table.insert(out, { { prefix .. line, hl } })
+    local chunks = { { prefix .. line, hl } }
+    if i == 1 and c.rebound then
+      table.insert(chunks, { ' ' .. M.rebound_mark, 'ReviewRebound' })
+    end
+    table.insert(out, chunks)
   end
   return out
 end
@@ -36,10 +50,11 @@ function M.buffer(bufnr)
   local loc = require('review.buffers').locate(bufnr)
   if not loc then return end
   local total = vim.api.nvim_buf_line_count(bufnr)
-  -- A file on disk shows HEAD rather than the commit being read, so its line
-  -- numbers are not the comment's; the file comment, which has no line at all,
-  -- is at home in either.
-  local lines_true = loc.revision or loc.commit == nil
+  -- A file on disk read while commits are targeted shows HEAD rather than the
+  -- commit being read, so its line numbers are not the comment's; the file
+  -- comment, which has no line at all, is at home in either. A span ending at
+  -- the Uncommitted Tip is those files, so its lines are the true ones.
+  local lines_true = loc.revision or state.is_uncommitted(loc.commit)
   local above = {}
   for _, c in ipairs(state.for_location(loc.from, loc.commit, loc.rel)) do
     local resolved = c.status == 'resolved'
@@ -50,7 +65,8 @@ function M.buffer(bufnr)
     elseif (not resolved or state.show_resolved) and lines_true then
       -- Left bar spanning every line of the commented range (priority above
       -- gitsigns so the range wins the sign cell on its own lines).
-      local bar_hl = resolved and 'ReviewBarResolved' or 'ReviewBar'
+      local bar_hl = resolved and 'ReviewBarResolved'
+        or (c.rebound and 'ReviewBarRebound' or 'ReviewBar')
       for l = c.lnum, math.min(c.end_line or c.lnum, total) do
         pcall(vim.api.nvim_buf_set_extmark, bufnr, ns, l - 1, 0, {
           sign_text = '▌',
@@ -64,8 +80,10 @@ function M.buffer(bufnr)
       if c.text:find('\n') then label = first .. ' …' end
       local icon = resolved and '󰄬' or '󰆉'
       local hl = resolved and 'Comment' or 'DiagnosticVirtualTextInfo'
+      local chunks = { { icon .. ' ' .. label, hl } }
+      if c.rebound then table.insert(chunks, { ' ' .. M.rebound_mark, 'ReviewRebound' }) end
       pcall(vim.api.nvim_buf_set_extmark, bufnr, ns, c.lnum - 1, 0, {
-        virt_text = { { icon .. ' ' .. label, hl } },
+        virt_text = chunks,
         virt_text_pos = 'eol',
       })
     end
@@ -114,6 +132,7 @@ end
 -- about.
 local function float_title(c)
   local icon = (c.status == 'resolved') and '󰄬' or '󰆉'
+  if c.rebound then icon = icon .. ' ' .. M.rebound_mark end
   if c.scope == 'commit' and c.commit_from and c.commit_from ~= c.commit then
     local n = state.span_length(c.commit_from, c.commit)
     return (' %s %s..%s%s comment '):format(icon, c.commit_from, c.commit,
@@ -166,7 +185,7 @@ function M.set_statusline()
   -- CURRENT window's local statusline, which would clobber the qf-local one we set.
   if state.active then
     vim.go.statusline =
-      '%#ReviewStatus# 󰆉 %{v:lua.ReviewCommentCount()} REVIEW%{v:lua.ReviewStaleFlag()}%{v:lua.ReviewCommitFlag()}%{v:lua.ReviewHunkPosition()} %* %f %m%r%=%l:%c '
+      '%#ReviewStatus# 󰆉 %{v:lua.ReviewCommentCount()} REVIEW%{v:lua.ReviewCommitFlag()}%{v:lua.ReviewHunkPosition()} %* %f %m%r%=%l:%c '
   else
     vim.go.statusline = default_statusline
   end
@@ -191,8 +210,8 @@ end
 -- What is being read: ` abc1234` for a single commit, ` abc1234..def5678` for a
 -- wider span. How many commits that is stays out of it -- the badge is read
 -- while walking hunks, where the useful counter is the hunk one next to it, and
--- the commit count is in the changeset window's title for when it is wanted.
--- Empty for a working-tree session, which has no range.
+-- the member count is in the changeset window's title for when it is wanted.
+-- Empty once the span being read has left the range.
 function _G.ReviewCommitFlag()
   local span = state.targeted()
   if #span == 0 then return '' end
@@ -202,10 +221,5 @@ function _G.ReviewCommitFlag()
   return (' %s'):format(state.current)
 end
 
--- A rewritten stack is worth seeing at all times, not only in the warning that
--- announced it: the badge says so until the session is exported or discarded.
-function _G.ReviewStaleFlag()
-  return state.stale and ' STALE' or ''
-end
 
 return M

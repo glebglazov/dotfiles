@@ -41,8 +41,10 @@ end
 -- The commit before `sha`: what a changeset beginning at `sha` is diffed
 -- against, and so what the revision buffers of that changeset show their signs
 -- against. A root commit has no parent, so its content reads against the empty
--- tree -- wholly added rather than unchanged.
+-- tree -- wholly added rather than unchanged. The Uncommitted Tip sits past
+-- HEAD, so what comes before it is HEAD itself.
 function M.parent(sha, root)
+  if require('review.state').is_uncommitted(sha) then return 'HEAD' end
   local out = vim.fn.systemlist({
     'git', '-C', root or vim.fn.getcwd(), 'rev-parse', '--verify', '--quiet', sha .. '^',
   })
@@ -98,11 +100,12 @@ function M.display_path(name, root)
   return name
 end
 
--- What a buffer is about, as a comment records it: the span of commits it was
+-- What a buffer is about, as a comment records it: the span of the range it was
 -- opened as part of -- `from`..`commit`, oldest and newest -- and the path it
 -- holds inside the repository. A revision buffer carries its span on the record
 -- the changeset builder left; a file on disk is the span the session is reading
--- now, so the two resolve to the same triple and to the same comments. A buffer
+-- now -- which is the span itself when that span ends at the Uncommitted Tip --
+-- so the two resolve to the same triple and to the same comments. A buffer
 -- of some other route (`:Gedit`, `:Gclog`) has no record, and is the one commit
 -- its name names. Nil for a buffer the review cannot place -- one with no name,
 -- or a file outside this repository.
@@ -115,10 +118,6 @@ function M.locate(bufnr)
   local state = require('review.state')
   local info = M.info(name)
   if info then
-    -- A working-tree session reads a deleted file out of HEAD, which is a
-    -- revision buffer without being another commit under review; its comments
-    -- belong to the working tree like every other comment of that session.
-    if not state.current then return { rel = info.rel, revision = true } end
     return { from = info.from or info.sha, commit = info.sha, rel = info.rel, revision = true }
   end
   local root = state.repo_root()
@@ -141,9 +140,16 @@ local local_keys = {}
 -- Buffers we have attached to, so the end of a session can give the keys back.
 local attached = {}
 
--- The tab the reader left the review for, and the review tab they left, while
--- an investigation is open. See M.investigate.
+-- The tab the reader left the review for, while an investigation is open. See
+-- M.investigate.
 local investigation = nil
+
+-- The tab the review is read in. The review knows it from the moment a session
+-- starts or is restored, rather than noticing it on the way out, so the way back
+-- never depends on the reader having left by a particular key. Nothing defends
+-- it -- see docs/adr/0005: when it is gone, M.home builds another one out of the
+-- session's own state.
+local review_tab = nil
 
 -- `setup{}` hands over the review-local half of its key table once; every
 -- attachment below binds exactly this.
@@ -151,9 +157,10 @@ function M.set_local_keys(maps)
   local_keys = maps or {}
 end
 
--- Does this buffer belong to the session being read? A committed session reads
--- revision buffers, which we registered ourselves; a working-tree session reads
--- real files, which are the session's only by being in its changeset. The
+-- Does this buffer belong to the session being read? A span of commits is read
+-- in revision buffers, which we registered ourselves; a span ending at the
+-- Uncommitted Tip is read in real files, which are the session's only by being
+-- in its changeset. The
 -- changeset window counts too -- it is where the walk is steered from.
 function M.member(bufnr)
   if not require('review.state').active then return false end
@@ -199,9 +206,10 @@ end
 -- than leaving them shadowed on whatever buffers the reader had open.
 function M.detach_all()
   for bufnr in pairs(vim.deepcopy(attached)) do M.detach(bufnr) end
-  -- The next session's investigation starts from a fresh tab, not from the one
-  -- the last reader left open.
+  -- The next session gets its own tabs: a fresh home, and a fresh investigation
+  -- to leave it for, rather than the ones the last reader left open.
   investigation = nil
+  review_tab = nil
 end
 
 -- gitsigns attaches to these buffers asynchronously and only takes a
@@ -241,6 +249,17 @@ function M.dress(bufnr)
   apply_base(bufnr, info.base or M.parent(info.sha, info.root), 40)
 end
 
+-- Whether `sha` holds `rel` at all. Asked here rather than left to the read:
+-- fugitive builds a name for a path a commit does not hold and only fails when
+-- the buffer is loaded, leaving the reader on an empty buffer with git's own
+-- fatal in the messages. A comment refiled onto HEAD by a rewrite keeps the path
+-- it was written against, so a path the commit does not hold is a thing this
+-- seam is asked for in normal use.
+local function holds(sha, rel, root)
+  vim.fn.system({ 'git', '-C', root or vim.fn.getcwd(), 'cat-file', '-e', sha .. ':' .. rel })
+  return vim.v.shell_error == 0
+end
+
 -- Open `rel` as of `sha` in the current window. The direct form of the seam --
 -- the changeset list reaches the same buffers through quickfix entries.
 --
@@ -250,7 +269,7 @@ end
 -- is only itself.
 function M.open(sha, rel, root)
   local name = M.name(sha, rel, root)
-  if not name then
+  if not name or not holds(sha, rel, root) then
     vim.notify(('Review: %s does not exist at %s'):format(rel, sha), vim.log.levels.WARN)
     return nil
   end
@@ -262,6 +281,70 @@ function M.open(sha, rel, root)
   return vim.api.nvim_get_current_buf()
 end
 
+local function tab_valid(tab)
+  return tab ~= nil and vim.api.nvim_tabpage_is_valid(tab)
+end
+
+-- The Review Tab: where the review is read, and the one place in the editor a
+-- single key always leads. It is never protected -- an ordinary file opened into
+-- it by habit is a non-event -- because everything it holds can be laid out
+-- again from the session, which is what the rest of this section does.
+
+-- Adopt the current tab as the review's home. Called by everything that opens a
+-- review -- a fresh start, a restored session, a rebuild -- so the home is
+-- always the tab the changeset was last laid out in.
+function M.set_review_tab(tab)
+  review_tab = tab or vim.api.nvim_get_current_tabpage()
+end
+
+-- Which tab that is, while it still exists, for anything that has to tell the
+-- review's tab from the investigation's.
+function M.review_tab()
+  return tab_valid(review_tab) and review_tab or nil
+end
+
+-- The review's home laid out from scratch: the changeset list, the entry being
+-- read in the window beside it, and the cursor on that entry's hunk. This is all
+-- the Review Tab ever holds, and every part of it is read back out of the
+-- session -- which is what makes losing the tab a non-event.
+local function lay_out(idx)
+  require('review.hunks').reopen()
+  -- From the changeset window `cc` opens the entry in the window beside it and
+  -- takes the reader there, so the layout comes out the same whether the list
+  -- was already on screen or has just been put back.
+  vim.cmd(('%dcc'):format(idx))
+  require('review.landing').land()
+  return true
+end
+
+-- Back to the review, from anywhere in the editor. From another tab it is the
+-- review exactly as the reader left it; pressed in the review's own tab -- where
+-- a file search has usually just dropped a working-tree file over the top of it
+-- -- it lays the reading position out again; and with the tab gone it builds the
+-- review in a new one. Nothing here depends on a window, a buffer or a tab
+-- having survived, only on the session.
+function M.home()
+  if not require('review.state').active then
+    vim.notify('Review: no session to go back to', vim.log.levels.WARN)
+    return false
+  end
+  if tab_valid(review_tab) and vim.api.nvim_get_current_tabpage() ~= review_tab then
+    vim.api.nvim_set_current_tabpage(review_tab)
+    return true
+  end
+  local qf = vim.fn.getqflist({ idx = 0, size = 0 })
+  local size = qf.size or 0
+  if size == 0 then
+    vim.notify('Review: no changeset to go back to', vim.log.levels.WARN)
+    return false
+  end
+  if not tab_valid(review_tab) then
+    vim.cmd('tabnew')
+    review_tab = vim.api.nvim_get_current_tabpage()
+  end
+  return lay_out(math.min(math.max(qf.idx or 1, 1), size))
+end
+
 -- The Investigation Tab: the working-tree copy of the file being read, in a tab
 -- of its own. Reading a commit answers what changed; investigating answers what
 -- the code around it does now, which needs whole files and a language server --
@@ -271,20 +354,13 @@ end
 -- its cursor and its changeset window are never touched, so coming back needs no
 -- restoring. The reader may wander across as many files as they like in there.
 
-local function tab_valid(tab)
-  return tab ~= nil and vim.api.nvim_tabpage_is_valid(tab)
-end
-
 -- Leave the review to investigate, or come back from investigating. One key
 -- both ways: which one it means is which tab it is pressed in.
 function M.investigate()
+  -- The way back is the review's own way home, so an investigation outlives the
+  -- tab it was started from: the review is rebuilt rather than reported missing.
   if investigation and vim.api.nvim_get_current_tabpage() == investigation.tab then
-    if not tab_valid(investigation.review) then
-      vim.notify('Review: the review tab is gone', vim.log.levels.WARN)
-      return false
-    end
-    vim.api.nvim_set_current_tabpage(investigation.review)
-    return true
+    return M.home()
   end
 
   local name = vim.api.nvim_buf_get_name(0)
@@ -303,7 +379,6 @@ function M.investigate()
     return false
   end
 
-  local review_tab = vim.api.nvim_get_current_tabpage()
   -- One tab for the whole investigation: a second trip out lands in the tab the
   -- reader was already investigating in, with whatever they had opened there.
   if tab_valid(investigation and investigation.tab) then
@@ -313,9 +388,8 @@ function M.investigate()
     vim.cmd('tabedit ' .. vim.fn.fnameescape(path))
     investigation = { tab = vim.api.nvim_get_current_tabpage() }
   end
-  investigation.review = review_tab
   pcall(vim.api.nvim_win_set_cursor, 0, { math.min(lnum, vim.api.nvim_buf_line_count(0)), col - 1 })
-  vim.cmd('normal! zz')
+  require('review.landing').land()
   return true
 end
 

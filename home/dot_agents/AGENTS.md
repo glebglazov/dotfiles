@@ -47,6 +47,9 @@ ones.
 
 ## Git
 
+Before you write a commit, run `pop conventions get commits` and follow every
+line it prints.
+
 Never create a branch unless I ask for one. Work on the branch that is already
 checked out, even if it is the default branch. If you think the change belongs on
 its own branch, say so and let me decide — do not switch or create anything first.

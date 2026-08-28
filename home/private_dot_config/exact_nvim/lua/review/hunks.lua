@@ -1,10 +1,11 @@
 -- The changeset a session reviews, as a quickfix list. It is one entry per hunk,
--- in diff order -- the targeted range's combined changes while commits are
--- targeted, the working tree's against HEAD otherwise -- so reading is a walk
--- through the changes rather than through the files, and the walk crosses file
--- boundaries without the reader doing anything about it. A wider stride over the
--- same list walks a file at a time when that is the question instead.
+-- in diff order -- the combined changes of the targeted range, whether that span
+-- ends at a commit or at the working tree -- so reading is a walk through the
+-- changes rather than through the files, and the walk crosses file boundaries
+-- without the reader doing anything about it. A wider stride over the same list
+-- walks a file at a time when that is the question instead.
 local buffers = require('review.buffers')
+local landing = require('review.landing')
 local state = require('review.state')
 
 local M = {}
@@ -56,14 +57,14 @@ function M.title()
   if current then
     local span = state.targeted()
     if #span > 1 then
-      label = ('%s..%s %d commits (%d/%d)'):format(
+      label = ('%s..%s %d members (%d/%d)'):format(
         span[1].hash, current.hash, #span, state.current_index() or 0, #state.range)
+    elseif state.is_uncommitted(current.hash) then
+      label = ('Working tree (%d/%d)'):format(state.current_index() or 0, #state.range)
     else
       label = ('%s %s (%d/%d)'):format(
         current.hash, current.subject, state.current_index() or 0, #state.range)
     end
-  elseif state.active then
-    label = 'Working tree'
   else
     label = 'Changed files'
   end
@@ -156,14 +157,15 @@ function M.reopen()
   return true
 end
 
--- Populate the quickfix list with files changed against `base`. Committed reviews
--- use `base...<head>` (merge-base), where <head> defaults to HEAD but may be a
--- single commit (e.g. base=<c>^, head=<c> → just that commit); --uncommitted
--- uses the working tree vs HEAD. Entries open the files on disk.
-function M.files(base, uncommitted, head)
+-- Populate the quickfix list with files changed against `base`, using
+-- `base...<head>` (merge-base), where <head> defaults to HEAD but may be a
+-- single commit (e.g. base=<c>^, head=<c> → just that commit). Entries open the
+-- files on disk. This is the list outside a session; a session's own changeset
+-- is built by `range_hunks`.
+function M.files(base, head)
   local root = repo_root()
   if not root then return false end
-  local range = uncommitted and 'HEAD' or (base .. '...' .. ((head and head ~= '') and head or 'HEAD'))
+  local range = base .. '...' .. ((head and head ~= '') and head or 'HEAD')
   return show(diff_items(root, range, function(_, rel) return root .. '/' .. rel end))
 end
 
@@ -247,7 +249,7 @@ local function hunk_items(out, locate)
 end
 
 -- The hunks a targeted range changed: one diff of the whole span, taken against
--- the commit before its oldest. Entries open revision buffers at `newest`, so
+-- the member before its oldest. Entries open revision buffers at `newest`, so
 -- reading the list reads the span's own content and never the working tree's --
 -- and a file several commits of the span touched appears once, at the version
 -- the span leaves behind, rather than once per commit at versions that share a
@@ -255,30 +257,44 @@ end
 --
 -- A single commit is the span where `oldest` and `newest` are the same commit,
 -- and the diff is then that commit's own.
+--
+-- A span ending at the Uncommitted Tip is the same one diff with its second ref
+-- left off -- which is what `git diff <ref>` means -- and its entries open the
+-- files on disk: no read-only view of a commit can hold uncommitted content, and
+-- these are the changes the reader can still edit. A file the span deleted has
+-- nothing left on disk to open, so it is read at the base, the last place it had
+-- content. Untracked files are added to that diff on their own (see
+-- untracked_diff), because a file git has never seen is uncommitted work like
+-- any other.
+-- The files git is not tracking yet, each as the diff that adds it. `git diff
+-- <ref>` cannot mention them -- they are in no tree it compares -- so a file
+-- written during the review would be uncommitted work the changeset never
+-- showed. `--no-index` against /dev/null gives each one the shape every other
+-- entry is parsed from: a new file, whole, added at line 1.
+local function untracked_diff(root)
+  local out = {}
+  local files = vim.fn.systemlist({ 'git', '-C', root, 'ls-files', '--others', '--exclude-standard' })
+  if vim.v.shell_error ~= 0 then return out end
+  for _, rel in ipairs(files) do
+    -- `--no-index` exits 1 when the two sides differ, which they always do here,
+    -- so the exit code says nothing and only the output is read.
+    vim.list_extend(out, vim.fn.systemlist({ 'git', '-C', root, '--no-pager', 'diff',
+      '--no-index', '--unified=0', '--no-color', '--', '/dev/null', rel }))
+  end
+  return out
+end
+
 function M.range_hunks(oldest, newest, opts)
   local root = repo_root()
   if not root then return false end
   local base = buffers.parent(oldest, root)
-  local out = vim.fn.systemlist(
-    'git -C ' .. root .. ' diff --unified=0 --no-color ' .. base .. ' ' .. newest)
+  local worktree = state.is_uncommitted(newest)
+  local out = vim.fn.systemlist(('git -C %s diff --unified=0 --no-color %s%s'):format(
+    root, base, worktree and '' or (' ' .. newest)))
+  if worktree then vim.list_extend(out, untracked_diff(root)) end
   return show(hunk_items(out, function(rel, status)
+    if worktree and status ~= 'D' then return root .. '/' .. rel end
     return revision_entry(root, base, oldest, newest, rel, status)
-  end), opts)
-end
-
--- The hunks of the working tree against HEAD, staged and unstaged alike. Built
--- exactly like a commit's so a working-tree session walks the same way -- hunk
--- by hunk and file by file -- rather than one entry per changed file. Entries
--- open the files themselves: these are the changes the reader can still edit.
-function M.worktree_hunks(opts)
-  local root = repo_root()
-  if not root then return false end
-  local out = vim.fn.systemlist('git -C ' .. root .. ' diff --unified=0 --no-color HEAD')
-  return show(hunk_items(out, function(rel, status)
-    -- A file deleted from the working tree has nothing left on disk to open, so
-    -- it is read at HEAD -- the last place it had content.
-    if status == 'D' then return revision_entry(root, 'HEAD', 'HEAD', 'HEAD', rel, 'D') end
-    return root .. '/' .. rel
   end), opts)
 end
 
@@ -290,6 +306,7 @@ local function jump(idx)
   local size = vim.fn.getqflist({ size = 0 }).size or 0
   if size == 0 then return false end
   vim.cmd(('%dcc'):format(idx))
+  landing.land()
   M.on_arrival()
   return true
 end
