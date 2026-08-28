@@ -17,10 +17,20 @@ set -euo pipefail
 exe="${1:?usage: mise-gem-exec <executable> [args...]}"
 shift
 
+# direnv exports op:// references, not secrets, so credentials the gem's
+# subprocesses read from the environment (e.g. Bundler's
+# BUNDLE_RUBYGEMS__PKG__GITHUB__COM for the composed bundle) are unusable
+# unless the whole tree runs under op-cache. nvim spawns servers straight
+# from this script, bypassing the shell's _op_run wrappers, so resolve here.
+op_run=()
+if command -v op-cache >/dev/null 2>&1; then
+  op_run=(op-cache run --)
+fi
+
 ruby_bin="$(mise which ruby 2>/dev/null || true)"
 if [ -z "$ruby_bin" ]; then
   # No mise-resolved Ruby (e.g. untrusted config) — fall back to PATH.
-  exec "$exe" "$@"
+  exec ${op_run[@]+"${op_run[@]}"} "$exe" "$@"
 fi
 
 bindir="$(dirname "$ruby_bin")"
@@ -32,4 +42,4 @@ if [ ! -x "$bindir/$exe" ]; then
   mise exec "ruby@${ver}" -- gem install "$exe" --no-document 1>&2
 fi
 
-exec mise exec "ruby@${ver}" -- "$exe" "$@"
+exec ${op_run[@]+"${op_run[@]}"} mise exec "ruby@${ver}" -- "$exe" "$@"
