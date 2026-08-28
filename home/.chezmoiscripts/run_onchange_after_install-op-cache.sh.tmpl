@@ -2,34 +2,23 @@
 
 set -eufo pipefail
 
-# Installed from a local clone, not from upstream: every `op://` secret here is
-# resolved through op-cache, and that needs the vault-to-account mapping from a
-# branch which is not merged upstream yet. Falling back to upstream would
-# silently install a build that resolves references against one account only.
-OP_CACHE_REPO="{{ .chezmoi.homeDir }}/private/Dev/mixed/op-cache"
+# A fork branch, not upstream: every `op://` secret here is resolved through
+# op-cache, and that needs the vault-to-account mapping which is not merged
+# upstream yet. Falling back to upstream would silently install a build that
+# resolves references against one account only.
+OP_CACHE_REPO="https://github.com/glebglazov/op-cache"
 
-# A commit, not the working tree, so the installed binary matches something
-# reviewable. Bumping this SHA is what makes chezmoi rebuild.
-OP_CACHE_REV="7924078f0f9cfc6a4cb725b1f26eaddf46989b61"
+# A commit, not a branch, so the installed binary matches something reviewable.
+# Bumping this SHA is what makes chezmoi rebuild.
+OP_CACHE_REV="b026923d30a9fac9f082ad5f9af66087ed7c0820"
 
 {{ if lookPath "cargo" -}}
-if [ ! -d "$OP_CACHE_REPO/.git" ]; then
-  echo "op-cache clone missing at $OP_CACHE_REPO — skipping." >&2
-  echo "Clone it there, check out the account-aware branch, then run chezmoi apply again." >&2
-  exit 0
-fi
-
-if ! git -C "$OP_CACHE_REPO" cat-file -e "$OP_CACHE_REV^{commit}" 2>/dev/null; then
-  echo "$OP_CACHE_REPO has no commit $OP_CACHE_REV — skipping." >&2
-  exit 0
-fi
-
 echo "Installing op-cache @ ${OP_CACHE_REV} from $OP_CACHE_REPO ..."
 
 # --root puts the binary in ~/.local/bin, which set_path.sh already exports,
 # instead of ~/.cargo/bin which nothing here adds to PATH.
 cargo install \
-  --git "file://$OP_CACHE_REPO" \
+  --git "$OP_CACHE_REPO" \
   --rev "$OP_CACHE_REV" \
   --locked \
   --root "{{ .chezmoi.homeDir }}/.local" \
