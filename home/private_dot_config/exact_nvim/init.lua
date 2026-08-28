@@ -959,8 +959,21 @@ vim.lsp.config('gopls', {})
 
 vim.lsp.config('ts_ls', {})
 
+-- Ruby is pinned per project, and mise-gem-exec resolves the Ruby from its own
+-- cwd. nvim spawns servers from wherever nvim was started, which is a sibling
+-- worktree often enough, so the process is launched from the project root here.
+local function mise_gem_cmd(gem)
+  return function(dispatchers, config)
+    return vim.lsp.rpc.start(
+      { vim.fn.expand("~/.local/bin/mise-gem-exec"), gem },
+      dispatchers,
+      { cwd = config.root_dir }
+    )
+  end
+end
+
 vim.lsp.config('ruby_lsp', {
-  cmd = { vim.fn.expand("~/.local/bin/mise-gem-exec"), "ruby-lsp" },
+  cmd = mise_gem_cmd("ruby-lsp"),
   init_options = {
     addonSettings = {
       ["Ruby LSP Rails"] = {
@@ -971,19 +984,25 @@ vim.lsp.config('ruby_lsp', {
 })
 
 vim.lsp.config('rubocop', {
-  cmd = { vim.fn.expand("~/.local/bin/mise-gem-exec"), "rubocop" },
+  cmd = mise_gem_cmd("rubocop"),
 })
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
+  -- ruby_lsp is deliberately absent: Mason's gem binstub hardcodes the Ruby it
+  -- was installed under, so it fails Bundler's version gate in any project on a
+  -- different Ruby. The mise-gem-exec cmd above resolves the project's Ruby instead.
   ensure_installed = {
-    'ruby_lsp',
     'lua_ls',
     'ts_ls',
     'gopls',
     'yamlls'
   },
 })
+
+-- mason-lspconfig only auto-enables the servers Mason installed, so the
+-- mise-backed ruby_lsp above would never start without this.
+vim.lsp.enable('ruby_lsp')
 
 require('blink.cmp').setup({
   keymap = {
