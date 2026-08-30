@@ -5,13 +5,13 @@ models:
   rerank: hf:ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF/qwen3-reranker-0.6b-q8_0.gguf
 collections:
   notes:
-    path: /Users/glebglazov/private/Dev/mixed/obsidian_vaults/glebglazov/Notes
+    path: {{ .obsidianVaultPath | replace "~" .chezmoi.homeDir }}/Notes
     pattern: "**/*.md"
     ignore: ["**/AI/**"]
     context:
       /: "Gleb's notes: ideas, references, people, facts (flat, tag-organized)"
   efforts:
-    path: /Users/glebglazov/private/Dev/mixed/obsidian_vaults/glebglazov/Efforts
+    path: {{ .obsidianVaultPath | replace "~" .chezmoi.homeDir }}/Efforts
     pattern: "**/*.md"
     ignore: ["**/AI/**"]
     context:
