@@ -1,3 +1,3 @@
 function npm {
-    _op_run npm "$@"
+    __op_run npm "$@"
 }

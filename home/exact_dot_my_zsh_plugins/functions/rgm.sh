@@ -1,3 +1,3 @@
 function rgm {
-    _be_wrap rails generate migration "$@"
+    __be_wrap rails generate migration "$@"
 }

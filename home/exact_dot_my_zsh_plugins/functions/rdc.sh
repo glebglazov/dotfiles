@@ -1,3 +1,3 @@
 function rdc {
-    _be_wrap rails db:create "$@"
+    __be_wrap rails db:create "$@"
 }

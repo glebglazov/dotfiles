@@ -1,5 +1,5 @@
 function newrelic {
     # As RTX prepends path and newrelic_rpm gem has a binstub of "newrelic" in bin/ path
     # I've decided to use direct alias to target homebrew folder
-    _op_run $BREW_PREFIX/newrelic-cli/bin/newrelic "$@"
+    __op_run $BREW_PREFIX/newrelic-cli/bin/newrelic "$@"
 }

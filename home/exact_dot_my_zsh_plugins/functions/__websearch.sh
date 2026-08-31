@@ -1,4 +1,4 @@
-function _websearch {
+function __websearch {
     if [ $# -eq 0 ]; then
         echo "Usage: ? <search query>"
         return 1

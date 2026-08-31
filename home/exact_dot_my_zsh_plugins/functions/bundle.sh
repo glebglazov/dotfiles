@@ -1,3 +1,3 @@
 function bundle {
-    _op_run bundle "$@"
+    __op_run bundle "$@"
 }

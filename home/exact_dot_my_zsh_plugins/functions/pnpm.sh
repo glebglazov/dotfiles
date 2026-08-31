@@ -1,3 +1,3 @@
 function pnpm {
-    _op_run pnpm "$@"
+    __op_run pnpm "$@"
 }

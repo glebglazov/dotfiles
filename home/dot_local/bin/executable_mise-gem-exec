@@ -21,7 +21,7 @@ shift
 # subprocesses read from the environment (e.g. Bundler's
 # BUNDLE_RUBYGEMS__PKG__GITHUB__COM for the composed bundle) are unusable
 # unless the whole tree runs under op-cache. nvim spawns servers straight
-# from this script, bypassing the shell's _op_run wrappers, so resolve here.
+# from this script, bypassing the shell's __op_run wrappers, so resolve here.
 op_run=()
 if command -v op-cache >/dev/null 2>&1; then
   op_run=(op-cache run --)

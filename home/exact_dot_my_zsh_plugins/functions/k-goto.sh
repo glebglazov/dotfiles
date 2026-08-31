@@ -1,3 +1,3 @@
 function k-goto {
-    _op_run k-goto "$@"
+    __op_run k-goto "$@"
 }

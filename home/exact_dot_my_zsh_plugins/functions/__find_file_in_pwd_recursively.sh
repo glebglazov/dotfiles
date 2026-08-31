@@ -1,6 +1,6 @@
-function _find_file_in_pwd_recursively {
+function __find_file_in_pwd_recursively {
     if [[ $# -eq 0 ]]; then
-        echo "Usage: _find_file_in_pwd_recursively FILENAME"
+        echo "Usage: __find_file_in_pwd_recursively FILENAME"
         return 1
     fi
 

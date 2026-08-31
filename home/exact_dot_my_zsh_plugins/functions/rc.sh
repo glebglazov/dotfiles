@@ -1,3 +1,3 @@
 function rc {
-    _be_wrap rails console "$@"
+    __be_wrap rails console "$@"
 }

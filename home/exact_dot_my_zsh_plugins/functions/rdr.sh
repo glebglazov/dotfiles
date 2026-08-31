@@ -1,3 +1,3 @@
 function rdr {
-    _be_wrap rails db:rollback "$@"
+    __be_wrap rails db:rollback "$@"
 }

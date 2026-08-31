@@ -1,3 +1,3 @@
 function rdm {
-    _be_wrap rails db:migrate "$@"
+    __be_wrap rails db:migrate "$@"
 }

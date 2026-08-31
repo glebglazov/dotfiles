@@ -1,3 +1,3 @@
 function yarn {
-    _op_run yarn "$@"
+    __op_run yarn "$@"
 }

@@ -1,3 +1,3 @@
 function rspec {
-    _be_wrap rspec "$@"
+    __be_wrap rspec "$@"
 }

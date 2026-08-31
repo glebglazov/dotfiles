@@ -1,3 +1,3 @@
 function rake {
-    _be_wrap rake "$@"
+    __be_wrap rake "$@"
 }

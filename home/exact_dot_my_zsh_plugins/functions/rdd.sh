@@ -1,3 +1,3 @@
 function rdd {
-    _be_wrap rails db:drop "$@"
+    __be_wrap rails db:drop "$@"
 }

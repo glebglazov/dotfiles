@@ -1,3 +1,3 @@
 function rs {
-    _be_wrap rails server "$@"
+    __be_wrap rails server "$@"
 }

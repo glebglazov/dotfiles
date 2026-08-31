@@ -1,5 +1,5 @@
 function r-edit-credentials {
     local env_name="$1"
 
-    RAILS_MASTER_KEY="op://$OP_RAILS_MASTER_KEY_BASE/$env_name" op-cache run -- zsh -ic "_be_wrap rails credentials:edit --environment '$env_name'"
+    RAILS_MASTER_KEY="op://$OP_RAILS_MASTER_KEY_BASE/$env_name" op-cache run -- zsh -ic "__be_wrap rails credentials:edit --environment '$env_name'"
 }

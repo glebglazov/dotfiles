@@ -1,3 +1,3 @@
 function terraform {
-    _op_run terraform "$@"
+    __op_run terraform "$@"
 }

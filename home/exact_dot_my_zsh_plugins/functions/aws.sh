@@ -1,3 +1,3 @@
 function aws {
-    _execute-with-aws-envrc aws "$@"
+    __execute_with_aws_envrc aws "$@"
 }

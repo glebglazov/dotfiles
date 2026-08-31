@@ -1,3 +1,3 @@
 function bun {
-    _op_run bun "$@"
+    __op_run bun "$@"
 }

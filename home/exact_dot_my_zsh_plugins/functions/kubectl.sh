@@ -1,3 +1,3 @@
 function kubectl {
-    _execute-with-aws-envrc kubectl "$@"
+    __execute_with_aws_envrc kubectl "$@"
 }
