@@ -47,8 +47,8 @@ end
 -- The changeset window back, without rebuilding the list behind it.
 M.changeset = hunks.reopen
 
--- Rewrites: resolve the range against git again and refile the comments a
--- rewrite took (`check`), and drop a session without exporting it (`discard`).
+-- A branch that moved under the session: ask on demand what the range holds
+-- again (`check`), and drop a session without exporting it (`discard`).
 M.check = persist.check
 M.discard = persist.discard
 
@@ -292,7 +292,8 @@ function M.setup(opts)
   -- :Review [start [<ref>] | finish | check | discard]
   --   start   — begin a session against <ref> (default remote branch if omitted)
   --   finish  — export + clear + signs off
-  --   check   — resolve the range against git again, refiling what a rewrite took
+  --   check   — ask the range what it holds again: commits that arrived join it,
+  --             and comments a departure orphaned are refiled onto HEAD
   --   discard — drop the session (and its saved state) without exporting
   vim.api.nvim_create_user_command('Review', function(cmd)
     local sub = cmd.fargs[1] or 'start'
@@ -302,7 +303,7 @@ function M.setup(opts)
       M.start({ base = cmd.fargs[2] })
     elseif sub == 'check' then
       if not persist.check() then
-        vim.notify('Review: no rewrite — every commit under review is still in the range',
+        vim.notify('Review: nothing to absorb — the range is the branch as it stands',
           vim.log.levels.INFO)
       end
     elseif sub == 'discard' then

@@ -127,32 +127,6 @@ function M.clear()
   if path then vim.fn.delete(path) end
 end
 
--- The commits of `range` the session can no longer read. A rewrite -- amend,
--- rebase, a git-pile restack -- replaces commits rather than editing them, but
--- the old objects linger in the repository until gc, so existence proves
--- nothing: what matters is reachability. A rewritten commit stops being an
--- ancestor of the branch the session was started on, and `--is-ancestor`
--- answers for a vanished object too (it simply fails).
---
--- The Uncommitted Tip is passed over: it is not a commit, git has no such
--- object, and asking would report a rewrite of every session that has one. Work
--- that stops being uncommitted has not been lost -- `session.refresh_range`
--- takes the tip out of the range when that happens.
-function M.missing(range)
-  local root = state.repo_root()
-  if not root then return {} end
-  local spec = state.spec or {}
-  local head = (spec.head and spec.head ~= '') and spec.head or 'HEAD'
-  local gone = {}
-  for _, c in ipairs(range or {}) do
-    if not state.is_uncommitted(c.hash) then
-      vim.fn.system({ 'git', '-C', root, 'merge-base', '--is-ancestor', c.hash, head })
-      if vim.v.shell_error ~= 0 then table.insert(gone, c) end
-    end
-  end
-  return gone
-end
-
 -- Whether the range no longer holds a home for `c`. A comment is filed under
 -- the span it was written against, and a span the range has lost is a span
 -- nothing can be drawn against: a rewritten commit, or the Uncommitted Tip once
@@ -195,25 +169,15 @@ function M.refile(head)
   return moved
 end
 
--- Look for a rewrite and carry the session across it: the range is resolved
--- again, the comments it lost are refiled onto HEAD, and the changeset is
--- rebuilt around whatever the reader is left reading. Runs on restore and on
--- demand (`:Review check`); the tip leaving the range reaches the same refile
--- through `session.refresh_range`. Returns whether there was a rewrite to
--- absorb -- never that the session ended, because it does not.
+-- Ask the range what it holds, on demand (`:Review check`). The Range Refresh
+-- is the whole answer -- arrivals admitted, what departures took refiled onto
+-- HEAD, the changeset rebuilt around whatever the reader is left reading -- so
+-- this is the reader's own way of reaching it between the three places it runs
+-- by itself. Returns whether the reading changed; never that the session
+-- ended, because it does not.
 function M.check()
   if not state.active or #state.range == 0 then return false end
-  if #M.missing(state.range) == 0 then return false end
-  local session = require('review.session')
-  session.reresolve_range()
-  local moved = M.refile()
-  local render = require('review.render')
-  require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
-  render.all()
-  render.set_statusline()
-  vim.notify(('Review: the stack was rewritten — reading %s%s'):format(session.span_label(),
-    (moved > 0) and (', %d comment(s) refiled onto HEAD'):format(moved) or ''), vim.log.levels.INFO)
-  return true
+  return require('review.session').refresh_range()
 end
 
 -- Drop the session without exporting, and forget the file with it.
@@ -245,11 +209,11 @@ function M.restore()
   state.active = true
 
   local render = require('review.render')
-  -- The working tree has been worked in since the session was saved, so what it
-  -- holds is asked again before anything is drawn: the tip joins the range or
-  -- leaves it, and a target that ended at a tip now committed follows the work
-  -- onto the commit that holds it.
-  require('review.session').refresh_range()
+  -- The branch has moved since the session was saved -- commits made or pulled,
+  -- work committed, a rewrite -- so its membership is asked again before
+  -- anything is drawn, and the session comes back describing the branch as it
+  -- now stands.
+  local refreshed = require('review.session').refresh_range()
 
   local spec = state.spec or {}
   if spec.base then
@@ -258,12 +222,10 @@ function M.restore()
   render.all()
   render.set_statusline()
   vim.notify(restored_message(), vim.log.levels.INFO)
-  -- A rewrite met while the editor was closed is absorbed here rather than
-  -- ending the session, and the changeset it rebuilds around the refile is the
-  -- walk -- so only a session that met no rewrite needs one built.
-  if not M.check() then
-    -- The walk comes back with the session, but quietly: the reader opened this
-    -- editor on a file of their own, not on the quickfix list.
+  -- The walk comes back with the session, but quietly: the reader opened this
+  -- editor on a file of their own, not on the quickfix list. A refresh that
+  -- changed the reading has rebuilt it already.
+  if not refreshed then
     require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
   end
   -- Tab ids do not survive quitting nvim, so the restored session adopts the tab

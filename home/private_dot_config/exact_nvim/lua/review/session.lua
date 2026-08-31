@@ -177,88 +177,93 @@ function M.uncommitted()
   return true
 end
 
--- Bring the range's membership up to date with the working tree: the tip joins
--- it as soon as there is something uncommitted and leaves as soon as there is
--- not. Called where docs/adr/0004 says membership is recomputed -- at a start
--- (which builds the range anyway), at a restore, and whenever the switcher
--- opens. Returns whether anything on the screen had to change: the span being
--- read moving, or comments being refiled out from under it.
---
--- The tip leaving the range is a rewrite like any other, so the comments made
--- against it are refiled onto HEAD along with everyone else's: their lines are
--- not the lines that were committed, and the rebound mark on them is what says
--- so (docs/adr/0006). The *target* follows too, so the screen after the commit
--- shows what the screen before it showed.
-function M.refresh_range()
-  if not state.active then return false end
-  local at = state.index_of(state.UNCOMMITTED)
-  local carries = M.carries_tip((state.spec or {}).head)
-  if carries == (at ~= nil) then return false end
-  if carries then
-    table.insert(state.range, state.uncommitted_entry())
-    state.save()
-    return false
+-- The targeted span put back over the range as it now stands. A span the reader
+-- chose is kept whole while the range still holds both of its ends; the whole
+-- range, which is where the reading rests rather than something chosen, widens
+-- onto whatever arrived.
+local function repair_target(from, to, resting, tip_left)
+  local whole_from, whole_to = M.whole_range_ends()
+  if resting then return state.set_targeted(whole_from, whole_to) end
+  if state.set_targeted(from, to) then return true end
+  -- An end of the chosen span is gone. Work that has just been committed is
+  -- still the work on the screen, so a span that ended at the tip follows it
+  -- onto the commit that holds it, keeping the end that survived:
+  -- `c3..the working tree` becomes `c3..HEAD` -- the same lines, now committed
+  -- -- while the tip on its own becomes HEAD on its own. A commit a rewrite
+  -- took leaves nothing to follow, so the reader is put back on the branch as
+  -- it now stands.
+  if tip_left and state.is_uncommitted(to) then
+    return state.set_targeted(state.index_of(from) and from or whole_to, whole_to)
   end
-  table.remove(state.range, at)
-  local was_targeted = state.is_uncommitted(state.current) or state.is_uncommitted(state.targeted_from)
-  -- Whatever was uncommitted is a commit now, and that commit is past the range
-  -- as it was resolved -- so the range is asked for again whether or not the tip
-  -- was the thing being read: the commit holding the work has to be a member
-  -- before the target can fall back onto it or a comment can be refiled onto it.
-  local spec = state.spec or {}
-  for _, c in ipairs(M.commits(spec.base or M.default_base(), spec.head)) do
-    if not state.index_of(c.hash) then table.insert(state.range, c) end
-  end
-  local moved = require('review.persist').refile()
-  state.save()
-  if not was_targeted then
-    if moved > 0 then
-      vim.notify(('Review: the uncommitted work is committed — %d comment(s) refiled onto HEAD'):format(moved),
-        vim.log.levels.INFO)
-    end
-    return moved > 0
-  end
-  -- Only the end that vanished falls back. A span that began at a commit keeps
-  -- that commit, so `c3..the working tree` becomes `c3..HEAD` -- the same lines,
-  -- now committed -- while the tip on its own becomes HEAD on its own.
-  local newest = state.range[#state.range]
-  local oldest = state.index_of(state.targeted_from) and state.targeted_from
-    or (newest and newest.hash)
-  if not newest or not state.set_targeted(oldest, newest.hash) then
-    vim.notify('Review: the uncommitted work is gone, and there is nothing to read in its place',
-      vim.log.levels.WARN)
-    state.save()
-    return false
-  end
-  state.save()
-  vim.notify(('Review: the uncommitted work is committed — reading %s instead%s'):format(M.span_label(),
-    (moved > 0) and (', %d comment(s) refiled onto HEAD'):format(moved) or ''), vim.log.levels.INFO)
-  return true
+  return state.set_targeted(whole_from, whole_to)
 end
 
--- The range asked for again from what it was resolved from, and the span being
--- read repaired around whatever came back. A rewrite replaces commits rather
--- than editing them, so every hash the session holds may be gone and only the
--- base survives -- which is enough, because the range was only ever
--- `base..head` of it. Refuses when that resolves to nothing at all, leaving the
--- range as it was: a review of no members is not a review.
+-- The Range Refresh: the one recompute of what the range holds. `base..head` is
+-- asked again, so a commit made here, made from a terminal, or pulled or
+-- rebased onto the branch is a member from now on; the Uncommitted Tip joins
+-- the range as soon as there is something uncommitted and leaves as soon as
+-- there is not. Comments filed under what the range lost are refiled onto HEAD,
+-- and the targeted span is repaired around both the arrivals and the
+-- departures. Called where docs/adr/0004 says membership is recomputed -- at a
+-- start (which builds the range anyway), at a restore, and whenever the
+-- switcher opens -- and nowhere else.
 --
--- The target is kept whenever the new range still holds both of its ends, and
--- falls back to the whole range when it does not -- a rewrite that took the very
--- commit being read leaves the reader on the branch as it now stands rather than
--- on nothing.
-function M.reresolve_range()
+-- A departure costs the session no more than that refile, whether it was a
+-- rewrite or the tip: nothing is matched onto the commits that replaced the
+-- ones the range lost (docs/adr/0006), so the comments arrive on HEAD exactly
+-- as they were written, knowingly describing lines that have since moved, and
+-- the rebound mark on them is what says so.
+--
+-- Returns whether the reading changed -- the span being read moving, or
+-- comments being refiled out from under it -- having rebuilt the changeset and
+-- redrawn when it did. That rebuild is quiet: a refresh happens while the
+-- reader is wherever they chose to be, and taking their window to the first
+-- hunk of a range they did not ask to be moved through is not the refresh's to
+-- do.
+function M.refresh_range()
   if not state.active then return false end
   local spec = state.spec or {}
   local members = M.members(spec.base or M.default_base(), spec.head)
+  -- A review of no members is not a review: whatever git has to say about the
+  -- base right now, the range is left as it was rather than emptied.
   if #members == 0 then return false end
-  local oldest, newest = state.targeted_from, state.current
+
+  local held, holds = {}, {}
+  for _, c in ipairs(state.range) do held[c.hash] = true end
+  for _, c in ipairs(members) do holds[c.hash] = true end
+  local arrivals, departures = 0, 0
+  for _, c in ipairs(members) do if not held[c.hash] then arrivals = arrivals + 1 end end
+  for _, c in ipairs(state.range) do if not holds[c.hash] then departures = departures + 1 end end
+  if arrivals == 0 and departures == 0 then return false end
+
+  local from, to = state.targeted_from, state.current
+  -- Asked of the range as it stood, before the arrivals move where "the whole
+  -- range" ends: a span that matches it is the reading at rest, and the rest is
+  -- what follows the membership.
+  local whole_from, whole_to = M.whole_range_ends()
+  local resting = (from == whole_from and to == whole_to)
+  local tip_left = held[state.UNCOMMITTED] and not holds[state.UNCOMMITTED]
+
   state.range = members
-  if not state.set_targeted(oldest, newest) then
-    local last = M.newest_commit() or members[#members]
-    state.set_targeted(members[1].hash, last.hash)
-  end
+  local moved = require('review.persist').refile()
+  repair_target(from, to, resting, tip_left)
   state.save()
+
+  local changed = state.targeted_from ~= from or state.current ~= to or moved > 0
+  if not changed then return false end
+  hunks.range_hunks(state.targeted_from, state.current, { quiet = true })
+  render.all()
+  render.set_statusline()
+  local what
+  if tip_left then
+    what = 'the uncommitted work is committed'
+  elseif departures > 0 then
+    what = 'the stack was rewritten'
+  else
+    what = ('%d commit(s) joined the range'):format(arrivals)
+  end
+  vim.notify(('Review: %s — reading %s%s'):format(what, M.span_label(),
+    (moved > 0) and (', %d comment(s) refiled onto HEAD'):format(moved) or ''), vim.log.levels.INFO)
   return true
 end
 
@@ -367,13 +372,27 @@ function M.set_current(hash)
   return M.target(hash, hash)
 end
 
--- The newest committed member of the range: where "the whole range" ends. Nil
--- for a range that holds nothing but the Uncommitted Tip.
-function M.newest_commit()
-  for i = #state.range, 1, -1 do
-    if not state.is_uncommitted(state.range[i].hash) then return state.range[i] end
+-- The newest committed member of `range` (the session's own by default): where
+-- "the whole range" ends. Nil for a range that holds nothing but the
+-- Uncommitted Tip.
+function M.newest_commit(range)
+  range = range or state.range
+  for i = #range, 1, -1 do
+    if not state.is_uncommitted(range[i].hash) then return range[i] end
   end
   return nil
+end
+
+-- The two ends "the whole range" means over `range`: its oldest member through
+-- its newest commit. One answer for the reset key, for a target left with
+-- nowhere to fall back to, and for the test of whether the reading is at rest --
+-- so the resting span is the same span in all three.
+function M.whole_range_ends(range)
+  range = range or state.range
+  local oldest = range[1]
+  if not oldest then return nil end
+  local newest = M.newest_commit(range) or range[#range]
+  return oldest.hash, newest.hash
 end
 
 -- The whole range targeted again: one diff of the branch, which is one diff of
@@ -382,10 +401,9 @@ end
 -- the branch as it stands. A session holding nothing but the tip resets onto the
 -- tip, because there is nothing else to put back.
 function M.target_whole_range()
-  local oldest = state.range[1]
+  local oldest, newest = M.whole_range_ends()
   if not oldest then return false end
-  local newest = M.newest_commit() or state.range[#state.range]
-  return M.target(oldest.hash, newest.hash)
+  return M.target(oldest, newest)
 end
 
 -- Target another part of the range from the switcher: one commit chosen, a run
@@ -395,14 +413,10 @@ end
 function M.switch_from_picker()
   -- The switcher is the list of what the range holds, so it is one of the three
   -- places membership is recomputed: it must not offer commits a rewrite has
-  -- taken, nor work that has since been committed, nor hide work that has since
-  -- been done. A rewrite redraws the changeset around its own refile, so only
-  -- the tip's departure is left to answer for here.
-  require('review.persist').check()
-  if M.refresh_range() then
-    hunks.range_hunks(state.targeted_from, state.current)
-    render.all()
-  end
+  -- taken, nor work that has since been committed, nor hide commits that have
+  -- since been made or pulled. One refresh answers all of that, and redraws
+  -- around whatever it changed.
+  M.refresh_range()
   require('review.pickers').switch_commit({
     choose = function(commit)
       if M.set_current(commit.hash) then

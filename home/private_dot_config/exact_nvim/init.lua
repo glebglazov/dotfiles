@@ -663,6 +663,32 @@ require('lazy').setup({
     end
   },
 
+  -- Screenshots of the current buffer or visual selection, via the `silicon`
+  -- binary installed by the package script.
+  {
+    'segeljakt/vim-silicon',
+    cmd = 'Silicon',
+    init = function()
+      vim.g.silicon = {
+        -- vim-silicon calls funcref values right before it shells out, so this
+        -- picks up whatever the macOS-appearance sync last set 'background' to.
+        theme = function()
+          return vim.o.background == 'dark' and 'gruvbox-dark' or 'gruvbox-light'
+        end,
+        font = 'BerkeleyMono Nerd Font Mono',
+        -- Padding around the code, kept equal to the gruvbox background so the
+        -- image reads as one surface.
+        background = function()
+          return vim.o.background == 'dark' and '#1d2021' or '#f9f5d7'
+        end,
+        ['pad-horiz'] = 40,
+        ['pad-vert'] = 40,
+        ['window-controls'] = false,
+        output = '~/Downloads/silicon-{time:%Y-%m-%d-%H%M%S}.png',
+      }
+    end,
+  },
+
   -------------------------------------------------
   -- Navigation
   -------------------------------------------------
