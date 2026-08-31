@@ -1385,7 +1385,6 @@ require('review').setup {
     delete_comment    = '<LEADER>rd',
     export            = '<LEADER>ree',
     files             = '<LEADER>rf',
-    investigate       = '<LEADER>rg',
     start             = '<LEADER>rs',
     start_uncommitted = '<LEADER>rS',
     home              = '<LEADER>rr',

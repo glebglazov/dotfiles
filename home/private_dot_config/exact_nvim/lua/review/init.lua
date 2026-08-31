@@ -80,7 +80,7 @@ M.pick_comment = comments.pick
 M.help = help.toggle
 
 M.open = buffers.open
-M.investigate = buffers.investigate
+M.cross = buffers.cross
 M.home = buffers.home
 M.export = export.export
 M.preview = export.preview
@@ -114,19 +114,16 @@ local actions = {
         return M.files()
       end, desc = 'Review: reopen the changeset (no session: changed files)' },
   },
-  -- The way back to the review from anywhere in the editor: another tab, a file
-  -- opened over the review by a search, a fresh editor after a restart. Nothing
-  -- has to have survived -- when the review's tab is gone the key builds it
-  -- again out of the session (see docs/adr/0005), which is why nothing in the
-  -- plugin defends that tab.
+  -- One key for both sides of the review (docs/adr/0007). On a Review Surface it
+  -- opens the Working Copy of the file being read, in the review's own window
+  -- and over the Revision Buffer; anywhere else -- that file, another file `gd`
+  -- led to, another tab, a fresh editor after a restart -- it comes back to the
+  -- Review Position. Nothing has to have survived: with the review's tab gone
+  -- the key builds it again out of the session (see docs/adr/0005), which is why
+  -- nothing in the plugin defends that tab.
   home = {
-    { mode = 'n', fn = buffers.home, desc = 'Review: back to the review (rebuilt if its tab is gone)' },
-  },
-  -- Out to the Investigation Tab and back again, on the one key: the working
-  -- tree copy of this file opens in a tab of its own, and pressing it there
-  -- goes home -- to the review, which was never disturbed.
-  investigate = {
-    { mode = 'n', fn = buffers.investigate, desc = 'Review: investigate this file in its own tab (and back)' },
+    { mode = 'n', fn = buffers.cross,
+      desc = 'Review: cross to this file on disk (and back to the review)' },
   },
   -- The whole branch, on one keypress: no chooser, nothing to land on by
   -- mistake. Another base is a typed `:Review start <ref>` -- or, on the same

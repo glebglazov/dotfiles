@@ -140,9 +140,17 @@ local local_keys = {}
 -- Buffers we have attached to, so the end of a session can give the keys back.
 local attached = {}
 
--- The tab the reader left the review for, while an investigation is open. See
--- M.investigate.
-local investigation = nil
+-- The Review Position: where the review was left when the Working Copy was
+-- opened -- the targeted span, the Revision Buffer (its name, and the record of
+-- what that name shows) and the cursor's line and column. Session facts rather
+-- than a window, a buffer or a tab, which is what makes the trip out free:
+-- wandering off with `gd`, closing the window, or fugitive wiping the blob
+-- buffer on the way out all cost the return nothing.
+--
+-- Never written to the session file (docs/adr/0007): after a restart there is
+-- nothing to return to, and the current changeset entry is where the first press
+-- lands instead.
+local position = nil
 
 -- The tab the review is read in. The review knows it from the moment a session
 -- starts or is restored, rather than noticing it on the way out, so the way back
@@ -166,6 +174,33 @@ function M.member(bufnr)
   if not require('review.state').active then return false end
   if vim.bo[bufnr].buftype == 'quickfix' then return true end
   if M.info(vim.api.nvim_buf_get_name(bufnr)) then return true end
+  for _, item in ipairs(vim.fn.getqflist({ items = 0 }).items or {}) do
+    if item.bufnr == bufnr then return true end
+  end
+  return false
+end
+
+-- A Review Surface: a place the review is being read. A Revision Buffer, the
+-- changeset window, or -- while the targeted range ends at the Uncommitted Tip,
+-- where the span is read from the files on disk (docs/adr/0004) -- a file the
+-- changeset holds. One predicate for everything that has to tell the review from
+-- the rest of the editor, and the whole of what decides which way `M.cross`
+-- goes.
+--
+-- `M.locate` is not this test: it answers for every file under the repository
+-- root, because a comment can be written anywhere. This answers for the review's
+-- own surfaces alone.
+function M.surface(bufnr)
+  local state = require('review.state')
+  if not state.active then return false end
+  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  if not vim.api.nvim_buf_is_valid(bufnr) then return false end
+  if vim.bo[bufnr].buftype == 'quickfix' then return true end
+  if M.is_revision(vim.api.nvim_buf_get_name(bufnr)) then return true end
+  -- A file on disk is the review's only while the span being read is the one
+  -- that is read from disk; under a commit it is HEAD's content at line numbers
+  -- that are not the commit's, which is the plain editor and nothing more.
+  if not state.is_uncommitted(state.current) then return false end
   for _, item in ipairs(vim.fn.getqflist({ items = 0 }).items or {}) do
     if item.bufnr == bufnr then return true end
   end
@@ -206,9 +241,9 @@ end
 -- than leaving them shadowed on whatever buffers the reader had open.
 function M.detach_all()
   for bufnr in pairs(vim.deepcopy(attached)) do M.detach(bufnr) end
-  -- The next session gets its own tabs: a fresh home, and a fresh investigation
-  -- to leave it for, rather than the ones the last reader left open.
-  investigation = nil
+  -- The next session gets its own home, and nowhere it has been left for yet,
+  -- rather than the tab and the position the last reader walked away from.
+  position = nil
   review_tab = nil
 end
 
@@ -297,8 +332,7 @@ function M.set_review_tab(tab)
   review_tab = tab or vim.api.nvim_get_current_tabpage()
 end
 
--- Which tab that is, while it still exists, for anything that has to tell the
--- review's tab from the investigation's.
+-- Which tab that is, while it still exists, for anything that has to ask.
 function M.review_tab()
   return tab_valid(review_tab) and review_tab or nil
 end
@@ -345,58 +379,139 @@ function M.home()
   return lay_out(math.min(math.max(qf.idx or 1, 1), size))
 end
 
--- The Investigation Tab: the working-tree copy of the file being read, in a tab
--- of its own. Reading a commit answers what changed; investigating answers what
--- the code around it does now, which needs whole files and a language server --
--- and a Revision Buffer is not a file on disk, so it has neither.
+-- The Working Copy: the working-tree file behind the Revision Buffer being read,
+-- opened in its place in the review's own window. Reading a commit answers what
+-- changed; the file on disk answers what the code around it does now, which
+-- takes a whole file and a language server -- and a Revision Buffer is neither.
 --
--- Keeping it in another tab is what makes the trip free: the review's windows,
--- its cursor and its changeset window are never touched, so coming back needs no
--- restoring. The reader may wander across as many files as they like in there.
+-- One key crosses both ways (docs/adr/0007), and the trip out is free because
+-- the trip back is: the Review Position is the session's own facts, so nothing
+-- the reader does over there has to survive for the return to work.
 
--- Leave the review to investigate, or come back from investigating. One key
--- both ways: which one it means is which tab it is pressed in.
-function M.investigate()
-  -- The way back is the review's own way home, so an investigation outlives the
-  -- tab it was started from: the review is rebuilt rather than reported missing.
-  if investigation and vim.api.nvim_get_current_tabpage() == investigation.tab then
-    return M.home()
+-- The window the review is read in: any window of its tab that is not the
+-- changeset list.
+local function reading_window(tab)
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].buftype ~= 'quickfix' then return win end
   end
+  return nil
+end
 
+-- Standing in that window, out of whatever is left of the review. From another
+-- tab it is that tab; with the tab gone it is a new one with the changeset put
+-- back into it; and with nothing but the changeset list left in the tab, a window
+-- is opened above the list, where the list's own jump would have opened one.
+-- Nothing here needs a window, a buffer or a tab to have survived
+-- (docs/adr/0005).
+local function to_reading_window()
+  if not tab_valid(review_tab) then
+    vim.cmd('tabnew')
+    review_tab = vim.api.nvim_get_current_tabpage()
+    require('review.hunks').reopen()
+  elseif vim.api.nvim_get_current_tabpage() ~= review_tab then
+    vim.api.nvim_set_current_tabpage(review_tab)
+  end
+  local win = reading_window(review_tab)
+  if win then
+    vim.api.nvim_set_current_win(win)
+  else
+    vim.cmd('topleft new')
+  end
+end
+
+-- The cursor put where it was, in the buffer that has just been opened, and
+-- landed. The line is clamped because it is carried across verbatim rather than
+-- mapped through the diff (docs/adr/0007): commit content and the file on disk
+-- are rarely the same lines, and a drift the reader can see beats being silently
+-- one hunk off.
+local function arrive(lnum, col)
+  pcall(vim.api.nvim_win_set_cursor, 0,
+    { math.min(lnum, vim.api.nvim_buf_line_count(0)), math.max(0, col - 1) })
+  require('review.landing').land()
+end
+
+-- The review's home, laid out on the current changeset entry from wherever the
+-- key was pressed: adopting the review's tab first is what stops `M.home` from
+-- counting the press as an arrival from another tab and stopping at the tab
+-- switch. This is what a crossing with nothing on the other side means.
+local function to_entry()
+  if tab_valid(review_tab) then vim.api.nvim_set_current_tabpage(review_tab) end
+  return M.home()
+end
+
+-- Out to the Working Copy, over the Revision Buffer in front of the reader and
+-- in its window. Where there is no working copy to open -- the changeset window,
+-- a file already read from disk because the span ends at the Uncommitted Tip, a
+-- Revision Buffer of a file the working tree no longer has -- the key goes home
+-- rather than warning and doing nothing: it is bound to "the other side of the
+-- review", and it always lands somewhere.
+local function to_working_copy()
+  local state = require('review.state')
   local name = vim.api.nvim_buf_get_name(0)
-  local info = M.info(name)
-  if not M.parse(name) or not info then
-    vim.notify('Review: not a revision buffer', vim.log.levels.WARN)
-    return false
-  end
-  local lnum, col = vim.fn.line('.'), vim.fn.col('.')
+  local info = M.parse(name) and M.info(name) or nil
+  if not info or state.is_uncommitted(state.current) then return to_entry() end
   local ok, path = pcall(vim.fn.FugitiveReal, name)
   if not ok or type(path) ~= 'string' or path == '' then
     path = (info.root and (info.root .. '/' .. info.rel)) or info.rel
   end
-  if vim.fn.filereadable(path) == 0 then
-    vim.notify(('Review: %s is not in the working tree'):format(info.rel), vim.log.levels.WARN)
-    return false
-  end
+  if vim.fn.filereadable(path) == 0 then return to_entry() end
 
-  -- One tab for the whole investigation: a second trip out lands in the tab the
-  -- reader was already investigating in, with whatever they had opened there.
-  if tab_valid(investigation and investigation.tab) then
-    vim.api.nvim_set_current_tabpage(investigation.tab)
-    vim.cmd('edit ' .. vim.fn.fnameescape(path))
-  else
-    vim.cmd('tabedit ' .. vim.fn.fnameescape(path))
-    investigation = { tab = vim.api.nvim_get_current_tabpage() }
-  end
-  pcall(vim.api.nvim_win_set_cursor, 0, { math.min(lnum, vim.api.nvim_buf_line_count(0)), col - 1 })
-  require('review.landing').land()
+  position = {
+    name = name,
+    info = info,
+    from = state.targeted_from,
+    to = state.current,
+    lnum = vim.fn.line('.'),
+    col = vim.fn.col('.'),
+  }
+  vim.cmd('edit ' .. vim.fn.fnameescape(path))
+  arrive(position.lnum, position.col)
   return true
 end
 
--- Which tab is the Investigation Tab, for the tests and for anything that has to
--- tell the two apart.
-function M.investigation_tab()
-  return tab_valid(investigation and investigation.tab) and investigation.tab or nil
+-- Back to the Review Position. The Revision Buffer is opened from the name and
+-- the record we kept rather than from the buffer the reader left, so fugitive
+-- having deleted that buffer on the way out is a non-event -- and the record is
+-- what keeps the buffer the reading of a span rather than of one commit.
+--
+-- A Range Refresh that moved the targeted span while the reader was away leaves
+-- the remembered position pointing into a diff that is no longer on screen, so
+-- it is dropped for the current changeset entry's hunk -- which is also where a
+-- press with nothing remembered lands, a restored session included.
+local function to_position()
+  local state = require('review.state')
+  if not position or position.from ~= state.targeted_from or position.to ~= state.current then
+    position = nil
+    return to_entry()
+  end
+  to_reading_window()
+  M.register(position.name, position.info)
+  vim.cmd('edit ' .. vim.fn.fnameescape(position.name))
+  arrive(position.lnum, position.col)
+  return true
+end
+
+-- The one key that crosses between the review and the file being reviewed: which
+-- way it goes is which side it is pressed on. There is nothing to remember about
+-- where the reader is, and nowhere the key is dead.
+function M.cross()
+  if not require('review.state').active then
+    vim.notify('Review: no session to go back to', vim.log.levels.WARN)
+    return false
+  end
+  if not M.surface() then return to_position() end
+  -- The changeset window is the review's list, not a file in it, and a list has
+  -- no working copy: the crossing there is the way back into the reading. This is
+  -- also the reader who closed the Working Copy's window, since the list is what
+  -- they are left standing in.
+  if vim.bo.buftype == 'quickfix' then return to_position() end
+  return to_working_copy()
+end
+
+-- The Review Position as it stands, for the tests and for anything that has to
+-- ask whether there is one to return to.
+function M.position()
+  return position
 end
 
 function M.setup()
