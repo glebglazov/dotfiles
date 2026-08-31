@@ -9,6 +9,11 @@ local default_statusline = vim.o.statusline
 
 -- Muted, easy-on-the-eyes review statusline badge (gruvbox neutral aqua on bg1).
 vim.api.nvim_set_hl(0, 'ReviewStatus', { fg = '#83a598', bg = '#3c3836', bold = true })
+-- The same badge gone grey: what a window shows when what is in it is not a
+-- Review Surface. A session is still on -- the count, the span and the walk
+-- counter are still worth reading -- but the review's short keys are not under
+-- the reader's fingers here, and the colour is the whole of how they can tell.
+vim.api.nvim_set_hl(0, 'ReviewStatusMuted', { fg = '#928374', bg = '#3c3836', bold = true })
 -- Left-margin range bars: aqua while unresolved, muted grey once resolved.
 vim.api.nvim_set_hl(0, 'ReviewBar', { fg = '#83a598' })
 vim.api.nvim_set_hl(0, 'ReviewBarResolved', { fg = '#665c54' })
@@ -184,11 +189,24 @@ function M.set_statusline()
   -- setglobal only: a bare `vim.o`/`:set` on this global-local option also resets the
   -- CURRENT window's local statusline, which would clobber the qf-local one we set.
   if state.active then
+    -- `%{%...%}` evaluates its expression and then expands the result as
+    -- statusline items, which is what lets one global string carry a highlight
+    -- group chosen per window: the badge is lit where the review is being read
+    -- and grey where it is not.
     vim.go.statusline =
-      '%#ReviewStatus# 󰆉 %{v:lua.ReviewCommentCount()} REVIEW%{v:lua.ReviewCommitFlag()}%{v:lua.ReviewHunkPosition()} %* %f %m%r%=%l:%c '
+      '%{%v:lua.ReviewBadgeGroup()%} 󰆉 %{v:lua.ReviewCommentCount()} REVIEW%{v:lua.ReviewCommitFlag()}%{v:lua.ReviewHunkPosition()} %* %f %m%r%=%l:%c '
   else
     vim.go.statusline = default_statusline
   end
+end
+
+-- Which colour the Review Badge is drawn in, for the window being drawn. The
+-- statusline is per-window and vim evaluates it with that window's buffer
+-- current, so asking the one Review Surface test here answers for each window on
+-- its own: the Revision Buffer being read and the changeset list are lit, and a
+-- Working Copy beside them is grey.
+function _G.ReviewBadgeGroup()
+  return require('review.buffers').surface() and '%#ReviewStatus#' or '%#ReviewStatusMuted#'
 end
 
 -- Global because the statusline string above reaches the count through `v:lua`

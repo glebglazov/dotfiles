@@ -165,27 +165,12 @@ function M.set_local_keys(maps)
   local_keys = maps or {}
 end
 
--- Does this buffer belong to the session being read? A span of commits is read
--- in revision buffers, which we registered ourselves; a span ending at the
--- Uncommitted Tip is read in real files, which are the session's only by being
--- in its changeset. The
--- changeset window counts too -- it is where the walk is steered from.
-function M.member(bufnr)
-  if not require('review.state').active then return false end
-  if vim.bo[bufnr].buftype == 'quickfix' then return true end
-  if M.info(vim.api.nvim_buf_get_name(bufnr)) then return true end
-  for _, item in ipairs(vim.fn.getqflist({ items = 0 }).items or {}) do
-    if item.bufnr == bufnr then return true end
-  end
-  return false
-end
-
 -- A Review Surface: a place the review is being read. A Revision Buffer, the
 -- changeset window, or -- while the targeted range ends at the Uncommitted Tip,
 -- where the span is read from the files on disk (docs/adr/0004) -- a file the
 -- changeset holds. One predicate for everything that has to tell the review from
--- the rest of the editor, and the whole of what decides which way `M.cross`
--- goes.
+-- the rest of the editor: which way `M.cross` goes, which buffers carry the
+-- review's short keys, and which colour the Review Badge is drawn in.
 --
 -- `M.locate` is not this test: it answers for every file under the repository
 -- root, because a comment can be written anywhere. This answers for the review's
@@ -208,10 +193,12 @@ function M.surface(bufnr)
 end
 
 -- Put the review's keys on one buffer, or take them off again when the buffer
--- has stopped being part of a session.
+-- has stopped being a Review Surface -- which a working-tree file does the
+-- moment the reader targets a commit, since from then on the file shows HEAD at
+-- line numbers that are not the commit's, and is the plain editor.
 function M.attach(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then return end
-  if not M.member(bufnr) then
+  if not M.surface(bufnr) then
     if attached[bufnr] then M.detach(bufnr) end
     return
   end
