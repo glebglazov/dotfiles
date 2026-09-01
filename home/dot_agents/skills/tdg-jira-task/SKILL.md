@@ -39,6 +39,10 @@ if the work extends prior behavior.>
 
 * **AC01:** <stimulus → observable outcome>
 * **AC02:** <...> (manual)
+
+## Testing notes   (only when producing a stimulus takes more than the AC states)
+
+* <example request with spec-derived values, doc link, how QA produces it>
 ```
 
 ## Audience split
@@ -130,6 +134,43 @@ unchanged") lives only in the ACs.
   the AC onto the nearest observable surface; if none exists, flag it at the
   checkpoint with what the implementation would need to make it verifiable.
 
+  QA never holds secrets, so a stimulus only producible with one (a signed
+  partner callback) is not actionable even when its endpoint is on the
+  surface. The AC still states the real behavior — "a wrong `verifier`
+  answers 401" — but the check itself stays spec-covered: flag the AC at the
+  checkpoint rather than marking it `(manual)`, which promises hand-testing
+  QA cannot do. The human then decides: commission a tester affordance,
+  accept spec-only coverage, or descope. The known remedy in this codebase
+  is the **Tester Callback** pattern — the real endpoint accepts an
+  operator's SSO personal token as a second proof of origin and skips
+  provider verification, so QA exercises everything behind the check
+  (linking, events, idempotency) without the secret. Propose it; the human
+  decides. An affordance built in this task is new observable behavior and
+  earns ACs like any other; a pre-existing one is only referenced from
+  Testing notes.
+
+**Testing notes** — added only when producing an AC's stimulus takes
+knowledge the AC itself doesn't carry: a signed request, a partner-initiated
+callback QA must simulate, a required parameter beyond the obvious. One
+bullet per stimulus, holding an example request with values drawn from the
+diff's specs (anything secret-derived is an explicit placeholder), the
+partner doc link, and how QA produces a valid stimulus — usually the tester
+affordance. ACs state behavior; Testing notes state how to exercise it, so
+repeating a path or parameter here is not duplication. A callback field
+inventory is verifier material and belongs here, load-bearing fields only,
+never in Context. Example:
+
+```
+## Testing notes
+
+* Besitos callback: `GET /api/v4/monetization_products/besitos/callback
+  ?user_id=<player public id>&transaction_id=100123&reward=120
+  &verifier=<signature>` ([postback fields](https://help.besitoscorp.com/...)).
+  QA sends their SSO personal token in `Authorization` in place of
+  `verifier` — the Tester Callback accepts it as proof of origin and skips
+  provider verification.
+```
+
 Scope holds only what was discussed and agreed; anything marked out of scope
 during the work stays out.
 
@@ -142,7 +183,9 @@ Show the user the complete draft plus a flag list:
 - every AC marked `(manual)`;
 - every coverage gap;
 - every AC that is not actionable against the implementation, with what
-  would make it verifiable.
+  would make it verifiable;
+- every AC whose stimulus needs a secret, with the decision it forces
+  (tester affordance, spec-only coverage, or descope).
 
 The step completes when the user approves the draft (possibly after edits).
 Hand the approved Markdown back to the caller — or, when invoked directly,
