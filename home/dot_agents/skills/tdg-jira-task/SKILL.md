@@ -108,7 +108,7 @@ Each fact appears in exactly one section — a delta stated in Scope is not
 restated as an AC, and an invariant worth asserting ("Freecash callbacks
 unchanged") lives only in the ACs.
 
-**Acceptance criteria** — three disciplines:
+**Acceptance criteria** — four disciplines:
 
 - *Selection.* The happy/critical path of the new behavior is fully covered.
   Failure modes **novel to this feature** (a signature check this feature
@@ -123,6 +123,12 @@ unchanged") lives only in the ACs.
   task text: specs are code that moves and gets deleted, so the description
   never cites spec files. Specs are free to cover more than the ACs state;
   happy-path behavior with no spec is always a gap.
+- *Testability.* Each AC must be **actionable** against the implementation as
+  built: the verifier can produce the stimulus, and the outcome sits on the
+  observable surface. When the implementation offers neither — the trigger
+  needs internal access, or the outcome is buried internal state — rephrase
+  the AC onto the nearest observable surface; if none exists, flag it at the
+  checkpoint with what the implementation would need to make it verifiable.
 
 Scope holds only what was discussed and agreed; anything marked out of scope
 during the work stays out.
@@ -134,7 +140,9 @@ Show the user the complete draft plus a flag list:
 - the precedent ticket key you found (confirm it's the right one);
 - every code-derived term awaiting the team's real word;
 - every AC marked `(manual)`;
-- every coverage gap.
+- every coverage gap;
+- every AC that is not actionable against the implementation, with what
+  would make it verifiable.
 
 The step completes when the user approves the draft (possibly after edits).
 Hand the approved Markdown back to the caller — or, when invoked directly,
