@@ -58,6 +58,12 @@ ones.
   work one file would do in a single run. Write the script to a temp file, run it
   once, print every assertion.
 
+## Implementation
+
+Before you write or change code, run `pop conventions get implementation` and
+follow every line it prints. It resolves to the standard in force for the
+repository you are in — its own, where the team has written one.
+
 ## Git
 
 Before you write a commit, run `pop conventions get commits` and follow every
@@ -75,21 +81,7 @@ Do not weigh implementation time. Propose the most correct and most maintainable
 solution available, and let me decide on scope. "Faster to build" is not a
 tiebreaker and should not be offered as one.
 
-### Testing
-
-Aim for confidence, not coverage. A handful of tests that exercise real flows
-through the system are worth more than many that pin down individual methods.
-
-Prefer tests that drive a whole path — request to response, command to persisted
-state — and let the units underneath be covered incidentally.
-
-Skip the obvious: that an object can be constructed, that an attribute
-round-trips, that a framework-provided validation fires. Those never fail for an
-interesting reason and turn every refactor into churn.
-
 ### Comments
-
-Comments must earn their line. Never restate what the code already says.
 
 A comment explains one of two things, chosen by where it sits:
 
