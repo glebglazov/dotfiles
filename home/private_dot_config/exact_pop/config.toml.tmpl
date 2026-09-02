@@ -43,6 +43,7 @@ agents = ["claude", "codex", "kimi"]
 {{- else }}
 agents = ["cursor", "pi", "claude"]
 {{- end }}
+include_implementation_convention = true
 
 [work.verify]
 enabled = true
@@ -52,10 +53,8 @@ agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "ki
 agents = ["cursor-agent --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
-# A review reaches no verdict and spawns no work — it writes a document into
-# task storage after the verify phase. Effort is left implicit: heavy.
-[work.review]
-enabled = false
+[work.refine]
+enabled = true
 {{- if .work }}
 agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
 {{- else }}
