@@ -21,6 +21,19 @@ there, invoke `rtk <cmd>` yourself when output is likely to be large.
 - Do not run `rtk init`. This file and every agent's rtk wiring are managed by
   chezmoi; `rtk init` rewrites them out from under it.
 
+## Secrets
+
+Environment values written as 1Password references (`op://vault/item/field`) are
+not secrets yet — they are pointers. Resolve them with `op-cache`, a caching
+proxy over `op` that keeps repeated reads fast.
+
+- `op-cache run <cmd>` runs a command with every `op://` value in its
+  environment resolved. Use it whenever a command needs a secret.
+- `op-cache read op://vault/item/field` gets one value.
+- Resolved secrets are masked in the output. If the command must print one —
+  a token you then pass on — add `--no-masking`.
+- Never `op read` a secret to paste it into a file, a commit, or your reply.
+
 ## Tool economy
 
 Context is billed on every turn and only grows, so a session's cost rises with
