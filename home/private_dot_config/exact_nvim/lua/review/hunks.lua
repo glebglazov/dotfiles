@@ -10,9 +10,9 @@ local state = require('review.state')
 
 local M = {}
 
--- --name-status so we can flag added/deleted/renamed files in the qf text;
--- gitsigns only marks hunks within a file (and shows nothing for files absent
--- from the base), so the per-file "new" indicator has to live in the list.
+-- --name-status so we can flag added/deleted/renamed files in the qf text: the
+-- Diff Marks are lines within a file, so what happened to the file as a whole
+-- has to live in the list.
 local status_label = { A = '[new] ', D = '[del] ', R = '[ren] ', C = '[cpy] ' }
 
 local function repo_root()
@@ -190,8 +190,7 @@ end
 --
 -- The hunk headers are the whole source: they give a file's changes as line
 -- ranges without any content around them, and they need no buffer open, which
--- is what makes an arbitrary commit's hunks reachable at all -- gitsigns can
--- only collect from buffers it has attached to.
+-- is what makes an arbitrary commit's hunks reachable at all.
 --
 -- `locate(rel, status)` names the buffer an entry opens, which is the only
 -- difference between a committed changeset and the working tree's.
@@ -292,6 +291,10 @@ function M.range_hunks(oldest, newest, opts)
   local out = vim.fn.systemlist(('git -C %s diff --unified=0 --no-color %s%s'):format(
     root, base, worktree and '' or (' ' .. newest)))
   if worktree then vim.list_extend(out, untracked_diff(root)) end
+  -- The same output twice over: the walk is its hunk headers, the Diff Marks are
+  -- its content. Read once here, so the list and the marks on the buffers it
+  -- opens are the same reading of the same span.
+  require('review.marks').set(out, { root = root, base = base, worktree = worktree })
   return show(hunk_items(out, function(rel, status)
     if worktree and status ~= 'D' then return root .. '/' .. rel end
     return revision_entry(root, base, oldest, newest, rel, status)

@@ -66,10 +66,10 @@ function M.land()
   vim.cmd('normal! zt')
   scroll_to(row, height)
 
-  -- gitsigns draws a hunk's deleted lines once it has looked at the buffer,
-  -- which for a file this jump has just opened is after this call returns. The
-  -- second pass lands against what is finally on the screen -- unless the reader
-  -- has already moved, in which case their position is theirs.
+  -- A hunk's removed lines are drawn when the buffer is shown, which for a file
+  -- this jump has just opened can be after this call returns. The second pass
+  -- lands against what is finally on the screen -- unless the reader has already
+  -- moved, in which case their position is theirs.
   local cursor = vim.api.nvim_win_get_cursor(win)
   vim.schedule(function()
     if not vim.api.nvim_win_is_valid(win) or vim.api.nvim_get_current_win() ~= win then return end

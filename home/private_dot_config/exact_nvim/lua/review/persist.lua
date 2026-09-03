@@ -194,7 +194,8 @@ local function restored_message()
 end
 
 -- Pick the saved session back up: comments, range, targeted span and the
--- reader's toggles, then the session dressing a start would have applied.
+-- reader's toggles. The Changeset is rebuilt below, and the Diff Marks come
+-- back with it, so a restored session is dressed by the same path a start is.
 function M.restore()
   if state.active then return false end
   local data = M.load()
@@ -215,10 +216,6 @@ function M.restore()
   -- now stands.
   local refreshed = require('review.session').refresh_range()
 
-  local spec = state.spec or {}
-  if spec.base then
-    require('review.session').dress(spec.base)
-  end
   render.all()
   render.set_statusline()
   vim.notify(restored_message(), vim.log.levels.INFO)
@@ -229,8 +226,7 @@ function M.restore()
     require('review.hunks').range_hunks(state.targeted_from, state.current, { quiet = true })
   end
   -- Tab ids do not survive quitting nvim, so the restored session adopts the tab
-  -- it came back in -- the one whose signs it just dressed and whose changeset
-  -- list it just filled. That tab is the review's home in every respect but the
+  -- it came back in -- the one whose changeset list it just filled. That tab is the review's home in every respect but the
   -- name it was saved under.
   require('review.buffers').set_review_tab()
   return true

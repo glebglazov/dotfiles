@@ -89,38 +89,7 @@ function M.span_label()
   return ('1 commit, %s %s'):format(span[1].hash, span[1].subject)
 end
 
--- Lazy-load gitsigns and run a function against it (keys-lazy plugin).
-function M.with_gitsigns(fn)
-  pcall(function()
-    require('lazy').load({ plugins = { 'gitsigns.nvim' } })
-    fn(require('gitsigns'))
-  end)
-end
-
--- The three things gitsigns does for a review, applied as one: it diffs against
--- the session's base rather than the index, its signs are visible, and removed
--- lines are shown inline so a deletion can be read where it happened. Both
--- entry points -- a fresh start and a restored session -- dress the editor
--- through here, so a fourth switch cannot reach one of them and miss the other.
-function M.dress(base)
-  M.with_gitsigns(function(gs)
-    gs.change_base(base, true)
-    gs.toggle_signs(true)
-    gs.toggle_deleted(true)
-  end)
-end
-
--- The dressing taken off again. `toggle_deleted` writes gitsigns' global config,
--- not anything buffer-local, so leaving it on would follow the reader into every
--- file they open after the review.
-function M.undress()
-  M.with_gitsigns(function(gs)
-    gs.toggle_signs(false)
-    gs.toggle_deleted(false)
-  end)
-end
-
--- Start a review: changeset → quickfix, the gitsigns dressing for <base>, inline
+-- Start a review: changeset → quickfix, Diff Marks for the span, inline
 -- comments on, statusline badge. `spec` is { base, head, uncommitted } -- see
 -- session.resolve. An omitted base means the default remote branch, which is the
 -- whole branch. Returns false without touching anything when the range holds no
@@ -140,10 +109,10 @@ function M.start(spec)
   -- key puts back: uncommitted work is a row to target, not something the review
   -- shows you before you asked for it.
   state.set_targeted(members[1].hash, (M.newest_commit() or members[#members]).hash)
-  M.dress(base)
   -- The whole range as one diff, the way a pull request shows a branch --
   -- revision buffers for its commits, the files on disk when the span ends at
-  -- the tip. One path, whatever the range is made of.
+  -- the tip. One path, whatever the range is made of, and the one place the
+  -- Diff Marks come from too.
   hunks.range_hunks(state.targeted_from, state.current)
   -- The review's home from here on: the tab the changeset was just laid out in.
   -- Recorded at the start rather than on the way out, so one key leads back to
@@ -327,15 +296,15 @@ function M.start_from_selection()
   return M.start({ base = sha .. '^' })
 end
 
--- Finish a review: export to clipboard, then clear comments, gitsigns off, badge off.
+-- Finish a review: export to clipboard, then clear comments, marks off, badge off.
 function M.finish()
   export.export() -- copies to clipboard (warns if empty); we tear down regardless
   M.teardown()
   vim.notify('Review finished', vim.log.levels.INFO)
 end
 
--- Everything a session leaves behind, taken down: comments, range, the gitsigns
--- dressing, badge and the file on disk. Shared with `persist.discard`, which
+-- Everything a session leaves behind, taken down: comments, range, the Diff
+-- Marks, badge and the file on disk. Shared with `persist.discard`, which
 -- drops a session without exporting it -- and the persisted state goes first, so
 -- a crash mid-teardown cannot resurrect a session that was being ended.
 function M.teardown()
@@ -343,7 +312,7 @@ function M.teardown()
   -- The review's own keys come off every buffer they were put on: `]f` and
   -- `<Tab>` mean what the editor means again the moment the session ends.
   require('review.buffers').detach_all()
-  M.undress()
+  require('review.marks').clear()
   state.active = false
   state.clear()
   state.clear_range()

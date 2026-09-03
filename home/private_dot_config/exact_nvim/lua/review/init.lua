@@ -8,6 +8,7 @@ local export = require('review.export')
 local help = require('review.help')
 local hunks = require('review.hunks')
 local landing = require('review.landing')
+local marks = require('review.marks')
 local persist = require('review.persist')
 local render = require('review.render')
 local session = require('review.session')
@@ -228,12 +229,12 @@ local actions = {
     { mode = 'n', fn = state.toggle_auto_form, desc = 'Review: toggle comment form on hunk arrival' },
   },
   toggle_signs = {
-    { mode = 'n', fn = function() session.with_gitsigns(function(gs) gs.toggle_signs() end) end,
-      desc = 'Review: toggle git signs' },
+    { mode = 'n', fn = function() require('review.marks').toggle_signs() end,
+      desc = 'Review: toggle diff signs' },
   },
   toggle_deleted = {
-    { mode = 'n', fn = function() session.with_gitsigns(function(gs) gs.toggle_deleted() end) end,
-      desc = 'Review: toggle deleted lines inline' },
+    { mode = 'n', fn = function() require('review.marks').toggle_deleted() end,
+      desc = 'Review: toggle removed lines inline' },
   },
   toggle_resolved = {
     { mode = 'n', fn = state.toggle_resolved, desc = 'Review: toggle resolved comments' },
@@ -312,17 +313,28 @@ function M.setup(opts)
 
   vim.api.nvim_create_user_command('ReviewClear', state.clear, { desc = 'Review: clear all comments' })
 
-  -- Re-render inline comments when a buffer is shown (e.g. after jumping via quickfix).
+  -- Re-render inline comments and Diff Marks when a buffer is shown (e.g. after
+  -- jumping via quickfix). The marks are drawn from the span's diff as it
+  -- stands, and then asked again for a file on disk: a Revision Buffer cannot
+  -- have changed since the Changeset was built, but a file the reader can still
+  -- edit can have, and it is theirs to edit while they read it.
+  local group = vim.api.nvim_create_augroup('glebglazov-review-render', { clear = true })
   vim.api.nvim_create_autocmd('BufWinEnter', {
-    group = vim.api.nvim_create_augroup('glebglazov-review-render', { clear = true }),
+    group = group,
     callback = function(args)
       render.buffer(args.buf)
+      marks.buffer(args.buf)
+      marks.refresh(args.buf)
     end,
+  })
+  vim.api.nvim_create_autocmd('BufWritePost', {
+    group = group,
+    callback = function(args) marks.refresh(args.buf) end,
   })
 
   -- The session of this repository, if there is one, picked up where it was left.
-  -- Scheduled so it runs after the rest of startup: it notifies, touches
-  -- gitsigns and repopulates the quickfix list.
+  -- Scheduled so it runs after the rest of startup: it notifies, draws the Diff
+  -- Marks and repopulates the quickfix list.
   vim.schedule(function() persist.restore() end)
 end
 

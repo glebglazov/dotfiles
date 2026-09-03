@@ -1,7 +1,7 @@
--- Revision buffers: a file as it stood at one commit, read-only, with that
--- commit's own hunks in the sign column. Nothing is checked out, so HEAD, the
--- index and the working tree never move, no buffer reloads, no language server
--- re-indexes, and a dirty tree is no obstacle.
+-- Revision buffers: a file as it stood at one commit, read-only, with the
+-- span's own hunks marked in it (see review.marks). Nothing is checked out, so
+-- HEAD, the index and the working tree never move, no buffer reloads, no
+-- language server re-indexes, and a dirty tree is no obstacle.
 --
 -- Every place the plugin needs commit content goes through this one seam --
 -- "give me a buffer for (sha, path)" -- so the scratch-worktree alternative in
@@ -234,41 +234,16 @@ function M.detach_all()
   review_tab = nil
 end
 
--- gitsigns attaches to these buffers asynchronously and only takes a
--- buffer-local base for the buffer that is current, so the base lands on a
--- retry -- and only while the buffer is still the one in front of the user.
--- Abandoning is safe: the next BufEnter dresses it again.
-local function apply_base(bufnr, base, tries)
-  if vim.api.nvim_get_current_buf() ~= bufnr then return end
-  if vim.b[bufnr].gitsigns_status_dict then
-    pcall(function()
-      require('lazy').load({ plugins = { 'gitsigns.nvim' } })
-      require('gitsigns').change_base(base)
-    end)
-    vim.b[bufnr].review_base = base
-    return
-  end
-  if tries <= 0 then return end
-  vim.defer_fn(function() apply_base(bufnr, base, tries - 1) end, 50)
-end
-
--- Make a revision buffer read what it should: never writable, and diffed
--- against the commit before the span it is being read as part of. Without the
--- base change gitsigns sets the buffer's base to the very commit it is showing,
--- which yields no signs at all -- and pinning it to the span's base rather than
--- to the commit's own parent is what makes the signs the whole span's changes.
+-- Make a revision buffer read what it should: never writable. What it shows of
+-- the diff is not asked of it -- the Diff Marks are drawn from the span's own
+-- diff (see review.marks), which is why this no longer has to talk a signs
+-- plugin into diffing a commit against the right base.
 function M.dress(bufnr)
   if not require('review.state').active then return end
   local name = vim.api.nvim_buf_get_name(bufnr)
-  local info = M.info(name)
-  if not info then return end
+  if not M.info(name) then return end
   vim.bo[bufnr].modifiable = false
   vim.bo[bufnr].readonly = true
-  -- A file the span deleted is shown at the base, where it still had content; it
-  -- has no hunks of its own, so it gets no signs.
-  if info.status == 'D' then return end
-  if vim.b[bufnr].review_base then return end
-  apply_base(bufnr, info.base or M.parent(info.sha, info.root), 40)
 end
 
 -- Whether `sha` holds `rel` at all. Asked here rather than left to the read:

@@ -68,8 +68,8 @@ function M.buffer(bufnr)
     if (not resolved or state.show_resolved) and c.scope == 'file' then
       for _, line in ipairs(file_lines(c, resolved)) do table.insert(above, line) end
     elseif (not resolved or state.show_resolved) and lines_true then
-      -- Left bar spanning every line of the commented range (priority above
-      -- gitsigns so the range wins the sign cell on its own lines).
+      -- Left bar spanning every line of the commented range (priority above the
+      -- Diff Marks so the range wins the sign cell on its own lines).
       local bar_hl = resolved and 'ReviewBarResolved'
         or (c.rebound and 'ReviewBarRebound' or 'ReviewBar')
       for l = c.lnum, math.min(c.end_line or c.lnum, total) do
