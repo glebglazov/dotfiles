@@ -119,6 +119,15 @@ unchanged") lives only in the ACs.
   introduces) get ACs; standard system behavior (generic 404s, framework
   validation) does not. Aim for the minimum set that fully covers what's new;
   merge criteria that state the same rule across areas.
+
+  The reader here is QA, not the implementer, so an **engineering property**
+  of the solution — a migration's plan and rollback, idempotency, a retry
+  budget, a batch size — earns an AC only at the point a player or operator
+  meets it. State the stimulus that reaches it and let the property stay
+  unnamed: "re-running the backfill leaves grant counts unchanged", not "the
+  migration is idempotent". Where no stimulus reaches it, the property is the
+  PR's material and the task stays quiet about it — a rollback path is
+  something the team needs and QA can never exercise.
 - *Phrasing.* Each AC is stimulus → observable outcome: "A Besitos callback
   with a missing or wrong signature is rejected with 401 and links nothing."
 - *Verification.* While composing, check each AC against the diff's specs:
