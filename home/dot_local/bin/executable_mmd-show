@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# mermaid-cli ships puppeteer-core only, and mise's npm backend skips the
+# postinstall that would fetch a browser — so point it at the installed Chrome.
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+usage() {
+  cat <<'USAGE'
+usage: mmd-show [<file>|-] [mmdc args...]
+
+Renders mermaid source to a PNG and draws it in the terminal.
+Reads stdin when the input is "-" or absent. ```mermaid fences are stripped.
+USAGE
+}
+
+[[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && { usage; exit 0; }
+
+input="${1:--}"
+[[ $# -gt 0 ]] && shift
+
+out_dir="$(mktemp -d "${TMPDIR:-/tmp}/mmd-show.XXXXXX")"
+src="$out_dir/diagram.mmd"
+png="$out_dir/diagram.png"
+
+if [[ "$input" == "-" ]]; then
+  cat > "$src"
+else
+  [[ -f "$input" ]] || { echo "mmd-show: no such file: $input" >&2; exit 1; }
+  cat "$input" > "$src"
+fi
+
+# A diagram pasted out of markdown arrives wrapped in a fence mmdc rejects.
+if grep -q '^[[:space:]]*```' "$src"; then
+  sed -n '/^[[:space:]]*```/,/^[[:space:]]*```$/{/^[[:space:]]*```/d;p;}' "$src" > "$src.stripped"
+  mv "$src.stripped" "$src"
+fi
+
+[[ -s "$src" ]] || { echo "mmd-show: empty diagram source" >&2; exit 1; }
+
+[[ -x "$CHROME" ]] && export PUPPETEER_EXECUTABLE_PATH="$CHROME"
+
+mmdc --input "$src" --output "$png" --scale 3 --theme dark \
+  --backgroundColor transparent "$@" >/dev/null
+
+echo "$png"
+
+# icat asks the terminal whether it speaks the kitty graphics protocol, so a
+# terminal that doesn't just falls through to the desktop viewer.
+if command -v kitten >/dev/null && kitten icat --align left "$png" 2>/dev/null; then
+  exit 0
+fi
+
+open "$png"
