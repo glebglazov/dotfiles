@@ -10,7 +10,9 @@ usage() {
   cat <<'USAGE'
 usage: mmd-show [<file>|-] [mmdc args...]
 
-Renders mermaid source to a PNG and draws it in the terminal.
+Renders mermaid source to a PNG and shows it: drawn in place when this terminal
+speaks the kitty graphics protocol, otherwise in a viewer pane to the right of
+the caller's tmux pane, otherwise in the desktop viewer.
 Reads stdin when the input is "-" or absent. ```mermaid fences are stripped.
 USAGE
 }
@@ -46,9 +48,38 @@ mmdc --input "$src" --output "$png" --scale 3 --theme dark \
 
 echo "$png"
 
-# icat asks the terminal whether it speaks the kitty graphics protocol, so a
-# terminal that doesn't just falls through to the desktop viewer.
-if command -v kitten >/dev/null && kitten icat --align left "$png" 2>/dev/null; then
+# Draw in place when this really is the user's terminal. icat asks the terminal
+# whether it speaks the kitty graphics protocol, so one that doesn't falls
+# through to the routes below.
+if [[ -t 1 ]] && command -v kitten >/dev/null &&
+   kitten icat --align left "$png" 2>/dev/null; then
+  exit 0
+fi
+
+# Called by an agent, or piped: our stdout is nobody's screen. The caller's tmux
+# pane is, so hand the diagram to a viewer pane beside it — one per caller,
+# reused across diagrams so a session doesn't accumulate panes.
+show_in_tmux_pane() {
+  local viewer cmd
+  # A shell after the draw is what makes the pane closable: the image stays on
+  # screen above a prompt the user can exit or reuse, where icat's own --hold
+  # would leave a pane with nothing listening but kill-pane.
+  cmd="kitten icat --align center $(printf '%q' "$png"); exec \"\$SHELL\" -l"
+
+  viewer="$(tmux show-option -p -t "$TMUX_PANE" -qv @mmd_viewer_pane)"
+  if [[ -n "$viewer" ]] && tmux list-panes -a -F '#{pane_id}' | grep -qFx "$viewer"; then
+    tmux respawn-pane -k -t "$viewer" "$cmd"
+  else
+    viewer="$(tmux split-window -h -d -l 45% -t "$TMUX_PANE" \
+      -P -F '#{pane_id}' "$cmd")"
+    tmux select-pane -t "$viewer" -T mermaid
+    tmux set-option -p -t "$TMUX_PANE" @mmd_viewer_pane "$viewer"
+  fi
+  echo "mmd-show: drawn in tmux pane $viewer"
+}
+
+if [[ -n "${TMUX:-}" ]] && command -v kitten >/dev/null; then
+  show_in_tmux_pane
   exit 0
 fi
 
