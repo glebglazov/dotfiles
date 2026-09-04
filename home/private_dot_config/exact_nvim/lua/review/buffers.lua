@@ -64,12 +64,34 @@ function M.gitdir(root)
   return gitdirs[root] or nil
 end
 
+-- A sha as its full 40 characters. Fugitive resolves an abbreviated one by
+-- spawning git, on every call and without caching, which a changeset pays once
+-- per changed file -- 36ms each, seconds over a branch's worth of files. A full
+-- sha it takes as given, so each one the review names buffers at is resolved
+-- here once and the names come out identical: fugitive spells them full anyway.
+--
+-- The range carries abbreviated hashes on purpose -- they are what a reader is
+-- shown and what a comment is filed under -- so the widening stops here, at the
+-- one call that hands a sha to fugitive.
+local full_shas = {}
+local function full_sha(sha, root)
+  if #sha == 40 and sha:match('^%x+$') then return sha end
+  local key = (root or '') .. '\0' .. sha
+  if full_shas[key] == nil then
+    local out = vim.fn.systemlist({
+      'git', '-C', root or vim.fn.getcwd(), 'rev-parse', '--verify', '--quiet', sha .. '^{commit}',
+    })
+    full_shas[key] = (vim.v.shell_error == 0 and out[1] and out[1] ~= '') and out[1] or false
+  end
+  return full_shas[key] or sha
+end
+
 -- The buffer name holding `rel` (repo-relative) as of `sha`. Nil when the
 -- object does not exist at that commit.
 function M.name(sha, rel, root)
   local dir = M.gitdir(root)
   if not dir then return nil end
-  local ok, name = pcall(vim.fn.FugitiveFind, sha .. ':' .. rel, dir)
+  local ok, name = pcall(vim.fn.FugitiveFind, full_sha(sha, root) .. ':' .. rel, dir)
   if not ok or type(name) ~= 'string' or not vim.startswith(name, 'fugitive://') then return nil end
   return name
 end

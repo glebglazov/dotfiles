@@ -16,8 +16,8 @@ local M = {}
 local status_label = { A = '[new] ', D = '[del] ', R = '[ren] ', C = '[cpy] ' }
 
 local function repo_root()
-  local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
-  if vim.v.shell_error ~= 0 or not root or root == '' then
+  local root = state.repo_root()
+  if not root then
     vim.notify('Review: not in a git repo', vim.log.levels.WARN)
     return nil
   end
@@ -265,20 +265,63 @@ end
 -- content. Untracked files are added to that diff on their own (see
 -- untracked_diff), because a file git has never seen is uncommitted work like
 -- any other.
+-- How many lines a file on disk holds, and whether git would read it as binary
+-- -- a NUL byte in the first chunk, the same test git applies. Read in chunks,
+-- so a large file costs one chunk of memory rather than its own size. Nil for a
+-- file that cannot be opened at all: a broken symlink, or one removed between
+-- git listing it and this.
+local function line_count(path)
+  local fh = io.open(path, 'rb')
+  if not fh then return nil end
+  local lines, last = 0, nil
+  local first = true
+  while true do
+    local chunk = fh:read(64 * 1024)
+    if not chunk or chunk == '' then break end
+    if first and chunk:find('\0', 1, true) then
+      fh:close()
+      return 0, true
+    end
+    first = false
+    local _, n = chunk:gsub('\n', '')
+    lines, last = lines + n, chunk:sub(-1)
+  end
+  fh:close()
+  -- A last line with no newline after it is still a line.
+  if last and last ~= '\n' then lines = lines + 1 end
+  return lines, false
+end
+
 -- The files git is not tracking yet, each as the diff that adds it. `git diff
 -- <ref>` cannot mention them -- they are in no tree it compares -- so a file
 -- written during the review would be uncommitted work the changeset never
--- showed. `--no-index` against /dev/null gives each one the shape every other
--- entry is parsed from: a new file, whole, added at line 1.
+-- showed.
+--
+-- The text is written here rather than asked of `git diff --no-index`, which
+-- costs a process per untracked file -- 25ms of spawn each before git does any
+-- work -- and answers with content nobody reads: the walk is built from the
+-- `@@` headers, and the marks keep only the removed side, which a wholly new
+-- file has none of. So a header and one hunk of N lines is the whole of what a
+-- new file's diff has to say here, and N is a count of newlines. An empty file
+-- and one git would call binary get the header and no hunk, which is what
+-- `--no-index` gives them too, so neither reaches the walk.
 local function untracked_diff(root)
   local out = {}
   local files = vim.fn.systemlist({ 'git', '-C', root, 'ls-files', '--others', '--exclude-standard' })
   if vim.v.shell_error ~= 0 then return out end
   for _, rel in ipairs(files) do
-    -- `--no-index` exits 1 when the two sides differ, which they always do here,
-    -- so the exit code says nothing and only the output is read.
-    vim.list_extend(out, vim.fn.systemlist({ 'git', '-C', root, '--no-pager', 'diff',
-      '--no-index', '--unified=0', '--no-color', '--', '/dev/null', rel }))
+    local lines, binary = line_count(root .. '/' .. rel)
+    if lines then
+      vim.list_extend(out, {
+        ('diff --git a/%s b/%s'):format(rel, rel),
+        'new file mode 100644',
+        '--- /dev/null',
+        '+++ b/' .. rel,
+      })
+      if lines > 0 and not binary then
+        table.insert(out, ('@@ -0,0 +1,%d @@'):format(lines))
+      end
+    end
   end
   return out
 end
