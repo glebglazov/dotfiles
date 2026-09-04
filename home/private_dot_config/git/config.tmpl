@@ -23,6 +23,12 @@
   # automatically solve conflict if rebasing on a branch with a lot of new commits
   autoUpdate = true
 
+[core]
+  # `git status` walks every directory looking for untracked files on each run,
+  # which is most of what it costs in a large checkout — caching the directory
+  # mtimes in the index skips the ones nothing has touched
+  untrackedCache = true
+
 [diff "lockb"]
   textconv = bun
   binary = true
