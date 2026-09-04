@@ -38,6 +38,14 @@ set -g extended-keys-format csi-u
 set -as terminal-features ',xterm-256color:RGB:extkeys'
 set -as terminal-features ',xterm-ghostty:RGB:extkeys'
 
+# Swallow M-c so no pane ever sees it. VCDR's Selection Capture posts a synthetic
+# Command-C into the frontmost app to read the selection. Ghostty owns cmd+c, but
+# with nothing selected it cannot perform the copy — and because extended keys are
+# on above, it reports the key to the pty instead of swallowing it. It arrives here
+# as M-c and lands in the pane as a stray `c`, which corrupts an agent CLI's prompt.
+# The cost is that Alt-c reaches no pane program, so readline loses capitalize-word.
+bind -n M-c set -gq @swallowed-alt-c 1
+
 # Allow kitty graphics protocol passthrough (for image.nvim)
 set -g allow-passthrough on
 set -ga update-environment TERM
