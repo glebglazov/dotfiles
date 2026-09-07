@@ -1394,10 +1394,11 @@ require('review').setup {
     preview           = '<LEADER>rep',
     pick_comment      = '<LEADER>rlc',
     send              = '<LEADER>reE',
-    -- What the review's keys do. Two ways in: `?` where the review is being
-    -- read, and the leader key from everywhere else -- the comment form, a file
-    -- opened for a closer look.
-    help              = '?',
+    -- What the review's keys do. Two ways in: `g?` where the review is being
+    -- read -- not `?`, which the changeset window needs for its own backward
+    -- search -- and the leader key from everywhere else: the comment form, a
+    -- file opened for a closer look.
+    help              = 'g?',
     help_anywhere     = '<LEADER>r?',
     -- Short, and bound only on the review's own buffers and its changeset
     -- window -- which is what lets them shadow `]f`, `]c` and `<C-i>` there and
