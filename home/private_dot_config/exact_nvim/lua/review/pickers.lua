@@ -414,26 +414,19 @@ local function row_marker(marks, hash)
   return mark .. targeted_marker(state, hash)
 end
 
--- Whether a comment group covers one member of the range: its own span of one,
--- or a wider span the member sits inside -- so a comment filed under `abc..def`
--- is reachable from either end's row and from every row between them.
-local function group_holds(g, hash)
-  if g.from == hash or g.hash == hash then return true end
-  local state = require('review.state')
-  local i, from, to = state.index_of(hash), state.index_of(g.from), state.index_of(g.hash)
-  return i ~= nil and from ~= nil and to ~= nil and i >= from and i <= to
-end
-
--- Everything said about one member of the range, in the rows the comment picker
--- draws. `session` comments are about the review rather than about any part of
--- it, so a narrowed list never holds them -- the full picker stays the one list
--- that reaches every comment.
+-- What one member of the range is counted as carrying, in the rows the comment
+-- picker draws: the comments this member owns and no others, so a list opened
+-- from a cell saying three holds three. Each row keeps the group its comment is
+-- filed under, which is the span the row names and the jump targets first -- a
+-- comment owned here may have been written while a wider span was being read.
+-- An Unowned comment is counted on no row and so appears on none of them; the
+-- full picker stays the one list that reaches every comment.
 local function member_comment_rows(hash)
   local state = require('review.state')
   local rows = {}
   for _, g in ipairs(state.comment_groups()) do
-    if group_holds(g, hash) then
-      for _, c in ipairs(state.for_span(g.from, g.hash)) do
+    for _, c in ipairs(state.for_span(g.from, g.hash)) do
+      if state.owning_commit(c) == hash then
         table.insert(rows, { comment = c, group = g })
       end
     end
@@ -533,6 +526,11 @@ function M.switch_commit(handlers, opening_hash)
     return false
   end
   local total = state.pending_count()
+  -- Said in the title because it is said nowhere else: a comment the review
+  -- cannot pin to a commit of its span is counted on no row, and a reader who
+  -- is not told how many there are has no way to tell that from having said
+  -- nothing.
+  local unowned = state.unowned_count()
   local marks = M.new_marks()
   -- Where the cursor opens. A review at rest is reading the whole range, which
   -- is no one member, so there is no "where am I" to answer -- the cursor goes
@@ -546,8 +544,9 @@ function M.switch_commit(handlers, opening_hash)
   pick(state.range, {
     initial_mode = 'normal',
     default_index = opening_row,
-    title = ('Switch commit (%d/%d, 󰆉 %d in session)'):format(
-      state.current_index() or 0, #state.range, total),
+    title = ('Switch commit (%d/%d, 󰆉 %d in session%s)'):format(
+      state.current_index() or 0, #state.range, total,
+      (unowned > 0) and (', %d unowned'):format(unowned) or ''),
     select_desc = 'read this commit on its own',
     widths = { { width = 14 }, { width = 12 }, { width = 10 }, { remaining = true } },
     columns = function(c)

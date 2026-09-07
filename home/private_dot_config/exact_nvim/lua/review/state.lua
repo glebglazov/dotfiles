@@ -68,10 +68,20 @@ function M.uncommitted_entry()
   return { hash = M.UNCOMMITTED, date = os.date('%Y-%m-%d'), subject = 'uncommitted changes' }
 end
 
+-- The blame answers behind the switcher's comment counts, keyed by the revision
+-- they were asked at and the path (see M.owning_commit). Declared up here rather
+-- than beside the reader below because M.save is what drops them.
+local blames = {}
+
 -- Every change to the store passes through here, so the session on disk is
 -- never older than the session on screen. Required lazily: review.persist reads
 -- this module.
 function M.save()
+  -- A comment or a range change can move which commit owns which comment, so
+  -- the blame the ownership was read off goes with it. Every path that changes
+  -- either -- M.set_range and the range refresh among them -- ends here, so this
+  -- is the one drop the cache needs.
+  blames = {}
   require('review.persist').save()
 end
 
@@ -256,26 +266,135 @@ function M.for_session()
   return list
 end
 
--- Whether the span `c` was written against holds `hash`. A comment about three
--- commits is about each of them, so it is counted on every row of the run --
--- and a span whose ends have left the range is only ever itself.
-local function span_holds(c, hash)
-  if c.commit == hash or c.commit_from == hash then return true end
-  local i, from, to = M.index_of(hash), M.index_of(c.commit_from), M.index_of(c.commit)
-  return i ~= nil and from ~= nil and to ~= nil and i >= from and i <= to
+-- Whether a sha is blame's way of saying "not committed yet", which is the
+-- Uncommitted Tip's identity in an answer about the working tree.
+local function not_committed(sha)
+  return sha:match('^0+$') ~= nil
+end
+
+-- Which commit each line of `path` last came from, as of `rev`: the lines of
+-- that revision mapped to the sha that changed them. One git process per file,
+-- not per comment, and the answer is kept until the comments or the range move.
+--
+-- The Uncommitted Tip is the one identity git cannot blame at, so there the file
+-- on disk is blamed: its uncommitted lines come back as the zero sha and are the
+-- tip's own, while a line blamed to a real commit belongs to that commit. An
+-- untracked file git refuses outright, and every line of it is the tip's.
+local function blame_lines(rev, path)
+  local root = M.repo_root()
+  if not root then return {} end
+  local key = rev .. '\0' .. path
+  if blames[key] then return blames[key] end
+  local cmd = { 'git', '-C', root, '--no-pager', 'blame', '--porcelain' }
+  if not M.is_uncommitted(rev) then table.insert(cmd, rev) end
+  vim.list_extend(cmd, { '--', path })
+  local out = vim.fn.systemlist(cmd)
+  local lines = {}
+  if vim.v.shell_error ~= 0 then
+    if M.is_uncommitted(rev) and vim.fn.filereadable(root .. '/' .. path) == 1 then
+      lines = setmetatable({}, { __index = function() return '0' end })
+    end
+  else
+    -- Porcelain answers one line at a time: a header `<sha> <line in rev> <line
+    -- now>`, then the commit's details, then the line's own text behind a tab.
+    -- The text is what ends an answer, so the header is whatever follows it --
+    -- read that way rather than by shape, because a commit summary can itself
+    -- read like a header.
+    local header = true
+    for _, line in ipairs(out) do
+      if header then
+        local sha, lnum = line:match('^(%x+) %d+ (%d+)')
+        if sha then lines[tonumber(lnum)] = sha end
+        header = false
+      elseif line:sub(1, 1) == '\t' then
+        header = true
+      end
+    end
+  end
+  blames[key] = lines
+  return lines
+end
+
+-- Which member of `span` (hashes, oldest first) a blamed sha is, or nil for a
+-- sha from outside the span. Range hashes are abbreviated and blame answers in
+-- full, so a member matches by prefix.
+local function member_of(span, sha)
+  for _, hash in ipairs(span) do
+    if M.is_uncommitted(hash) then
+      if not_committed(sha) then return hash end
+    elseif sha:sub(1, #hash) == hash then
+      return hash
+    end
+  end
+  return nil
+end
+
+-- The hashes of the span `c` was filed under, oldest first. A span of one is
+-- itself whether or not the range still holds it -- the same thing
+-- `span_length` says -- while a wider one needs the range to place its ends, and
+-- a comment left holding a span the range cannot place is about no commit.
+local function filed_span(c)
+  if c.commit_from == c.commit then return { c.commit } end
+  local from, to = M.index_of(c.commit_from), M.index_of(c.commit)
+  if not from or not to or from > to then return nil end
+  local hashes = {}
+  for i = from, to do table.insert(hashes, M.range[i].hash) end
+  return hashes
+end
+
+-- The Owning Commit of `c`: the member of its own filed span that changed the
+-- lines it points at (docs/adr/0009). Blame is asked at the span's newest member
+-- and its answer taken only when it sits inside that same span, so a comment
+-- filed under `base..mid` can never be owned by a commit outside `base..mid`.
+--
+-- nil for an Unowned comment: a `file` or `session` comment has no lines to
+-- blame, a comment on a path the span's newest member does not hold has nothing
+-- to blame them at, and a line the span never changed is feedback the span's
+-- commits did not cause. A `commit` comment is already about one member, and is
+-- counted there without asking git anything.
+function M.owning_commit(c)
+  if c.scope == 'commit' then return c.commit end
+  if c.scope ~= 'range' or not c.path or not c.commit then return nil end
+  local span = filed_span(c)
+  if not span then return nil end
+  local lines = blame_lines(c.commit, c.path)
+  local owner, newest
+  for lnum = c.lnum, (c.end_line or c.lnum) do
+    local sha = lines[lnum]
+    local member = sha and member_of(span, sha)
+    if member then
+      -- A comment covering lines two members changed belongs to the newer of
+      -- them: it is that change the lines on screen are.
+      local i = M.index_of(member) or 0
+      if not newest or i >= newest then owner, newest = member, i end
+    end
+  end
+  return owner
 end
 
 -- What a commit carries, split the way the switcher reads it: pending is what a
 -- finish would still send, resolved is what has been dealt with but kept. A
--- comment written against a span counts on every commit of that span.
+-- comment counts on its Owning Commit alone, so a row's count is feedback about
+-- that commit's own change rather than about the span it was read in.
 function M.counts_for_commit(hash)
   local pending, resolved = 0, 0
   for _, c in ipairs(M.comments) do
-    if c.scope ~= 'session' and span_holds(c, hash) then
+    if M.owning_commit(c) == hash then
       if c.status == 'resolved' then resolved = resolved + 1 else pending = pending + 1 end
     end
   end
   return pending, resolved
+end
+
+-- The comments no row of the switcher counts. The switcher's title carries this
+-- number: a comment the review cannot pin to a commit is still feedback, and one
+-- that appears in no count and no row would be lost without being deleted.
+function M.unowned_count()
+  local n = 0
+  for _, c in ipairs(M.comments) do
+    if M.owning_commit(c) == nil then n = n + 1 end
+  end
+  return n
 end
 
 -- One key per span, for the group builder below. The separator is a byte no
