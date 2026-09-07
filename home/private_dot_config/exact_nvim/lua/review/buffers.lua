@@ -21,6 +21,16 @@ local EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 -- changeset is built.
 local shown = {}
 
+-- The buffer a caller means, as a number of its own. `0` and nil are both the
+-- editor's way of saying "the one I am in", and the readers below do not pass
+-- the number on to the editor -- they key the anchor cache on it and compare it
+-- against a quickfix item's -- so the alias has to become a number first or it
+-- matches nothing.
+local function buf_id(bufnr)
+  if bufnr == nil or bufnr == 0 then return vim.api.nvim_get_current_buf() end
+  return bufnr
+end
+
 -- Split a `fugitive://<gitdir>//<sha>/<rel>` name back into its parts. Buffers
 -- opened by some other route (`:Gclog`, `:Gedit`) parse the same way, so they
 -- get the same treatment during a session.
@@ -177,7 +187,7 @@ end
 -- This is the one seam between a buffer and a comment's identity: widen it and
 -- everything that draws, adds, finds or deletes a comment widens with it.
 function M.locate(bufnr)
-  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  bufnr = buf_id(bufnr)
   local name = vim.api.nvim_buf_get_name(bufnr)
   if name == '' then return nil end
   local state = require('review.state')
@@ -202,8 +212,7 @@ end
 -- file becomes the working tree's own copy the moment it is saved -- and the
 -- comments drawn in it move with it.
 function M.forget_anchor(bufnr)
-  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-  local prefix = bufnr .. '\0'
+  local prefix = buf_id(bufnr) .. '\0'
   for key in pairs(anchors) do
     if vim.startswith(key, prefix) then anchors[key] = nil end
   end
@@ -257,13 +266,15 @@ end
 function M.surface(bufnr)
   local state = require('review.state')
   if not state.active then return false end
-  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  bufnr = buf_id(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then return false end
   if vim.bo[bufnr].buftype == 'quickfix' then return true end
   if M.is_revision(vim.api.nvim_buf_get_name(bufnr)) then return true end
   -- A file on disk is the review's only while the span being read is the one
-  -- that is read from disk; under a commit it is HEAD's content at line numbers
-  -- that are not the commit's, which is the plain editor and nothing more.
+  -- that is read from disk. Under a commit the file is still commentable -- its
+  -- Comment Anchor is the version it holds (docs/adr/0010) -- but it is not a
+  -- place that span is being read, and answering true here would put `]e`, `]f`
+  -- and `<Tab>` on every file in the repository.
   if not state.is_uncommitted(state.current) then return false end
   for _, item in ipairs(vim.fn.getqflist({ items = 0 }).items or {}) do
     if item.bufnr == bufnr then return true end
@@ -273,8 +284,9 @@ end
 
 -- Put the review's keys on one buffer, or take them off again when the buffer
 -- has stopped being a Review Surface -- which a working-tree file does the
--- moment the reader targets a commit, since from then on the file shows HEAD at
--- line numbers that are not the commit's, and is the plain editor.
+-- moment the reader targets a commit, since from then on the span is read from
+-- revision buffers rather than from disk. Only these keys go: `add_comment` is
+-- bound for good, so the file stays one the reader can comment on.
 function M.attach(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then return end
   if not M.surface(bufnr) then

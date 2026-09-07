@@ -16,10 +16,13 @@ local M = {
   -- instead of by path.
   -- { scope, commit_from, commit, path, lnum, end_line, text, status, rebound }
   --   scope  — 'range' | 'file' | 'commit' | 'session'
-  --   commit_from, commit — the ends of the targeted range it was written
-  --            against, oldest and newest. The same hash for a range of one,
-  --            which is the identity a comment on a single commit has always
-  --            had; both nil for session scope. Either end may be the
+  --   commit_from, commit — the ends of the span it is filed under, oldest and
+  --            newest: the targeted range for a comment written in a revision
+  --            buffer, and the buffer's Comment Anchor for one written in a file
+  --            on disk, which is the targeted range only while the copy on disk
+  --            is that range's own (docs/adr/0010). The same hash for a range of
+  --            one, which is the identity a comment on a single commit has
+  --            always had; both nil for session scope. Either end may be the
   --            Uncommitted Tip. Reassignable, once: a rewrite refiles the
   --            comment onto HEAD (docs/adr/0006).
   --   rebound — set by that refile, because the lines below it then describe
@@ -608,7 +611,9 @@ function M.add(start_line, end_line)
     target = {
       scope = scope,
       -- A session comment belongs to no commit; every other scope to the span
-      -- being read. (Spelled out, not `and nil or`, which never yields nil.)
+      -- the buffer under the cursor is filed under, which is the span being read
+      -- unless a file on disk anchors elsewhere. (Spelled out, not `and nil or`,
+      -- which never yields nil.)
       commit = scope ~= 'session' and commit or nil,
       commit_from = scope ~= 'session' and commit_from or nil,
       path = (scope == 'range' or scope == 'file') and path or nil,
