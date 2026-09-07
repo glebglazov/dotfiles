@@ -327,9 +327,16 @@ function M.setup(opts)
       marks.refresh(args.buf)
     end,
   })
+  -- A write can move a file's Comment Anchor -- a clean file becomes the working
+  -- tree's own copy the moment it is saved -- so the anchor is asked again and
+  -- the comments of the new one drawn.
   vim.api.nvim_create_autocmd('BufWritePost', {
     group = group,
-    callback = function(args) marks.refresh(args.buf) end,
+    callback = function(args)
+      buffers.forget_anchor(args.buf)
+      render.buffer(args.buf)
+      marks.refresh(args.buf)
+    end,
   })
 
   -- The session of this repository, if there is one, picked up where it was left.

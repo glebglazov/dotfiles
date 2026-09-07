@@ -122,11 +122,53 @@ function M.display_path(name, root)
   return name
 end
 
+-- The Comment Anchor each file on disk resolved to, keyed by the buffer and by
+-- the span that was targeted when it was asked. The span is part of the key
+-- because targeting another one is a different question, so a move through the
+-- range asks again instead of reading back an answer about a diff nobody is on.
+local anchors = {}
+
+-- Whether the copy of `rel` on disk *is* `rev`'s copy of it: `git diff --quiet`
+-- exits 0 when the two agree. Being tracked at all is part of the question --
+-- git reports no difference for a path it does not track, so an untracked file
+-- would otherwise read as every revision's own copy.
+local function disk_is(rev, rel, root)
+  local listed = vim.fn.systemlist({ 'git', '-C', root, 'ls-files', '--', rel })
+  if vim.v.shell_error ~= 0 or not listed[1] or listed[1] == '' then return false end
+  vim.fn.system({ 'git', '-C', root, 'diff', '--quiet', rev, '--', rel })
+  return vim.v.shell_error == 0
+end
+
+-- The Comment Anchor of a file on disk: the span a comment written in it is
+-- filed under, and so the span whose comments are drawn in it.
+--
+-- Whether the text on screen is a commit's is asked of git rather than assumed.
+-- Where it is the newest targeted commit's copy of the path, the buffer is the
+-- reading of the targeted span -- the very filing that file's Revision Buffer
+-- gets, so a comment written in either is one comment drawn in both. Where it is
+-- not, the text belongs to the working tree, and it is filed under the newest
+-- member of the range that holds it: the Uncommitted Tip for a file the reader
+-- has modified, and the newest commit for a clean file the targeted span merely
+-- ends before.
+local function anchor(rel, root)
+  local state = require('review.state')
+  local targeted = { from = state.targeted_from, commit = state.current }
+  -- A span ending at the tip is read from these very files (docs/adr/0004), and
+  -- outside a session there is no span to be read against, so neither asks git.
+  if not state.current or state.is_uncommitted(state.current) then return targeted end
+  if disk_is(state.current, rel, root) then return targeted end
+  local newest = require('review.session').newest_commit()
+  if newest and newest.hash ~= state.current and disk_is(newest.hash, rel, root) then
+    return { from = newest.hash, commit = newest.hash }
+  end
+  return { from = state.UNCOMMITTED, commit = state.UNCOMMITTED }
+end
+
 -- What a buffer is about, as a comment records it: the span of the range it was
 -- opened as part of -- `from`..`commit`, oldest and newest -- and the path it
 -- holds inside the repository. A revision buffer carries its span on the record
--- the changeset builder left; a file on disk is the span the session is reading
--- now -- which is the span itself when that span ends at the Uncommitted Tip --
+-- the changeset builder left; a file on disk carries its Comment Anchor, which
+-- is the targeted span itself whenever the copy on disk is that span's copy --
 -- so the two resolve to the same triple and to the same comments. A buffer
 -- of some other route (`:Gedit`, `:Gclog`) has no record, and is the one commit
 -- its name names. Nil for a buffer the review cannot place -- one with no name,
@@ -135,7 +177,8 @@ end
 -- This is the one seam between a buffer and a comment's identity: widen it and
 -- everything that draws, adds, finds or deletes a comment widens with it.
 function M.locate(bufnr)
-  local name = vim.api.nvim_buf_get_name(bufnr or 0)
+  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  local name = vim.api.nvim_buf_get_name(bufnr)
   if name == '' then return nil end
   local state = require('review.state')
   local info = M.info(name)
@@ -144,12 +187,26 @@ function M.locate(bufnr)
   end
   local root = state.repo_root()
   if not root or root == '' or name:sub(1, #root + 1) ~= root .. '/' then return nil end
+  local rel = name:sub(#root + 2)
+  local key = bufnr .. '\0' .. (state.targeted_from or '') .. '\0' .. (state.current or '')
+  if not anchors[key] then anchors[key] = anchor(rel, root) end
   return {
-    from = state.targeted_from,
-    commit = state.current,
-    rel = name:sub(#root + 2),
+    from = anchors[key].from,
+    commit = anchors[key].commit,
+    rel = rel,
     revision = false,
   }
+end
+
+-- Ask a buffer's anchor again next time. A write is what moves it -- a clean
+-- file becomes the working tree's own copy the moment it is saved -- and the
+-- comments drawn in it move with it.
+function M.forget_anchor(bufnr)
+  if bufnr == nil or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  local prefix = bufnr .. '\0'
+  for key in pairs(anchors) do
+    if vim.startswith(key, prefix) then anchors[key] = nil end
+  end
 end
 
 -- The keys that live only on the review's own surfaces. `]e`, `]f` and `<Tab>`
@@ -517,7 +574,10 @@ function M.setup()
   -- BufReadPost see it as new and bind the keys again.
   vim.api.nvim_create_autocmd({ 'BufUnload', 'BufDelete', 'BufWipeout' }, {
     group = group,
-    callback = function(args) attached[args.buf] = nil end,
+    callback = function(args)
+      attached[args.buf] = nil
+      M.forget_anchor(args.buf)
+    end,
   })
 end
 

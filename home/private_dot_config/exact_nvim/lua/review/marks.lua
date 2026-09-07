@@ -152,14 +152,15 @@ local function draw(bufnr, hunk, deleted, total)
   end
 end
 
--- The record for a buffer, when its lines are the span's own. The rule is the
--- comments' rule: a mark is a line number, and a Working Copy read while
--- commits are targeted shows HEAD at line numbers that are not the span's, so
--- there is nowhere true to put one.
+-- The record for a buffer, when the span's diff is the diff that buffer holds.
+-- This is the Diff Marks' own gate, not the comments': a comment goes wherever
+-- its buffer's Comment Anchor is, but a file the targeted span never touched
+-- holds no hunk of that span to draw, so only a Revision Buffer and -- while the
+-- span is read from disk -- a file of the changeset gets marks.
 local function record_for(bufnr)
   local loc = require('review.buffers').locate(bufnr)
   if not loc then return nil end
-  if not (loc.revision or state.is_uncommitted(loc.commit)) then return nil end
+  if not (loc.revision or state.is_uncommitted(state.current)) then return nil end
   if loc.commit ~= state.current or loc.from ~= state.targeted_from then return nil end
   return marks[loc.rel]
 end

@@ -515,18 +515,17 @@ end
 
 -- The scopes the form can cycle, for the place the form was opened from. A
 -- buffer the review cannot place -- no name, or a file outside the repository
--- -- leaves only the session itself. Lines are the one thing that does not
--- carry across: a file on disk read while commits are targeted shows HEAD, so
--- line 42 there is not line 42 of the commit being read, and `range` is
--- withheld rather than recorded against the wrong lines. A span ending at the
--- tip *is* the files on disk, so there its lines are the true ones.
+-- -- leaves only the session itself; everywhere else every scope is on offer,
+-- lines included. Lines carry because the buffer's Comment Anchor is the span
+-- its lines really are (see buffers.locate): a file on disk is filed under the
+-- targeted span when its copy is that span's copy, and under the working tree's
+-- own member when it is not, so line 42 is line 42 of whatever it is filed
+-- under.
 local function scopes_here(loc, commit)
-  local lines_true = loc ~= nil and (loc.revision or M.is_uncommitted(commit))
   local usable = {}
   for _, scope in ipairs(SCOPES) do
     local ok = true
-    if scope == 'range' and not lines_true then ok = false end
-    if scope == 'file' and not loc then ok = false end
+    if (scope == 'range' or scope == 'file') and not loc then ok = false end
     if scope == 'commit' and not commit then ok = false end
     if ok then table.insert(usable, scope) end
   end

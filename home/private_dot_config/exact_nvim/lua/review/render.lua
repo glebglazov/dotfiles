@@ -44,22 +44,18 @@ local function file_lines(c, resolved)
   return out
 end
 
--- What one buffer shows of the store. The buffer is resolved to the span of
--- commits and the path it holds rather than compared by name, so the same file
--- opened as commit content and off disk draws the same comments -- and a
--- comment written against another span is left undrawn, because the diff it was
--- about is not the diff on screen.
+-- What one buffer shows of the store: exactly the comments of its own anchor,
+-- lines included. The buffer is resolved to the span of commits and the path it
+-- holds rather than compared by name, so the same file opened as commit content
+-- and off disk draws the same comments whenever the copy on disk is that span's
+-- copy -- and a comment written against another span is left undrawn, because
+-- the diff it was about is not the diff on screen.
 function M.buffer(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
   if #state.comments == 0 then return end
   local loc = require('review.buffers').locate(bufnr)
   if not loc then return end
   local total = vim.api.nvim_buf_line_count(bufnr)
-  -- A file on disk read while commits are targeted shows HEAD rather than the
-  -- commit being read, so its line numbers are not the comment's; the file
-  -- comment, which has no line at all, is at home in either. A span ending at
-  -- the Uncommitted Tip is those files, so its lines are the true ones.
-  local lines_true = loc.revision or state.is_uncommitted(loc.commit)
   local above = {}
   for _, c in ipairs(state.for_location(loc.from, loc.commit, loc.rel)) do
     local resolved = c.status == 'resolved'
@@ -67,7 +63,7 @@ function M.buffer(bufnr)
     -- is only about the buffer, so a second read sees the lines it left alone.
     if (not resolved or state.show_resolved) and c.scope == 'file' then
       for _, line in ipairs(file_lines(c, resolved)) do table.insert(above, line) end
-    elseif (not resolved or state.show_resolved) and lines_true then
+    elseif not resolved or state.show_resolved then
       -- Left bar spanning every line of the commented range (priority above the
       -- Diff Marks so the range wins the sign cell on its own lines).
       local bar_hl = resolved and 'ReviewBarResolved'
