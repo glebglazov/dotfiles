@@ -83,3 +83,19 @@ the key is the review's to reassign, once, on a rewrite — and that reassigning
 is how a rewrite stops throwing review work away. The path half stays immutable
 and stays the reader's anchor: the rebind moves the range and never the path, even
 when the path no longer resolves at HEAD.
+
+## Amendment — a buffer's version is tested, not assumed
+
+"`range` Comments are therefore not offered outside a Revision Buffer and not
+drawn in a working-tree buffer" was the enforcement of a true premise by a blunt
+rule. The premise stands — a line is only a line of the version it is read in —
+but a file on disk often *is* the version being read, and that can be asked
+rather than assumed. Line Comments are therefore offered in any file of the
+repository, filed under the Comment Anchor its buffer resolves to; see
+[ADR-0010](0010-a-file-on-disk-is-commentable-at-the-version-it-holds.md).
+
+The identity rule above is unchanged, and this is what makes the anchor work: a
+disk copy that is the span's own copy resolves to the span, so it lands on the
+very same `(range, path)` filing as the Revision Buffer of that file — one set of
+Comments, however the file was opened, which is the property this ADR exists to
+protect.

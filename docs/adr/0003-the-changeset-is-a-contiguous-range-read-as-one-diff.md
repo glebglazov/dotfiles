@@ -36,3 +36,18 @@ range to one commit recovers the attribution exactly.
 
 The newest commit of the Targeted Range becomes the Current Commit: it is the
 commit whose content the Revision Buffers show.
+
+## Amendment — attribution is recovered for counting
+
+"Nothing on screen can say which commit introduced a given line" is no longer
+true of one surface. The Commit Switcher counts each Comment on the commit that
+changed the lines it points at, found by blame — see
+[ADR-0009](0009-a-comment-is-counted-on-the-commit-that-changed-its-lines.md).
+
+The decision above is untouched: the Changeset is still one merged diff of the
+whole span, and the buffers and the Hunk walk still know nothing about which
+commit a line came from. What is recovered is a Comment's own owner, asked per
+Comment when the Switcher opens, so nothing on the changeset build path pays for
+it. The trade this ADR made — read the span as a squashed pull request — was
+about what the reader *walks*, and it survives; what the reader has *said* now
+has a commit to sit under.
