@@ -75,10 +75,10 @@ agents = ["claude", "pi", "cursor"]
 [work.attended]
 {{- if .work }}
 agents = [
+    { display_name = "Claude Fable", cmd = "claude --model fable" },
     { display_name = "Claude Opus", cmd = "claude --model opus" },
+    { display_name = "Codex Astra", cmd = "codex --model gpt-6-astra" },
     { display_name = "Codex Sol", cmd = "codex --model gpt-5.6-sol" },
-    "kimi",
-    "claude",
 ]
 {{- else }}
 agents = [
