@@ -1,0 +1,28 @@
+# Mole Whitelist - Protected paths won't be deleted
+#
+# This file REPLACES DEFAULT_WHITELIST_PATTERNS. Only SAFETY_WHITELIST_PATTERNS
+# merge on their own, so Mole's own defaults are copied back below.
+#
+# A pattern with no glob also protects every child. A pattern with a glob
+# protects only what the glob matches.
+
+# --- zsh / prompt ---
+$HOME/Library/Caches/antidote
+$HOME/.cache/gitstatus
+$HOME/.cache/p10k-glebglazov
+
+# --- Mole defaults, kept because this file replaces them ---
+$HOME/Library/Caches/ms-playwright*
+$HOME/.gradle/caches/*
+$HOME/.gradle/daemon/*
+$HOME/.ollama/models/*
+$HOME/Library/Caches/com.nssurge.surge-mac/*
+$HOME/Library/Application Support/com.nssurge.surge-mac/*
+$HOME/Library/Caches/org.R-project.R/R/renv/*
+$HOME/Library/Caches/JetBrains*
+$HOME/Library/Caches/com.jetbrains.toolbox*
+$HOME/Library/Caches/tealdeer/tldr-pages
+$HOME/Library/Application Support/JetBrains*
+$HOME/Library/Caches/com.apple.finder
+$HOME/Library/Mobile Documents*
+FINDER_METADATA
