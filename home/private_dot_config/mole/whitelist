@@ -11,6 +11,15 @@ $HOME/Library/Caches/antidote
 $HOME/.cache/gitstatus
 $HOME/.cache/p10k-glebglazov
 
+# --- browsers: profile data (history, sessions, cookies, bookmarks) ---
+# Mole treats these trees as app caches and walks into them. The Chromium
+# profile holds the History database next to the caches, so the whole profile
+# root is protected. Pure HTTP caches live outside it (Caches/Arc, Chrome's
+# ShaderCache and optimization_guide_model_store) and stay cleanable.
+$HOME/Library/Application Support/Arc/User Data
+$HOME/Library/Application Support/Google/Chrome/Default
+$HOME/Library/Safari/History.db*
+
 # --- Mole defaults, kept because this file replaces them ---
 $HOME/Library/Caches/ms-playwright*
 $HOME/.gradle/caches/*
