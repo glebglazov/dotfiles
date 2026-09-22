@@ -96,9 +96,9 @@
   a_locksys C-M-q
 
   ;; screenshot actions
-  a_scrarea (multi (t! deeplink cleanshot://capture-area) @l_qwe)
-  a_scrfull (multi (t! deeplink cleanshot://capture-fullscreen) @l_qwe)
-  a_scrocr  (multi (t! deeplink cleanshot://capture-text) @l_qwe)
+  a_scrarea (multi (t! deeplink shottr://grab/area) @l_qwe)
+  a_scrfull (multi (t! deeplink shottr://grab/fullscreen) @l_qwe)
+  a_scrocr  (multi (t! deeplink shottr://ocr) @l_qwe)
 
   ;; app opening actions
   a_opn_ala (t! openapp Alacritty)

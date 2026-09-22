@@ -108,7 +108,7 @@ Actions follow the `a_<category>_<action>` pattern:
 
 **Screenshot** (`screenshot`)
 - `s` key in actions layer
-- Screenshots via CleanShot
+- Screenshots via Shottr
 
 **Raycast** (`raycast`)
 - `r` key in actions layer
