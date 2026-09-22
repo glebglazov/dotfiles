@@ -1132,21 +1132,6 @@ autocmd('VimResized', {
   end
 })
 
--- blink.cmp forces a redraw when it closes its floats only in cmdline mode
--- (see win:redraw_if_needed). In insert mode it trusts Neovim's incremental
--- redraw, and the cells the menu occupied are sometimes never repainted — the
--- menu stays on the screen after it is gone (blink.cmp #1932, still open as of
--- v1.10.2; auto_show_delay_ms below covers the timing race, not the residue).
--- Invalidating the screen on menu close repaints those cells. Costs one full
--- redraw per closed menu, which is not noticeable at this rate.
-autocmd('User', {
-  pattern = 'BlinkCmpMenuClose',
-  group = augroup('glebglazov-blink-redraw', {clear = true}),
-  callback = function()
-    vim.api.nvim__redraw({ valid = false, flush = true })
-  end
-})
-
 -------------------------------------------------
 -- Autogroups — All files
 -------------------------------------------------
@@ -1443,6 +1428,11 @@ autocmd('FileType', {
 vim.keymap.set('n', '<ESC>', ':noh<CR>', { silent = true })
 vim.keymap.set('v', '#', 'y/<C-R>"<CR>', { silent = true })
 vim.keymap.set('n', '<LEADER><tab>', ':b#<CR>', { silent = true })
+
+-- Prefer the keymap: typing `:ScreenDiff` opens noice's cmdline float, and
+-- closing it can repaint the leftover before the report reads the screen.
+vim.api.nvim_create_user_command('ScreenDiff', function() require('screen_diff').report() end, {})
+vim.keymap.set('n', '<LEADER>sd', function() require('screen_diff').report() end)
 
 vim.keymap.set({'n', 'v'}, '<LEADER>th', function()
   if vim.opt.cursorline:get() or vim.opt.cursorcolumn:get() then
