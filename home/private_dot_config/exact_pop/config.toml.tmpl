@@ -48,17 +48,17 @@ include_implementation_convention = true
 [work.verify]
 enabled = true
 {{- if .work }}
-agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
+agents = ["claude --model claude-opus-5-5 --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
 {{- else }}
-agents = ["cursor --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
+agents = ["cursor --model claude-opus-5-thinking-high", "claude --model claude-opus-5-5 --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
 [work.refine]
 enabled = true
 {{- if .work }}
-agents = ["claude --model opus --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
+agents = ["claude --model claude-opus-5-5 --effort xhigh", "codex --model gpt-5.6-sol", "kimi --model moonshot-ai/kimi-k3"]
 {{- else }}
-agents = ["cursor --model claude-opus-5-thinking-high", "claude --model opus --effort high", "pi --model opencode-go/kimi-k3"]
+agents = ["cursor --model claude-opus-5-thinking-high", "claude --model claude-opus-5-5 --effort high", "pi --model opencode-go/kimi-k3"]
 {{- end }}
 
 [work.routine]
@@ -76,13 +76,13 @@ agents = ["claude", "pi", "cursor"]
 {{- if .work }}
 agents = [
     { display_name = "Claude Fable", cmd = "claude --model fable" },
-    { display_name = "Claude Opus", cmd = "claude --model opus" },
+    { display_name = "Claude Opus", cmd = "claude --model claude-opus-5-5" },
     { display_name = "Codex Astra", cmd = "codex --model gpt-6-astra" },
     { display_name = "Codex Sol", cmd = "codex --model gpt-5.6-sol" },
 ]
 {{- else }}
 agents = [
-    { display_name = "Claude Opus", cmd = "claude --model opus" },
+    { display_name = "Claude Opus", cmd = "claude --model claude-opus-5-5" },
     { display_name = "Cursor Opus", cmd = "cursor --model claude-opus-5-thinking-high" },
     "pi",
 ]
@@ -90,13 +90,13 @@ agents = [
 
 {{ if .work -}}
 [effort.claude]
-heavy = [{ model = "opus", reasoning = "high" }]
-standard = [{ model = "opus", reasoning = "medium" }]
+heavy = [{ model = "claude-opus-5-5", reasoning = "high" }]
+standard = [{ model = "claude-opus-5-5", reasoning = "medium" }]
 light = [{ model = "sonnet", reasoning = "high" }]
 {{ else }}
 [effort.claude]
-heavy = [{ model = "opus", reasoning = "medium" }]
-standard = [{ model = "opus", reasoning = "low" }]
+heavy = [{ model = "claude-opus-5-5", reasoning = "medium" }]
+standard = [{ model = "claude-opus-5-5", reasoning = "low" }]
 light = [{ model = "haiku", reasoning = "high" }]
 {{ end }}
 
