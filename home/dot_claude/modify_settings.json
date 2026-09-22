@@ -19,7 +19,7 @@ input="$(cat)"
 printf '%s' "$input" | jq '
     # ---- chezmoi-owned editor settings (authoritative) ----
       .tui = "default"
-    | .model = "claude-opus-5"
+    | .model = "claude-opus-5-5"
     | .effortLevel = "medium"
     | .theme = "auto"
     | .skipDangerousModePermissionPrompt = true
