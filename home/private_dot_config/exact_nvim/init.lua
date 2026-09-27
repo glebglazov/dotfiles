@@ -364,6 +364,18 @@ require('lazy').setup({
     opts = {}
   },
   {
+    'mistricky/codesnap.nvim', -- Code screenshots from a visual selection
+    version = '*',
+    cmd = { 'CodeSnap', 'CodeSnapSave', 'CodeSnapASCII', 'CodeSnapHighlight', 'CodeSnapSaveHighlight' },
+    opts = {
+      snapshot_config = {
+        watermark = { content = '' },
+        background = '#00000000',
+        window = { margin = { x = 0, y = 0 } },
+      },
+    },
+  },
+  {
     "nvim-neotest/neotest",
     lazy = true,
     dependencies = {
