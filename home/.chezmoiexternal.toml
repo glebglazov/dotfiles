@@ -4,6 +4,9 @@
 {{- $playwright_cli_commit := "3a1bafc8b4e973c72d0364eb5b427d1ce0aa8317" }}
 {{- $playwright_cli_url := printf "https://github.com/microsoft/playwright-cli/archive/%s.tar.gz" $playwright_cli_commit }}
 {{- $playwright_cli_checksum := "4423c13dd0b86d3d2884f6a9fa67f10eb799d83c7e4ccbf7845ad3deb709de9a" }}
+{{- $gogcli_version := "0.42.0" }}
+{{- $gogcli_url := printf "https://github.com/openclaw/gogcli/archive/refs/tags/v%s.tar.gz" $gogcli_version }}
+{{- $gogcli_checksum := "3e898748f902c30336eca78191dd067bd2ce7e912d879ae583bf376fbb414a54" }}
 {{ if eq .chezmoi.os "darwin" -}}
 [".local/bin/kanata"]
 	type = "archive-file"
@@ -95,4 +98,44 @@
 	checksum.sha256 = "{{ $playwright_cli_checksum }}"
 	stripComponents = 3
 	include = ["**/skills/playwright-cli/**"]
+	exact = true
+
+[".agents/skills/gog"]
+	type = "archive"
+	url = "{{ $gogcli_url }}"
+	checksum.sha256 = "{{ $gogcli_checksum }}"
+	stripComponents = 4
+	include = ["**/.agents/skills/gog/**"]
+	exact = true
+
+[".agents/skills/gog-gmail"]
+	type = "archive"
+	url = "{{ $gogcli_url }}"
+	checksum.sha256 = "{{ $gogcli_checksum }}"
+	stripComponents = 4
+	include = ["**/.agents/skills/gog-gmail/**"]
+	exact = true
+
+[".agents/skills/gog-calendar"]
+	type = "archive"
+	url = "{{ $gogcli_url }}"
+	checksum.sha256 = "{{ $gogcli_checksum }}"
+	stripComponents = 4
+	include = ["**/.agents/skills/gog-calendar/**"]
+	exact = true
+
+[".agents/skills/gog-drive"]
+	type = "archive"
+	url = "{{ $gogcli_url }}"
+	checksum.sha256 = "{{ $gogcli_checksum }}"
+	stripComponents = 4
+	include = ["**/.agents/skills/gog-drive/**"]
+	exact = true
+
+[".agents/skills/gog-slides"]
+	type = "archive"
+	url = "{{ $gogcli_url }}"
+	checksum.sha256 = "{{ $gogcli_checksum }}"
+	stripComponents = 4
+	include = ["**/.agents/skills/gog-slides/**"]
 	exact = true
