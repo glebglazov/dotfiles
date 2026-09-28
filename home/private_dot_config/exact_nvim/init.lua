@@ -368,12 +368,35 @@ require('lazy').setup({
     version = '*',
     cmd = { 'CodeSnap', 'CodeSnapSave', 'CodeSnapASCII', 'CodeSnapHighlight', 'CodeSnapSaveHighlight' },
     opts = {
+      show_workspace = false,
       snapshot_config = {
+        -- codesnap's bundled "candy" with its italic styles removed
+        theme = 'candy-upright',
+        themes_folders = { vim.fn.stdpath('config') .. '/codesnap-themes' },
         watermark = { content = '' },
         background = '#00000000',
-        window = { margin = { x = 0, y = 0 } },
+        window = {
+          margin = { x = 0, y = 0 },
+          title_config = { font_family = 'BerkeleyMono Nerd Font Mono' },
+        },
+        code_config = {
+          font_family = 'BerkeleyMono Nerd Font Mono',
+          breadcrumbs = { enable = false },
+        },
       },
     },
+    config = function(_, opts)
+      require('codesnap').setup(opts)
+      -- The window bar shows `title`, which codesnap never fills; it is rebuilt per
+      -- snapshot, so wrap the builder to put the current file name there
+      local config = require('codesnap.config')
+      local get_config = config.get_config
+      config.get_config = function()
+        local snapshot = get_config()
+        snapshot.title = vim.fn.expand('%:t')
+        return snapshot
+      end
+    end,
   },
   {
     "nvim-neotest/neotest",
