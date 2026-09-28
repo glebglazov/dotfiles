@@ -99,6 +99,7 @@
   a_scrarea (multi (t! deeplink cleanshot://capture-area) @l_qwe)
   a_scrfull (multi (t! deeplink cleanshot://capture-fullscreen) @l_qwe)
   a_scrocr  (multi (t! deeplink cleanshot://capture-text) @l_qwe)
+  a_scrrec  (multi (t! deeplink cleanshot://record-screen) @l_qwe)
 
   ;; app opening actions
 {{- if .work }}
@@ -200,7 +201,7 @@
   XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
   XX         XX         XX         XX         XX         @a_scrocr  XX         XX         XX         XX         XX         XX         XX         XX
   @l_qwe     @a_scrarea XX         XX         @a_scrfull XX         XX         XX         XX         XX         XX         XX         XX
-  XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
+  XX         XX         XX         XX         @a_scrrec  XX         XX         XX         XX         XX         XX         XX
   XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX
 )
 
