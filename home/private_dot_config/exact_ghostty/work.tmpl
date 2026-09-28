@@ -1,0 +1,8 @@
+# Profile for "Ghostty Work.app". Plain Ghostty loads none of this.
+config-file = shared
+
+{{ if .work -}}
+command = /bin/zsh -l -i -c "tmux new-session -A -s main"
+{{- else -}}
+command = ssh macbook-tds-1 -t 'zsh -l -i -c "tmux new-session -A -s main"'
+{{- end }}

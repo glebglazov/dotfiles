@@ -57,7 +57,7 @@ Actions follow the `a_<category>_<action>` pattern:
 - `a_scrfull` - Capture fullscreen
 
 #### App Opening (`a_opn_*`)
-- `a_opn_ala` - Open Alacritty
+- `a_opn_trm` - Open the terminal for this machine (Ghostty Work or Ghostty Personal)
 - `a_opn_agi` - Open ChatGPT/Claude
 - `a_opn_arc` - Open Arc
 - `a_opn_fan` - Open Fantastical

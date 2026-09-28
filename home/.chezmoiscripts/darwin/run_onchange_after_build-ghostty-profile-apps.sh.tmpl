@@ -1,0 +1,108 @@
+{{ if and (eq .chezmoi.os "darwin") (glob "/Applications/Ghostty.app") -}}
+#!/bin/bash
+set -euo pipefail
+
+# Rebuilds on every Ghostty update, because each profile app is a copy of it.
+# Ghostty version: {{ output "defaults" "read" "/Applications/Ghostty.app/Contents/Info.plist" "CFBundleVersion" | trim }}
+
+# Each profile app is a full copy of Ghostty.app with its own name, bundle ID
+# and icon, so macOS shows it as a separate app in the Dock and in cmd+tab.
+# Launching it opens Ghostty with ~/.config/ghostty/<profile>, which pulls in
+# the shared config; plain Ghostty.app has no config and runs with defaults.
+#
+# profile:icon pairs; icons are Ghostty's own variants from its Assets.car.
+PROFILES="Personal:RetroImage Work:BlueprintImage"
+
+GHOSTTY=/Applications/Ghostty.app
+WORKDIR="$(mktemp -d)"
+trap 'rm -rf "$WORKDIR"' EXIT
+
+cat > "$WORKDIR/render-icon.swift" <<'SWIFT'
+import AppKit
+let name = CommandLine.arguments[1], iconset = CommandLine.arguments[2]
+guard let image = Bundle(path: "/Applications/Ghostty.app")?.image(forResource: name) else {
+  FileHandle.standardError.write("Ghostty.app has no image named \(name)\n".data(using: .utf8)!)
+  exit(1)
+}
+for points in [16, 32, 128, 256, 512] {
+  for scale in [1, 2] {
+    let px = points * scale
+    let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: px, pixelsHigh: px, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+    image.draw(in: NSRect(x: 0, y: 0, width: px, height: px))
+    NSGraphicsContext.restoreGraphicsState()
+    let suffix = scale == 2 ? "@2x" : ""
+    try! rep.representation(using: .png, properties: [:])!
+      .write(to: URL(fileURLWithPath: "\(iconset)/icon_\(points)x\(points)\(suffix).png"))
+  }
+}
+SWIFT
+
+# launchd refuses a script as a bundle's main executable, so the launcher that
+# adds --config-file must be a compiled binary. It replaces itself with the
+# real ghostty binary, so the running process still belongs to this bundle.
+cat > "$WORKDIR/launcher.c" <<'C'
+#include <libgen.h>
+#include <limits.h>
+#include <mach-o/dyld.h>
+#include <stdio.h>
+#include <unistd.h>
+
+int main(void) {
+  char self[PATH_MAX], ghostty[PATH_MAX];
+  uint32_t size = sizeof self;
+  if (_NSGetExecutablePath(self, &size) != 0) return 1;
+  snprintf(ghostty, sizeof ghostty, "%s/ghostty", dirname(self));
+  char *args[] = { ghostty, "--config-file=" PROFILE_CONFIG, NULL };
+  execv(ghostty, args);
+  perror("execv");
+  return 1;
+}
+C
+
+codesign -d --entitlements - --xml "$GHOSTTY" > "$WORKDIR/entitlements.plist" 2>/dev/null
+
+for entry in $PROFILES; do
+  profile="${entry%%:*}"
+  icon="${entry#*:}"
+  id="$(echo "$profile" | tr '[:upper:]' '[:lower:]')"
+  name="Ghostty $profile"
+  app="$WORKDIR/$name.app"
+  plist="$app/Contents/Info.plist"
+
+  echo "Building $name.app..."
+  ditto "$GHOSTTY" "$app"
+  xattr -cr "$app"
+  # Ghostty may have written a custom icon onto its own bundle; the copy must
+  # show only its own.
+  rm -f "$app/Icon"$'\r'
+
+  # Ghostty's Dock tile plugin shows the icon from Ghostty's shared defaults in
+  # every copy, so it would override the per-profile icon.
+  rm -rf "$app/Contents/PlugIns/DockTilePlugin.plugin"
+  /usr/libexec/PlistBuddy \
+    -c "Delete :NSDockTilePlugIn" \
+    -c "Delete :CFBundleIconName" \
+    -c "Set :CFBundleIdentifier com.glebglazov.ghostty-$id" \
+    -c "Set :CFBundleName $name" \
+    -c "Set :CFBundleDisplayName $name" \
+    -c "Set :CFBundleExecutable launcher" \
+    "$plist"
+
+  iconset="$WORKDIR/$id.iconset"
+  mkdir -p "$iconset"
+  swift "$WORKDIR/render-icon.swift" "$icon" "$iconset"
+  iconutil -c icns "$iconset" -o "$app/Contents/Resources/Ghostty.icns"
+
+  clang -O2 -DPROFILE_CONFIG="\"$HOME/.config/ghostty/$id\"" \
+    -o "$app/Contents/MacOS/launcher" "$WORKDIR/launcher.c"
+
+  codesign --force --deep --sign - --entitlements "$WORKDIR/entitlements.plist" "$app"
+
+  mkdir -p "$HOME/Applications"
+  rm -rf "$HOME/Applications/$name.app"
+  mv "$app" "$HOME/Applications/"
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$HOME/Applications/$name.app"
+done
+{{ end -}}

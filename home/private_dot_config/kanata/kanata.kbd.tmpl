@@ -101,7 +101,11 @@
   a_scrocr  (multi (t! deeplink shottr://ocr) @l_qwe)
 
   ;; app opening actions
-  a_opn_ala (t! openapp Alacritty)
+{{- if .work }}
+  a_opn_trm (t! openapp "Ghostty Work")
+{{- else }}
+  a_opn_trm (t! openapp "Ghostty Personal")
+{{- end }}
 {{- if .work }}
   a_opn_agi (t! openapp ChatGPT)
 {{- else }}
@@ -212,7 +216,7 @@
 (deflayer app
   @l_qwe     XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX
   XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         XX         =          @l_act
-  XX         XX         @a_opn_wts @a_opn_mai XX         @a_opn_ala XX         XX         @a_opn_agi XX         @a_opn_pst XX         XX         XX
+  XX         XX         @a_opn_wts @a_opn_mai XX         @a_opn_trm XX         XX         @a_opn_agi XX         @a_opn_pst XX         XX         XX
   XX         XX         @a_opn_spo @a_opn_tod XX         @a_opn_tgr XX         XX         XX         @a_opn_slk XX         XX         XX
   XX         @a_opn_zoo XX         @a_opn_cal XX         @a_opn_arc @a_opn_obd XX         XX         XX         XX         XX
   XX         XX         XX         XX                               XX                               XX         XX         XX         XX         XX         XX         XX

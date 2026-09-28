@@ -27,7 +27,7 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 ### Development Environment
 - **Version Management**: `mise` manages all language runtimes (Node.js, Ruby, Python, Go, Rust, Java, etc.)
 - **Shell**: Primary shell is `zsh` with custom prompt and functions
-- **Terminal**: Alacritty with Berkeley Mono Nerd Font
+- **Terminal**: Ghostty, as two profile apps (Ghostty Personal, Ghostty Work) that `build-ghostty-profile-apps` builds from `Ghostty.app`; each runs tmux locally on its own machine and over SSH on the other. Plain Ghostty stays stock
 - **Editor**: Neovim with custom Lua configuration
 - **Session Management**: Tmux with custom layouts and session management tools
 
@@ -63,7 +63,6 @@ This is a **chezmoi dotfiles repository** that manages a comprehensive developme
 - `git-wrapper` - Enhanced git clone functionality with SSH URL conversion
 - `tmux-ide-layout` - IDE-like tmux pane arrangements
 - `tmux-sessioniser` & `tmux-windowiser` - Session management utilities
-- `update-alacritty-icon` - Terminal icon customization
 
 ### Security Patterns
 - Private files use `.tmpl` suffix to avoid committing secrets

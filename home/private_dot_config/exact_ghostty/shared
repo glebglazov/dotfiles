@@ -1,5 +1,3 @@
-command = /bin/zsh -l -i -c "tmux new-session -A -s main"
-
 auto-update = off
 
 theme = light:Gruvbox Light,dark:Gruvbox Dark Hard

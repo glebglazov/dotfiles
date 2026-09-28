@@ -58,8 +58,10 @@ driver's release tags — use the daemon `CFBundleVersion` when comparing versio
    (prompts for sudo, deactivates any other driver version first).
 2. Approve the driver extension: **System Settings > General > Login Items &
    Extensions > Driver Extensions** > enable `.Karabiner-VirtualHIDDevice-Manager`.
-3. Grant **Privacy & Security > Input Monitoring** to the terminal (Alacritty,
-   Ghostty, iTerm) and to `kanata`.
+3. Grant **Privacy & Security > Input Monitoring** to the terminal that runs
+   `kanata` (Ghostty Personal or Ghostty Work) and to `kanata`. The Ghostty
+   profile apps are signed again on every rebuild, so grant it again after a
+   Ghostty update.
 4. Run `kanata` — zsh function in
    `home/exact_dot_my_zsh_plugins/functions/kanata.sh`, runs under sudo from
    `~/.config/kanata`.

@@ -62,7 +62,7 @@ launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.
 # defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 125 "{ enabled = 1; value = { parameters = (56, 28, 1048576); type = standard; }; }"
 
 # How to get program name:
-# mdls -name kMDItemCFBundleIdentifier /Applications/Alacritty.app
+# mdls -name kMDItemCFBundleIdentifier /Applications/Ghostty.app
 
 # How to override already set custom shortcut (set an empty dict):
 # defaults write com.flexibits.fantastical2.mac NSUserKeyEquivalents -dict
@@ -77,25 +77,21 @@ defaults write com.flexibits.fantastical2.mac NSUserKeyEquivalents -dict-add "By
 # App keyboard shortcut overrides                                             #
 ###############################################################################
 
-# alacritty installed: {{ if glob "/Applications/Alacritty.app" }}true{{ else }}false{{ end }}
-{{ if glob "/Applications/Alacritty.app" -}}
-# Remap Cmd+H (Hide) to F15 to avoid conflict with tmux
-defaults write org.alacritty NSUserKeyEquivalents -dict-add "Hide alacritty" "\UF70E"
-# Remap Cmd+Q (Quit) to F16 to avoid accidental exit
-defaults write org.alacritty NSUserKeyEquivalents -dict-add "Quit alacritty" "\UF70F"
-{{ end -}}
-
 # ghostty installed: {{ if glob "/Applications/Ghostty.app" }}true{{ else }}false{{ end }}
 {{ if glob "/Applications/Ghostty.app" -}}
-# Remap Cmd+H (Hide) to F15 to avoid conflict with tmux
-defaults write com.mitchellh.ghostty NSUserKeyEquivalents -dict-add "Hide Ghostty" "\UF70E"
-# Remap split navigation to F1/F2
-defaults write com.mitchellh.ghostty NSUserKeyEquivalents -dict-add "Select Previous Split" "\UF704"
-defaults write com.mitchellh.ghostty NSUserKeyEquivalents -dict-add "Select Next Split" "\UF705"
-# Remap Settings to F3
-defaults write com.mitchellh.ghostty NSUserKeyEquivalents -dict-add "Settings..." "\UF706"
-# Remap Cmd+Q (Quit) to F5 to avoid accidental exit
-defaults write com.mitchellh.ghostty NSUserKeyEquivalents -dict-add "Quit Ghostty" "\UF708"
+# Only the Ghostty profile apps (build-ghostty-profile-apps) get the remaps;
+# plain Ghostty stays stock. macOS keeps shortcuts per bundle ID.
+for domain in com.glebglazov.ghostty-personal com.glebglazov.ghostty-work; do
+  # Remap Cmd+H (Hide) to F15 to avoid conflict with tmux
+  defaults write "$domain" NSUserKeyEquivalents -dict-add "Hide Ghostty" "\UF70E"
+  # Remap split navigation to F1/F2
+  defaults write "$domain" NSUserKeyEquivalents -dict-add "Select Previous Split" "\UF704"
+  defaults write "$domain" NSUserKeyEquivalents -dict-add "Select Next Split" "\UF705"
+  # Remap Settings to F3
+  defaults write "$domain" NSUserKeyEquivalents -dict-add "Settings..." "\UF706"
+  # Remap Cmd+Q (Quit) to F5 to avoid accidental exit
+  defaults write "$domain" NSUserKeyEquivalents -dict-add "Quit Ghostty" "\UF708"
+done
 {{ end -}}
 
 ###############################################################################
