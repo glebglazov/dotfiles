@@ -1,0 +1,14 @@
+{{ if and (eq .chezmoi.os "darwin") (glob "/Applications/Ghostty.app") -}}
+#!/bin/bash
+set -euo pipefail
+
+# Reinstalls on every Ghostty update, so the entry matches the running Ghostty.
+# Ghostty version: {{ output "defaults" "read" "/Applications/Ghostty.app/Contents/Info.plist" "CFBundleVersion" | trim }}
+
+# Ghostty ships its terminfo inside Ghostty.app and points TERMINFO at it only
+# in its own local sessions. A Ghostty profile app that SSHes into this machine
+# sends TERM=xterm-ghostty, and without an entry in ~/.terminfo tmux refuses to
+# start and the window closes.
+TERMINFO=/Applications/Ghostty.app/Contents/Resources/terminfo infocmp -x xterm-ghostty \
+  | tic -x -o "$HOME/.terminfo" -
+{{ end -}}
