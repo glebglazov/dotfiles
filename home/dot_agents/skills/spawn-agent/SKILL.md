@@ -16,11 +16,15 @@ argument-hint: "[harness] [directory] [task or handoff path]"
    file. Pass a short prompt with its absolute path. Prefer CLI prompt options;
    otherwise wait for the input prompt and paste through a tmux buffer. Quote
    shell arguments; keep task text out of shell code.
-3. Use **tmux-pane** to create a uniquely named pane with
-   `pop pane create <name> <command> --project <absolute-directory>`. This also
-   works outside tmux. If pop is unavailable, use tmux directly with an explicit
-   working directory. Capture the pane ID and use it thereafter: agents can
-   change pane titles.
+3. Use tmux directly. Target the caller's `$TMUX_PANE`, or an explicit pane
+   supplied by the user. If neither exists, ask for a target pane. Split that
+   pane's window without changing focus:
+   `tmux split-window -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
+   Capture the returned pane ID. Wait for its shell to be ready, then send the
+   quoted launch command with `tmux send-keys -l -t "$pane_id" "$launch_command"`
+   and submit with `tmux send-keys -t "$pane_id" Enter`. Use the pane ID for all
+   later operations; titles can change. If the split fails, report the error
+   rather than creating a different window.
 4. Check startup for up to two minutes, with waits of at most ten seconds.
    Require a task-specific response or the caller's acknowledgement file. For
    an empty session, require a ready input prompt. An echoed command is not
