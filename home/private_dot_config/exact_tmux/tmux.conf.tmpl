@@ -56,7 +56,7 @@ set -g status-keys vi
 set -g mode-keys vi
 
 set -g set-titles on
-set -g set-titles-string "#h · #S · #W (#{session_windows})"
+set -g set-titles-string "#S · #W (#{session_windows}) · #h"
 set -g automatic-rename off
 
 {{- if (eq .chezmoi.os "darwin") }}
