@@ -21,8 +21,9 @@ argument-hint: "[harness] [directory] [task or handoff path]"
    pane side by side, without changing focus:
    `tmux split-window -h -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
    Capture the returned pane ID. Wait for its shell to be ready, then send the
-   quoted launch command with `tmux send-keys -l -t "$pane_id" "$launch_command"`
-   and submit with `tmux send-keys -t "$pane_id" Enter`. Use the pane ID for all
+   quoted launch command with one leading space, so shell history skips it:
+   `tmux send-keys -l -t "$pane_id" " $launch_command"`. Submit with
+   `tmux send-keys -t "$pane_id" Enter`. Use the pane ID for all
    later operations; titles can change. If the split fails, report the error
    rather than creating a different window.
 4. Check startup for up to two minutes, with waits of at most ten seconds.
