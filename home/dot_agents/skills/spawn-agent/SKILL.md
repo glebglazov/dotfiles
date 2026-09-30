@@ -18,8 +18,8 @@ argument-hint: "[harness] [directory] [task or handoff path]"
    shell arguments; keep task text out of shell code.
 3. Use tmux directly. Target the caller's `$TMUX_PANE`, or an explicit pane
    supplied by the user. If neither exists, ask for a target pane. Split that
-   pane's window without changing focus:
-   `tmux split-window -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
+   pane side by side, without changing focus:
+   `tmux split-window -h -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
    Capture the returned pane ID. Wait for its shell to be ready, then send the
    quoted launch command with `tmux send-keys -l -t "$pane_id" "$launch_command"`
    and submit with `tmux send-keys -t "$pane_id" Enter`. Use the pane ID for all
