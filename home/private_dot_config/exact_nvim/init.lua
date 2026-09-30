@@ -1406,7 +1406,7 @@ require('review').setup {
     export            = '<LEADER>ree',
     files             = '<LEADER>rf',
     start             = '<LEADER>rs',
-    start_uncommitted = '<LEADER>rS',
+    start_commit      = '<LEADER>rS',
     home              = '<LEADER>rr',
     switch            = '<LEADER>rll',
     clear             = '<LEADER>rX',

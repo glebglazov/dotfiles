@@ -383,12 +383,8 @@ end
 local function whole_range_targeted(state)
   local span = state.targeted()
   if #span == 0 or #state.range == 0 then return true end
-  -- The whole range ends at its newest commit, not at the Uncommitted Tip: the
-  -- tip is a row the reader targets on purpose, so a review sitting at rest with
-  -- a dirty tree still draws a clean list, and targeting the tip shows.
-  local session = require('review.session')
-  local newest = session.newest_commit() or state.range[#state.range]
-  return span[1].hash == state.range[1].hash and span[#span].hash == newest.hash
+  local oldest, newest = require('review.session').whole_range_ends()
+  return span[1].hash == oldest and span[#span].hash == newest
 end
 
 -- What the second column says: the span the review is reading now, drawn on

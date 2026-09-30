@@ -17,15 +17,10 @@ local state = require('review.state')
 local M = {}
 
 -- Lua API: a session can be driven from here without a keymap or the command.
--- `spec` is { base, head, uncommitted } — see session.resolve.
+-- `spec` is { base, head } — see session.resolve.
 function M.start(spec)
   return session.start(spec)
 end
-
--- "Show me my uncommitted work": a session on the working tree alone outside a
--- session, and the working tree targeted inside one — the same range member
--- either way, so this can never end or convert a review that is running.
-M.uncommitted = session.uncommitted
 
 -- The same start, with the base taken from a highlighted commit.
 M.start_from_selection = session.start_from_selection
@@ -131,22 +126,24 @@ local actions = {
   -- key, a highlighted commit: the range then starts at that commit instead of
   -- at the branch point, which is how a stack is read from partway up.
   start = {
-    { mode = 'n', fn = function() M.start() end, desc = 'Review: start session (whole branch → HEAD)' },
+    { mode = 'n', fn = function() M.start() end, desc = 'Review: start session (whole branch → working tree)' },
     { mode = 'v', fn = session.start_from_selection,
-      desc = 'Review: start session (highlighted commit → HEAD)' },
+      desc = 'Review: start session (highlighted commit → working tree)' },
   },
   -- Its own key, not a mode of `start`: `start` asks nothing, this one lists the
   -- range -- and a switch must never be able to run without a session.
   switch = {
     { mode = 'n', fn = session.switch_from_picker, desc = 'Review: target a commit or a marked span of the range' },
   },
-  -- The working tree, which is a member of the range like any commit: outside a
-  -- session this starts one on that member alone, and inside a session it
-  -- targets it. Never a session of another kind, and never the end of the one
-  -- running (see docs/adr/0004).
-  start_uncommitted = {
-    { mode = 'n', fn = function() session.uncommitted() end,
-      desc = 'Review: read my uncommitted work' },
+  -- `start`'s range, opened on the highlighted commit alone. Without a highlight
+  -- there is no commit to name, so the normal-mode key says so rather than
+  -- guessing one.
+  start_commit = {
+    { mode = 'n', fn = function()
+        vim.notify('Review: highlight a commit hash first', vim.log.levels.WARN)
+      end, desc = 'Review: start session on one commit (highlight it first)' },
+    { mode = 'v', fn = session.start_on_selected_commit,
+      desc = 'Review: start session (highlighted commit alone)' },
   },
   clear = {
     { mode = 'n', fn = state.clear, desc = 'Review: clear all comments' },

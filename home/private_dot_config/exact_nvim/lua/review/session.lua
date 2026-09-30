@@ -22,14 +22,11 @@ function M.rev(ref)
   return out[1]
 end
 
--- Normalize a session spec into the two values the git commands take.
--- `uncommitted` reviews the working tree alone -- a range whose only member is
--- the Uncommitted Tip -- so its base is HEAD, resolved to a hash so that the
--- range goes on meaning the same thing once the reader commits. A bare `base`
--- is used as the base; nothing at all falls back to the default remote branch.
+-- Normalize a session spec into the two values the git commands take. A bare
+-- `base` is used as the base; nothing at all falls back to the default remote
+-- branch.
 function M.resolve(spec)
   spec = spec or {}
-  if spec.uncommitted then return M.rev('HEAD') or 'HEAD', nil end
   local base = (spec.base and spec.base ~= '') and spec.base or M.default_base()
   return base, spec.head
 end
@@ -90,12 +87,14 @@ function M.span_label()
 end
 
 -- Start a review: changeset → quickfix, Diff Marks for the span, inline
--- comments on, statusline badge. `spec` is { base, head, uncommitted } -- see
+-- comments on, statusline badge. `spec` is { base, head } -- see
 -- session.resolve. An omitted base means the default remote branch, which is the
--- whole branch. Returns false without touching anything when the range holds no
+-- whole branch. `focus` is one member, by the short hash the range lists it
+-- under, to open on alone; without it the session opens on the whole range.
+-- Returns false without touching anything when the range holds no
 -- members at all: there is nothing to read, and saying so beats opening a
 -- session that looks like a review of nothing.
-function M.start(spec)
+function M.start(spec, focus)
   local base, head = M.resolve(spec)
   local members = M.members(base, head)
   if #members == 0 then
@@ -105,10 +104,11 @@ function M.start(spec)
   end
   state.active = true
   state.set_range(members, { base = base, head = head })
-  -- The range opens on its committed part, the same span the switcher's reset
-  -- key puts back: uncommitted work is a row to target, not something the review
-  -- shows you before you asked for it.
-  state.set_targeted(members[1].hash, (M.newest_commit() or members[#members]).hash)
+  -- The range opens on all of it, the same span the switcher's reset key puts
+  -- back, unless the start named one member to read on its own.
+  if not (focus and state.set_targeted(focus, focus)) then
+    state.set_targeted(M.whole_range_ends())
+  end
   -- The whole range as one diff, the way a pull request shows a branch --
   -- revision buffers for its commits, the files on disk when the span ends at
   -- the tip. One path, whatever the range is made of, and the one place the
@@ -121,28 +121,6 @@ function M.start(spec)
   render.all()
   render.set_statusline()
   vim.notify(('Review started (%s)'):format(M.span_label()), vim.log.levels.INFO)
-  return true
-end
-
--- Show me my uncommitted work. Outside a session it starts one on the tip
--- alone; inside a session it targets the tip, which is a move within the review
--- rather than the end of it -- no keypress of this plugin destroys a running
--- review.
-function M.uncommitted()
-  if not state.active then
-    if not M.carries_tip(nil) then
-      vim.notify('Review: nothing uncommitted to read', vim.log.levels.WARN)
-      return false
-    end
-    return M.start({ uncommitted = true })
-  end
-  M.refresh_range()
-  if not state.index_of(state.UNCOMMITTED) then
-    vim.notify('Review: nothing uncommitted to read', vim.log.levels.WARN)
-    return false
-  end
-  if not M.set_current(state.UNCOMMITTED) then return false end
-  vim.notify('Review: reading the working tree', vim.log.levels.INFO)
   return true
 end
 
@@ -269,31 +247,46 @@ local function selected_text()
   return ok and table.concat(text, '\n') or ''
 end
 
--- Start a review of everything from the highlighted commit onwards: base is that
--- commit's parent, so the commit itself is the oldest one under review. This is
--- the answer to "review this branch from here" -- point at where the work
--- starts, in a log or a blame, and read forward from it.
+-- The highlighted commit, as the short hash the range lists it under -- or nil,
+-- once the reader has been told why there is none.
 --
 -- The selection is read before the session opens: starting one moves windows
 -- around, and the highlight would be gone by then.
-function M.start_from_selection()
+local function selected_commit()
   local text = selected_text()
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'n', false)
   local sha = M.sha_in_text(text)
   if not sha then
     vim.notify(('Review: no commit in %q'):format(vim.trim(text):sub(1, 40)), vim.log.levels.WARN)
-    return false
+    return nil
   end
   -- A root commit has no parent to diff against, so there is no range starting
   -- before it -- said plainly rather than left to git's own error.
-  vim.fn.systemlist({ 'git', 'rev-parse', '--verify', '--quiet', sha .. '^{commit}' })
   local parent = vim.fn.systemlist({ 'git', 'rev-parse', '--verify', '--quiet', sha .. '^^{commit}' })
   if vim.v.shell_error ~= 0 or not parent[1] then
     vim.notify(('Review: %s is the first commit — nothing before it to review against'):format(sha),
       vim.log.levels.WARN)
-    return false
+    return nil
   end
+  return M.rev(sha)
+end
+
+-- Start a review of everything from the highlighted commit onwards: base is that
+-- commit's parent, so the commit itself is the oldest one under review. This is
+-- the answer to "review this branch from here" -- point at where the work
+-- starts, in a log or a blame, and read forward from it.
+function M.start_from_selection()
+  local sha = selected_commit()
+  if not sha then return false end
   return M.start({ base = sha .. '^' })
+end
+
+-- The same range, opened on the highlighted commit alone: "review this commit",
+-- with everything after it one switcher away.
+function M.start_on_selected_commit()
+  local sha = selected_commit()
+  if not sha then return false end
+  return M.start({ base = sha .. '^' }, sha)
 end
 
 -- Finish a review: export to clipboard, then clear comments, marks off, badge off.
@@ -341,9 +334,8 @@ function M.set_current(hash)
   return M.target(hash, hash)
 end
 
--- The newest committed member of `range` (the session's own by default): where
--- "the whole range" ends. Nil for a range that holds nothing but the
--- Uncommitted Tip.
+-- The newest committed member of `range` (the session's own by default). Nil
+-- for a range that holds nothing but the Uncommitted Tip.
 function M.newest_commit(range)
   range = range or state.range
   for i = #range, 1, -1 do
@@ -353,22 +345,18 @@ function M.newest_commit(range)
 end
 
 -- The two ends "the whole range" means over `range`: its oldest member through
--- its newest commit. One answer for the reset key, for a target left with
+-- its newest one, which is the Uncommitted Tip while the tree is dirty. One answer for the reset key, for a target left with
 -- nowhere to fall back to, and for the test of whether the reading is at rest --
 -- so the resting span is the same span in all three.
 function M.whole_range_ends(range)
   range = range or state.range
   local oldest = range[1]
   if not oldest then return nil end
-  local newest = M.newest_commit(range) or range[#range]
-  return oldest.hash, newest.hash
+  return oldest.hash, range[#range].hash
 end
 
--- The whole range targeted again: one diff of the branch, which is one diff of
--- what is committed on it. The tip is left out on purpose -- the uncommitted key
--- is what targets it, and a reset that swept it in would leave no way back to
--- the branch as it stands. A session holding nothing but the tip resets onto the
--- tip, because there is nothing else to put back.
+-- The whole range targeted again: one diff of the branch as it stands on disk,
+-- committed and uncommitted work together, the span the session opened on.
 function M.target_whole_range()
   local oldest, newest = M.whole_range_ends()
   if not oldest then return false end
