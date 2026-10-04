@@ -16,5 +16,9 @@ private/Dev/work
 private/Dev/personal
 {{ end -}}
 
+# Machine-named links to the Obsidian vault — each machine keeps only its own
+private/Dev/mixed/obsidian_vaults/glebglazov-*
+!private/Dev/mixed/obsidian_vaults/glebglazov-{{ .chezmoi.hostname }}
+
 # Issue tracker doc — pop's integrate phase owns this dir (symlink into pop's data dir)
 .agents/docs/issue-tracker.md
