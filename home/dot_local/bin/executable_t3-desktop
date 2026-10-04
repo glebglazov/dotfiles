@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Run the t3 CLI bundled inside the T3 Code desktop app.
+#
+# The bundled CLI has the same version as the desktop server, so commands that
+# write to its state (like `pair`) use the right database. The standalone `t3`
+# CLI can be a different version. Prefers the Nightly app over the stable one.
+#
+# Usage: t3-desktop <t3 command> [args...]   e.g. t3-desktop pair --tailscale
+set -euo pipefail
+
+for app in "T3 Code (Nightly)" "T3 Code"; do
+  for dir in /Applications ~/Applications; do
+    contents="$dir/$app.app/Contents"
+    if [[ -x "$contents/MacOS/$app" ]]; then
+      ELECTRON_RUN_AS_NODE=1 exec "$contents/MacOS/$app" \
+        "$contents/Resources/app.asar/apps/server/dist/bin.mjs" "$@"
+    fi
+  done
+done
+
+echo "t3-desktop: no T3 Code desktop app found in /Applications or ~/Applications" >&2
+exit 1
