@@ -1,3 +1,11 @@
+{{- /* Tools listed in the private submodule's .chezmoidata. Absent on a clone
+       made without --recurse-submodules, so guard the key. */ -}}
+{{- $private := dict -}}
+{{- if hasKey . "private_packages" }}{{ $private = .private_packages }}{{ end -}}
+{{- $releaseAgeExempt := list -}}
+{{- range dig "mise" (list) $private -}}
+{{- if and (kindIs "map" .) .skip_release_age }}{{ $releaseAgeExempt = append $releaseAgeExempt .tool }}{{ end -}}
+{{- end -}}
 [settings]
 trusted_config_paths = [
   '~/private/Dev',
@@ -5,6 +13,9 @@ trusted_config_paths = [
 ]
 idiomatic_version_file_enable_tools = ["ruby"]
 minimum_release_age = "7d"
+{{- if $releaseAgeExempt }}
+minimum_release_age_excludes = [{{ range $i, $t := $releaseAgeExempt }}{{ if $i }}, {{ end }}'{{ $t }}'{{ end }}]
+{{- end }}
 
 [tools]
 rust      = '1.91.0'
@@ -29,10 +40,6 @@ tree-sitter = '0.26'
 "npm:openai" = "latest"
 "npm:impeccable" = 'latest'
 "npm:@mermaid-js/mermaid-cli" = 'latest'
-{{- /* Tools listed in the private submodule's .chezmoidata. Absent on a clone
-       made without --recurse-submodules, so guard the key. */}}
-{{- $private := dict }}
-{{- if hasKey . "private_packages" }}{{ $private = .private_packages }}{{ end }}
 {{- range dig "mise" (list) $private }}
 {{- if kindIs "string" . }}
 "{{ . }}" = 'latest'
