@@ -75,4 +75,4 @@ keybind = cmd+o=text:\x02o
 keybind = cmd+u=text:\x02u
 keybind = cmd+i=text:\x02i
 keybind = cmd+f=unbind
-keybind = cmd+f=text:\x02f
+keybind = cmd+f=text:\x02F

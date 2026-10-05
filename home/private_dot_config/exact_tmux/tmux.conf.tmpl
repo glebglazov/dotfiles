@@ -222,6 +222,17 @@ bind-key i display-popup -E -w 80% -h 80% "pop monitor dashboard"
 bind-key u display-popup -E -w 80% -h 80% "pop work dashboard"
 bind-key g run-shell 'tmux display-popup -E -w 80% -h 80% "pop project --tmux-cd #{pane_id} --yank-target #{pane_id}"'
 
+# Hint labels over URLs, paths, and hashes in the pane: a letter copies the
+# match, Ctrl+letter opens it. prefix J already moves between panes, so
+# fingers binds only its own key table and prefix F starts it.
+set -g @fingers-enable-bindings 0
+# Labels as white on red blocks over a dimmed pane, readable in light and dark.
+set -g @fingers-hint-style "fg=colour231,bg=colour160,bold"
+set -g @fingers-highlight-style "fg=colour33,underscore"
+set -g @fingers-backdrop-style "dim"
+run-shell "$HOME/.local/bin/tmux-fingers load-config"
+bind-key F run-shell -b "#{@fingers-cli} start #{pane_id}"
+
 #Createnew session
 bind-key N command-prompt -p "New session name:" "new-session -s '%%'"
 

@@ -22,6 +22,20 @@
 	checksum.sha256 = "a72a1acb344fcd325c982aff95402b25bace7c261ae81369fa53501325b6cebe"
 	executable = true
 
+[".local/bin/tmux-fingers"]
+	type = "file"
+	{{- $tmux_fingers_version := "2.7.1" }}
+	{{- $tmux_fingers_checksum := "" }}
+	{{ if eq .chezmoi.os "darwin" -}}
+	url = "https://github.com/Morantron/tmux-fingers/releases/download/{{ $tmux_fingers_version }}/tmux-fingers-{{ $tmux_fingers_version }}-macos-arm64"
+	{{- $tmux_fingers_checksum = "32b94499f3569d548a6dffd0d89d88e1d6a600c7a8aa891d2b0ee6cc068a720c" }}
+	{{- else }}
+	url = "https://github.com/Morantron/tmux-fingers/releases/download/{{ $tmux_fingers_version }}/tmux-fingers-{{ $tmux_fingers_version }}-linux-x86_64"
+	{{- $tmux_fingers_checksum = "48460fd9a9216d8a461e936b89ac6850a9022467d46ddafa24cfad0bb6cd10cf" }}
+	{{- end }}
+	checksum.sha256 = "{{ $tmux_fingers_checksum }}"
+	executable = true
+
 [".local/bin/mise"]
 	type = "archive-file"
 	{{- $mise_version := "2026.8.0" }}
