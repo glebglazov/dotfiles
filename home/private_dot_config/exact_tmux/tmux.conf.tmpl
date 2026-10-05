@@ -10,6 +10,54 @@ unbind -n MouseDrag1Pane
 unbind -T copy-mode MouseDrag1Pane
 unbind -T copy-mode-vi MouseDrag1Pane
 
+# The wheel scrolls the active pane, not the pane under the pointer.
+# `send -M` can only reach the pane under the pointer, so a pane that asked
+# for SGR mouse reports gets a new wheel report at its top-left cell.
+# copy-mode-vi gets the same bindings: tmux reads the wheel from that table
+# when the pane under the pointer is in copy mode.
+bind -n WheelUpPane {
+  if -F -t "{active}" "#{pane_in_mode}" {
+    send -X -t "{active}" -N 5 scroll-up
+  } {
+    if -F -t "{active}" "#{mouse_sgr_flag}" {
+      send -t "{active}" -l "\e[<64;1;1M"
+    } {
+      copy-mode -e -t "{active}"
+      send -X -t "{active}" -N 5 scroll-up
+    }
+  }
+}
+bind -n WheelDownPane {
+  if -F -t "{active}" "#{pane_in_mode}" {
+    send -X -t "{active}" -N 5 scroll-down
+  } {
+    if -F -t "{active}" "#{mouse_sgr_flag}" {
+      send -t "{active}" -l "\e[<65;1;1M"
+    }
+  }
+}
+bind -T copy-mode-vi WheelUpPane {
+  if -F -t "{active}" "#{pane_in_mode}" {
+    send -X -t "{active}" -N 5 scroll-up
+  } {
+    if -F -t "{active}" "#{mouse_sgr_flag}" {
+      send -t "{active}" -l "\e[<64;1;1M"
+    } {
+      copy-mode -e -t "{active}"
+      send -X -t "{active}" -N 5 scroll-up
+    }
+  }
+}
+bind -T copy-mode-vi WheelDownPane {
+  if -F -t "{active}" "#{pane_in_mode}" {
+    send -X -t "{active}" -N 5 scroll-down
+  } {
+    if -F -t "{active}" "#{mouse_sgr_flag}" {
+      send -t "{active}" -l "\e[<65;1;1M"
+    }
+  }
+}
+
 # Start window and pane numbering at 1
 set -g base-index 1
 setw -g pane-base-index 1
