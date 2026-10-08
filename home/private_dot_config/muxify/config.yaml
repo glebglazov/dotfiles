@@ -12,6 +12,8 @@ projects:
 
 sidebar:
   panes: true
+  agents:
+    topics: false
 
 keybindings:
   # cmd+s and cmd+b stay with Ghostty, which sends cmd+s to tmux (C-b s).
