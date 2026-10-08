@@ -1,0 +1,19 @@
+ghostty:
+  # The profiles (personal, work) only add a `command`, and Muxify starts
+  # its own terminal command, so it loads the shared part directly.
+  config_file: ~/.config/ghostty/shared
+
+# The same Projects as pop's config.
+projects:
+  - path: ~/.local/share/chezmoi
+  - path: ~/Dev/*/*
+  - path: ~/Dev/mixed/obsidian_vaults/*
+    display_depth: 2
+
+sidebar:
+  panes: true
+
+keybindings:
+  # cmd+s and cmd+b stay with Ghostty, which sends cmd+s to tmux (C-b s).
+  toggle_sidebar: cmd+shift+s
+  toggle_browser: cmd+shift+b
