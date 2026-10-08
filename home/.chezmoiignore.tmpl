@@ -13,7 +13,11 @@ private/Dev/work
 {{ end -}}
 
 {{ if not .personal -}}
-private/Dev/personal
+private/Dev/personal/*
+{{ if eq .chezmoi.os "darwin" -}}
+# Muxify is a personal macOS app I also run on the work Mac
+!private/Dev/personal/muxify
+{{ end -}}
 {{ end -}}
 
 # Machine-named links to the Obsidian vault — each machine keeps only its own
