@@ -12,7 +12,9 @@ unbind -T copy-mode-vi MouseDrag1Pane
 
 # The wheel scrolls the active pane, not the pane under the pointer.
 # `send -M` can only reach the pane under the pointer, so a pane that asked
-# for SGR mouse reports gets a new wheel report at its top-left cell.
+# for SGR mouse reports gets a new wheel report at its centre cell: Codex
+# ignores a report outside its transcript, such as the top-left cell.
+# `run -C` expands the centre formats; `send` and a `{ }` block cannot.
 # copy-mode-vi gets the same bindings: tmux reads the wheel from that table
 # when the pane under the pointer is in copy mode.
 bind -n WheelUpPane {
@@ -20,7 +22,7 @@ bind -n WheelUpPane {
     send -X -t "{active}" -N 5 scroll-up
   } {
     if -F -t "{active}" "#{mouse_sgr_flag}" {
-      send -t "{active}" -l "\e[<64;1;1M"
+      run -C -t "{active}" 'send -t "{active}" -l "\e[<64;#{e|+:#{e|/:#{pane_width},2},1};#{e|+:#{e|/:#{pane_height},2},1}M"'
     } {
       copy-mode -e -t "{active}"
       send -X -t "{active}" -N 5 scroll-up
@@ -32,7 +34,7 @@ bind -n WheelDownPane {
     send -X -t "{active}" -N 5 scroll-down
   } {
     if -F -t "{active}" "#{mouse_sgr_flag}" {
-      send -t "{active}" -l "\e[<65;1;1M"
+      run -C -t "{active}" 'send -t "{active}" -l "\e[<65;#{e|+:#{e|/:#{pane_width},2},1};#{e|+:#{e|/:#{pane_height},2},1}M"'
     }
   }
 }
@@ -41,7 +43,7 @@ bind -T copy-mode-vi WheelUpPane {
     send -X -t "{active}" -N 5 scroll-up
   } {
     if -F -t "{active}" "#{mouse_sgr_flag}" {
-      send -t "{active}" -l "\e[<64;1;1M"
+      run -C -t "{active}" 'send -t "{active}" -l "\e[<64;#{e|+:#{e|/:#{pane_width},2},1};#{e|+:#{e|/:#{pane_height},2},1}M"'
     } {
       copy-mode -e -t "{active}"
       send -X -t "{active}" -N 5 scroll-up
@@ -53,7 +55,7 @@ bind -T copy-mode-vi WheelDownPane {
     send -X -t "{active}" -N 5 scroll-down
   } {
     if -F -t "{active}" "#{mouse_sgr_flag}" {
-      send -t "{active}" -l "\e[<65;1;1M"
+      run -C -t "{active}" 'send -t "{active}" -l "\e[<65;#{e|+:#{e|/:#{pane_width},2},1};#{e|+:#{e|/:#{pane_height},2},1}M"'
     }
   }
 }
