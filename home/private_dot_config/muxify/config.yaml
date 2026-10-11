@@ -15,6 +15,12 @@ sidebar:
   agents:
     topics: false
 
+  formats:
+    window:
+      left: '#{symbol:macwindow}'
+      title: '#{window_index}:#{window_name}'
+      summary: ''
+
 keybindings:
   # cmd+s and cmd+b stay with Ghostty, which sends cmd+s to tmux (C-b s).
   toggle_sidebar: cmd+shift+s
