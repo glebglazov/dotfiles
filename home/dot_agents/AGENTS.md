@@ -1,6 +1,6 @@
 # Global Instructions
 
-Always talk in ASD-STE100 Simplified Technical English. Always read CONTEXT.md or CONTEXT-MAP.md files, and use their ubiquitous language.
+Always talk in ASD-STE100 Simplified Technical English. Always read GLOSSARY.md or GLOSSARY-MAP.md files (or the legacy CONTEXT.md or CONTEXT-MAP.md), and use their ubiquitous language.
 
 ## RTK
 

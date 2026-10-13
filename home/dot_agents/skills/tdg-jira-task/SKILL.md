@@ -65,7 +65,8 @@ agreed. Where the conversation is thin, read the diff and its spec files
 Domain terminology follows this authority order:
 
 1. the user's own words in the conversation;
-2. the repo's `CONTEXT.md` / `CONTEXT-MAP.md` ubiquitous language;
+2. the repo's `GLOSSARY.md` / `GLOSSARY-MAP.md` ubiquitous language (legacy:
+   `CONTEXT.md` / `CONTEXT-MAP.md`);
 3. the precedent ticket (Step 2) — how the team wrote about this area before;
 4. code identifiers — weakest: teams often speak a different dialect than the
    schema (`monetization_products` in code was "incent partner" to the team).
