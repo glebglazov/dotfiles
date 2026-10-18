@@ -5,15 +5,22 @@ ghostty:
 
 # The same Projects as pop's config.
 projects:
-  - path: ~/.local/share/chezmoi
-  - path: ~/Dev/*/*
-  - path: ~/Dev/mixed/obsidian_vaults/*
-    display_depth: 2
+  paths:
+    - path: ~/.local/share/chezmoi
+    - path: ~/Dev/*/*
+    - path: ~/Dev/mixed/obsidian_vaults/*
+      display_depth: 2
+  aliases:
+    - ~/Dev/mixed/obsidian_vaults/glebglazov: My Obsidian
 
 sidebar:
-  panes: true
+  # Only Window rows, in Topics and Sessions mode.
+  panes: false
   agents:
-    topics: false
+    topics: true
+  # The Agents section lists the Agents of the Active Topic.
+  agents_scope:
+    topics: window
 
   formats:
     window:
@@ -21,7 +28,42 @@ sidebar:
       title: '#{window_index}:#{window_name}'
       summary: ''
 
+# Hints at rest only, none while a modifier is held.
+hints:
+  hold_delay: false
+
 keybindings:
   # cmd+s and cmd+b stay with Ghostty, which sends cmd+s to tmux (C-b s).
   toggle_sidebar: cmd+shift+s
   toggle_browser: cmd+shift+b
+  toggle_terminal: cmd+shift+j
+  toggle_maximize_browser: ctrl+minus
+  select_window_1: []
+  select_window_2: []
+  select_window_3: []
+  select_window_4: []
+  select_window_5: []
+  select_window_6: []
+  select_window_7: []
+  select_window_8: []
+  select_window_9: []
+  # These take ⌘[ and ⌘] from Browser back and forward. They step through
+  # every Window of the Active Topic, across its Sessions.
+  select_prev_topic_window: cmd+left_bracket
+  select_next_topic_window: cmd+right_bracket
+  # These take ⌘⇧[ and ⌘⇧] from Browser Tab cycling, which keeps ⌃Tab.
+  select_prev_topic: cmd+shift+left_bracket
+  select_next_topic: cmd+shift+right_bracket
+  # This takes the key from tmux's new session (cmd+shift+n) binding, but
+  # only inside Muxify.
+  new_topic: cmd+shift+n
+
+# Go to… takes the key from Ghostty's pop project binding (cmd+p), but only
+# inside Muxify.
+command_palettes:
+  - name: Commands
+    keybinding: cmd+shift+p
+    sources: [commands]
+  - name: Go to…
+    keybinding: cmd+p
+    sources: [topics, sessions]
