@@ -38,6 +38,9 @@ keybindings:
   toggle_browser: cmd+shift+b
   toggle_terminal: cmd+shift+j
   toggle_maximize_browser: ctrl+minus
+  # alt+0 goes to the Browser, after Tabs on alt+1..9. It takes the key from
+  # focus_terminal's defaults.
+  focus_browser: alt+0
   select_window_1: []
   select_window_2: []
   select_window_3: []
