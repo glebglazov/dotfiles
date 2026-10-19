@@ -41,3 +41,21 @@ export QUICKOPEN_FOLDER_0=~/.local/share/chezmoi
 export MISE_GITHUB_TOKEN=""
 
 export PATH="$PATH:$HOME/.local/bin:$HOME/.local/share/git-pile/bin:$HOME/private/scripts"
+{{- if eq .chezmoi.os "darwin" }}
+
+# A tmux server that an older Muxify build started keeps that app's
+# Contents/MacOS in PATH and GHOSTTY_BIN_DIR. APFS ignores case, so `muxify`
+# there runs the GUI binary `Muxify`: a second app that never exits. Swap each
+# such entry for the bundle's CLI folder, Contents/Resources/bin.
+() {
+  local macos contents
+  for macos in ${(M)path:#*/Muxify*.app/Contents/MacOS}; do
+    contents=${macos%/MacOS}
+    path=(${path:#${(b)macos}})
+    [[ -d $contents/Resources/bin ]] && path=($contents/Resources/bin ${path:#${(b)contents}/Resources/bin})
+  done
+  if [[ $GHOSTTY_BIN_DIR == */Muxify*.app/Contents/MacOS ]]; then
+    export GHOSTTY_BIN_DIR=${GHOSTTY_BIN_DIR%/MacOS}/Resources/bin
+  fi
+}
+{{- end }}
