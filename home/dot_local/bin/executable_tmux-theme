@@ -8,13 +8,21 @@ set -euo pipefail
 if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi dark; then
   border=colour238
   active='fg=colour31,bg=default'
+  background='#1d2021' # Ghostty theme "Gruvbox Dark Hard"
 else
   border=colour243
   active='fg=colour208,bg=default,bold'
+  background='#fbf1c7' # Ghostty theme "Gruvbox Light"
 fi
 
 tmux set -g pane-border-style "fg=${border},bg=default"
 tmux set -g pane-active-border-style "${active}"
+
+# Claude Code and Codex pick light or dark colors from the reply to an OSC 11
+# background query. With window-style set, tmux answers it itself; without it,
+# the answer depends on the attached clients, and a Pane no client shows gets
+# none. Keep these colors in step with the Ghostty theme in ghostty/shared.
+tmux set -g window-style "bg=${background}"
 
 # Ghostty's light/dark theme switch can leave the cursor color from the
 # previous theme while inside tmux. Reset it through tmux passthrough so the
