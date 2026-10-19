@@ -47,7 +47,7 @@ printf '%s' "$input" | jq '
       ]
     | .disableBundledSkills = true
     | .disableWorkflows = true
-    | .disableClaudeAiConnectors = true
+    | del(.disableClaudeAiConnectors)   # TDG Snowflake and DE-Lineage ship only as claude.ai connectors
     | .disableArtifact = true
     # ---- chezmoi-owned rtk Bash hook: ensure present exactly once, leave pop hooks intact ----
     | .hooks.PreToolUse = (
