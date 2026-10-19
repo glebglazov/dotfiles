@@ -35,6 +35,8 @@ defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock show-recents -bool false
 # Don’t automatically rearrange Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
+# Don’t bounce Dock icons when apps ask for attention
+defaults write com.apple.dock no-bouncing -bool true
 
 # Remove some animations and decrease delays
 defaults write com.apple.finder DisableAllAnimations -bool true
