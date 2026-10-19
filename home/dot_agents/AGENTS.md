@@ -58,13 +58,24 @@ ones.
   work one file would do in a single run. Write the script to a temp file, run it
   once, print every assertion.
 
-## Lavish
+## Opening pages in a browser
 
-When you use the `lavish` skill, run every command without
-`LAVISH_AXI_HOST=127.0.0.1`, even though the skill sets it. Then the review
-server also binds the Tailscale address when Tailscale runs, and I can open the
-session from my other machines. Give me the Tailscale URL as well as the local
-one.
+Before you show me a web page, a preview, an HTML file, or a Lavish review, run
+`muxify browser available`. Then open the page with the opener its answer picks:
+
+- `local` or `remote`: `muxify browser open <url>`.
+- `no` (exit status 1, a normal result), or no `muxify` command: the default
+  browser (`open` on macOS, `xdg-open` on Linux).
+
+Open the Tailscale URL when the page has one. It works on the Mac and on my
+other machines, and for `remote` my Mac can reach only that address.
+`localhost` is the Mac.
+
+If the tool that serves the page opens a browser by itself, start it with its
+no-open option, so the page opens only once. For Lavish, that is `--no-open`.
+Run Lavish commands without `LAVISH_AXI_HOST=127.0.0.1`, even though the skill
+sets it. Then the server also binds the Tailscale address. Give me the Tailscale
+URL as well as the local one.
 
 ## Implementation
 
