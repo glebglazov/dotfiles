@@ -4,7 +4,7 @@ ghostty:
   config_file: ~/.config/ghostty/shared
 
 # The same Projects as pop's config.
-projects:
+sessions:
   paths:
     - path: ~/.local/share/chezmoi
     - path: ~/Dev/*/*
