@@ -165,6 +165,13 @@ local actions = {
   send = {
     { mode = 'n', fn = export.send_preview, desc = 'Review: send comments to Pop pane' },
   },
+  -- A live grep over the files of the span being read, at the version the
+  -- review shows them -- not the working tree's, which the editor's own grep
+  -- already reaches. A hit opens through the changeset, so the walk goes on
+  -- from it.
+  grep = {
+    { mode = 'n', fn = hunks.grep, desc = 'Review: live grep the changed files of this span' },
+  },
   -- The walk through the current commit's hunks. Both directions wrap, so the
   -- reader meets the commit's first hunk again instead of stopping or sliding
   -- into another commit.

@@ -449,6 +449,55 @@ function M.last_hunk()
   return jump(vim.fn.getqflist({ size = 0 }).size or 1)
 end
 
+-- Grep through the changeset: every file the targeted range changed, at the
+-- version its entries open -- the Current Commit's content, or the files on disk
+-- for a span ending at the Uncommitted Tip. The file list is read off the
+-- changeset itself, so the grep reads exactly what the walk does. A file the
+-- span deleted is left out: its content is what the span took away, and its
+-- entry opens it at the base, a version no other file of the grep is read at.
+function M.grep()
+  if not state.active then
+    vim.notify('Review: no session — start one first', vim.log.levels.WARN)
+    return false
+  end
+  local root = repo_root()
+  if not root then return false end
+  local rels, seen = {}, {}
+  for _, item in ipairs(vim.fn.getqflist()) do
+    local rel = M.entry_file(item)
+    local info = item.bufnr > 0 and buffers.info(vim.api.nvim_buf_get_name(item.bufnr))
+    if not seen[rel] and not (info and info.status == 'D') then
+      seen[rel] = true
+      table.insert(rels, rel)
+    end
+  end
+  if #rels == 0 then
+    vim.notify('Review: no changed files to grep', vim.log.levels.WARN)
+    return false
+  end
+  local rev = not state.is_uncommitted(state.current) and state.current or nil
+  return require('review.pickers').grep(root, rev, rels, function(hit)
+    M.land_at(hit.rel, hit.lnum, hit.col)
+  end)
+end
+
+-- A line of a changed file, reached through the changeset: the entry opened is
+-- the file's last hunk at or above the line -- its first hunk when the line sits
+-- above them all -- so the buffer is the one the walk opens, and the next `]e`
+-- goes on from where the reader landed rather than from where they left.
+function M.land_at(rel, lnum, col)
+  local idx
+  for i, item in ipairs(vim.fn.getqflist()) do
+    if M.entry_file(item) == rel and (not idx or item.lnum <= lnum) then idx = i end
+  end
+  if not idx then return false end
+  vim.cmd(('%dcc'):format(idx))
+  pcall(vim.api.nvim_win_set_cursor, 0,
+    { math.min(lnum, vim.api.nvim_buf_line_count(0)), math.max(0, col - 1) })
+  landing.land()
+  return true
+end
+
 -- Landing on a hunk with the auto-form toggle on opens the comment form there,
 -- so a reading pass and a commenting pass are one pass. Scheduled because the
 -- quickfix jump has to finish moving the cursor before the form reads it.

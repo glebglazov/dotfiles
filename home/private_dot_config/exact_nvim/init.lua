@@ -1413,6 +1413,7 @@ require('review').setup {
     finish            = '<LEADER>rQ',
     preview           = '<LEADER>rep',
     pick_comment      = '<LEADER>rlc',
+    grep              = '<LEADER>r/',
     send              = '<LEADER>reE',
     -- What the review's keys do. Two ways in: `g?` where the review is being
     -- read -- not `?`, which the changeset window needs for its own backward

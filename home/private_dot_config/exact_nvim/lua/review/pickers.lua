@@ -1,6 +1,7 @@
--- The pickers that choose where a review goes. Two of them, listing different
--- things: the switcher offers the range of the session already running, and the
--- comment picker offers everything the reader has said so far. Nothing here
+-- The pickers that choose where a review goes. Three of them, listing different
+-- things: the switcher offers the range of the session already running, the
+-- comment picker offers everything the reader has said so far, and the grep
+-- offers the lines of the changeset that match what is typed. Nothing here
 -- starts a session -- a review covers the whole branch, so there is nothing to
 -- choose.
 local M = {}
@@ -743,6 +744,122 @@ function M.comment(on_choose, opts)
       })
     end,
   }, function(row) on_choose(row.comment) end)
+  return true
+end
+
+-- Live grep over `rels` as they stand at `rev`, or on disk when `rev` is nil.
+-- `git grep` rather than telescope's own live_grep: ripgrep reads the working
+-- tree only, and a commit's content is no file on disk. Each keystroke runs the
+-- grep again, so the rows are git's own matches in git's own order, and the
+-- prompt is a Perl regex, smart-case the way ripgrep's is. `on_choose` gets
+-- `{ rel, lnum, col }`.
+--
+-- Not built on `pick`: that lists a table fixed when it opens, and these rows
+-- are the answer to the prompt. Without telescope there is no live prompt to
+-- answer, so there is no fallback either.
+function M.grep(root, rev, rels, on_choose)
+  local ok, pickers = pcall(require, 'telescope.pickers')
+  if not ok then
+    vim.notify('Review: grep needs telescope', vim.log.levels.WARN)
+    return false
+  end
+  local finders = require('telescope.finders')
+  local sorters = require('telescope.sorters')
+  local actions = require('telescope.actions')
+  local action_state = require('telescope.actions.state')
+  local entry_display = require('telescope.pickers.entry_display')
+  local previewers = require('telescope.previewers')
+  local preview_utils = require('telescope.previewers.utils')
+
+  local rel_width = 0
+  for _, rel in ipairs(rels) do rel_width = math.max(rel_width, #rel) end
+  local displayer = entry_display.create({
+    separator = '  ',
+    items = { { width = math.min(rel_width, 50) }, { width = 9 }, { remaining = true } },
+  })
+
+  local function command(prompt)
+    if not prompt or prompt == '' then return nil end
+    -- Literal pathspecs: a changed file is a name, never a pattern for git to
+    -- expand.
+    local cmd = { 'git', '--literal-pathspecs', '-C', root, 'grep',
+      '-n', '--column', '-I', '--no-color', '-P' }
+    if not prompt:find('%u') then table.insert(cmd, '-i') end
+    -- An untracked file is part of a working-tree changeset, and git grep reads
+    -- only what it tracks unless told otherwise.
+    if not rev then table.insert(cmd, '--untracked') end
+    vim.list_extend(cmd, { '-e', prompt })
+    if rev then table.insert(cmd, rev) end
+    table.insert(cmd, '--')
+    return vim.list_extend(cmd, rels)
+  end
+
+  -- `<rev>:<rel>:<lnum>:<col>:<text>`, with the `<rev>:` only when a tree was
+  -- grepped.
+  local function entry_maker(line)
+    if rev then line = line:sub(#rev + 2) end
+    local rel, lnum, col, text = line:match('^(.-):(%d+):(%d+):(.*)$')
+    if not rel then return nil end
+    local hit = { rel = rel, lnum = tonumber(lnum), col = tonumber(col), text = text }
+    return {
+      value = hit,
+      ordinal = rel .. ' ' .. text,
+      display = function()
+        return displayer({
+          { rel, 'TelescopeResultsIdentifier' },
+          { ('%d:%d'):format(hit.lnum, hit.col), 'TelescopeResultsLineNr' },
+          vim.trim(text),
+        })
+      end,
+    }
+  end
+
+  -- The file as the grep read it, so the preview shows the line it matched:
+  -- `git show` for a commit's content, the disk for the working tree's. Kept per
+  -- file for as long as the list is open, because moving down the rows of one
+  -- file would otherwise ask git for the same blob on every step.
+  local contents = {}
+  local function content_of(rel)
+    if not contents[rel] then
+      contents[rel] = rev
+        and vim.fn.systemlist({ 'git', '-C', root, 'show', rev .. ':' .. rel })
+        or vim.fn.readfile(root .. '/' .. rel)
+    end
+    return contents[rel]
+  end
+  local ns = vim.api.nvim_create_namespace('glebglazov-review-grep')
+
+  pickers.new({}, {
+    prompt_title = ('Grep %s'):format(require('review.session').span_label()),
+    finder = finders.new_job(command, entry_maker, nil, root),
+    sorter = sorters.highlighter_only({}),
+    previewer = previewers.new_buffer_previewer({
+      title = 'Changeset',
+      define_preview = function(self, entry)
+        local hit = entry.value
+        local bufnr, winid = self.state.bufnr, self.state.winid
+        vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, content_of(hit.rel))
+        preview_utils.highlighter(bufnr, vim.filetype.match({ filename = hit.rel }))
+        vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+        pcall(vim.api.nvim_buf_set_extmark, bufnr, ns, hit.lnum - 1, 0,
+          { line_hl_group = 'TelescopePreviewLine' })
+        -- Scheduled: telescope puts the buffer in its window after this returns.
+        vim.schedule(function()
+          if not vim.api.nvim_win_is_valid(winid) then return end
+          pcall(vim.api.nvim_win_set_cursor, winid, { hit.lnum, 0 })
+          vim.api.nvim_win_call(winid, function() vim.cmd('normal! zz') end)
+        end)
+      end,
+    }),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local entry = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        if entry then on_choose(entry.value) end
+      end)
+      return true
+    end,
+  }):find()
   return true
 end
 
