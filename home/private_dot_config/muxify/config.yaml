@@ -28,6 +28,19 @@ sidebar:
       title: '#{window_index}:#{window_name}'
       summary: ''
 
+# The default presets, with Evening added. '19:00' is the next 19:00 to come, so
+# after 19:00 it is tomorrow evening.
+topics:
+  snooze_presets:
+    - label: In one hour
+      at: +1h
+    - label: Evening
+      at: '19:00'
+    - label: Tomorrow
+      at: tomorrow
+    - label: Next Monday
+      at: mon
+
 # Hints at rest only, none while a modifier is held.
 hints:
   hold_delay: false
