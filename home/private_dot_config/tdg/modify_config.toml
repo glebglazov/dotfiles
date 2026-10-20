@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# chezmoi modify_ script for ~/.config/tdg/config.toml
+#
+# Why a modify_ script instead of a static file: this file has two owners.
+# tdg writes it itself (`tdg profile switch` sets default_profile, `tdg skills
+# autoupdate` sets [skills.autoupdate]), and the dev profiles hold local
+# source_dir paths. chezmoi owns only the [deploy] table: the folder that
+# `tdg deploy run` files my deploys under when no flag or tdg-deploy.yml names
+# one. Every other line passes through verbatim.
+#
+# chezmoi pipes the current file to stdin; our stdout becomes the new file.
+set -euo pipefail
+
+folder_line='folder = "Gleb'"'"'s files"'
+
+awk -v folder_line="$folder_line" '
+    # Inside [deploy], drop any folder key; the owned line is written at the
+    # table header instead, so a rerun converges on one line.
+    /^[[:space:]]*\[/ { in_deploy = ($0 ~ /^[[:space:]]*\[deploy\][[:space:]]*$/) }
+    in_deploy && /^[[:space:]]*folder[[:space:]]*=/ { next }
+    { print }
+    /^[[:space:]]*\[deploy\][[:space:]]*$/ { print folder_line; seen = 1 }
+    END {
+        if (!seen) {
+            if (NR > 0) print ""
+            print "[deploy]"
+            print folder_line
+        }
+    }
+'
