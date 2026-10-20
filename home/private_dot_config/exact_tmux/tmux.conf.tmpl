@@ -171,7 +171,10 @@ set -g status-right-length 40
 # -- Custom Keybindings --------------------------------------------------------
 
 # Reload configuration
-bind r source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded"
+bind R source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded"
+
+# Rename the current window, starting from its current name
+bind r command-prompt -I "#W" -p "Rename window:" "rename-window -- '%%'"
 
 # Copy mode bindings
 bind -T copy-mode-vi v send -X begin-selection
