@@ -14,6 +14,7 @@ sessions:
     - ~/Dev/mixed/obsidian_vaults/glebglazov: My Obsidian
 
 sidebar:
+  tag_placement: corner
   # Only Window rows, in Topics and Sessions mode.
   panes: false
   agents:
@@ -32,14 +33,19 @@ sidebar:
 # after 19:00 it is tomorrow evening.
 topics:
   snooze_presets:
-    - label: In one hour
-      at: +1h
     - label: Evening
       at: '19:00'
     - label: Tomorrow
       at: tomorrow
+    - label: In one hour
+      at: +1h
     - label: Next Monday
       at: mon
+  tags:
+    personal:
+      color: {light: '#5E8C6A', dark: '#7FA88A'}
+    work:
+      color: {light: '#5B7A99', dark: '#8AA4BF'}
 
 # Hints at rest only, none while a modifier is held.
 hints:
