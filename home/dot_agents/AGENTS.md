@@ -60,8 +60,10 @@ ones.
 
 ## Opening pages in a browser
 
-Before you show me a web page, a preview, an HTML file, or a Lavish review, run
-`muxify browser available`. Then open the page with the opener its answer picks:
+Open every page your reply delivers to me: a PR you opened, an HTML file or
+artifact I asked for, a preview, a deployed site, a Lavish review. A page you only
+cite as a source stays a link. To open one, run `muxify browser available`, then
+use the opener its answer picks:
 
 - `local` or `remote`: `muxify browser open <url>`.
 - `no` (exit status 1, a normal result), or no `muxify` command: the default
@@ -99,6 +101,15 @@ its own branch, say so and let me decide — do not switch or create anything fi
 Do not weigh implementation time. Propose the most correct and most maintainable
 solution available, and let me decide on scope. "Faster to build" is not a
 tiebreaker and should not be offered as one.
+
+### HTML pages
+
+An HTML page you write follows the OS light/dark setting. Put
+`<meta name="color-scheme" content="light dark">` in `<head>`, and give the dark
+values under `@media (prefers-color-scheme: dark)`. With DaisyUI, leave
+`data-theme` off `<html>`: its `themes.css` switches by itself. Use one fixed
+theme only when I ask for one, or when the page shows a product that has only
+one theme.
 
 ### Comments
 
