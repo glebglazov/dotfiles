@@ -1,4 +1,3 @@
 {{ if .work -}}
-{{ template "tds/github-workflow-env-vars.tmpl" . }}
 export BUNDLE_RUBYGEMS__PKG__GITHUB__COM="{{ printf "%v%v" .githubWorkTokenBase "username_and_token" }}"
 {{ end -}}

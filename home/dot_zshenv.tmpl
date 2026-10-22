@@ -27,6 +27,10 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 export GITHUB_USER=glebglazov
+{{- if or .work .personal }}
+export GH_TOKEN="{{ .githubWorkTokenBase }}token"
+export GITHUB_TOKEN="{{ .githubWorkTokenBase }}token"
+{{- end }}
 
 export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/config
 
