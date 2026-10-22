@@ -4,22 +4,16 @@ Always talk in ASD-STE100 Simplified Technical English. Always read GLOSSARY.md 
 
 ## RTK
 
-`rtk` is a token-optimizing CLI proxy — it filters verbose command output down to
-what matters.
+`rtk` filters verbose command output. Claude Code, Cursor, pi and OpenCode
+rewrite shell commands through it automatically, so expect rtk-shaped output.
+In Codex and Amp, run `rtk <cmd>` yourself when output is likely to be large.
 
-Claude Code, Cursor, pi and OpenCode each have rtk wired in, so shell commands are
-rewritten through it automatically (`git status` → `rtk git status`); expect
-rtk-shaped output from plain commands. Codex and Amp have no rtk integration —
-there, invoke `rtk <cmd>` yourself when output is likely to be large.
-
-- Meta commands are never rewritten and must be invoked directly:
-  `rtk gain`, `rtk gain --history`, `rtk discover`.
 - `rtk proxy <cmd>` runs a command unfiltered. Use it when rtk's filtering is
   hiding output you need.
-- `rtk find` rejects compound predicates and actions (`-not`, `-exec`, …). Don't
-  retry variations — reach for `rg --files` or `rtk proxy find` instead.
-- Do not run `rtk init`. This file and every agent's rtk wiring are managed by
-  chezmoi; `rtk init` rewrites them out from under it.
+- `rtk find` rejects compound predicates and actions (`-not`, `-exec`, …). Use
+  `rg --files` or `rtk proxy find` instead.
+- Do not run `rtk init`. Chezmoi manages this file and every agent's rtk
+  wiring, and `rtk init` rewrites them.
 
 ## Secrets
 
@@ -48,8 +42,6 @@ ones.
   If two searches for the same symbol come back empty, the search shape is wrong —
   switch to LSP go-to-definition or read the file that owns the type, don't try a
   third pattern.
-- **Never re-run for output already in context.** Re-reading a file you just read
-  or re-running a build whose output you have pays twice for one fact.
 - **Images are permanent context.** A screenshot read at turn 60 is re-billed for
   every turn after it. Read one when visual judgment is genuinely the question;
   don't hold variant pairs side by side.
@@ -75,9 +67,7 @@ other machines, and for `remote` my Mac can reach only that address.
 
 If the tool that serves the page opens a browser by itself, start it with its
 no-open option, so the page opens only once. For Lavish, that is `--no-open`.
-Run Lavish commands without `LAVISH_AXI_HOST=127.0.0.1`, even though the skill
-sets it. Then the server also binds the Tailscale address. Give me the Tailscale
-URL as well as the local one.
+Before you run `lavish-axi`, read `~/.agents/docs/lavish.md`.
 
 ## Implementation
 
