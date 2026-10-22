@@ -47,6 +47,10 @@ topics:
     work:
       color: {light: '#5B7A99', dark: '#8AA4BF'}
 
+# A visit to a Window or Topic does not clear Unread; Mark Read does.
+notifications:
+  manual_read: true
+
 # Hints at rest only, none while a modifier is held.
 hints:
   hold_delay: false
