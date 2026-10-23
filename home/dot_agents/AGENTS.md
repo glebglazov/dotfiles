@@ -2,6 +2,22 @@
 
 Always talk in ASD-STE100 Simplified Technical English. Always read GLOSSARY.md or GLOSSARY-MAP.md files (or the legacy CONTEXT.md or CONTEXT-MAP.md), and use their ubiquitous language. Run all prose you write (replies, commit messages, PR bodies, docs) through `pstack:unslop` where you have it.
 
+## My configs
+
+Chezmoi manages my configs from `~/.local/share/chezmoi`: dotfiles, `~/.config`,
+`~/.agents`, agent settings, scripts in `~/.local/bin`, and the `.envrc` files
+of my projects. The copy in `~` is a render. When I ask you to change a config,
+change its source:
+
+1. `chezmoi source-path <target>` finds the source. Exit status 1 means the
+   file is not managed: `chezmoi add <target>` first, when it should be.
+2. Edit the source. A `.tmpl` source renders per machine, so check it with
+   `chezmoi execute-template < <source>`.
+3. `chezmoi apply <target>` writes the change to `~`.
+
+The repository's own `CLAUDE.md` has its naming rules and layout. Read it
+before you add a file.
+
 ## RTK
 
 `rtk` filters verbose command output. Claude Code, Cursor, pi and OpenCode
