@@ -13,6 +13,16 @@ sessions:
   aliases:
     - ~/Dev/mixed/obsidian_vaults/glebglazov: My Obsidian
 
+# No Session name or Window selector in the header, for now. tmux's status
+# line shows them.
+ui:
+  status_line_header: false
+  # A short line on the top edge of the Terminal or the Browser, whichever
+  # has Focus.
+  focus_marker: true
+  # Stronger than the 0.45 default, so the marker is easy to see.
+  focus_marker_opacity: {light: 0.85, dark: 0.75}
+
 sidebar:
   tag_placement: corner
   # Only Window rows, in Topics and Sessions mode.
