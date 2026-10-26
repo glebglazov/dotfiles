@@ -53,6 +53,8 @@ printf '%s' "$input" | jq '
     | .disableWorkflows = true
     | del(.disableClaudeAiConnectors)   # TDG Snowflake and DE-Lineage ship only as claude.ai connectors
     | .disableArtifact = true
+    # ---- chezmoi-owned mods: hooks modules under ~/.claude/mods, loaded in every session ----
+    | .env.CLAUDE_CODE_PLUGIN_DIRS = "~/.claude/mods/mermaid-images"
     # ---- chezmoi-owned rtk Bash hook: ensure present exactly once, leave pop hooks intact ----
     | .hooks.PreToolUse = (
         (.hooks.PreToolUse // []) as $pre

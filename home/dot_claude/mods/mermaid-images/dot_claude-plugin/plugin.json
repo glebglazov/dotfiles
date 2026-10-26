@@ -1,0 +1,6 @@
+{
+  "name": "mermaid-images",
+  "version": "0.1.0",
+  "description": "Draws ```mermaid blocks in Claude's replies as pictures in the terminal",
+  "types": "./types/index.d.ts"
+}
