@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+for codex_dir in "${path[@]}"; do
+    codex_bin="${codex_dir:-.}/codex"
+    if [[ -x "$codex_bin" && ! -d "$codex_bin" && ! "$codex_bin" -ef "$0" ]]; then
+        exec "$codex_bin" --no-daemon "$@"
+    fi
+done
+
+print -u2 'codex: no Codex executable found in PATH'
+exit 127

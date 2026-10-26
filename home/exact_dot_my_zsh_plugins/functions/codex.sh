@@ -3,5 +3,5 @@ function codex {
         pop-status clear codex
     fi
 
-    command codex "$@"
+    "$HOME/.local/bin/codex" "$@"
 }
