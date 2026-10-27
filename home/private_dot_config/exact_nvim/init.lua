@@ -143,6 +143,8 @@ vim.opt.updatetime = 250
 -- Follow macOS light/dark appearance.
 -- AppleInterfaceStyle is "Dark" in dark mode and absent (error) in light mode.
 -- Setting background fires OptionSet, which re-applies gruvbox (see below).
+-- From FocusGained that needs `nested`: without it OptionSet stays silent, and
+-- nvim reloads gruvbox with the old contrast.
 local function sync_macos_background()
   local out = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' })
   local want = (vim.v.shell_error == 0 and out:match('Dark')) and 'dark' or 'light'
@@ -152,7 +154,7 @@ local function sync_macos_background()
 end
 
 sync_macos_background()
-vim.api.nvim_create_autocmd('FocusGained', { callback = sync_macos_background })
+vim.api.nvim_create_autocmd('FocusGained', { nested = true, callback = sync_macos_background })
 
 -- Comment these two for now: I remember those causing some issues, but let's try again
 -- vim.o.swapfile = false
