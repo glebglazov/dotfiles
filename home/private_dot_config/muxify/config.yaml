@@ -16,7 +16,8 @@ sessions:
 # No Session name or Window selector in the header, for now. tmux's status
 # line shows them.
 ui:
-  status_line_header: false
+  status_line:
+    enabled: false
   # A short line on the top edge of the Terminal or the Browser, whichever
   # has Focus.
   focus_marker: true
@@ -42,6 +43,7 @@ sidebar:
 # The default presets, with Evening added. '19:00' is the next 19:00 to come, so
 # after 19:00 it is tomorrow evening.
 topics:
+  in_play: 3
   snooze_presets:
     - label: Evening
       at: '19:00'
@@ -93,6 +95,9 @@ keybindings:
   # This takes the key from tmux's new session (cmd+shift+n) binding, but
   # only inside Muxify.
   new_topic: cmd+shift+n
+  # No key for Find in Pane, so cmd+f in the Terminal goes on to Ghostty.
+  # Find in Page keeps cmd+f in the Browser.
+  find_in_pane: []
 
 # Go to… takes the key from Ghostty's pop project binding (cmd+p), but only
 # inside Muxify.
@@ -103,3 +108,13 @@ command_palettes:
   - name: Go to…
     keybinding: cmd+p
     sources: [topics, sessions]
+    order: ranked
+    tiebreak: [open, visit, length]
+    # No Worktrees, and no Sessions in Topics: you reach those through their
+    # Topic. The kinds of the other Sources stay, for when their buttons are on.
+    show: [topic, snoozed, settled, session, session-path, window, agent, command, tag]
+
+# Add a Session lists folders only: no running Sessions, no Worktrees.
+pick_lists:
+  add_session:
+    show: [session-path]
