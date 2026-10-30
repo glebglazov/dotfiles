@@ -21,7 +21,7 @@ const renders = atom({ plugin: 'mermaid-images', key: 'renders' } as const, {}, 
 const inFlight = new Set<string>()
 
 type Picture =
-  | { kind: 'ready'; base64: string; columns: number; rows: number }
+  | { kind: 'ready'; base64: string; columns: number; rows: number; path: string }
   | { kind: 'pending' }
   | { kind: 'failed'; error: string }
 
@@ -32,7 +32,7 @@ export const register: Register = on => {
     const parts = split(e.props.text)
     if (!parts.some(part => part.kind === 'diagram')) return next(e)
 
-    const { Box, Image, Markdown, Text } = $.ui.resolve(e)
+    const { Box, Image, Link, Markdown, Text } = $.ui.resolve(e)
     const known = await read($, renders)
     const dir = await cacheDir($)
     const maxColumns = Math.max(10, (e.viewport?.columns ?? 80) - 4)
@@ -60,7 +60,10 @@ export const register: Register = on => {
       if (part.kind === 'prose') return <Markdown text={part.text} />
       if (picture?.kind === 'ready') {
         return (
-          <Image source={{ png: picture.base64 }} columns={picture.columns} rows={picture.rows} alt={fenced(part.source)} />
+          <Box flexDirection="column">
+            <Image source={{ png: picture.base64 }} columns={picture.columns} rows={picture.rows} alt={fenced(part.source)} />
+            <Text dimColor><Link href={`file://${picture.path}`} label={picture.path} /></Text>
+          </Box>
         )
       }
 
@@ -90,7 +93,7 @@ async function picture(
   if (await $.fs.exists(png)) {
     const { base64 } = await $.fs.read(png, { as: 'bytes' })
 
-    return { kind: 'ready', base64, ...fit(pngSize(base64), maxColumns) }
+    return { kind: 'ready', base64, path: png, ...fit(pngSize(base64), maxColumns) }
   }
 
   const render = known[hash]

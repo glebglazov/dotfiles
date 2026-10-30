@@ -55,6 +55,8 @@ test('a rendered diagram is drawn as a picture, the engine drawing the opening p
   expect(image?.props.columns).toBe(76)
   expect(image?.props.rows).toBe(18)
   expect(String(image?.props.alt)).toContain('A --> B')
+  const link = await ui.find({ type: 'Link' })
+  expect(link?.props.href).toMatch(/^file:\/\/\/home\/me\/\.cache\/claude-mermaid-images\/[0-9a-f]{64}\.png$/)
   expect(await ui.find({ type: 'Text', text: 'engine: Here is the flow:' })).toBeDefined()
   expect(await ui.find({ type: 'Markdown', text: /That is all/ })).toBeDefined()
   await ui.unmount()
