@@ -38,15 +38,15 @@ tmux list-windows -a -F '#{window_id} #{session_id}' |
   tmux source-file -
 
 # Ghostty's light/dark theme switch can leave the cursor color from the
-# previous theme while inside tmux. Reset it through tmux passthrough so the
-# terminal re-applies its active cursor defaults.
+# previous theme while inside tmux. The theme hooks name the client that
+# switched; reset its cursor on its own terminal, so the terminal re-applies
+# its theme's cursor. Never through a pane: a write there lands in the middle
+# of whatever the pane is printing, and splits an image Claude Code is sending
+# into raw base64 on screen.
 target_client=${1:-}
 if [[ -n "$target_client" ]]; then
-  pane_tty=$(tmux display-message -p -c "$target_client" '#{pane_tty}' 2>/dev/null || true)
-else
-  pane_tty=$(tmux display-message -p '#{pane_tty}' 2>/dev/null || true)
-fi
-
-if [[ -n "$pane_tty" && -w "$pane_tty" ]]; then
-  printf '\033Ptmux;\033\033]112\007\033\\' >"$pane_tty"
+  client_tty=$(tmux display-message -p -c "$target_client" '#{client_tty}' 2>/dev/null || true)
+  if [[ -n "$client_tty" && -w "$client_tty" ]]; then
+    printf '\033]112\007' >"$client_tty"
+  fi
 fi

@@ -148,7 +148,7 @@ set -g status-style bg=default,fg=colour245
 run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"
 set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
-set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
+set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"'
 # tmux-theme also gives window-style only to windows no client can reach, so
 # it runs again whenever that set changes. A fixed index keeps pop's own hooks
 # on these names, and a reload overwrites rather than stacks.
