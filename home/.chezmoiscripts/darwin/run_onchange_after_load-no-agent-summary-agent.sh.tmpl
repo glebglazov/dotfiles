@@ -1,0 +1,16 @@
+{{ if (eq .chezmoi.os "darwin") -}}
+#!/bin/bash
+set -euo pipefail
+
+# plist hash: {{ include "private_Library/LaunchAgents/com.glebglazov.no-agent-summary.plist" | sha256sum }}
+
+PLIST="$HOME/Library/LaunchAgents/com.glebglazov.no-agent-summary.plist"
+DOMAIN="gui/$(id -u)"
+
+# bootout removes the old definition; launchd keeps serving the loaded copy
+# until then, so a changed preload path would otherwise never take effect.
+launchctl bootout "$DOMAIN/com.glebglazov.no-agent-summary" 2>/dev/null || true
+launchctl bootstrap "$DOMAIN" "$PLIST"
+
+echo "no-agent-summary agent loaded: restart terminal apps and Claude to pick up BUN_OPTIONS"
+{{ end -}}

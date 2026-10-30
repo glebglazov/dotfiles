@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.glebglazov.no-agent-summary</string>
+
+    <!-- Apps started after login inherit this, so Claude Code in the desktop
+         app and in every terminal loads the preload that stops agent_summary. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/launchctl</string>
+        <string>setenv</string>
+        <string>BUN_OPTIONS</string>
+        <string>--preload=/Users/glebglazov/.local/share/no-agent-summary.js</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>

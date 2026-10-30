@@ -65,6 +65,11 @@
 	stripComponents = 1
 	exact = true
 
+[".local/share/no-agent-summary.js"]
+	type = "file"
+	url = "https://gist.githubusercontent.com/flamerix-ai/c3905705cc4205e5de3011fa2e74efce/raw/4f1ad563fbe4fb830af5dd67fbde4c1860f9caa6/no-agent-summary.js"
+	checksum.sha256 = "f95df896a998653ee86e7320ae9a29a547add4addd50cf631491dffaa6040b40"
+
 [".agents/skills/improve-codebase-architecture"]
 	type = "archive"
 	url = "{{ $mattpocock_skills_url }}"
