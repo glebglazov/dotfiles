@@ -18,11 +18,24 @@ fi
 tmux set -g pane-border-style "fg=${border},bg=default"
 tmux set -g pane-active-border-style "${active}"
 
-# Claude Code and Codex pick light or dark colors from the reply to an OSC 11
-# background query. With window-style set, tmux answers it itself; without it,
-# the answer depends on the attached clients, and a Pane no client shows gets
-# none. Keep these colors in step with the Ghostty theme in ghostty/shared.
-tmux set -g window-style "bg=${background}"
+# Claude Code, Codex and nvim pick light or dark colors from the reply to an
+# OSC 11 background query. tmux answers it from a window's window-style, else
+# from any client attached to a session that has the window, else not at all.
+# So a window no client can reach gets window-style with the Ghostty
+# background, and every other window has none: tmux then answers with the
+# client's own background and paints nothing, so a terminal with another
+# theme (Blink) keeps it. Keep these colors in step with ghostty/shared.
+reachable=$(tmux list-clients -F '#{?client_control_mode,,#{session_id}}' | tr '\n' ' ')
+tmux list-windows -a -F '#{window_id} #{session_id}' |
+  awk -v reachable="$reachable" -v style="bg=${background}" '
+    BEGIN { n = split(reachable, s, " "); for (i = 1; i <= n; i++) seen[s[i]] = 1 }
+    { if ($2 in seen) shown[$1] = 1; else if (!($1 in shown)) shown[$1] = 0 }
+    END {
+      for (w in shown)
+        if (shown[w]) printf "set -wu -t %s window-style\n", w
+        else printf "set -w -t %s window-style \"%s\"\n", w, style
+    }' |
+  tmux source-file -
 
 # Ghostty's light/dark theme switch can leave the cursor color from the
 # previous theme while inside tmux. Reset it through tmux passthrough so the

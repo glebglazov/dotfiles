@@ -140,21 +140,10 @@ vim.opt.cursorcolumn = false
 -- Decrease update time
 vim.opt.updatetime = 250
 
--- Follow macOS light/dark appearance.
--- AppleInterfaceStyle is "Dark" in dark mode and absent (error) in light mode.
--- Setting background fires OptionSet, which re-applies gruvbox (see below).
--- From FocusGained that needs `nested`: without it OptionSet stays silent, and
--- nvim reloads gruvbox with the old contrast.
-local function sync_macos_background()
-  local out = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' })
-  local want = (vim.v.shell_error == 0 and out:match('Dark')) and 'dark' or 'light'
-  if vim.o.background ~= want then
-    vim.opt.background = want
-  end
-end
-
-sync_macos_background()
-vim.api.nvim_create_autocmd('FocusGained', { nested = true, callback = sync_macos_background })
+-- 'background' is left unset: nvim reads it from the terminal's reply to an
+-- OSC 11 query, at startup and again whenever the terminal reports a theme
+-- change. Inside tmux the reply comes from the attached client, so Ghostty and
+-- Blink each get their own light or dark, not the Mac's.
 
 -- Comment these two for now: I remember those causing some issues, but let's try again
 -- vim.o.swapfile = false
@@ -666,9 +655,12 @@ require('lazy').setup({
 
       -- Dark uses hard contrast (matches Ghostty "Gruvbox Dark Hard");
       -- light uses medium (matches Ghostty "Gruvbox Light").
+      -- Transparent, so a terminal with another theme (Blink) keeps its own
+      -- background under gruvbox's text.
       local function apply()
         gruvbox.setup({
           contrast = vim.o.background == 'dark' and 'hard' or '',
+          transparent_mode = true,
           overrides = {
             DiffAdd = { fg = "#b8bb26", bg = "NONE" },
             DiffDelete = { fg = "#fb4934", bg = "NONE" },
@@ -695,7 +687,7 @@ require('lazy').setup({
       })
 
       apply()
-      -- Re-apply whenever the background flips (set by the macOS-appearance sync).
+      -- Re-apply whenever the background flips (set by the terminal's OSC 11 reply).
       vim.api.nvim_create_autocmd('OptionSet', { pattern = 'background', callback = apply })
     end
   },
@@ -708,7 +700,7 @@ require('lazy').setup({
     init = function()
       vim.g.silicon = {
         -- vim-silicon calls funcref values right before it shells out, so this
-        -- picks up whatever the macOS-appearance sync last set 'background' to.
+        -- picks up whatever the terminal's OSC 11 reply last set 'background' to.
         theme = function()
           return vim.o.background == 'dark' and 'gruvbox-dark' or 'gruvbox-light'
         end,
