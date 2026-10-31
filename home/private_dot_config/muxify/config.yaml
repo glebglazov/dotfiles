@@ -32,11 +32,8 @@ sidebar:
   tag_placement: corner
   # Only Window rows, in Topics and Sessions mode.
   panes: false
-  agents:
-    topics: true
-  # The Agents section lists the Agents of the Active Topic.
-  agents_scope:
-    topics: window
+  # No Agents section, in Topics and Sessions mode.
+  agents: false
 
   formats:
     window:
