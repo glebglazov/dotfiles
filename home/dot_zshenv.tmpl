@@ -44,6 +44,14 @@ export QUICKOPEN_FOLDER_0=~/.local/share/chezmoi
 
 export MISE_GITHUB_TOKEN=""
 
+# Claude Code runs on Bun, and Bun loads this file before Claude Code starts.
+# It stops the agent_summary calls: every ~30 s each background agent's whole
+# context goes to its own model only to refresh a 3-5 word panel status.
+() {
+  local preload="--preload=$HOME/.local/share/no-agent-summary.js"
+  [[ " $BUN_OPTIONS " == *" $preload "* ]] || export BUN_OPTIONS="${BUN_OPTIONS:+$BUN_OPTIONS }$preload"
+}
+
 export PATH="$PATH:$HOME/.local/bin:$HOME/.local/share/git-pile/bin:$HOME/private/scripts"
 {{- if eq .chezmoi.os "darwin" }}
 
