@@ -10,7 +10,7 @@ OP_CACHE_REPO="https://github.com/glebglazov/op-cache"
 
 # A commit, not a branch, so the installed binary matches something reviewable.
 # Bumping this SHA is what makes chezmoi rebuild.
-OP_CACHE_REV="b026923d30a9fac9f082ad5f9af66087ed7c0820"
+OP_CACHE_REV="0b5a8edf72387d96cf785f62f28b8c10e71e1ebd"
 
 {{ if lookPath "cargo" -}}
 echo "Installing op-cache @ ${OP_CACHE_REV} from $OP_CACHE_REPO ..."
