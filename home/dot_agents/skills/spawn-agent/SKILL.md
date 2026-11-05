@@ -11,7 +11,10 @@ argument-hint: "[harness] [directory] [task or handoff path]"
    establish its fresh-session command and initial-prompt options. Report
    unsupported settings instead of guessing flags. Preserve requested model and
    permission settings; otherwise use CLI defaults. Launching alone does not
-   authorize a permissions bypass.
+   authorize a permissions bypass. Set a session name with the CLI's
+   session-name option, such as `--name`: use the name the caller gives, or
+   else a short name for the task. If the CLI has no such option, report that
+   the harness names the session itself.
 2. Put a long task in a unique OS temporary file, or use the supplied handoff
    file. Pass a short prompt with its absolute path. Prefer CLI prompt options;
    otherwise wait for the input prompt and paste through a tmux buffer. Quote

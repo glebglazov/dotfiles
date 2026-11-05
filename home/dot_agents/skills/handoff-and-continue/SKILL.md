@@ -17,7 +17,11 @@ argument-hint: "[target harness] [next task]"
    Include the absolute working directory, branch, uncommitted work, active
    processes, next action, and completion checks. Reference existing artifacts
    instead of copying them.
-3. Choose an absent acknowledgement-file path beside the handoff. From now on,
+3. Write a session name of three to six words that tells the next task, for
+   example "Fix op-cache Touch ID prompt". Do not name the handoff, its file,
+   or the transfer: the recipient's first prompt is about the handoff, so a
+   harness that names a session from that prompt gives a useless name.
+   Choose an absent acknowledgement-file path beside the handoff. From now on,
    only monitor the transfer. Launch the recipient with this prompt, using
    absolute paths:
 
@@ -28,11 +32,12 @@ argument-hint: "[target harness] [next task]"
    > stopped editing. You are the recipient; do not repeat the handoff.
 
    - **T3 route:** call `t3_thread_launch` once, with the prompt as `message`
-     and a short task title. When this checkout is a worktree, pass an
+     and the session name as the title. When this checkout is a worktree, pass an
      `existing_worktree` `workspaceStrategy` with its path and branch; without
      one, the recipient lands in the project root. Set `modelSelection` only
      for a requested harness change.
-   - **tmux route:** invoke **spawn-agent** with the prompt.
+   - **tmux route:** invoke **spawn-agent** with the prompt and the session
+     name.
 4. Within two minutes, read the acknowledgement and check that it matches the
    handoff and next task. Check the recipient for startup errors: on the T3
    route with `t3_thread_read` (`view: "activity"`), on the tmux route in the
