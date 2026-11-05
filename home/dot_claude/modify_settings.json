@@ -55,6 +55,10 @@ printf '%s' "$input" | jq '
     | .disableArtifact = true
     # ---- chezmoi-owned mods: hooks modules under ~/.claude/mods, loaded in every session ----
     | .env.CLAUDE_CODE_PLUGIN_DIRS = "~/.claude/mods/mermaid-images"
+    # Without this, every ~30 s each background agent sends its whole context to
+    # its own model only to refresh a 3-5 word status in the agents panel.
+    # Claude Code reads it from 2.1.318, and only the exact value "1".
+    | .env.CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES = "1"
     # ---- chezmoi-owned rtk Bash hook: ensure present exactly once, leave pop hooks intact ----
     | .hooks.PreToolUse = (
         (.hooks.PreToolUse // []) as $pre
