@@ -1,0 +1,2 @@
+{{- $membr := joinPath .chezmoi.homeDir "private/Dev/personal/membr/packages/server/src/main.ts" -}}
+{{- if stat $membr }}{{ $membr }}{{ end -}}
