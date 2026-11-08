@@ -1,0 +1,8 @@
+{
+  "open": "\"$HOME/.local/bin/membr-pane-status\"",
+  "working": "\"$HOME/.local/bin/membr-pane-status\"",
+  "blocked": "\"$HOME/.local/bin/membr-pane-status\"",
+  "done": "\"$HOME/.local/bin/membr-pane-status\"",
+  "failed": "\"$HOME/.local/bin/membr-pane-status\"",
+  "close": "\"$HOME/.local/bin/membr-pane-status\""
+}

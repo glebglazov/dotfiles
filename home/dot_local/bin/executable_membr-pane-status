@@ -1,0 +1,29 @@
+#!/bin/sh
+# membr hook for every event in ~/.config/membr/hooks.json. It marks the tmux
+# Pane of a terminal chat the way ~/.claude/hooks/muxify-status.sh and pop's
+# hooks mark a Claude Code Pane. Muxify accepts only the Agents claude, codex,
+# opencode and pi, so a membr chat shows as claude. It always exits 0, and
+# membr ignores its output.
+
+[ -n "${TMUX_PANE:-}" ] || exit 0
+pane=$TMUX_PANE
+
+case ${MEMBR_EVENT:-} in
+open)
+	# Name the Agent, but leave the Status alone: no turn has run yet.
+	tmux set -p -t "$pane" @muxify_agent claude >/dev/null 2>&1
+	pop pane set-status clear >/dev/null 2>&1
+	pop pane set-topic --clear >/dev/null 2>&1
+	;;
+close)
+	tmux set -p -u -t "$pane" @muxify_agent \; set -p -u -t "$pane" @muxify_agent_status >/dev/null 2>&1
+	pop pane set-status clear >/dev/null 2>&1
+	;;
+working | blocked | done | failed)
+	tmux set -p -t "$pane" @muxify_agent claude \; set -p -t "$pane" @muxify_agent_status "$MEMBR_EVENT" >/dev/null 2>&1
+	# pop knows only working and unread: anything that waits for you is unread.
+	[ "$MEMBR_EVENT" = working ] && mark=working || mark=unread
+	pop pane set-status "$mark" >/dev/null 2>&1
+	;;
+esac
+exit 0
