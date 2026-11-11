@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# Runs read-only SQL on a Redash data source and prints the rows, so an agent
+# can read a replica through Redash without a console or an MCP server.
+#
+# Usage:
+#   redash-query sources                               id, name, type of each data source
+#   redash-query [--json] <data_source_id> "<SQL>"
+#   redash-query [--json] <data_source_id> -f <file.sql>
+#
+# Output is TSV with a header row, or the raw rows array with --json.
+# REDASH_QUERY_TIMEOUT (seconds, default 300) limits how long a query may run.
+set -euo pipefail
+
+: "${REDASH_URL:=op://Private/Redash/url}"
+: "${REDASH_API_KEY:=op://Private/Redash/password}"
+
+# Callers get a working command with no setup: the defaults above are
+# 1Password references, so the script re-runs itself once under op-cache.
+if [[ $REDASH_URL == op://* || $REDASH_API_KEY == op://* ]]; then
+  if [[ -n ${REDASH_QUERY_RESOLVING:-} ]]; then
+    echo "redash-query: op-cache did not resolve REDASH_URL / REDASH_API_KEY" >&2
+    exit 1
+  fi
+  export REDASH_URL REDASH_API_KEY REDASH_QUERY_RESOLVING=1
+  exec op-cache run -- "$0" "$@"
+fi
+
+usage() {
+  sed -n '5,8p' "$0" | sed 's/^# \{0,1\}//' >&2
+  exit 2
+}
+
+# The key goes in through a file descriptor, not argv, so `ps` never shows it.
+# Anything but a 2xx stops the script: a login redirect is a 303 with no body,
+# which would otherwise read as an empty result.
+api() {
+  local path=$1 output code
+  shift
+  output=$(curl --silent --show-error --max-time 60 --write-out '\n%{http_code}' \
+    --header @<(printf 'Authorization: Key %s\n' "$REDASH_API_KEY") \
+    --header 'Content-Type: application/json' \
+    "$@" "${REDASH_URL%/}/api/$path")
+  code=${output##*$'\n'}
+  output=${output%$'\n'*}
+  if [[ $code != 2* ]]; then
+    echo "redash-query: HTTP $code from /api/$path" >&2
+    [[ $code == 30* ]] && echo "redash-query: redirected to a login page; the API key did not reach Redash" >&2
+    [[ -n $output ]] && head -c 500 <<<"$output" >&2
+    exit 1
+  fi
+  printf '%s\n' "$output"
+}
+
+# A seat belt only: the data source's DB user is what really keeps it read-only.
+assert_read_only() {
+  local first
+  first=$(printf '%s\n' "$1" |
+    sed -e 's/--.*$//' -e 's/#.*$//' |
+    tr '\n' ' ' |
+    sed -E 's#/\*([^*]|\*+[^*/])*\*+/##g; s/^[[:space:](]+//' |
+    awk '{ print tolower($1) }')
+  case $first in
+    select | with | show | explain | describe | desc) ;;
+    *)
+      echo "redash-query: only SELECT, WITH, SHOW, EXPLAIN and DESCRIBE are allowed (got '${first:-empty}')" >&2
+      exit 2
+      ;;
+  esac
+}
+
+print_rows() {
+  if [[ $json == 1 ]]; then
+    jq '.query_result.data.rows'
+  else
+    jq -r '
+      .query_result.data as $d
+      | [$d.columns[].name] as $cols
+      | ($cols | @tsv),
+        ($d.rows[] | [.[$cols[]] | if type == "object" or type == "array" then tojson else . end] | @tsv)'
+  fi
+}
+
+json=0
+if [[ ${1:-} == --json ]]; then
+  json=1
+  shift
+fi
+
+case ${1:-} in
+  sources)
+    api data_sources | jq -r '.[] | [.id, .name, .type] | @tsv'
+    exit 0
+    ;;
+  '' | -h | --help) usage ;;
+esac
+
+data_source_id=$1
+[[ $data_source_id =~ ^[0-9]+$ ]] || usage
+case ${2:-} in
+  -f) sql=$(cat "${3:?redash-query: -f needs a file}") ;;
+  '') usage ;;
+  *) sql=$2 ;;
+esac
+assert_read_only "$sql"
+
+response=$(api query_results --request POST --data "$(
+  jq -n --argjson ds "$data_source_id" --arg q "$sql" '{data_source_id: $ds, query: $q, max_age: 0}'
+)")
+
+# Redash answers at once from a cached result, or with a job to poll.
+if jq -e '.query_result' >/dev/null <<<"$response"; then
+  print_rows <<<"$response"
+  exit 0
+fi
+
+job_id=$(jq -r '.job.id' <<<"$response")
+deadline=$((SECONDS + ${REDASH_QUERY_TIMEOUT:-300}))
+while :; do
+  job=$(api "jobs/$job_id")
+  case $(jq -r '.job.status' <<<"$job") in
+    3) break ;;
+    4 | 5)
+      echo "redash-query: $(jq -r '.job.error // "query failed"' <<<"$job")" >&2
+      exit 1
+      ;;
+  esac
+  if ((SECONDS >= deadline)); then
+    api "jobs/$job_id" --request DELETE >/dev/null || true
+    echo "redash-query: cancelled after ${REDASH_QUERY_TIMEOUT:-300}s" >&2
+    exit 1
+  fi
+  sleep 1
+done
+
+api "query_results/$(jq -r '.job.query_result_id' <<<"$job")" | print_rows
