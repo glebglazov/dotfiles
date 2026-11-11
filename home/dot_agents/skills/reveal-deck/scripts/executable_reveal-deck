@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# The template ships in the skill beside this script. ~/.local/bin/reveal-deck
+# is a symlink to here, so resolve it before looking for ../assets.
+SKILL_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)
+TEMPLATE="$SKILL_DIR/assets/template"
+
+usage() {
+  cat <<'EOF'
+reveal-deck: a reveal.js deck where each slide is its own HTML file.
+
+  reveal-deck new <dir> [title]       Make a deck with one title slide.
+  reveal-deck slide <dir> <name>      Add <name>.html and append it to slides.txt.
+  reveal-deck serve <dir> [port]      Serve the deck on 127.0.0.1 (default port 8765).
+
+The deck folder is flat:
+  index.html   the deck; it reads slides.txt and merges the slide files
+  slides.txt   slide order, one file per line; '#' starts a comment
+  deck.js      reveal.js settings, shared by the deck and every slide
+  theme.css    the shared look
+  <name>.html  one slide: a complete page with one <section>
+
+A slide file opened alone (in a browser or in Lavish) renders as a one-slide
+deck with the same settings and theme. The deck needs HTTP, not file://,
+because index.html fetches the slide files.
+EOF
+}
+
+die() { echo "reveal-deck: $*" >&2; exit 1; }
+
+# A slug is the file name and the CSS class prefix, and a class cannot start
+# with a digit.
+slugify() {
+  local slug
+  slug=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')
+  slug=${slug#-}
+  slug=${slug%-}
+  [[ $slug =~ ^[a-z] ]] || die "slide name must start with a letter: '$1'"
+  printf '%s' "$slug"
+}
+
+html_escape() {
+  local s=$1
+  s=${s//&/"&amp;"}
+  s=${s//</"&lt;"}
+  s=${s//>/"&gt;"}
+  printf '%s' "$s"
+}
+
+# Copies a template file to dest with __TITLE__ and __SLUG__ filled in.
+render() {
+  local src=$1 dest=$2 title slug=$4 content
+  title=$(html_escape "$3")
+  content=$(<"$TEMPLATE/$src")
+  content=${content//__TITLE__/"$title"}
+  content=${content//__SLUG__/"$slug"}
+  printf '%s\n' "$content" >"$dest"
+}
+
+add_slide() {
+  local dir=$1 name=$2 slug
+  [[ -f "$dir/slides.txt" ]] || die "not a deck (no slides.txt): $dir"
+  slug=$(slugify "$name")
+  [[ ! -e "$dir/$slug.html" ]] || die "slide exists: $dir/$slug.html"
+  render slide.html "$dir/$slug.html" "$name" "$slug"
+  echo "$slug.html" >>"$dir/slides.txt"
+  echo "$dir/$slug.html"
+}
+
+cmd_new() {
+  [[ $# -ge 1 ]] || { usage >&2; exit 1; }
+  local dir=$1 title=${2:-$(basename "$1")}
+  [[ -d "$TEMPLATE" ]] || die "template missing: $TEMPLATE"
+  if [[ -e "$dir" ]] && [[ -n "$(ls -A "$dir")" ]]; then
+    die "not empty: $dir"
+  fi
+  mkdir -p "$dir"
+  render index.html "$dir/index.html" "$title" ""
+  cp "$TEMPLATE/deck.js" "$TEMPLATE/theme.css" "$dir/"
+  printf '# Slide order: one file per line.\n' >"$dir/slides.txt"
+
+  local slug
+  slug=$(slugify "$title" 2>/dev/null) || slug=title
+  render slide.html "$dir/$slug.html" "$title" "$slug"
+  echo "$slug.html" >>"$dir/slides.txt"
+  echo "$dir"
+}
+
+cmd_slide() {
+  [[ $# -eq 2 ]] || { usage >&2; exit 1; }
+  add_slide "$1" "$2"
+}
+
+cmd_serve() {
+  [[ $# -ge 1 ]] || { usage >&2; exit 1; }
+  local dir=$1 port=${2:-8765}
+  [[ -f "$dir/index.html" ]] || die "not a deck (no index.html): $dir"
+  echo "http://localhost:$port/"
+  exec python3 -m http.server "$port" --bind 127.0.0.1 --directory "$dir"
+}
+
+case "${1:-}" in
+  new)   shift; cmd_new "$@" ;;
+  slide) shift; cmd_slide "$@" ;;
+  serve) shift; cmd_serve "$@" ;;
+  -h|--help|help|"") usage ;;
+  *) usage >&2; exit 1 ;;
+esac

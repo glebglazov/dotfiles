@@ -1,0 +1,12 @@
+:root { --bg: #fafafa; --fg: #1d1d1f; --muted: #6e6e73; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #16161a; --fg: #ececf1; --muted: #a1a1aa; }
+}
+
+/* reveal.js puts .reveal-viewport on <body> with its own background, so name it here. */
+html, body, .reveal-viewport, .reveal { background: var(--bg); color: var(--fg); }
+.reveal { font-family: system-ui, -apple-system, sans-serif; }
+.reveal .slides { text-align: left; }
+.reveal h1, .reveal h2 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+.reveal p { margin: 0; color: var(--muted); }
+.reveal .controls, .reveal .progress { color: var(--fg); }
