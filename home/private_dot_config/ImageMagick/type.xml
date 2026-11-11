@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Homebrew's ImageMagick has no fontconfig, so it knows no fonts and fails on
+  any SVG with text ("unable to read font `'"). This maps common SVG font
+  families to the macOS system fonts. Helvetica is the fallback for text
+  with no family or an unknown one.
+-->
+<typemap>
+  <type name="Helvetica" fullname="Helvetica" family="Helvetica" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Helvetica.ttc"/>
+  <type name="Arial" fullname="Arial" family="Arial" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Supplemental/Arial.ttf"/>
+  <type name="Arial-Bold" fullname="Arial Bold" family="Arial" style="Normal" stretch="Normal" weight="700" glyphs="/System/Library/Fonts/Supplemental/Arial Bold.ttf"/>
+  <type name="Verdana" fullname="Verdana" family="Verdana" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Supplemental/Verdana.ttf"/>
+  <type name="Georgia" fullname="Georgia" family="Georgia" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Supplemental/Georgia.ttf"/>
+  <type name="Times-New-Roman" fullname="Times New Roman" family="Times New Roman" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Supplemental/Times New Roman.ttf"/>
+  <type name="Courier-New" fullname="Courier New" family="Courier New" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Supplemental/Courier New.ttf"/>
+  <type name="Menlo" fullname="Menlo" family="Menlo" style="Normal" stretch="Normal" weight="400" glyphs="/System/Library/Fonts/Menlo.ttc"/>
+</typemap>

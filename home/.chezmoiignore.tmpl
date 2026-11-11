@@ -26,3 +26,8 @@ private/Dev/mixed/obsidian_vaults/glebglazov-*
 
 # Issue tracker doc — pop's integrate phase owns this dir (symlink into pop's data dir)
 .agents/docs/issue-tracker.md
+
+{{ if ne .chezmoi.os "darwin" -}}
+# The ImageMagick font map points at macOS system fonts
+.config/ImageMagick
+{{ end -}}
