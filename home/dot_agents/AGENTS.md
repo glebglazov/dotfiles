@@ -112,10 +112,21 @@ tiebreaker and should not be offered as one.
 
 An HTML page you write follows the OS light/dark setting. Put
 `<meta name="color-scheme" content="light dark">` in `<head>`, and give the dark
-values under `@media (prefers-color-scheme: dark)`. With DaisyUI, leave
-`data-theme` off `<html>`: its `themes.css` switches by itself. Use one fixed
-theme only when I ask for one, or when the page shows a product that has only
-one theme.
+values under `@media (prefers-color-scheme: dark)`. DaisyUI's `themes.css`
+from the CDN does not follow the OS: without `data-theme` it is always light.
+So with DaisyUI, put this script in `<head>`. It sets `data-theme` from the OS
+and changes it when the OS changes:
+
+```html
+<script>
+  const q = matchMedia('(prefers-color-scheme: dark)');
+  const set = () => document.documentElement.dataset.theme = q.matches ? 'dark' : 'light';
+  set(); q.addEventListener('change', set);
+</script>
+```
+
+Use one fixed theme only when I ask for one, or when the page shows a product
+that has only one theme.
 
 ### Comments
 
