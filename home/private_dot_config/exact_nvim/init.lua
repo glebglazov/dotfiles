@@ -489,7 +489,7 @@ require('lazy').setup({
       {
         '<LEADER>gpl',
         function()
-          vim.system({ 'git', 'pull', '--rebase', '--tags' }, { text = true }, function(pull)
+          vim.system({ 'git', 'pull', '--rebase', '--tags', '--force' }, { text = true }, function(pull)
             vim.schedule(function()
               if pull.code ~= 0 then
                 vim.notify((pull.stderr or '') .. (pull.stdout or ''), vim.log.levels.ERROR)
