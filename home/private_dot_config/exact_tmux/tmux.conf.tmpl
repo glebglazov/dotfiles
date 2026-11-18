@@ -149,11 +149,13 @@ run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"
 set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"'
-# tmux-theme also gives window-style only to windows no client can reach, so
-# it runs again whenever that set changes. A fixed index keeps pop's own hooks
-# on these names, and a reload overwrites rather than stacks.
+# tmux-theme also sets window-style by whether a client shows the window, so
+# it runs again whenever that set changes. A detach can drop a control
+# client's color report, so tmux-theme then tells the panes again. A fixed
+# index keeps pop's own hooks on these names, and a reload overwrites rather
+# than stacks.
 set-hook -g client-attached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g client-detached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
+set-hook -g client-detached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --detached \"#{hook_client}\""'
 set-hook -g client-session-changed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
 set-hook -g session-created[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
 set-hook -g session-closed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'

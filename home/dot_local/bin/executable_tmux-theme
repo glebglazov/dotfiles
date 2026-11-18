@@ -5,6 +5,14 @@
 # orange active border so the focused pane is unmistakable.
 set -euo pipefail
 
+# --detached <client>: the client-detached hook. The report then runs even
+# with no color change, unless the client was this script's own reporter.
+refresh=false
+if [[ ${1:-} == --detached ]]; then
+  [[ ${2:-} == "$(tmux show -gv @tmux-theme-reporter 2>/dev/null)" ]] || refresh=true
+  set -- "${@:3}"
+fi
+
 if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi dark; then
   border=colour238
   active='fg=colour31,bg=default'
@@ -19,52 +27,55 @@ tmux set -g pane-border-style "fg=${border},bg=default"
 tmux set -g pane-active-border-style "${active}"
 
 # Claude Code, Codex and nvim pick light or dark colors from the reply to an
-# OSC 11 background query. tmux answers it from a window's window-style, else
-# from any client attached to a session that has the window, else not at all.
-# So a window no client can reach gets window-style with the Ghostty
-# background, and every other window has none: tmux then answers with the
-# client's own background and paints nothing, so a terminal with another
-# theme (Blink) keeps it. Keep these colors in step with ghostty/shared.
-#
-# A light/dark switch reaches running programs that turned on mode 2031 as
-# `ESC[?997;1n` or `;2n`, but tmux sends it only to the panes of the session
-# whose client switched. A new window-style changes the answer to the next
-# query and sends nothing, so the panes no client can reach are told by the
-# lines marked `report`, as Muxify Mobile does on a phone.
+# OSC 11 background query. tmux answers it from the window-style background,
+# else from the client attached to the window's session. The Ghostty
+# background is the global window-style, so a window no client shows answers
+# from its first moment: a program in a new window asks before the hooks run
+# this script, and with no answer it picks dark. A shown window gets
+# `default`, so tmux answers with the client's own background and paints
+# nothing, and a terminal with another theme (Blink) keeps it. Keep these
+# colors in step with ghostty/shared.
+style="bg=${background}"
+previous=$(tmux show -gv window-style)
+tmux set -g window-style "$style"
 reachable=$(tmux list-clients -F '#{?client_control_mode,,#{session_id}}' | tr '\n' ' ')
-plan=$(tmux list-panes -a -F '#{window_id} #{session_id} #{pane_id} #{window-style}' |
-  awk -v reachable="$reachable" -v style="bg=${background}" '
+plan=$(tmux list-panes -a -F '#{window_id} #{session_id} #{pane_id}' |
+  awk -v reachable="$reachable" '
     BEGIN { n = split(reachable, s, " "); for (i = 1; i <= n; i++) seen[s[i]] = 1 }
     {
       if ($2 in seen) shown[$1] = 1; else if (!($1 in shown)) shown[$1] = 0
-      current[$1] = $4; panes[$1] = panes[$1] " " $3
+      panes[$1] = panes[$1] " " $3
     }
     END {
       for (w in shown)
-        if (shown[w]) printf "set -wu -t %s window-style\n", w
+        if (shown[w]) printf "set -w -t %s window-style default\n", w
         else {
-          printf "set -w -t %s window-style \"%s\"\n", w, style
-          # Only a window that already had the other color: the hooks re-run
-          # this script when the reporting client attaches, and that run must
-          # find nothing to report, or the reports never stop.
-          if (current[w] != "default" && current[w] != style) {
-            m = split(panes[w], p, " ")
-            for (i = 1; i <= m; i++) if (!(p[i] in told)) { told[p[i]] = 1; print "report " p[i] }
-          }
+          printf "set -wu -t %s window-style\n", w
+          m = split(panes[w], p, " ")
+          for (i = 1; i <= m; i++) if (!(p[i] in told)) { told[p[i]] = 1; print "report " p[i] }
         }
     }')
 grep -v '^report ' <<<"$plan" | tmux source-file -
 
-# `refresh-client -r` works only from a control client. tmux sends the 2031
-# notice from the reported color, which is the same as the new window-style,
-# and drops the report when this client detaches.
+# A program that turned on mode 2031 hears of a light/dark switch as
+# `ESC[?997;1n` or `;2n`. tmux sends it to the panes of a client whose theme
+# changed, and not reliably because window-style changed (with any normal
+# client attached, a new window-style sends nothing). So when the color changes,
+# or a control client detaches and tmux drops its report (Muxify Mobile
+# reports the phone's colors), a short-lived control client reports the color
+# to every pane no client shows. tmux sends the notice only to a pane it last
+# told the other color, so a pane that is already right gets nothing.
+# `refresh-client -r` works only from a control client. Its first command
+# names it in @tmux-theme-reporter, so its own detach starts no new round.
 reports=$(sed -n 's/^report //p' <<<"$plan")
-if [[ -n "$reports" ]]; then
+if [[ -n "$reports" ]] && [[ "$previous" != "$style" || $refresh == true ]]; then
   osc11="rgb:${background:1:2}${background:1:2}/${background:3:2}${background:3:2}/${background:5:2}${background:5:2}"
-  while read -r pane; do
-    printf 'refresh-client -r "%s:\\033]11;%s\\033\\\\"\n' "$pane" "$osc11"
-  done <<<"$reports" |
-    tmux -C attach -t "${reports%%$'\n'*}" -f no-output,ignore-size,read-only >/dev/null
+  {
+    echo 'set -gF @tmux-theme-reporter "#{client_name}"'
+    while read -r pane; do
+      printf 'refresh-client -r "%s:\\033]11;%s\\033\\\\"\n' "$pane" "$osc11"
+    done <<<"$reports"
+  } | tmux -C attach -t "${reports%%$'\n'*}" -f no-output,ignore-size,read-only >/dev/null
 fi
 
 # Ghostty's light/dark theme switch can leave the cursor color from the
