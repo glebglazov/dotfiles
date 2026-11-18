@@ -9,10 +9,15 @@
 #
 # Output is TSV with a header row, or the raw rows array with --json.
 # REDASH_QUERY_TIMEOUT (seconds, default 300) limits how long a query may run.
+# The AWS Verified Access Connectivity Client must be connected.
 set -euo pipefail
 
 : "${REDASH_URL:=op://Private/Redash/url}"
 : "${REDASH_API_KEY:=op://Private/Redash/password}"
+# Redash's public host name answers API calls with a Google login. The Verified
+# Access TCP endpoint reaches Redash through the Connectivity Client instead; its
+# host comes from the private env vars.
+: "${REDASH_ENDPOINT:?redash-query: set REDASH_ENDPOINT to the Verified Access TCP endpoint host of Redash}"
 
 # Callers get a working command with no setup: the defaults above are
 # 1Password references, so the script re-runs itself once under op-cache.
@@ -31,15 +36,21 @@ usage() {
 }
 
 # The key goes in through a file descriptor, not argv, so `ps` never shows it.
+# --connect-to sends the request to REDASH_ENDPOINT but keeps REDASH_URL's host
+# name for TLS, which matches the *.tripledotapi.com certificate.
 # Anything but a 2xx stops the script: a login redirect is a 303 with no body,
 # which would otherwise read as an empty result.
 api() {
   local path=$1 output code
   shift
-  output=$(curl --silent --show-error --max-time 60 --write-out '\n%{http_code}' \
+  if ! output=$(curl --silent --show-error --connect-timeout 10 --max-time 60 --write-out '\n%{http_code}' \
+    --connect-to "::$REDASH_ENDPOINT:" \
     --header @<(printf 'Authorization: Key %s\n' "$REDASH_API_KEY") \
     --header 'Content-Type: application/json' \
-    "$@" "${REDASH_URL%/}/api/$path")
+    "$@" "${REDASH_URL%/}/api/$path"); then
+    echo "redash-query: could not reach Redash; is the Connectivity Client connected?" >&2
+    exit 1
+  fi
   code=${output##*$'\n'}
   output=${output%$'\n'*}
   if [[ $code != 2* ]]; then
