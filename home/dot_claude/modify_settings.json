@@ -29,10 +29,14 @@ printf '%s' "$input" | jq '
     | .enabledPlugins = {
         "skill-creator@claude-plugins-official": true,
         "swift-lsp@claude-plugins-official": true,
-        "pstack@pstack-claude": true
+        "pstack@pstack-claude": true,
+        "cook@cook": true
       }
     | .extraKnownMarketplaces["pstack-claude"] = {
         "source": {"source": "github", "repo": "michael-denyer/pstack-claude"}
+      }
+    | .extraKnownMarketplaces["cook"] = {
+        "source": {"source": "github", "repo": "ykaratkou/cook"}
       }
     | .permissions.deny = [
         "EnterPlanMode",
