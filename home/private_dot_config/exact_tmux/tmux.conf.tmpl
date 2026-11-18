@@ -149,18 +149,19 @@ run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"
 set-hook -g client-dark-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set-hook -g client-light-theme 'run-shell -b "$HOME/.local/bin/tmux-theme \"#{hook_client}\"; $HOME/.local/bin/k9s-theme"'
 set-hook -g client-focus-in 'run-shell -b "$HOME/.local/bin/tmux-theme; $HOME/.local/bin/k9s-theme"'
-# tmux-theme also sets window-style by whether a client shows the window, so
-# it runs again whenever that set changes. A detach can drop a control
-# client's color report, so tmux-theme then tells the panes again. A fixed
-# index keeps pop's own hooks on these names, and a reload overwrites rather
-# than stacks.
-set-hook -g client-attached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g client-detached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --detached \"#{hook_client}\""'
-set-hook -g client-session-changed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g session-created[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g session-closed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g after-new-window[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
-set-hook -g window-linked[50] 'run-shell -b "$HOME/.local/bin/tmux-theme"'
+# tmux-theme reports each pane's color by the client that shows it, so it
+# runs again whenever a client comes, goes or changes session, and sets
+# window-style when a session or window comes or goes. --client names the
+# client, so tmux-theme can skip its own reporting client and the phone's.
+# A fixed index keeps pop's own hooks on these names, and a reload overwrites
+# rather than stacks.
+set-hook -g client-attached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --client \"#{hook_client}\""'
+set-hook -g client-detached[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --client \"#{hook_client}\""'
+set-hook -g client-session-changed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --client \"#{hook_client}\""'
+set-hook -g session-created[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --no-report"'
+set-hook -g session-closed[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --no-report"'
+set-hook -g after-new-window[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --no-report"'
+set-hook -g window-linked[50] 'run-shell -b "$HOME/.local/bin/tmux-theme --no-report"'
 set -g message-style fg=colour0,bg=colour245
 set -g mode-style fg=colour0,bg=colour11,bold
 # tmux 3.8 gives popups a grey theme background by default. Popup TUIs such as
