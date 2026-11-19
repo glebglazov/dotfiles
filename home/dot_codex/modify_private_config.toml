@@ -1,14 +1,4 @@
-#!/bin/sh
-# Codex keeps local credentials in this file. Chezmoi owns only the window size.
-exec awk '
-    BEGIN { setting = "model_context_window = 872000" }
-    /^[[:space:]]*\[/ { in_table = 1 }
-    !in_table && /^[[:space:]]*model_context_window[[:space:]]*=/ {
-        if (!written) print setting
-        written = 1
-        next
-    }
-    in_table && !written { print setting; written = 1 }
-    { print }
-    END { if (!written) print setting }
-'
+#!/bin/bash
+set -o pipefail
+# tomato adds a blank line to its output on every apply.
+tomato set model_context_window 872000 | sed '${/^$/d;}'
