@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Usage: check-layout <file.html>...
+# Renders each page in headless Chromium at phone and desktop width and prints
+# every layout problem. Exits 1 when it finds one.
+set -euo pipefail
+
+[ $# -ge 1 ] || { echo "usage: check-layout <file.html>..." >&2; exit 2; }
+
+here=$(cd "$(dirname "$0")" && pwd)
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/explain-check-layout"
+playwright_version=1.65.1
+
+if [ ! -f "$cache/node_modules/playwright/package.json" ] ||
+   [ "$(node -p 'require(process.argv[1]).version' "$cache/node_modules/playwright/package.json")" != "$playwright_version" ]; then
+  mkdir -p "$cache"
+  echo "Installing Playwright $playwright_version into $cache ..." >&2
+  npm install --prefix "$cache" --silent --no-audit --no-fund "playwright@$playwright_version" >&2
+  (cd "$cache" && npx --no-install playwright install chromium >&2)
+fi
+
+NODE_PATH="$cache/node_modules" node "$here/check-layout.cjs" "$@"
