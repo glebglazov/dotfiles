@@ -85,6 +85,18 @@ If the tool that serves the page opens a browser by itself, start it with its
 no-open option, so the page opens only once. For Lavish, that is `--no-open`.
 Before you run `lavish-axi`, read `~/.agents/docs/lavish.md`.
 
+## Project tasks
+
+I keep work I want to do later on a project as Tasks in my Obsidian vault,
+`~/private/Dev/mixed/obsidian_vaults/glebglazov`: one file per Task in
+`Efforts/<Project>/AI/tasks/<slug>.md`. The vault's
+`System/docs/tasks.md` defines the format.
+
+- When I ask you to remember a task for a project, write it there. A project
+  with no Effort yet gets one first: `python3 System/scripts/make_effort.py
+  "<Project>"`, run from the vault root.
+- When I ask what is planned for a project, read its open Tasks there.
+
 ## Implementation
 
 Before you write or change code, run `pop conventions get implementation` and
