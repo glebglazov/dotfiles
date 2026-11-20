@@ -89,6 +89,9 @@ grep -v '^report ' <<<"$plan" | tmux source-file -
 reports=$(sed -n 's/^report //p' <<<"$plan")
 if [[ -n "$reports" && $report == true ]]; then
   now=$(date +%s)
+  # Attach to the first pane's session, not to the pane: a pane target also
+  # selects its window, which pulls every client on that session back to it.
+  session=$(tmux display-message -p -t "${reports%% *}" '#{session_id}')
   tmux show -g | awk -v now="$now" '/^@tmux-theme-reporter-/ && now - $2 > 60 { print "set -gu " $1 }' |
     tmux source-file -
   {
@@ -96,7 +99,7 @@ if [[ -n "$reports" && $report == true ]]; then
     while read -r pane colour; do
       printf 'refresh-client -r "%s:\\033]11;%s\\033\\\\"\n' "$pane" "$(osc11 "$colour")"
     done <<<"$reports"
-  } | tmux -C attach -t "${reports%% *}" -f no-output,ignore-size,read-only >/dev/null
+  } | tmux -C attach -t "$session" -f no-output,ignore-size,read-only >/dev/null
 fi
 
 # Ghostty's light/dark theme switch can leave the cursor color from the
