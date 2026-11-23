@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Checks which page skill a request starts.
+
+Usage: triggers [--runs N] [--jobs N] [--model ID] [index ...]
+
+Sends each request of triggers.json to a headless Claude session, with all of
+the user's skills installed, and records the skills it loads. A run ends when
+it loads explain, propose or debrief, after 8 tool calls, or after 2 minutes.
+A request passes when every run starts its expected skill, or, for a request
+with skill null, none of the three. Results go to
+~/.cache/pages-evals/triggers-<time>.tsv.
+"""
+import argparse
+import concurrent.futures
+import datetime
+import json
+import os
+import pathlib
+import subprocess
+import time
+
+HERE = pathlib.Path(__file__).resolve().parent
+CACHE = pathlib.Path(os.environ.get("XDG_CACHE_HOME", pathlib.Path.home() / ".cache")) / "pages-evals"
+VERBS = {"explain", "propose", "debrief"}
+MAX_TOOLS, TIMEOUT = 8, 120
+
+
+def run(query, model):
+    """Answers the skills one session loaded, in order, and the verb skill it started, or None."""
+    cmd = ["claude", "-p", query, "--output-format", "stream-json", "--verbose",
+           "--no-session-persistence", "--permission-mode", "dontAsk"] + (["--model", model] if model else [])
+    env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+                            cwd=pathlib.Path.home() / ".local/share/chezmoi", env=env)
+    loaded, tools, start = [], 0, time.time()
+    try:
+        for line in proc.stdout:
+            if time.time() - start > TIMEOUT:
+                break
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("type") != "assistant":
+                continue
+            for block in event["message"].get("content", []):
+                if block.get("type") != "tool_use":
+                    continue
+                tools += 1
+                if block["name"] == "Skill":
+                    name = block["input"].get("skill", "").split(":")[-1]
+                    loaded.append(name)
+                    if name in VERBS:
+                        return loaded, name
+            if tools >= MAX_TOOLS:
+                break
+        return loaded, None
+    finally:
+        proc.kill()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--runs", type=int, default=2, help="runs of each request")
+    parser.add_argument("--jobs", type=int, default=6)
+    parser.add_argument("--model", help="model of the sessions; the user's default when not set")
+    parser.add_argument("indexes", nargs="*", type=int, help="0-based indexes in triggers.json; all when none")
+    args = parser.parse_args()
+
+    cases = json.loads((HERE / "triggers.json").read_text())
+    cases = [c for i, c in enumerate(cases) if not args.indexes or i in args.indexes]
+    jobs = [(i, c) for i, c in enumerate(cases) for _ in range(args.runs)]
+    started = {i: [] for i in range(len(cases))}
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        for (i, _), (loaded, verb) in zip(jobs, pool.map(lambda j: run(j[1]["query"], args.model), jobs)):
+            started[i].append((verb, loaded))
+
+    out = CACHE / f"triggers-{datetime.datetime.now():%Y%m%d-%H%M%S}.tsv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    passed = 0
+    with open(out, "w") as tsv:
+        tsv.write("pass\texpected\tstarted\tother skills\tquery\n")
+        for i, case in enumerate(cases):
+            verbs = [v for v, _ in started[i]]
+            ok = all(v == case["skill"] for v in verbs)
+            passed += ok
+            others = sorted({s for _, loaded in started[i] for s in loaded if s not in VERBS})
+            row = ["ok" if ok else "FAIL", str(case["skill"]), ",".join(str(v) for v in verbs),
+                   ",".join(others), case["query"]]
+            tsv.write("\t".join(row) + "\n")
+            print("\t".join(row), flush=True)
+    print(f"{passed}/{len(cases)} requests pass; {out}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Usage: check-layout <file.html>...
 # Renders each page in headless Chromium at phone and desktop width and prints
-# every layout problem. Exits 1 when it finds one.
+# every layout problem. Exits 1 when it finds one, and 2 when a page could not
+# load or render, which is not a layout problem: run it again.
 set -euo pipefail
 
 [ $# -ge 1 ] || { echo "usage: check-layout <file.html>..." >&2; exit 2; }
 
 here=$(cd "$(dirname "$0")" && pwd)
-cache="${XDG_CACHE_HOME:-$HOME/.cache}/explain-check-layout"
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/pages-check-layout"
 playwright_version=1.65.1
 
 if [ ! -f "$cache/node_modules/playwright/package.json" ] ||

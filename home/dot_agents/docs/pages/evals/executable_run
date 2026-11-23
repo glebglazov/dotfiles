@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+"""Runs the evals of the page skills (explain, propose, debrief).
+
+Usage: run [--jobs N] [--budget USD] [case-name ...]
+
+Each case names its skill and runs in a fresh headless Claude session that
+uses that skill, in a git worktree of its repository: at the commit for a
+`change` case, at its parent for a `proposal` case. A case with `asked` names
+a file next to this script, such as the planning page a commit carried out;
+its prompt gets the file's path for `{asked}`. A second session, a reader with only the page, answers the case's
+questions; a third grades those answers against the key. Results go to
+~/.cache/pages-evals/<run>/<case>/, with summary.tsv for the whole run.
+"""
+import argparse
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import os
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+
+HERE = pathlib.Path(__file__).resolve().parent
+CACHE = pathlib.Path(os.environ.get("XDG_CACHE_HOME", pathlib.Path.home() / ".cache")) / "pages-evals"
+LAVISH = pathlib.Path.home() / ".local/share/lavish-axi"
+
+HARNESS = (
+    "Use the {skill} skill. Run every step of the skill except the last one, Deliver: do not open the page. "
+    "End your reply with one line, `PAGE: <absolute path of the HTML file>`."
+)
+PROPOSAL = "Do not change the code: the page plans a change that does not exist yet."
+
+
+def skills_loaded(log):
+    """The names of the skills a session loaded through the Skill tool."""
+    names = set()
+    for line in log.read_text().splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") != "assistant":
+            continue
+        for block in event["message"].get("content", []):
+            if block.get("type") == "tool_use" and block.get("name") == "Skill":
+                names.add(block["input"].get("skill", "").split(":")[-1])
+    return names
+
+
+def claude(prompt, cwd, log, *extra):
+    """Runs one headless session and answers its last result event."""
+    cmd = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose", "--no-session-persistence", *extra]
+    with open(log, "w") as out:
+        subprocess.run(cmd, cwd=cwd, stdout=out, stderr=subprocess.STDOUT, check=False)
+    result, peak = None, 0
+    for line in open(log):
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        usage = event.get("message", {}).get("usage") if event.get("type") == "assistant" else None
+        if usage and not event.get("parent_tool_use_id"):
+            peak = max(peak, usage.get("input_tokens", 0) + usage.get("cache_read_input_tokens", 0)
+                       + usage.get("cache_creation_input_tokens", 0))
+        if event.get("type") == "result":
+            result = event
+    if result is None:
+        raise RuntimeError(f"no result in {log}")
+    # A session that waits for background subagents emits one result per stop; the last one has the final text.
+    return {"text": result.get("result", ""), "cost": result.get("total_cost_usd", 0.0), "peak": peak}
+
+
+def checkout(case, workdir):
+    repo = pathlib.Path(os.path.expanduser(case["repo"]["path"]))
+    if not (repo / ".git").exists():
+        repo = CACHE / "repos" / case["name"]
+        if not repo.exists():
+            subprocess.run(["git", "clone", "-q", case["repo"]["url"], str(repo)], check=True)
+    ref = case["commit"] + ("^" if case["kind"] == "proposal" else "")
+    if subprocess.run(["git", "-C", str(repo), "cat-file", "-e", case["commit"] + "^{commit}"]).returncode:
+        subprocess.run(["git", "-C", str(repo), "fetch", "-q", "origin"], check=True)
+    subprocess.run(["git", "-C", str(repo), "worktree", "add", "-q", "--detach", str(workdir), ref], check=True)
+    return repo
+
+
+def strip_check(html):
+    """Removes the page's check section, so the reader cannot read the answers."""
+    match = re.search(r'<(section|div)\b[^>]*\bid="check"', html)
+    if match:
+        tag, start, depth = match.group(1), match.start(), 0
+        for m in re.finditer(rf"<{tag}\b|</{tag}>", html[start:]):
+            depth += -1 if m.group(0).startswith("</") else 1
+            if depth == 0:
+                return html[:start] + html[start + m.end():]
+    match = re.search(r"<h2[^>]*>\s*Check yourself", html, re.I)
+    if not match:
+        raise RuntimeError("the page has no check section")
+    end = re.search(r"</section>|</main>|</article>|</body>", html[match.end():])
+    return html[:match.start()] + html[match.end() + end.end():]
+
+
+def check_owns_options(html, reader_html):
+    """The check's options, and so its answers, must live in its own markup. When a script elsewhere builds them,
+    the reader's copy still holds them, and the reader score is not to be trusted."""
+    start = len(os.path.commonprefix([html, reader_html]))  # strip_check cuts out one span
+    removed = html[start:start + len(html) - len(reader_html)]
+    return bool(re.search(r"<input\b|<button\b|<details\b", removed))
+
+
+def grade(case, out, answers):
+    """Grades a reader's answers against the case's key, and writes grading.json."""
+    key = "\n".join(f"{i}. {q['question']}\n   Key: {q['answer']}\n   Must: " + "; ".join(q["must"])
+                    for i, q in enumerate(case["questions"], 1))
+    grader = claude(
+        "Grade a reader's answers against an answer key. An answer passes when it states every Must fact, in any "
+        "words, and nothing in it contradicts the Key; facts of the Key that are not Must are optional. A `guessed` "
+        "answer that is right still passes, and evidence says it was a guess. Reply with only a JSON object: {\"expectations\": [{\"text\": <question>, "
+        "\"passed\": <bool>, \"evidence\": <one sentence>}], \"confusions\": [<the reader's confusions, one "
+        f"short line each>]}}.\n\nKEY:\n{key}\n\nREADER'S ANSWERS:\n{answers}",
+        out, out / "grader.jsonl", "--tools", "", "--permission-mode", "dontAsk")
+    grading = json.loads(grader["text"][grader["text"].index("{"):grader["text"].rindex("}") + 1])
+    (out / "grading.json").write_text(json.dumps(grading, indent=2, ensure_ascii=False) + "\n")
+    return grading, grader["cost"]
+
+
+def grade_decisions(case, out, page_html):
+    """For a proposal case: did the page ask, or settle with a reason, each decision the real commit had to make?"""
+    text = re.sub(r"<script.*?</script>|<style.*?</style>", " ", page_html, flags=re.S)
+    text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))
+    expected = "\n".join(f"{i}. {d}" for i, d in enumerate(case["decisions"], 1))
+    grader = claude(
+        "A page plans a change. Below are the decisions the real change had to make, and the page's text. For each "
+        "decision, say if the page asks the user about it, settles it with a stated reason, or misses it. It passes "
+        "when the page asks or settles it. Reply with only a JSON object: {\"expectations\": [{\"text\": <decision>, "
+        "\"passed\": <bool>, \"evidence\": <one sentence, quoting the page>}], \"extra\": [<decisions the page asks "
+        f"that are not in the list, one short line each>]}}.\n\nDECISIONS:\n{expected}\n\nPAGE TEXT:\n{text}",
+        out, out / "decisions-grader.jsonl", "--tools", "", "--permission-mode", "dontAsk")
+    grading = json.loads(grader["text"][grader["text"].index("{"):grader["text"].rindex("}") + 1])
+    (out / "decisions.json").write_text(json.dumps(grading, indent=2, ensure_ascii=False) + "\n")
+    return grading, grader["cost"]
+
+
+def run_case(case, root, budget):
+    out = root / case["name"]
+    out.mkdir(parents=True)
+    # Outside `out`, so the reader, which works in `out/reader`, has no repository near it.
+    workdir = CACHE / "worktrees" / f"{root.name}-{case['name']}"
+    repo = checkout(case, workdir)
+    try:
+        skill = case["skill"]
+        asked = str(HERE / case["asked"]) if "asked" in case else ""
+        prompt = (case["prompt"].replace("{asked}", asked) + (f"\n\n{PROPOSAL}" if case["kind"] == "proposal" else "")
+                  + "\n\n" + HARNESS.format(skill=skill))
+        author = claude(prompt, workdir, out / "author.jsonl",
+                         "--permission-mode", "auto", "--max-budget-usd", str(budget))
+        page = re.findall(r"PAGE:\s*`?(\S+?\.html)", author["text"])
+        if not page:
+            digest = hashlib.sha256(str(workdir).encode()).hexdigest()[:12]
+            page = sorted((LAVISH / digest).glob("*.html"), key=lambda p: p.stat().st_mtime)[-1:]
+        if not page:
+            raise RuntimeError(f"the {skill} session wrote no page")
+        page = pathlib.Path(page[-1])
+        shutil.copytree(page.parent, out / "page")
+        page_copy = out / "page" / page.name
+        (out / "reader").mkdir()
+        html = page_copy.read_text()
+        reader_html = strip_check(html)
+        (out / "reader" / "page.html").write_text(reader_html)
+        notes = [] if check_owns_options(html, reader_html) else ["check answers outside #check"]
+        if skill not in skills_loaded(out / "author.jsonl"):
+            notes.append(f"{skill} skill not loaded")
+
+
+        questions = "\n".join(f"{i}. {q['question']}" for i, q in enumerate(case["questions"], 1))
+        reader = claude(
+            "You are a reader test for a page. Read only `page.html` in this directory: the test is "
+            "whether the page alone teaches the answers. Answer each question below in 1-3 sentences, name the section "
+            "the answer came from, and say `sure`, `guessed` or `the page does not say`. Then list, in at most 5 "
+            f"bullets, what on the page confused you.\n\n{questions}",
+            out / "reader", out / "reader.jsonl", "--tools", "Read", "--permission-mode", "dontAsk")
+        (out / "reader.md").write_text(reader["text"])
+
+        grading, grader_cost = grade(case, out, reader["text"])
+        decisions = ""
+        if case.get("decisions"):
+            found, cost = grade_decisions(case, out, page_copy.read_text())
+            grader_cost += cost
+            decisions = f"{sum(e['passed'] for e in found['expectations'])}/{len(found['expectations'])}"
+        passed = sum(e["passed"] for e in grading["expectations"])
+        return {"case": case["name"], "score": f"{passed}/{len(grading['expectations'])}", "decisions": decisions, "note": "; ".join(notes),
+                "cost": round(author["cost"] + reader["cost"] + grader_cost, 2),
+                "peak_context": author["peak"], "page": str(page_copy)}
+    finally:
+        subprocess.run(["git", "-C", str(repo), "worktree", "remove", "--force", str(workdir)], check=False)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("cases", nargs="*", help="case names from evals.json; all when none")
+    parser.add_argument("--jobs", type=int, default=3)
+    parser.add_argument("--budget", type=float, default=25, help="USD cap for each session that writes a page")
+    parser.add_argument("--regrade", metavar="RUN", help="grade the saved reader answers of an earlier run again, "
+                        "after a change to the keys; runs no page or reader session")
+    args = parser.parse_args()
+
+    cases = json.loads((HERE / "evals.json").read_text())["evals"]
+    unknown = set(args.cases) - {c["name"] for c in cases}
+    if unknown:
+        sys.exit(f"unknown cases: {', '.join(sorted(unknown))}")
+    cases = [c for c in cases if not args.cases or c["name"] in args.cases]
+
+    if args.regrade:
+        root = pathlib.Path(args.regrade).expanduser()
+        for case in cases:
+            if not (root / case["name"] / "reader.md").exists():
+                continue
+            grading, _ = grade(case, root / case["name"], (root / case["name"] / "reader.md").read_text())
+            passed = sum(e["passed"] for e in grading["expectations"])
+            print(f"{case['name']}\t{passed}/{len(grading['expectations'])}")
+            for e in grading["expectations"]:
+                if not e["passed"]:
+                    print(f"  ✗ {e['text']}\n    {e['evidence']}")
+        return
+
+    root = CACHE / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    root.mkdir(parents=True)
+    print(f"results: {root}", flush=True)
+    rows = []
+    with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
+        futures = {pool.submit(run_case, c, root, args.budget): c["name"] for c in cases}
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                row = future.result()
+            except Exception as error:  # one failed case must not hide the results of the others
+                row = {"case": futures[future], "score": "error", "decisions": "", "note": "", "cost": "", "peak_context": "", "page": str(error)}
+            rows.append(row)
+            print("\t".join(str(v) for v in row.values()), flush=True)
+
+    columns = ["case", "score", "decisions", "note", "cost", "peak_context", "page"]
+    with open(root / "summary.tsv", "w") as summary:
+        summary.write("\t".join(columns) + "\n")
+        for row in sorted(rows, key=lambda r: r["case"]):
+            summary.write("\t".join(str(row[c]) for c in columns) + "\n")
+    sys.exit(any(r["score"] == "error" for r in rows))
+
+
+if __name__ == "__main__":
+    main()

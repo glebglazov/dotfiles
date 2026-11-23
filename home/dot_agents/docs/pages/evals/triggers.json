@@ -1,0 +1,31 @@
+[
+  {"skill": "explain", "query": "how does the tmux-sessioniser script in my dotfiles pick which directories show up? walk me through it with a diagram"},
+  {"skill": "explain", "query": "I keep getting lost in how membr's summary batch and epochs interact. Can you make me a page that explains the lifecycle?"},
+  {"skill": "explain", "query": "explain how chezmoi in this repo decides between a .tmpl render and a modify_ script, visually please"},
+  {"skill": "explain", "query": "whats the difference between op-cache run and plain op run? i want it side by side, on a page"},
+  {"skill": "explain", "query": "walk me through what happens from a keypress in Ghostty Work to the tmux pane on the hetzner box"},
+  {"skill": "explain", "query": "Explain the muxify browser open flow: local vs remote vs no. I want something I can read on my phone."},
+
+  {"skill": "propose", "query": "I want check-layout to also test 768px. How would you change it? give me a plan with the decisions I need to make"},
+  {"skill": "propose", "query": "plan how we'd make the muxify Board Sessions pinnable, don't code it yet"},
+  {"skill": "propose", "query": "membr: I want epochs to roll over at 220k instead of 150k. What would need to change and what do I need to decide?"},
+  {"skill": "propose", "query": "We need to move the gg config out of chezmoi private files into a template per machine. propose an approach"},
+  {"skill": "propose", "query": "how should we change the pages eval runner so each case runs 3 times and reports the spread? lay out the options for me"},
+  {"skill": "propose", "query": "Goal: one error with one Try again when a Host is unreachable in muxify-mobile. what's the plan?"},
+
+  {"skill": "debrief", "query": "debrief the last commit in this repo against what I asked for"},
+  {"skill": "debrief", "query": "what did my teammate's PR #412 actually change, and does it match its description?"},
+  {"skill": "debrief", "query": "you just finished the ios-sim script. show me what you did and whether it matches what I asked for, before I commit"},
+  {"skill": "debrief", "query": "Before I merge feature/pin-board, I want a page of what changed on the branch and why"},
+  {"skill": "debrief", "query": "compare what we built today with the three-verbs plan page"},
+  {"skill": "debrief", "query": "walk me through commit a408fba of membr: what changed and why"},
+
+  {"skill": null, "query": "write the PR body for this branch"},
+  {"skill": null, "query": "review this branch for bugs and security issues before I merge it"},
+  {"skill": null, "query": "what did I get done last week? short summary pls"},
+  {"skill": null, "query": "make me a 5-slide deck on how our eval runner works, for friday's demo"},
+  {"skill": null, "query": "quick q: what does set -euo pipefail do in bash?"},
+  {"skill": null, "query": "grill me on my plan to split the explain skill into three"},
+  {"skill": null, "query": "catch me up on what happened in this chat since my last message"},
+  {"skill": null, "query": "write a jira task description for the epoch limit change"}
+]

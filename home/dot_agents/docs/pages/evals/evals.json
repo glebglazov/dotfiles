@@ -1,0 +1,397 @@
+{
+  "evals": [
+    {
+      "id": 1,
+      "name": "membr-epochs",
+      "kind": "change",
+      "skill": "debrief",
+      "repo": {
+        "path": "~/private/Dev/personal/membr",
+        "url": "https://github.com/glebglazov/membr"
+      },
+      "commit": "a408fbaf78ce204e650aa13a5cb6b6c955edaa12",
+      "prompt": "Debrief commit HEAD of this repository (compare it with HEAD^): what changed, and why.",
+      "expected_output": "A one-line constant change whose value is in the numbers and the why. The page must not invent a reason the commit does not give.",
+      "files": [],
+      "questions": [
+        {
+          "question": "A model has a 1,000,000-token window. A turn ends with the epoch at 200k tokens. Does the next turn start in a new epoch? What was the answer before this commit?",
+          "answer": "Now: no, the limit is 220k. Before: yes, the limit was 150k.",
+          "must": [
+            "now no new epoch (limit 220k)",
+            "before a new epoch (limit 150k)"
+          ]
+        },
+        {
+          "question": "A model has a 200,000-token window. What is the epoch limit before and after this commit?",
+          "answer": "Before: 150k (min of 150k and 80% = 160k). After: 160k (80% of the window, as 220k > 160k).",
+          "must": [
+            "before 150k",
+            "after 160k"
+          ]
+        },
+        {
+          "question": "Below which window size does the 80% rule set the limit, before and after?",
+          "answer": "Before: 187,500 tokens. After: 275,000 tokens.",
+          "must": [
+            "before 187,500 tokens",
+            "after 275,000 tokens"
+          ]
+        },
+        {
+          "question": "The status shows the epoch after a 42k-token turn on a 1M window. What does it show now?",
+          "answer": "\"epoch 42k / 220k (19%)\" (before: \"42k / 150k (28%)\").",
+          "must": [
+            "42k / 220k (19%)"
+          ]
+        },
+        {
+          "question": "Why is there a limit below the window at all, and what happens when a turn goes over the window?",
+          "answer": "Past the limit each request costs more and the model reads its context less well. Over the window the turn fails with \"Prompt is too long\"; membr starts a new epoch, writes a note, and the user sends the message again.",
+          "must": [
+            "past the limit requests cost more or the model reads its context less well",
+            "over the window the turn fails with \"Prompt is too long\"",
+            "the user sends the message again"
+          ]
+        },
+        {
+          "question": "Does the commit say why it picked 220k?",
+          "answer": "No. A page that gives a reason must mark it as not from the commit.",
+          "must": [
+            "no"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "mobile-one-error",
+      "kind": "change",
+      "skill": "debrief",
+      "repo": {
+        "path": "~/private/Dev/work/muxify-mobile",
+        "url": "https://github.com/muxify-dev/muxify-mobile"
+      },
+      "commit": "1f879e56dd48a7499f26a341aba3d5fb95d62ff8",
+      "prompt": "Debrief commit HEAD of this repository (compare it with HEAD^): what changed, and why.",
+      "expected_output": "A UI change across 40 files: one owner and one presenter for a Host fault, before and after.",
+      "files": [],
+      "questions": [
+        {
+          "question": "A Host does not answer. The user is on the Host Screen. How many error rows and buttons show, before and after?",
+          "answer": "Before: two red rows (Listing and Topics), each with its own Retry. After: one row at the top of the tab with one Try again.",
+          "must": [
+            "before: two error rows, each with its own Retry",
+            "after: one row with one Try again"
+          ]
+        },
+        {
+          "question": "Which part of the app owns the Host Problem, and why there?",
+          "answer": "The Connections, one per Host, because every use of a Host goes through them.",
+          "must": [
+            "the Connections",
+            "every use of a Host goes through them"
+          ]
+        },
+        {
+          "question": "The Host answers but refuses a read. Is that a Host Problem? Who shows it?",
+          "answer": "No. It stays a `failed` state with the Host's words, shown by the screen that asked.",
+          "must": [
+            "not a Host Problem",
+            "the screen that asked shows it"
+          ]
+        },
+        {
+          "question": "The Host Screen shows a Host Problem. Another use of the same Host then reaches it. What does the Host Screen do?",
+          "answer": "The Host Problem clears, and the Host Screen holds the Host again without a tap.",
+          "must": [
+            "the Host Problem clears",
+            "the Host Screen holds or reads the Host again with no tap"
+          ]
+        },
+        {
+          "question": "Which label goes on the button for: a lost link, any other failed connect or read, a failed Host Write?",
+          "answer": "Reconnect; Try again; Retry.",
+          "must": [
+            "Reconnect for a lost link",
+            "Try again for other connects and reads",
+            "Retry for a Host Write"
+          ]
+        },
+        {
+          "question": "In the Title Sheet, the user's last act failed and the Host also has a Host Problem. Which notice shows?",
+          "answer": "The act's error, because it answers the last tap. The Host Problem comes next, then a refused Topic read.",
+          "must": [
+            "the error of the user's act"
+          ]
+        },
+        {
+          "question": "A read fails on its Connection. When does that record a Host Problem?",
+          "answer": "When it fails on its Connection two times: the first failure makes the app read again.",
+          "must": [
+            "on the second failure on its Connection"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "muxify-pin",
+      "kind": "change",
+      "skill": "debrief",
+      "repo": {
+        "path": "~/private/Dev/personal/muxify",
+        "url": "https://github.com/muxify-dev/muxify"
+      },
+      "commit": "de20093b36e6cac6c1678bda2fb9fed50aa6cd39",
+      "prompt": "Debrief commit HEAD of this repository (compare it with HEAD^): what changed, and why.",
+      "expected_output": "A state and ordering change: Pin for Board Sessions and the new Unpin rule.",
+      "files": [],
+      "questions": [
+        {
+          "question": "Can a Board Session be Pinned, before and after?",
+          "answer": "Before: no, only Topics. After: yes, as a Topic is.",
+          "must": [
+            "before: no, only Topics",
+            "after: yes"
+          ]
+        },
+        {
+          "question": "An In Play place is free. The user Unpins a Topic. Where does the card go, before and after?",
+          "answer": "Before: the top of the Bench, where a new Topic goes, so with a free In Play place it took that place. After: the end of the Guests, as a Guest; the Open Place stays open.",
+          "must": [
+            "before: the top of the Bench",
+            "after: the end of the Guests, as a Guest",
+            "the free place stays open"
+          ]
+        },
+        {
+          "question": "Why does Unpin not fill the free In Play place?",
+          "answer": "The user wants the card where they can see it, and one rule for every card is easier to predict. The Bench holds only Topics, so a Board Session could not go there.",
+          "must": [
+            "the card stays where the user can see it, or one rule for every card",
+            "a Board Session cannot go to the Bench"
+          ]
+        },
+        {
+          "question": "A Board Session that is a Guest is Pinned. Where does it go, and what happens to its Guest mark?",
+          "answer": "Last among the Pinned cards; it loses the Guest mark.",
+          "must": [
+            "last among the Pinned cards",
+            "loses the Guest mark"
+          ]
+        },
+        {
+          "question": "tmux restarts. What happens to a Pinned Board Session?",
+          "answer": "It stays Dormant among the Pinned cards, with Reopen and Start Fresh.",
+          "must": [
+            "Dormant among the Pinned cards"
+          ]
+        },
+        {
+          "question": "Which actions stay Topic-only on a Pinned Board Session?",
+          "answer": "Settle, Forget, the Topic Note and Tags. Bench is not offered either, because a Pinned card is not In Play.",
+          "must": [
+            "Settle",
+            "Forget",
+            "Note",
+            "Tags"
+          ]
+        },
+        {
+          "question": "The Session of a Pinned Board Session ends. What happens to its card?",
+          "answer": "The card leaves the Board and leaves no Open Place.",
+          "must": [
+            "leaves the Board",
+            "leaves no Open Place"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "membr-epochs-plan",
+      "kind": "proposal",
+      "skill": "propose",
+      "repo": {
+        "path": "~/private/Dev/personal/membr",
+        "url": "https://github.com/glebglazov/membr"
+      },
+      "commit": "a408fbaf78ce204e650aa13a5cb6b6c955edaa12",
+      "prompt": "Goal: Keep an epoch until it reaches 220k tokens, not 150k.\nPlan how you would change this repository to reach the goal.",
+      "expected_output": "A plan for a one-constant change that shows today's limit rule and what the new number changes, and asks what the code does not settle.",
+      "files": [],
+      "questions": [
+        {
+          "question": "A model has a 1,000,000-token window. Today, at how many tokens does a turn start a new epoch, and what sets that number?",
+          "answer": "150k: the constant EPOCH_BUDGET in packages/protocol; the limit is the smaller of it and 80% of the window.",
+          "must": [
+            "150k",
+            "a constant (EPOCH_BUDGET)",
+            "the smaller of it and 80% of the window"
+          ]
+        },
+        {
+          "question": "Where does the user see the 150k number today?",
+          "answer": "In the status line (\"epoch 42k / 150k\") and in the Settings popover's Epoch size; the docs (README, CONTEXT.md) also name it.",
+          "must": [
+            "the status line",
+            "the Settings popover"
+          ]
+        },
+        {
+          "question": "What happens today when a turn goes over the model's window?",
+          "answer": "The turn fails with \"Prompt is too long\"; membr starts a new epoch, writes a note, and the user sends the message again.",
+          "must": [
+            "the turn fails with \"Prompt is too long\"",
+            "a new epoch",
+            "the user sends the message again"
+          ]
+        }
+      ],
+      "decisions": [
+        "Whether the 80%-of-window rule for small windows stays as it is",
+        "Whether the tests that use a 200k window change, because at 200k the limit becomes 160k and no longer shows 220k"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "mobile-one-error-plan",
+      "kind": "proposal",
+      "skill": "propose",
+      "repo": {
+        "path": "~/private/Dev/work/muxify-mobile",
+        "url": "https://github.com/muxify-dev/muxify-mobile"
+      },
+      "commit": "1f879e56dd48a7499f26a341aba3d5fb95d62ff8",
+      "prompt": "Goal: When a Host cannot be reached, show one error with one Try again, not several.\nPlan how you would change this repository to reach the goal.",
+      "expected_output": "A plan that shows why one fault shows several errors today, and asks where the fault should have one owner.",
+      "files": [],
+      "questions": [
+        {
+          "question": "A Host does not answer, and the user opens the Host Screen. What shows today?",
+          "answer": "Two red rows with the same text, one for the Listing and one for the Topics, each with its own Retry.",
+          "must": [
+            "two error rows",
+            "each with its own Retry"
+          ]
+        },
+        {
+          "question": "Why does one fault show more than once today?",
+          "answer": "Each reader of the Host catches the same SSH failure and shows its own error, because no part owns the fault.",
+          "must": [
+            "each reader shows its own error",
+            "no part owns the fault"
+          ]
+        },
+        {
+          "question": "How many functions turn a connection failure into words today?",
+          "answer": "Two: one for the Attach and one for the screens.",
+          "must": [
+            "two"
+          ]
+        }
+      ],
+      "decisions": [
+        "Where the fault lives: one owner for the whole app, one per Host in the Connections, or a fix in the two screens only",
+        "Whether a refusal from a Host that answered counts as the same problem",
+        "The button labels: Reconnect, Try again and Retry, and when each applies"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "muxify-pin-plan",
+      "kind": "proposal",
+      "skill": "propose",
+      "repo": {
+        "path": "~/private/Dev/personal/muxify",
+        "url": "https://github.com/muxify-dev/muxify"
+      },
+      "commit": "de20093b36e6cac6c1678bda2fb9fed50aa6cd39",
+      "prompt": "Goal: Let me Pin a Board Session, and make Unpin put any card at the end of the Guests.\nPlan how you would change this repository to reach the goal.",
+      "expected_output": "A plan that shows today's Pin and Unpin rules for Topics, and asks the choices that a Pinned Board Session opens.",
+      "files": [],
+      "questions": [
+        {
+          "question": "Can the user Pin a Board Session today?",
+          "answer": "No. Only a Topic can be Pinned; ADR 0102 says a Board Session is never Pinned.",
+          "must": [
+            "no",
+            "only a Topic"
+          ]
+        },
+        {
+          "question": "Where does Unpin put a Topic today?",
+          "answer": "At the top of the Bench, where a new Topic goes.",
+          "must": [
+            "the top of the Bench"
+          ]
+        },
+        {
+          "question": "Which actions work only on a Topic today, and not on a Board Session?",
+          "answer": "Bench, Settle, Forget, the Topic Note and Tags; a Board Session's card leaves the Board with Bench.",
+          "must": [
+            "Settle",
+            "Forget",
+            "Note",
+            "Tags"
+          ]
+        }
+      ],
+      "decisions": [
+        "Where Unpin puts a card: the next free In Play place, or the end of the Guests",
+        "Which actions stay Topic-only on a Pinned Board Session",
+        "How the protocol carries the Pin of a Board Session: widen in place, or a new capability with a fallback",
+        "What a Pinned Board Session is after a tmux restart"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "membr-epochs-debrief",
+      "kind": "change",
+      "skill": "debrief",
+      "repo": {
+        "path": "~/private/Dev/personal/membr",
+        "url": "https://github.com/glebglazov/membr"
+      },
+      "commit": "a408fbaf78ce204e650aa13a5cb6b6c955edaa12",
+      "asked": "asked/membr-epochs-plan.html",
+      "prompt": "Commit HEAD of this repository carries out the planning page {asked}. Both of its decisions were answered with the recommended option. Debrief the commit against that plan.",
+      "expected_output": "A debrief that matches each asked item of the plan to the commit, with file:line, finds no difference and no unasked change, and says which tests ran.",
+      "files": [],
+      "questions": [
+        {
+          "question": "The plan asked whether the epoch budget stays a constant or becomes a setting in config.json. What did the commit do, and where?",
+          "answer": "It kept a constant: EPOCH_BUDGET in packages/protocol/src/index.ts went from 150_000 to 220_000. No config key and no protocol field were added.",
+          "must": [
+            "a constant, not a setting",
+            "EPOCH_BUDGET in packages/protocol (src/index.ts) is now 220_000"
+          ]
+        },
+        {
+          "question": "After the commit, what epoch limit does a model with a 200,000-token window get, and does that match the plan?",
+          "answer": "160k: the limit is still min(220k, 80% of the window), as the plan recommended for D2; epochLimit() did not change. The README now says the 80% rule applies under 275,000 tokens.",
+          "must": [
+            "160k (80% of the window)",
+            "it matches the plan: the 80% rule (epochLimit) is unchanged"
+          ]
+        },
+        {
+          "question": "The e2e tests used a 200,000-token fake window. What did the commit do with them, and was that in the plan?",
+          "answer": "It moved their fake window to 1,000,000, so they expect 'epoch 42k / 220k (19%)' and '42,000 of 220,000 tokens'. The plan recommended exactly this, to keep the 80% path in context.test.ts.",
+          "must": [
+            "the fake window became 1,000,000",
+            "the plan recommended it"
+          ]
+        },
+        {
+          "question": "Did the commit change any file the plan did not list, or leave out a file it listed?",
+          "answer": "No. The commit changes the seven files the plan listed: protocol index.ts, web main.ts, context.test.ts, browser.e2e.ts, pty.e2e.ts, README.md and CONTEXT.md.",
+          "must": [
+            "no difference: the changed files are the ones the plan listed"
+          ]
+        }
+      ]
+    }
+  ]
+}

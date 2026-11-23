@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en" data-lavish-annotate="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>membr · Keep an epoch until 220k tokens</title>
+<style>
+  /* membr's own tokens, from packages/web/src/style.css */
+  :root {
+    color-scheme: light dark;
+    --ink: #1c1b19; --mid: #6b665d; --paper: #f7f5f0; --surface: #ffffff; --block: #ece8df; --line: #e2ddd2;
+    --accent: #b4532a; --on-accent: #ffffff; --ok: #2f7a47; --busy: #c98a1b; --red: #b42318;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #ece8df; --mid: #a7a195; --paper: #161513; --surface: #1f1e1b; --block: #2a2824; --line: #35322c;
+      --accent: #e08a5f; --on-accent: #1a1410; --ok: #5cc27c; --busy: #e3a63a; --red: #f8857c; }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--sans); }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 18px 80px; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.2; letter-spacing: -.01em; }
+  h1 { font-size: 30px; margin: 0 0 10px; }
+  h2 { font-size: 23px; margin: 48px 0 12px; }
+  h3 { font-size: 18px; margin: 0 0 8px; }
+  p, li, td, th, dd { overflow-wrap: anywhere; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--block); padding: 1px 5px; border-radius: 4px; }
+  a { color: var(--accent); }
+  .lead { font-size: 18px; }
+  .answer { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 18px; margin: 18px 0; }
+  .answer p { margin: 6px 0; }
+  .muted { color: var(--mid); }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--block); color: var(--ink); }
+  .frame { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 12px; margin: 14px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 13px; color: var(--mid); font-weight: 600; }
+  .glossary table { min-width: 560px; }
+  .glossary td:first-child { white-space: nowrap; }
+  figure { margin: 14px 0; }
+  figcaption { font-size: 14px; color: var(--mid); margin-top: 6px; }
+  svg text { fill: var(--ink); font-family: var(--sans); }
+  svg .muted-t { fill: var(--mid); }
+  svg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  svg .hot { fill: color-mix(in srgb, var(--accent) 14%, var(--surface)); stroke: var(--accent); stroke-width: 2.5; }
+  svg .edge { stroke: var(--mid); stroke-width: 1.6; fill: none; }
+  svg .edge-hot { stroke: var(--accent); stroke-width: 2.4; fill: none; }
+  svg .grid { stroke: var(--line); stroke-width: 1; }
+  .side { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .side { grid-template-columns: 1fr; } h1 { font-size: 25px; } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card.after { border-color: var(--accent); }
+  .mock { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .mock header { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+  .mock .brand { font: 600 20px/1 var(--serif); }
+  .mock .brand b { color: var(--accent); }
+  .mock .meta { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--mid); white-space: nowrap; }
+  .mock .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+  .mock .usage { padding-left: 8px; border-left: 1px solid var(--line); color: var(--ink); }
+  .decision { border: 2px dashed var(--accent); border-radius: 12px; padding: 14px 18px; margin: 22px 0; background: var(--surface); }
+  .decision h3::before { content: "⚑ "; color: var(--accent); }
+  .opt { display: block; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; cursor: pointer; }
+  .opt:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+  .opt small { display: block; color: var(--mid); margin-left: 24px; }
+  .rec { border-left: 3px solid var(--ok); padding-left: 10px; margin: 10px 0; }
+  button { font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); cursor: pointer; }
+  button.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .state { font-size: 13px; margin-left: 8px; }
+  .q { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 14px 0; background: var(--surface); }
+  .q .fb { margin-top: 8px; padding: 8px 12px; border-radius: 8px; display: none; }
+  .q .fb.ok { display: block; border-left: 4px solid var(--ok); background: color-mix(in srgb, var(--ok) 10%, var(--surface)); }
+  .q .fb.no { display: block; border-left: 4px solid var(--red); background: color-mix(in srgb, var(--red) 8%, var(--surface)); }
+  .files li { margin: 6px 0; }
+  .diffwrap { margin: 10px 0 18px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .diffhead { font-family: var(--mono); font-size: 13px; padding: 6px 10px; background: var(--block); }
+  .diffhead span { color: var(--mid); font-family: var(--sans); }
+  .unchanged { opacity: .9; }
+  details { margin: 10px 0; }
+  summary { cursor: pointer; color: var(--mid); }
+</style>
+</head>
+<body>
+<main>
+
+<p class="muted" style="margin:0 0 4px;font-size:14px">membr · a plan for a change, not yet in the code</p>
+<h1>To keep an epoch until 220k tokens, change one constant from 150,000 to 220,000</h1>
+
+<div class="answer">
+  <p><strong>Question:</strong> what must change so that membr keeps an epoch until it reaches 220k tokens, not 150k?</p>
+  <p><strong>Answer:</strong> set <code>EPOCH_BUDGET</code> in <code>packages/protocol/src/index.ts</code> to <code>220_000</code>. The server trigger and the status in both clients all read the limit from <code>epochLimit()</code>, so only tests, docs and one tooltip text change with it.</p>
+  <p><strong>Catch:</strong> the limit stays 80% of the window when that is less. So you get 220k only on models with a window of 275,000 tokens or more. A 200,000-token window goes from 150k to 160k.</p>
+</div>
+
+<p>Two decisions need you: <a href="#D1">D1 — constant or setting</a> and <a href="#D2">D2 — what a small window gets</a>. You answer them at the end, in <a href="#decisions">Decisions</a>.</p>
+
+<section class="glossary">
+<h2>The page uses these terms</h2>
+<div class="frame"><table>
+<thead><tr><th>Term</th><th>What it is</th><th>Unit</th></tr></thead>
+<tbody>
+<tr><td><strong>Epoch</strong></td><td>One engine session (one Claude Code session). It starts from the current view.</td><td>—</td></tr>
+<tr><td><strong>Turn</strong></td><td>One input and the agent work that answers it, up to its end entry in the log.</td><td>—</td></tr>
+<tr><td><strong>Context</strong></td><td>What the engine reports at the end of a turn: <code>{ used, window }</code>, or <code>"overflow"</code>. <code>used</code> is the context of the last model call in the turn.</td><td>tokens</td></tr>
+<tr><td><strong>Window</strong></td><td>The model's context window, from <code>modelUsage[model].contextWindow</code> of the SDK result.</td><td>tokens</td></tr>
+<tr><td><strong>Epoch limit</strong></td><td><code>epochLimit(window) = min(EPOCH_BUDGET, round(window × 0.8))</code>. A turn that ends at this size or more gets a new epoch for the next turn.</td><td>tokens</td></tr>
+<tr><td><strong>Summary batch</strong></td><td>The step that makes the view smaller when it is over 128 KB. It also starts a new epoch. It does not read the epoch limit.</td><td>bytes</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="s1">
+<h2>1. The status shows the limit, so you see the change first in the header</h2>
+<p>The header of the web client shows how full the epoch was after its last turn. The terminal client shows the same words. The same turn (42,000 tokens used) gives these texts. The numbers are from the e2e tests; the 1M window is <span class="tag">illustrative</span>.</p>
+<div class="side">
+  <div class="card">
+    <h3>Today (limit 150k)</h3>
+    <div class="mock" data-mockup><header><span class="brand">membr<b>.</b></span><span class="meta"><span class="pulse"></span>Ready<span class="usage">epoch 42k / 150k (28%)</span></span></header></div>
+    <p class="muted" style="font-size:14px;margin:8px 0 0">Both a 200,000 and a 1,000,000 window show this text.</p>
+  </div>
+  <div class="card after">
+    <h3>After the change</h3>
+    <div class="mock" data-mockup><header><span class="brand">membr<b>.</b></span><span class="meta"><span class="pulse"></span>Ready<span class="usage">epoch 42k / 220k (19%)</span></span></header></div>
+    <p style="font-size:14px;margin:8px 0 4px">Window 1,000,000 → <strong>220k</strong>.</p>
+    <div class="mock" data-mockup><header><span class="brand">membr<b>.</b></span><span class="meta"><span class="pulse"></span>Ready<span class="usage">epoch 42k / 160k (26%)</span></span></header></div>
+    <p style="font-size:14px;margin:8px 0 0">Window 200,000 → <strong>160k</strong> (80% of the window).</p>
+  </div>
+</div>
+<p>The Settings popover shows the same limit in full: "42,000 of 150,000 tokens" becomes "42,000 of 220,000 tokens", or "of 160,000" on a 200,000 window. On screens under the phone breakpoint, the web header hides this text.</p>
+</section>
+
+<section id="s2">
+<h2>2. One function computes the limit, and every place that uses it calls that function</h2>
+<p>The limit lives in the protocol package. The server uses it to decide on a new epoch. The core package uses it for the status words, and both clients show those words. No other code has the number 150,000.</p>
+<figure>
+<div class="frame">
+<svg viewBox="0 0 760 330" style="min-width:700px;width:100%" role="img" aria-labelledby="rel-t">
+  <title id="rel-t">Where the epoch limit is read</title>
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color:var(--mid)"/></marker>
+  <marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+  <g id="n-engine"><title>Engine</title><rect class="box" x="10" y="20" width="190" height="64" rx="10"/><text x="105" y="47" text-anchor="middle" font-size="15" font-weight="600">Engine</text><text x="105" y="68" text-anchor="middle" font-size="13" class="muted-t">server/src/engine.ts</text></g>
+  <g id="n-proto"><title>epochLimit in protocol</title><rect class="hot" x="285" y="128" width="200" height="74" rx="10"/><text x="385" y="155" text-anchor="middle" font-size="15" font-weight="600">epochLimit(window)</text><text x="385" y="176" text-anchor="middle" font-size="13">EPOCH_BUDGET = 150_000</text><text x="385" y="194" text-anchor="middle" font-size="12" class="muted-t">protocol/src/index.ts:93</text></g>
+  <g id="n-turn"><title>full() in turn.ts</title><rect class="box" x="285" y="20" width="200" height="64" rx="10"/><text x="385" y="47" text-anchor="middle" font-size="15" font-weight="600">full(context)</text><text x="385" y="68" text-anchor="middle" font-size="13" class="muted-t">server/src/turn.ts:61</text></g>
+  <g id="n-epoch"><title>new epoch</title><rect class="box" x="570" y="20" width="180" height="64" rx="10"/><text x="660" y="47" text-anchor="middle" font-size="15" font-weight="600">reopen: true</text><text x="660" y="68" text-anchor="middle" font-size="13" class="muted-t">next turn → new epoch</text></g>
+  <g id="n-core"><title>epochWords in core</title><rect class="box" x="285" y="250" width="200" height="64" rx="10"/><text x="385" y="277" text-anchor="middle" font-size="15" font-weight="600">epochWords(context)</text><text x="385" y="298" text-anchor="middle" font-size="13" class="muted-t">core/src/index.ts:416</text></g>
+  <g id="n-clients"><title>clients</title><rect class="box" x="570" y="232" width="180" height="90" rx="10"/><text x="660" y="258" text-anchor="middle" font-size="15" font-weight="600">Clients</text><text x="660" y="280" text-anchor="middle" font-size="13">web: header, Settings</text><text x="660" y="300" text-anchor="middle" font-size="13">term: status line</text></g>
+  <path class="edge" d="M200 52 H280" marker-end="url(#ar)"/><text x="240" y="44" text-anchor="middle" font-size="12">end: {used, window}</text>
+  <path class="edge-hot" d="M385 128 V88" marker-end="url(#arh)"/><text x="392" y="112" font-size="12">limit</text>
+  <path class="edge" d="M485 52 H565" marker-end="url(#ar)"/><text x="525" y="44" text-anchor="middle" font-size="12">used ≥ limit</text>
+  <path class="edge-hot" d="M385 202 V245" marker-end="url(#arh)"/><text x="392" y="228" font-size="12">limit</text>
+  <path class="edge" d="M485 282 H565" marker-end="url(#ar)"/><text x="525" y="274" text-anchor="middle" font-size="12">"epoch 42k / 150k"</text>
+  <path class="edge" d="M570 312 C 520 330, 520 200, 489 180" marker-end="url(#ar)"/><text x="500" y="226" font-size="12">web Settings calls it</text>
+</svg>
+</div>
+<figcaption>Orange: the one value that changes. Everything else reads it. <code>full()</code> also returns true on <code>"overflow"</code>; that path does not use the limit.</figcaption>
+</figure>
+<p>The server sends <code>context</code> to the clients in the state event. Each client computes the limit itself from <code>context.window</code>, so the server sends no limit. A new server with an old client would show the old 150k; both ship from this repository at once.</p>
+</section>
+
+<div class="decision" id="D1" data-lavish-question="D1">
+  <h3>D1 — Keep the budget a constant, or make it a setting in config.json?</h3>
+  <p>The goal names one number. A setting would let each agent pick its own.</p>
+  <form onsubmit="event.preventDefault(); queueDecision('D1', this)">
+    <label class="opt"><input type="radio" name="D1" value="constant"> <strong>A. Constant <code>220_000</code></strong><small>One line changes. The clients compute the limit from <code>window</code>, as now. Changing it again needs a release.</small></label>
+    <label class="opt"><input type="radio" name="D1" value="setting"> <strong>B. A key in config.json, such as <code>epochBudget</code></strong><small>The server reads it on reload. The clients do not know it, so the state event must carry the limit, and <code>epochWords()</code> and the Settings popover must take it from there. Tests for config parsing and the protocol change too.</small></label>
+    <p class="rec"><strong>Recommendation: A.</strong> The limit is a property of how models read long context, not of one agent. A setting adds a protocol field and a second source of truth for a number nobody asked to vary.</p>
+    <button type="submit">Queue answer</button><span class="state" data-state="D1">open</span>
+  </form>
+</div>
+
+<section id="s3">
+<h2>3. The new limit is 220k only when the window is 275,000 tokens or more</h2>
+<p>The 80% rule stays. It was added so that the next turn still fits in a small window (see <code>docs/p0-report.md</code>, section 9). With a budget of 220,000, the budget wins only when 80% of the window is at least 220,000: a window of 275,000 or more. Today that point is 187,500.</p>
+<figure>
+<div class="frame">
+<svg viewBox="0 0 700 300" style="min-width:650px;width:100%" role="img" aria-labelledby="bars-t">
+  <title id="bars-t">Epoch limit by window, before and after</title>
+  <line class="grid" x1="170" y1="20" x2="170" y2="280"/>
+  <line class="grid" x1="497" y1="20" x2="497" y2="280" stroke-dasharray="4 4"/><text x="497" y="292" text-anchor="middle" font-size="12" class="muted-t">150k</text>
+  <line class="grid" x1="650" y1="20" x2="650" y2="280" stroke-dasharray="4 4"/><text x="650" y="292" text-anchor="middle" font-size="12" class="muted-t">220k</text>
+  <!-- scale: x = 170 + used/220000*480 -->
+  <g><title>window 150,000</title><text x="160" y="50" text-anchor="end" font-size="14">window 150k</text>
+    <rect x="170" y="32" width="262" height="16" style="fill:var(--mid)" opacity=".55"/><text x="438" y="45" font-size="12">120k today</text>
+    <rect x="170" y="52" width="262" height="16" style="fill:var(--accent)"/><text x="438" y="65" font-size="12" font-weight="600">120k after (=)</text></g>
+  <g><title>window 200,000</title><text x="160" y="112" text-anchor="end" font-size="14">window 200k</text>
+    <rect x="170" y="94" width="327" height="16" style="fill:var(--mid)" opacity=".55"/><text x="503" y="107" font-size="12">150k today</text>
+    <rect x="170" y="114" width="349" height="16" style="fill:var(--accent)"/><text x="525" y="127" font-size="12" font-weight="600">160k after (+10k)</text></g>
+  <g><title>window 275,000</title><text x="160" y="174" text-anchor="end" font-size="14">window 275k</text>
+    <rect x="170" y="156" width="327" height="16" style="fill:var(--mid)" opacity=".55"/><text x="503" y="169" font-size="12">150k today</text>
+    <rect x="170" y="176" width="480" height="16" style="fill:var(--accent)"/><text x="560" y="211" font-size="12" font-weight="600">220k after</text></g>
+  <g><title>window 1,000,000</title><text x="160" y="248" text-anchor="end" font-size="14">window 1M</text>
+    <rect x="170" y="230" width="327" height="16" style="fill:var(--mid)" opacity=".55"/><text x="503" y="243" font-size="12">150k today</text>
+    <rect x="170" y="250" width="480" height="16" style="fill:var(--accent)"/><text x="560" y="275" font-size="12" font-weight="600">220k after</text></g>
+</svg>
+</div>
+<figcaption>Grey bar: today. Orange bar: after. Each value is <code>min(budget, 80% of window)</code>. The four windows are sample inputs, not a list of models. The p0 report measured a window of about 1,000,000 tokens for Haiku in Claude Code; the e2e tests use 200,000.</figcaption>
+</figure>
+</section>
+
+<div class="decision" id="D2" data-lavish-question="D2">
+  <h3>D2 — What limit does a window under 275,000 tokens get?</h3>
+  <p>With the formula as it is, a 200,000 window moves from 150k to 160k. That is not the 220k of the goal, and it is more than today.</p>
+  <form onsubmit="event.preventDefault(); queueDecision('D2', this)">
+    <label class="opt"><input type="radio" name="D2" value="keep-80"> <strong>A. Keep <code>min(220k, 80% of window)</code></strong><small>200,000 window → 160k. 40,000 tokens stay free for the next turn. No new code path.</small></label>
+    <label class="opt"><input type="radio" name="D2" value="higher-fraction"> <strong>B. Raise the fraction, for example to 90%</strong><small>200,000 window → 180k. Only 20,000 tokens stay free, so a turn with one large tool output can hit "Prompt is too long" and must be sent again by hand.</small></label>
+    <label class="opt"><input type="radio" name="D2" value="keep-150-small"> <strong>C. Keep 150k for small windows</strong><small>A two-tier formula: 220k at 275,000 or more, 150k under it. The goal does not ask for this, and it adds a branch.</small></label>
+    <p class="rec"><strong>Recommendation: A.</strong> The 80% rule is the guard against an overflow, and an overflow costs a failed turn. The goal is about the size of an epoch on large windows, where A gives exactly 220k.</p>
+    <button type="submit">Queue answer</button><span class="state" data-state="D2">open</span>
+  </form>
+</div>
+
+<section id="s4">
+<h2>4. A turn that ends at or over the limit marks the epoch, and the next turn opens a new one</h2>
+<p>The same turns run before and after the change, on a 1,000,000 window. The token counts are <span class="tag">illustrative</span>.</p>
+<figure>
+<div class="frame">
+<svg viewBox="0 0 760 230" style="min-width:700px;width:100%" role="img" aria-labelledby="tl-t">
+  <title id="tl-t">The same turns with limit 150k and with limit 220k</title>
+  <text x="10" y="40" font-size="15" font-weight="600">Today</text><text x="10" y="58" font-size="12" class="muted-t">limit 150k</text>
+  <text x="10" y="150" font-size="15" font-weight="600">After</text><text x="10" y="168" font-size="12" class="muted-t">limit 220k</text>
+  <line class="grid" x1="110" y1="45" x2="750" y2="45"/><line class="grid" x1="110" y1="155" x2="750" y2="155"/>
+  <!-- today -->
+  <g><circle cx="150" cy="45" r="7" style="fill:var(--mid)"/><text x="150" y="28" text-anchor="middle" font-size="13">T1 90k</text></g>
+  <g><circle cx="270" cy="45" r="7" style="fill:var(--mid)"/><text x="270" y="28" text-anchor="middle" font-size="13">T2 130k</text></g>
+  <g><title>reopen set</title><rect x="381" y="36" width="18" height="18" style="fill:var(--accent)"/><text x="390" y="28" text-anchor="middle" font-size="13" font-weight="600">T3 165k ≥ 150k</text><text x="390" y="76" text-anchor="middle" font-size="12">reopen: true</text></g>
+  <g><path class="edge-hot" d="M420 45 H500"/><text x="560" y="49" text-anchor="middle" font-size="13" font-weight="600">T4 → new epoch</text></g>
+  <!-- after -->
+  <g><circle cx="150" cy="155" r="7" style="fill:var(--mid)"/><text x="150" y="138" text-anchor="middle" font-size="13">T1 90k</text></g>
+  <g><circle cx="270" cy="155" r="7" style="fill:var(--mid)"/><text x="270" y="138" text-anchor="middle" font-size="13">T2 130k</text></g>
+  <g><circle cx="390" cy="155" r="7" style="fill:var(--ok)"/><text x="390" y="138" text-anchor="middle" font-size="13">T3 165k</text><text x="390" y="182" text-anchor="middle" font-size="12">stays</text></g>
+  <g><circle cx="510" cy="155" r="7" style="fill:var(--ok)"/><text x="510" y="138" text-anchor="middle" font-size="13">T4 205k</text><text x="510" y="182" text-anchor="middle" font-size="12">stays</text></g>
+  <g><title>reopen set</title><rect x="621" y="146" width="18" height="18" style="fill:var(--accent)"/><text x="630" y="138" text-anchor="middle" font-size="13" font-weight="600">T5 230k ≥ 220k</text><text x="630" y="186" text-anchor="middle" font-size="12">reopen → T6 new epoch</text></g>
+</svg>
+</div>
+<figcaption>Square: the turn that sets <code>reopen</code>. Circle: a turn that keeps the epoch. The turn that crosses the limit still finishes in the old epoch.</figcaption>
+</figure>
+<p>The rule, from <code>turn.ts</code>: on <code>ended</code>, <code>full(context)</code> sets <code>reopen: true</code>. When the chat goes idle with that mark, membr closes the epoch and opens a new one from the view. If a message arrives before that step, its start does the same before it sends the message. Only the number in the comparison moves. Two other paths do not change:</p>
+<ul>
+  <li><strong>Overflow.</strong> A turn that Claude Code or the API refuses for size ("Prompt is too long") still fails, gets a new epoch, and a note asks the user to send the message again.</li>
+  <li><strong>Summary batch.</strong> It still runs when the view is over 128 KB (<code>View.over</code>), and still starts a new epoch. It counts view bytes, not epoch tokens.</li>
+</ul>
+<details><summary>What a larger epoch costs</summary>
+<p>Each request in an epoch sends the whole epoch again, mostly from the prompt cache. The README says that past the limit "each request costs more and the model reads its context less well". The commit that set 150k (<code>d140d0c</code>) cites practitioners who put that zone at about 100k to 150k tokens. 220k accepts more cost per request in exchange for fewer new epochs, and each new epoch's first turn reads the view without the cache.</p>
+</details>
+</section>
+
+<section id="s5">
+<h2>5. The change is one constant, and the tests, docs and tooltip that name 150k follow it</h2>
+<p>No logic changes. <code>turn.ts</code>, <code>core/src/index.ts</code> and <code>term/src/transcript.ts</code> stay as they are, because they call <code>epochLimit()</code>.</p>
+<ul class="files">
+  <li><code>packages/protocol/src/index.ts</code> <span class="tag">code</span> — the constant.</li>
+  <li><code>packages/web/src/main.ts:158</code> <span class="tag">text</span> — the Settings tooltip says "150k tokens".</li>
+  <li><code>packages/server/context.test.ts:51–52</code> <span class="tag">test</span> — the large-window rows move to 220,000 and 219,999. The small-window rows (120,000 of 150,000) stay: they test the 80% rule.</li>
+  <li><code>packages/web/test/browser.e2e.ts:77, 80</code> and <code>packages/term/test/pty.e2e.ts:56</code> <span class="tag">test</span> — their fake window is 200,000, so the expected text becomes 160k. I recommend that they use a 1,000,000 window, so that the e2e tests show 220k and the 80% path stays in <code>context.test.ts</code>.</li>
+  <li><code>README.md:248–251</code> and <code>CONTEXT.md:36</code> <span class="tag">docs</span> — 150k becomes 220k, and "under 187,500 tokens" becomes "under 275,000 tokens".</li>
+</ul>
+<div id="diffs"></div>
+</section>
+
+<section id="check">
+<h2>Check yourself</h2>
+<p>Make sure you understand it well enough before you decide. Pick an answer to see if it is right.</p>
+<div id="questions"></div>
+<script>
+  const QS = [
+    { q: "After the change, an agent on a model with a 200,000-token window ends a turn at 170k tokens. What happens on the next turn?",
+      opts: ["It runs in a new epoch, because the limit for that window is 160k.", "It runs in the same epoch, because 170k is under 220k.", "It fails with \"Prompt is too long\", because 170k is over 80% of the window."],
+      right: 0, why: "epochLimit(200,000) = min(220,000, 160,000) = 160,000. 170k ≥ 160k, so the turn sets reopen and the next turn opens a new epoch. Overflow happens only when Claude Code or the API refuses the size.", sec: "s3" },
+    { q: "After the change, on a 1,000,000-token window, a turn ends at 200k tokens. What happens on the next turn?",
+      opts: ["It runs in a new epoch, because 200k is over 150k.", "It runs in the same epoch.", "It fails, and the user must send it again."],
+      right: 1, why: "The limit is min(220k, 800k) = 220k. 200k is under it, so the epoch stays.", sec: "s4" },
+    { q: "Which source code (not tests or docs) changes?",
+      opts: ["turn.ts full() and core epochWords() get a new 220k check.", "The constant EPOCH_BUDGET, and the text of one tooltip in the web client.", "A new key in config.json, read by the server."],
+      right: 1, why: "full() and epochWords() both call epochLimit(), so they follow the constant. A config key is option B of D1, not part of the base plan.", sec: "s5" },
+    { q: "Does the change move the point at which a summary batch runs?",
+      opts: ["Yes, it now runs at 220k tokens.", "No, it still runs when the view is over 128 KB.", "Yes, it no longer runs until the epoch is full."],
+      right: 1, why: "The summary batch counts the bytes of the view (View.over, 128 KB), not the tokens of the epoch. It does not read the epoch limit.", sec: "s4" },
+    { q: "With a 1,000,000 window and 42,000 tokens used, what does the web header show after the change?",
+      opts: ["epoch 42k / 150k (28%)", "epoch 42k / 220k (19%)", "epoch 42k / 1M (4%)"],
+      right: 1, why: "epochWords() shows used of epochLimit(window): 42,000 of 220,000 is 19%.", sec: "s1" },
+  ];
+  const host = document.getElementById("questions");
+  QS.forEach((item, i) => {
+    const n = i + 1, div = document.createElement("div"); div.className = "q";
+    div.innerHTML = `<p><strong>Q${n}.</strong> ${item.q}</p>` + item.opts.map((o, j) => `<label class="opt"><input type="radio" name="q${n}" value="${j}"> ${o}</label>`).join("") + `<div class="fb"></div>`;
+    div.addEventListener("change", (e) => {
+      const pick = Number(e.target.value), fb = div.querySelector(".fb"), sec = document.getElementById(item.sec).querySelector("h2").textContent;
+      if (pick === item.right) { fb.className = "fb ok"; fb.innerHTML = `✓ Right. ${item.why} <a href="#${item.sec}">${sec}</a>`; }
+      else {
+        fb.className = "fb no";
+        fb.innerHTML = `✗ Not this one. ${item.why} <a href="#${item.sec}">${sec}</a><br><button type="button" class="ghost" style="margin-top:6px">Tell the agent: section ${item.sec.slice(1)} did not teach this</button>`;
+        fb.querySelector("button").onclick = (ev) => { window.lavish?.queuePrompt?.(`Section ${item.sec.slice(1)} did not teach Q${n}: "${item.q}". I picked "${item.opts[pick]}".`, { tag: "check", queueKey: `check-Q${n}`, element: div }); ev.target.textContent = "Queued"; };
+      }
+    });
+    host.appendChild(div);
+  });
+</script>
+</section>
+
+<section id="decisions">
+<h2>Decisions</h2>
+<p>Each decision is open until you queue it. Queued answers wait in Lavish until you press Send to Agent. D2 and D1 are independent: D2 sets the formula, D1 sets where its budget comes from. With D1 = B, the fraction of D2 could become a setting too; I would keep it in code.</p>
+<div class="frame"><table>
+<thead><tr><th>ID</th><th>Question</th><th>Recommendation</th><th>State</th></tr></thead>
+<tbody>
+<tr><td><a href="#D1">D1</a></td><td>Constant or config.json setting</td><td>A. Constant 220_000</td><td data-state="D1">open</td></tr>
+<tr><td><a href="#D2">D2</a></td><td>Limit for windows under 275,000</td><td>A. Keep 80% of the window</td><td data-state="D2">open</td></tr>
+</tbody></table></div>
+<p><button type="button" onclick="acceptAll()">Accept all recommendations</button> <span class="muted" style="font-size:14px">Queues the recommendation of each decision that is still open.</span></p>
+</section>
+
+</main>
+
+<script>
+  const REC = { D2: "keep-80", D1: "constant" };
+  const LABEL = {
+    D2: { "keep-80": "A. Keep min(220k, 80% of window)", "higher-fraction": "B. Raise the fraction", "keep-150-small": "C. Keep 150k for small windows" },
+    D1: { constant: "A. Constant 220_000", setting: "B. A key in config.json" },
+  };
+  function setState(id, text) { document.querySelectorAll(`[data-state="${id}"]`).forEach((el) => el.textContent = text); }
+  document.addEventListener("change", (e) => {
+    const t = e.target; if (t.type === "radio" && LABEL[t.name]) setState(t.name, "chosen (not queued): " + LABEL[t.name][t.value]);
+  });
+  function queue(id, value) {
+    const text = `${id}: ${LABEL[id][value]}`;
+    window.lavish?.queuePrompt?.(`Decision ${text}. Apply it to the plan to keep an epoch until 220k tokens.`, { tag: "decision", text, queueKey: id, element: document.getElementById(id), data: { question: id, answer: value } });
+    setState(id, "queued: " + LABEL[id][value]);
+  }
+  function queueDecision(id, form) { const v = new FormData(form).get(id); if (v) queue(id, v); }
+  function acceptAll() {
+    for (const id of Object.keys(REC)) {
+      const cell = document.querySelector(`td[data-state="${id}"]`);
+      if (cell.textContent.startsWith("queued")) continue;
+      document.querySelector(`input[name="${id}"][value="${REC[id]}"]`).checked = true;
+      queue(id, REC[id]);
+    }
+  }
+
+</script>
+
+<script type="module">
+  import { FileDiff } from "https://esm.sh/@pierre/diffs@1.2.10?bundle";
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const options = { theme: { light: "github-light", dark: "github-dark" }, themeType: dark ? "dark" : "light", overflow: "wrap", diffStyle: "unified" };
+  const diffs = [
+    { name: "packages/protocol/src/index.ts", why: "the only line of logic that changes",
+      a: "// A turn that ends with the epoch at this many tokens or more gets a new epoch: past it, each request\n// costs more and the model reads its context less well. A small window lowers it to 80%, so the next turn still fits.\nexport const EPOCH_BUDGET = 150_000;\nexport function epochLimit(window: number): number { return Math.min(EPOCH_BUDGET, Math.round(window * 0.8)); }\n",
+      b: "// A turn that ends with the epoch at this many tokens or more gets a new epoch: past it, each request\n// costs more and the model reads its context less well. A small window lowers it to 80%, so the next turn still fits.\nexport const EPOCH_BUDGET = 220_000;\nexport function epochLimit(window: number): number { return Math.min(EPOCH_BUDGET, Math.round(window * 0.8)); }\n" },
+    { name: "packages/server/context.test.ts", why: "the budget rows move; the 80% rows stay",
+      a: "  { name: \"a turn that ends at 150k tokens of a large window opens a new epoch for the next message\", context: { used: 150_000, window: 1_000_000 }, epochs: 2 },\n  { name: \"a turn that ends below 150k tokens of a large window keeps the epoch\", context: { used: 149_999, window: 1_000_000 }, epochs: 1 },\n  { name: \"a turn that ends at 80% of a small window opens a new epoch for the next message\", context: { used: 120_000, window: 150_000 }, epochs: 2 },\n",
+      b: "  { name: \"a turn that ends at 220k tokens of a large window opens a new epoch for the next message\", context: { used: 220_000, window: 1_000_000 }, epochs: 2 },\n  { name: \"a turn that ends below 220k tokens of a large window keeps the epoch\", context: { used: 219_999, window: 1_000_000 }, epochs: 1 },\n  { name: \"a turn that ends at 80% of a small window opens a new epoch for the next message\", context: { used: 120_000, window: 150_000 }, epochs: 2 },\n" },
+    { name: "packages/web/test/browser.e2e.ts", why: "with the recommended 1,000,000 window",
+      a: "  const engine = new FakeEngine((epoch) => epoch.emit({ ...END, context: { used: 42_000, window: 200_000 } }));\n    // …\n    await expect(page.locator(\".usage\")).toHaveText(\"epoch 42k / 150k (28%)\");\n    // …\n    await expect(page.getByLabel(\"Epoch size\")).toContainText(\"42,000 of 150,000 tokens\");\n",
+      b: "  const engine = new FakeEngine((epoch) => epoch.emit({ ...END, context: { used: 42_000, window: 1_000_000 } }));\n    // …\n    await expect(page.locator(\".usage\")).toHaveText(\"epoch 42k / 220k (19%)\");\n    // …\n    await expect(page.getByLabel(\"Epoch size\")).toContainText(\"42,000 of 220,000 tokens\");\n" },
+    { name: "README.md", why: "the user-facing rule",
+      a: "ends with the epoch at 150k tokens or more, the next turn starts in a new\nepoch. Past that size each request costs more and the model reads its context\nless well. For a model with a window under 187,500 tokens, the limit is 80% of\n",
+      b: "ends with the epoch at 220k tokens or more, the next turn starts in a new\nepoch. Past that size each request costs more and the model reads its context\nless well. For a model with a window under 275,000 tokens, the limit is 80% of\n" },
+  ];
+  const host = document.getElementById("diffs");
+  for (const d of diffs) {
+    const wrap = document.createElement("div"); wrap.className = "diffwrap";
+    wrap.innerHTML = `<div class="diffhead">${d.name} <span>— ${d.why}</span></div><div></div>`;
+    host.appendChild(wrap);
+    new FileDiff(options).render({ containerWrapper: wrap.lastElementChild, oldFile: { name: d.name, contents: d.a }, newFile: { name: d.name, contents: d.b } });
+  }
+</script>
+</body>
+</html>
