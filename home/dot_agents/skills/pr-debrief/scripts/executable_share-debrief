@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Usage: share-debrief <debrief.html>
+# Run it from the repository of the PR. It publishes the debrief page where the
+# reviewers of that repository can open it, and prints the Markdown line for
+# the PR body. The host follows the repository:
+#   - work (a Tripledot owner): a Harmony version, behind the Harmony login.
+#   - personal and public: a commit on the `debriefs` branch, served through
+#     raw.githack and pinned to that commit.
+#   - personal and private: no host this script can use alone. It prints the
+#     `lavish-axi share --private` command for the user to run, and exits 3.
+set -euo pipefail
+
+[ $# -eq 1 ] && [ -f "$1" ] || { echo "usage: share-debrief <debrief.html>" >&2; exit 2; }
+page=$1
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# One HTML file with its local assets inlined and no Lavish SDK.
+LAVISH_AXI_TELEMETRY=0 LAVISH_AXI_HOST=127.0.0.1 \
+  npx -y lavish-axi@0.1.96 export "$page" --out "$tmp/index.html" >&2
+
+# Links to a Lavish session point at this machine's review server, which no
+# reviewer can reach. Keep their text and drop the link.
+perl -0pi -e 's{<a\b[^>]*href="https?://[^"]*/session/[0-9a-f]+"[^>]*>(.*?)</a>}{$1}gs' "$tmp/index.html"
+
+read -r owner repo visibility < <(gh repo view --json owner,name,visibility \
+  --jq '[.owner.login, .name, .visibility] | @tsv')
+branch=$(git branch --show-current)
+slug=$(printf '%s' "${branch:-detached}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')
+
+case $owner in
+  tripledotstudios | TDG-Automation | tripledot-fortune)
+    url=$(cd "$tmp" && tdg deploy run --project "$repo-debriefs" --source . --no-live --output json |
+      jq -r '.previewUrl')
+    echo "**Debrief:** $url (open it with your Harmony login)"
+    ;;
+  *)
+    if [ "$visibility" != PUBLIC ]; then
+      shareable=${page%.html}.share.html
+      cp "$tmp/index.html" "$shareable"
+      cat >&2 <<EOF
+$owner/$repo is private, and no host keeps a private personal page without a third party.
+Run this yourself, then give the reviewer the URL and, apart from it, the password:
+  LAVISH_AXI_TELEMETRY=0 npx -y lavish-axi@0.1.96 share "$shareable" --private
+EOF
+      exit 3
+    fi
+    # Commit the page on the `debriefs` branch with plumbing, so the working
+    # tree, the index and the PR's own branch stay as they are.
+    export GIT_INDEX_FILE="$tmp/index"
+    parent=
+    if git fetch --quiet origin debriefs 2>/dev/null; then
+      parent=$(git rev-parse FETCH_HEAD)
+      git read-tree "$parent"
+    else
+      git read-tree --empty
+    fi
+    blob=$(git hash-object -w "$tmp/index.html")
+    git update-index --add --cacheinfo "100644,$blob,$slug.html"
+    tree=$(git write-tree)
+    commit=$(git commit-tree "$tree" ${parent:+-p "$parent"} -m "debrief: $branch")
+    git push --quiet origin "$commit:refs/heads/debriefs"
+    echo "**Debrief:** https://raw.githack.com/$owner/$repo/$commit/$slug.html"
+    ;;
+esac
