@@ -1,4 +1,33 @@
 #!/bin/bash
-set -o pipefail
-# tomato adds a blank line to its output on every apply.
-tomato set model_context_window 872000 | sed '${/^$/d;}'
+set -euo pipefail
+
+config=$(tomato set model_context_window 872000)
+set_hook_hash() {
+    config=$(printf '%s\n' "$config" | tomato set "hooks.state.\"$1\".$2" "\"$3\"")
+}
+
+while read -r entry hash; do
+    set_hook_hash "$HOME/.codex/hooks.json:$entry" trusted_hash "$hash"
+done <<'HOOKS'
+interrupt:0:0 sha256:f3d9781056cd1bf2b8b811352f62cae75ec04e24cd49b31cbf1d5c35b60dbc1e
+permission_request:0:0 sha256:8467849c46504196aebf67cc65c859545e1cf1cecc1f60b301aaef41ca5d842d
+permission_request:1:0 sha256:f86fc29f078614463c1de842fc401054abd9b8d885dee2afc1d65c7683b62d5c
+post_tool_use:0:0 sha256:a694dcfd5afbdbb2db1a6532da224b77da8c6c118260b7cdf392243b82137bb4
+pre_tool_use:0:0 sha256:08c748b1e8490af3df7883ded1b1db588b70c2a883427c4d0a2f3ab452225f78
+pre_tool_use:1:0 sha256:a74dd23f8184c7671c5ed68445abd46a7edd58d7fa69a59c5e0d6253981bff06
+session_end:0:0 sha256:e17a8d353a7bae7b1f98c6a893ccf37f7a7798ce7cb8537fd9df530bb3c32766
+session_start:0:0 sha256:986fdc612b1ff2d496bbc709207f1deded49c1f62590f9f0b266ec2e7497ced1
+session_start:1:0 sha256:fa37d171903247578f4de1a4863d04c2e7dca71493131559222b094cc0c54bd9
+session_start:2:0 sha256:875376e097344879c1bc2a426fef932d31e6636398ee57b8295041dac98cf12a
+stop:0:0 sha256:156e3929716b856043e1f1155526d4a523acc235d31eea0d4f5dfbfad84db63c
+stop:1:0 sha256:31f067a97835f1a82d8de9fdf9344546889c195b953019d3ccc094ea2bab7f85
+user_prompt_submit:0:0 sha256:56fc9e614fb2c15ab6e1e6d2671c16b1c11e71d8c735775cdec378342397c4c5
+user_prompt_submit:1:0 sha256:289542e727d99738192a63a7eea9582704882a6a725baf0a0344a71893b55eae
+user_prompt_submit:2:0 sha256:23927131423f4d3a1d01a3dd375152584e9d09bc4c89fd4f5644a5cc50107446
+HOOKS
+
+pstack='pstack@pstack-claude:hooks/codex-hooks.json:session_start:0:0'
+set_hook_hash "$pstack" trusted_hash sha256:0423e2d2c45fe8f4c25c82dbaf027a724c9b15397e8487c003489dda0c03e02b
+set_hook_hash "$pstack" trusted_content_hash sha256:725a581babf59134eb0fa0d9a3e7c5c169d6fd3d8c9ec5f3ff540afc1dd8b063
+
+printf '%s\n' "$config"
