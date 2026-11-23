@@ -392,6 +392,158 @@
           ]
         }
       ]
+    },
+    {
+      "id": 8,
+      "name": "membr-epochs-explain",
+      "kind": "system",
+      "skill": "explain",
+      "repo": {
+        "path": "~/private/Dev/personal/membr",
+        "url": "https://github.com/glebglazov/membr"
+      },
+      "commit": "a408fbaf78ce204e650aa13a5cb6b6c955edaa12",
+      "prompt": "How does membr decide when a chat gets a new epoch? Explain it to me on a page.",
+      "expected_output": "An explainer of the epoch lifecycle before the 220k change: what starts a new epoch, the limit rule and its numbers, the overflow path, and where the user sees the limit.",
+      "files": [],
+      "questions": [
+        {
+          "question": "Besides its size, what starts a new epoch?",
+          "answer": "A summary batch, and a change of the agent's home or prompt.",
+          "must": [
+            "a summary batch",
+            "a change of the agent's home or prompt"
+          ]
+        },
+        {
+          "question": "A model has a 1,000,000-token window. Today, at how many tokens does a turn start a new epoch, and what sets that number?",
+          "answer": "150k: the constant EPOCH_BUDGET in packages/protocol; the limit is the smaller of it and 80% of the window.",
+          "must": [
+            "150k",
+            "a constant (EPOCH_BUDGET)",
+            "the smaller of it and 80% of the window"
+          ]
+        },
+        {
+          "question": "A model has a 200,000-token window. What is its epoch limit, and below which window size does the 80% rule set the limit?",
+          "answer": "150k: the smaller of 150k and 80% of 200,000 (160k). The 80% rule sets the limit under 187,500 tokens.",
+          "must": [
+            "150k",
+            "under 187,500 tokens"
+          ]
+        },
+        {
+          "question": "A turn on a 1,000,000-token window ends with the epoch at 160k tokens. Which turn runs in a new epoch?",
+          "answer": "The next turn: the turn that crossed the limit finishes in its epoch and marks it, and the new epoch opens before the next turn.",
+          "must": [
+            "the next turn, not the one that crossed the limit"
+          ]
+        },
+        {
+          "question": "Where does the user see the 150k number today?",
+          "answer": "In the status line (\"epoch 42k / 150k\") and in the Settings popover's Epoch size; the docs (README, CONTEXT.md) also name it.",
+          "must": [
+            "the status line",
+            "the Settings popover"
+          ]
+        },
+        {
+          "question": "Why is there a limit below the window at all, and what happens when a turn goes over the window?",
+          "answer": "Past the limit each request costs more and the model reads its context less well. Over the window the turn fails with \"Prompt is too long\"; membr starts a new epoch, writes a note, and the user sends the message again.",
+          "must": [
+            "past the limit requests cost more or the model reads its context less well",
+            "over the window the turn fails with \"Prompt is too long\"",
+            "the user sends the message again"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "mobile-one-error-explain",
+      "kind": "system",
+      "skill": "explain",
+      "repo": {
+        "path": "~/private/Dev/work/muxify-mobile",
+        "url": "https://github.com/muxify-dev/muxify-mobile"
+      },
+      "commit": "1f879e56dd48a7499f26a341aba3d5fb95d62ff8",
+      "prompt": "How does muxify-mobile show the user that a Host cannot be reached? Walk me through it on a page.",
+      "expected_output": "An explainer of how a Host fault reaches the screens before the one-error change: each reader shows its own error, and two functions turn a failure into words.",
+      "files": [],
+      "questions": [
+        {
+          "question": "A Host does not answer, and the user opens the Host Screen. What shows today?",
+          "answer": "Two red rows with the same text, one for the Listing and one for the Topics, each with its own Retry.",
+          "must": [
+            "two error rows",
+            "each with its own Retry"
+          ]
+        },
+        {
+          "question": "Why does one fault show more than once today?",
+          "answer": "Each reader of the Host catches the same SSH failure and shows its own error, because no part owns the fault.",
+          "must": [
+            "each reader shows its own error",
+            "no part owns the fault"
+          ]
+        },
+        {
+          "question": "How many functions turn a connection failure into words today?",
+          "answer": "Two: one for the Attach and one for the screens.",
+          "must": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "muxify-pin-explain",
+      "kind": "system",
+      "skill": "explain",
+      "repo": {
+        "path": "~/private/Dev/personal/muxify",
+        "url": "https://github.com/muxify-dev/muxify"
+      },
+      "commit": "de20093b36e6cac6c1678bda2fb9fed50aa6cd39",
+      "prompt": "How do Pin and Unpin work on the muxify Board? Explain it on a page.",
+      "expected_output": "An explainer of Pin and Unpin before Board Sessions could be Pinned: only Topics, where Unpin puts a Topic, and which actions are Topic-only.",
+      "files": [],
+      "questions": [
+        {
+          "question": "Can the user Pin a Board Session today?",
+          "answer": "No. Only a Topic can be Pinned; ADR 0102 says a Board Session is never Pinned.",
+          "must": [
+            "no",
+            "only a Topic"
+          ]
+        },
+        {
+          "question": "Where does Unpin put a Topic today?",
+          "answer": "At the top of the Bench, where a new Topic goes.",
+          "must": [
+            "the top of the Bench"
+          ]
+        },
+        {
+          "question": "An In Play place is free. The user Unpins a Topic. Where does the card go?",
+          "answer": "To the top of the Bench, where a new Topic goes, so it takes the free In Play place.",
+          "must": [
+            "it takes the free In Play place"
+          ]
+        },
+        {
+          "question": "Which actions work only on a Topic today, and not on a Board Session?",
+          "answer": "Bench, Settle, Forget, the Topic Note and Tags; a Board Session's card leaves the Board with Bench.",
+          "must": [
+            "Settle",
+            "Forget",
+            "Note",
+            "Tags"
+          ]
+        }
+      ]
     }
   ]
 }

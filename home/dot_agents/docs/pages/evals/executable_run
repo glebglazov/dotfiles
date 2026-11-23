@@ -5,7 +5,8 @@ Usage: run [--jobs N] [--budget USD] [case-name ...]
 
 Each case names its skill and runs in a fresh headless Claude session that
 uses that skill, in a git worktree of its repository: at the commit for a
-`change` case, at its parent for a `proposal` case. A case with `asked` names
+`change` case, at its parent for a `proposal` or a `system` case (the system
+before the change, for an explainer). A case with `asked` names
 a file next to this script, such as the planning page a commit carried out;
 its prompt gets the file's path for `{asked}`. A second session, a reader with only the page, answers the case's
 questions; a third grades those answers against the key. Results go to
@@ -79,7 +80,7 @@ def checkout(case, workdir):
         repo = CACHE / "repos" / case["name"]
         if not repo.exists():
             subprocess.run(["git", "clone", "-q", case["repo"]["url"], str(repo)], check=True)
-    ref = case["commit"] + ("^" if case["kind"] == "proposal" else "")
+    ref = case["commit"] + ("^" if case["kind"] in ("proposal", "system") else "")
     if subprocess.run(["git", "-C", str(repo), "cat-file", "-e", case["commit"] + "^{commit}"]).returncode:
         subprocess.run(["git", "-C", str(repo), "fetch", "-q", "origin"], check=True)
     subprocess.run(["git", "-C", str(repo), "worktree", "add", "-q", "--detach", str(workdir), ref], check=True)
