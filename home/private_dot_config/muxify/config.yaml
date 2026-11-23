@@ -107,6 +107,10 @@ command_palettes:
     # Topic. The kinds of the other Sources stay, for when their buttons are on.
     show: [topic, settled, session, session-path, window, agent, command, tag]
 
+# Logs CPU, freezes and Bursts to ~/Library/Logs/Muxify/. Off by default.
+diagnostics:
+  enabled: true
+
 # Add a Session lists folders only: no running Sessions, no Worktrees.
 pick_lists:
   add_session:
