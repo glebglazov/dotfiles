@@ -58,9 +58,8 @@ printf '%s' "$input" | jq '
     | del(.disableClaudeAiConnectors)   # TDG Snowflake and DE-Lineage ship only as claude.ai connectors
     | .disableArtifact = true
     # ---- chezmoi-owned plugin dirs, loaded in every session, colon-separated ----
-    # mermaid-images: a hooks module mod. gg: the workflow plugin, loaded from
-    # its repo so an edit works in the next session.
-    | .env.CLAUDE_CODE_PLUGIN_DIRS = "~/.claude/mods/mermaid-images:~/Dev/personal/gg"
+    # mermaid-images: a hooks module mod.
+    | .env.CLAUDE_CODE_PLUGIN_DIRS = "~/.claude/mods/mermaid-images"
     # Without this, every ~30 s each background agent sends its whole context to
     # its own model only to refresh a 3-5 word status in the agents panel.
     # Claude Code reads it from 2.1.318, and only the exact value "1".
