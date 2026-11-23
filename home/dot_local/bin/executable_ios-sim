@@ -1,0 +1,105 @@
+#!/bin/bash
+# ios-sim: the two iOS simulators agents share, and a cleanup that keeps only them.
+#   ios-sim udid iphone|ipad            print the UDID; fail if it is missing (never creates)
+#   ios-sim run  iphone|ipad -- CMD...  boot it, run CMD with SIMULATOR_UDID set, one CMD at a time per device
+#   ios-sim cleanup                     show what goes and the disk it frees, ask, then delete
+set -euo pipefail
+
+IPHONE_NAME="iPhone 17"
+IPHONE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-17"
+IPAD_NAME="iPad Pro 11-inch (M5)"
+IPAD_TYPE="com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M5-12GB"
+DEVICES_DIR="$HOME/Library/Developer/CoreSimulator/Devices"
+
+latest_runtime() {
+  xcrun simctl list runtimes -j | jq -r '[.runtimes[] | select(.platform=="iOS" and .isAvailable)]
+    | sort_by(.version | split(".") | map(tonumber)) | last | .identifier // empty'
+}
+
+keeper_name() {
+  case "$1" in
+    iphone) echo "$IPHONE_NAME" ;;
+    ipad)   echo "$IPAD_NAME" ;;
+    *) echo "unknown kind '$1': use iphone or ipad" >&2; exit 2 ;;
+  esac
+}
+
+udid_of() { # kind -> UDID, or nothing when the keeper is missing
+  local name; name=$(keeper_name "$1")
+  xcrun simctl list devices -j | jq -r --arg rt "$(latest_runtime)" --arg n "$name" \
+    '.devices[$rt][]? | select(.name==$n and .isAvailable) | .udid' | head -1
+}
+
+cmd_udid() {
+  local u; u=$(udid_of "$1")
+  if [ -z "$u" ]; then
+    echo "There is no \"$(keeper_name "$1")\" on $(latest_runtime). Ask Gleb to run 'ios-sim cleanup', which creates it." >&2
+    exit 1
+  fi
+  echo "$u"
+}
+
+cmd_run() {
+  local kind=$1; shift
+  if [ "${1:-}" = "--" ]; then shift; fi
+  local u; u=$(cmd_udid "$kind")
+  xcrun simctl bootstatus "$u" -b >/dev/null
+  # lockf holds the lock while CMD runs and drops it when CMD exits, so a crashed run leaves no stale lock.
+  echo "ios-sim: running on $u (this waits while another run holds it)" >&2
+  SIMULATOR_UDID="$u" exec lockf -t 3600 "/tmp/ios-sim-$u.lock" "$@"
+}
+
+kb_of() { du -sk "$1" 2>/dev/null | cut -f1 || echo 0; }
+human() { awk -v k="$1" 'BEGIN { printf "%.1f GB", k/1048576 }'; }
+
+cmd_cleanup() {
+  local rt; rt=$(latest_runtime)
+  if [ -z "$rt" ]; then echo "No iOS runtime is installed."; exit 1; fi
+  local keep_iphone keep_ipad total=0 dev_ids="" rt_ids="" u name r state avail kb
+  keep_iphone=$(udid_of iphone); keep_ipad=$(udid_of ipad)
+  echo "Latest iOS runtime: $rt"
+  echo "Keep: $IPHONE_NAME ${keep_iphone:-(missing)}, $IPAD_NAME ${keep_ipad:-(missing)}"
+
+  echo; echo "Devices to delete:"
+  while IFS=$'\t' read -r u name r state avail; do
+    if [ "$u" = "$keep_iphone" ] || [ "$u" = "$keep_ipad" ]; then continue; fi
+    kb=$(kb_of "$DEVICES_DIR/$u"); total=$((total + kb)); dev_ids="$dev_ids $u"
+    if [ "$avail" = true ]; then avail=""; else avail=" (unavailable)"; fi
+    printf '  %-9s %-36s %-9s %s%s\n' "$(human "$kb")" "$name" "$state" "${r##*.}" "$avail"
+  done < <(xcrun simctl list devices -j | jq -r '.devices | to_entries[] | .key as $rt | .value[]
+            | [.udid, .name, $rt, .state, (.isAvailable|tostring)] | @tsv')
+  if [ -z "$dev_ids" ]; then echo "  none"; fi
+
+  echo; echo "Old iOS runtimes to delete:"
+  while IFS=$'\t' read -r u r kb; do
+    total=$((total + kb)); rt_ids="$rt_ids $u"
+    printf '  %-9s %s\n' "$(human "$kb")" "$r"
+  done < <(xcrun simctl runtime list -j | jq -r --arg rt "$rt" '.[]
+            | select(.platformIdentifier=="com.apple.platform.iphonesimulator" and .runtimeIdentifier!=$rt and .deletable)
+            | [.identifier, .runtimeIdentifier, (.sizeBytes/1024|floor)] | @tsv')
+  if [ -z "$rt_ids" ]; then echo "  none"; fi
+
+  local clones; clones=$(kb_of "$HOME/Library/Developer/XCTestDevices"); total=$((total + clones))
+  echo; echo "XCTest clones to delete: $(human "$clones")"
+  echo; echo "Total freed: about $(human "$total")"
+  if [ -z "$keep_iphone" ]; then echo "To create: $IPHONE_NAME on $rt"; fi
+  if [ -z "$keep_ipad" ]; then echo "To create: $IPAD_NAME on $rt"; fi
+
+  printf '\nGo ahead? [y/N] '; read -r ok || ok=""
+  case "$ok" in y|Y) ;; *) echo "Nothing changed."; exit 0 ;; esac
+
+  for u in $dev_ids; do xcrun simctl shutdown "$u" 2>/dev/null || true; xcrun simctl delete "$u"; done
+  xcrun simctl delete unavailable
+  for u in $rt_ids; do xcrun simctl runtime delete "$u"; done
+  xcrun simctl --set testing delete all 2>/dev/null || true
+  if [ -z "$keep_iphone" ]; then xcrun simctl create "$IPHONE_NAME" "$IPHONE_TYPE" "$rt" >/dev/null; fi
+  if [ -z "$keep_ipad" ]; then xcrun simctl create "$IPAD_NAME" "$IPAD_TYPE" "$rt" >/dev/null; fi
+  echo; xcrun simctl list devices available
+}
+
+case "${1:-}" in
+  udid)    cmd_udid "${2:?kind: iphone or ipad}" ;;
+  run)     shift; cmd_run "$@" ;;
+  cleanup) cmd_cleanup ;;
+  *) sed -n '2,5p' "$0"; exit 2 ;;
+esac

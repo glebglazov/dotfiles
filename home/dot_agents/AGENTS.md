@@ -97,6 +97,22 @@ I keep work I want to do later on a project as Tasks in my Obsidian vault,
   "<Project>"`, run from the vault root.
 - When I ask what is planned for a project, read its open Tasks there.
 
+## iOS simulators
+
+I keep two simulators on the latest iOS, `iPhone 17` and
+`iPad Pro 11-inch (M5)`, and I prefer that you use them instead of making
+your own. Each simulator you make costs about 3 GB, and the ones agents left
+behind once took 50 GB. `ios-sim` finds them for you:
+
+- `ios-sim run iphone -- <cmd>` (or `ipad`) boots the simulator and runs
+  `<cmd>` with `SIMULATOR_UDID` set. If another agent's run is using the
+  simulator, it waits, so parallel worktrees can share one.
+- `ios-sim udid iphone` prints the UDID, for a `-destination "id=…"`.
+
+If a check really needs another device or OS, make that simulator, delete it
+when you finish, and tell me about it. If `ios-sim` reports a simulator is
+missing, tell me: `ios-sim cleanup` makes it, and I run that myself.
+
 ## Implementation
 
 Before you write or change code, run `pop conventions get implementation` and
