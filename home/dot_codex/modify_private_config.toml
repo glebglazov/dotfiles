@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-config=$(tomato set model_context_window 872000)
+config=$(tomato set model_context_window 872000 | tomato set check_for_update_on_startup false)
 set_hook_hash() {
     config=$(printf '%s\n' "$config" | tomato set "hooks.state.\"$1\".$2" "\"$3\"")
 }
