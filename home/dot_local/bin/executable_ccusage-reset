@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Report Claude Code and Codex usage for the last 30 local calendar days."""
+
+import argparse
+import calendar
+import json
+import os
+from collections import Counter
+from contextlib import ExitStack
+from datetime import datetime, time, timedelta
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+
+def reset_date(day, weekday):
+    return day - timedelta(days=(day.weekday() - weekday) % 7)
+
+
+def usage_record(row, agent):
+    if agent == "claude":
+        message = row.get("message")
+        if not isinstance(message, dict) or not message.get("usage"):
+            return None
+        return {**row, "message": {**message, "content": []}}
+    payload = row.get("payload", {})
+    if row.get("type") == "event_msg" and payload.get("type") == "token_count":
+        return row
+    if row.get("type") in ("session_meta", "turn_context"):
+        return {**row, "payload": {k: v for k, v in payload.items()
+                                  if k not in ("base_instructions", "instructions", "truncation_policy")}}
+    return None
+
+
+def stage_sessions(source, target, start, now, cutoff, agent):
+    """Give ccusage a private copy with UTC dates aligned to the local reset."""
+    target.mkdir(parents=True)
+    for path in source.rglob("*.jsonl"):
+        if path.stat().st_mtime < start.timestamp():
+            continue
+        with path.open("rb") as stream, ExitStack() as stack:
+            dest = None
+            for line in stream:
+                try:
+                    row = usage_record(json.loads(line), agent)
+                    if row is None:
+                        continue
+                    stamp = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
+                except (ValueError, KeyError, TypeError, AttributeError):
+                    continue
+                if stamp.tzinfo is None or stamp > now:
+                    continue
+                # Keep older context so ccusage can calculate Codex token deltas.
+                local = stamp.astimezone(start.tzinfo)
+                day = local.date()
+                if stamp.timestamp() < datetime.combine(day, cutoff, start.tzinfo).timestamp():
+                    day -= timedelta(days=1)
+                if stamp < start:
+                    day = min(day, start.date() - timedelta(days=2))
+                shifted = local.replace(tzinfo=None) - timedelta(hours=cutoff.hour, minutes=cutoff.minute)
+                row["timestamp"] = datetime.combine(day, shifted.time()).isoformat(timespec="milliseconds") + "Z"
+                if dest is None:
+                    out = target / path.relative_to(source)
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    dest = stack.enter_context(out.open("w"))
+                dest.write(json.dumps(row, separators=(",", ":")) + "\n")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("day", help="reset weekday, for example Wed or Wednesday")
+    parser.add_argument("time", help="local reset time in 24-hour format, for example 13:00")
+    parser.add_argument("--timezone", default="Europe/Madrid", help="default: Europe/Madrid")
+    args = parser.parse_args()
+    weekdays = {name.lower(): i for names in (calendar.day_name, calendar.day_abbr)
+                for i, name in enumerate(names)}
+    if args.day.lower() not in weekdays or not re.fullmatch(r"(?:[01]?\d|2[0-3]):[0-5]\d", args.time):
+        parser.error("enter a weekday and a time, for example Wed 13:00")
+    weekday = weekdays[args.day.lower()]
+    cutoff = datetime.strptime(args.time, "%H:%M").time()
+    try:
+        now = datetime.now(ZoneInfo(args.timezone))
+    except (ZoneInfoNotFoundError, ValueError):
+        parser.error(f"unknown time zone: {args.timezone}")
+    start = datetime.combine(now.date() - timedelta(days=29), time.min, now.tzinfo)
+    first_day = start.date() - timedelta(days=int(cutoff != time.min))
+    today_reset = datetime.combine(now.date(), cutoff, now.tzinfo)
+    last_day = now.date() - timedelta(days=int(now.timestamp() < today_reset.timestamp()))
+    weeks = {}
+    day = reset_date(first_day, weekday)
+    while day <= last_day:
+        weeks[day] = Counter()
+        day += timedelta(days=7)
+
+    with tempfile.TemporaryDirectory(prefix="ccusage-reset-") as tmp:
+        root = Path(tmp)
+        env = os.environ.copy()
+        claude_dirs = env.get("CLAUDE_CONFIG_DIR") or str(Path.home() / ".claude")
+        for i, directory in enumerate(claude_dirs.split(",")):
+            source = Path(directory.strip()).expanduser()
+            if source.name != "projects":
+                source /= "projects"
+            stage_sessions(source, root / "claude/projects" / str(i), start, now, cutoff, "claude")
+        codex = Path(env.get("CODEX_HOME") or Path.home() / ".codex")
+        stage_sessions(codex / "sessions", root / "codex/sessions", start, now, cutoff, "codex")
+        if (codex / "config.toml").is_file():
+            (root / "codex/config.toml").symlink_to(codex / "config.toml")
+        env.update(CLAUDE_CONFIG_DIR=str(root / "claude"), CODEX_HOME=str(root / "codex"))
+        command = ["ccusage", "daily", "--timezone", "UTC", "--by-agent", "--json",
+                   "--since", first_day.isoformat(), "--until", last_day.isoformat()]
+        report = json.loads(subprocess.check_output(command, env=env))
+
+    for row in report["daily"]:
+        week = weeks[reset_date(datetime.fromisoformat(row["period"]).date(), weekday)]
+        for agent in row["agents"]:
+            if agent["agent"] not in ("claude", "codex"):
+                continue
+            week[agent["agent"]] += agent["totalTokens"]
+            week["cost"] += agent["totalCost"]
+            if any(m["cost"] == 0 for m in agent["modelBreakdowns"]):
+                week["unpriced"] = 1
+
+    print(f"{start:%Y-%m-%d} through {now:%Y-%m-%d %H:%M} ({args.timezone})")
+    print(f"Weekly reset: {calendar.day_name[weekday]} {cutoff:%H:%M}")
+    print(f"{'Week starting':<15} {'Claude tokens':>16} {'Codex tokens':>16} {'Cost estimate':>17}")
+    total = sum(weeks.values(), Counter())
+    rows = [(str(day), counts) for day, counts in weeks.items()]
+    rows.append(("Total", total))
+    for label, week in rows:
+        cost = f"${week['cost']:,.2f}"
+        if week["unpriced"]:
+            cost = cost + " partial" if week["cost"] else "unknown"
+        print(f"{label:<15} {week['claude']:>16,} {week['codex']:>16,} {cost:>17}")
+    print("Rows include only usage inside the 30-day window.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise SystemExit(str(error))
