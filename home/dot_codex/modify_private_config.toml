@@ -26,8 +26,4 @@ user_prompt_submit:1:0 sha256:289542e727d99738192a63a7eea9582704882a6a725baf0a03
 user_prompt_submit:2:0 sha256:23927131423f4d3a1d01a3dd375152584e9d09bc4c89fd4f5644a5cc50107446
 HOOKS
 
-pstack='pstack@pstack-claude:hooks/codex-hooks.json:session_start:0:0'
-set_hook_hash "$pstack" trusted_hash sha256:0423e2d2c45fe8f4c25c82dbaf027a724c9b15397e8487c003489dda0c03e02b
-set_hook_hash "$pstack" trusted_content_hash sha256:725a581babf59134eb0fa0d9a3e7c5c169d6fd3d8c9ec5f3ff540afc1dd8b063
-
 printf '%s\n' "$config"
