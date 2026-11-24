@@ -12,6 +12,10 @@ for work with neither, its commit messages and PR body. This skill finds what
 was asked and the evidence. The core, `~/.agents/docs/pages/core.md`, defines
 a page and has the steps that write, check and deliver it.
 
+Write the debrief in English so reviewers can read it without the original
+conversation. Translate any conversation excerpts you include and label
+translated quotations. Preserve code, commands and identifiers exactly.
+
 ## Steps
 
 1. **Find what was asked.** Look in this order, and use every source that
