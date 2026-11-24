@@ -1,7 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-config=$(tomato set model_context_window 872000 | tomato set check_for_update_on_startup false)
+config=$(
+    tomato set model_context_window 872000 |
+        tomato set check_for_update_on_startup false |
+        tomato set developer_instructions '"When you reply to me, answer the question in the first sentence. Use short paragraphs. Skip praise and recaps.
+
+When I ask for an explanation, start with what I can see or do. Use one concrete example to show how it works. A small diagram can replace prose when the relationships are easier to see.
+
+By default, stop once I have enough to understand the main idea. Let me choose what to explore next. If I ask for a full walkthrough, give it in one reply. Use short sections with headings that state each point. Make each section understandable on its own so I can skip around."'
+)
 set_hook_hash() {
     config=$(printf '%s\n' "$config" | tomato set "hooks.state.\"$1\".$2" "\"$3\"")
 }
