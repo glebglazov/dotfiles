@@ -16,7 +16,7 @@ set -euo pipefail
 input="$(cat)"
 [ -z "$input" ] && input='{}'
 
-printf '%s' "$input" | jq '
+printf '%s' "$input" | jq --arg pstack_marketplace "$HOME/.claude/pstack-marketplace.json" '
     # ---- chezmoi-owned editor settings (authoritative) ----
       .tui = "fullscreen"
     | .model = "claude-opus-5-5"
@@ -33,7 +33,7 @@ printf '%s' "$input" | jq '
         "cook@cook": true
       }
     | .extraKnownMarketplaces["pstack-claude"] = {
-        "source": {"source": "github", "repo": "michael-denyer/pstack-claude"}
+        "source": {"source": "file", "path": $pstack_marketplace}
       }
     | .extraKnownMarketplaces["cook"] = {
         "source": {"source": "github", "repo": "ykaratkou/cook"}

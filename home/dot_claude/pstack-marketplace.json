@@ -1,0 +1,16 @@
+{
+  "name": "pstack-claude",
+  "description": "Pinned pstack release for Claude Code.",
+  "owner": {"name": "Michael Denyer"},
+  "plugins": [
+    {
+      "name": "pstack",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/michael-denyer/pstack-claude.git",
+        "path": "plugins/pstack",
+        "sha": "103a68d9a9aa23759d00ad95b01cb78cb8f57772"
+      }
+    }
+  ]
+}
