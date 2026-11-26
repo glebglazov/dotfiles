@@ -19,11 +19,18 @@ argument-hint: "[harness] [directory] [task or handoff path]"
    file. Pass a short prompt with its absolute path. Prefer CLI prompt options;
    otherwise wait for the input prompt and paste through a tmux buffer. Quote
    shell arguments; keep task text out of shell code.
-3. Use tmux directly. Target the caller's `$TMUX_PANE`, or an explicit pane
-   supplied by the user. If neither exists, ask for a target pane. Split that
-   pane side by side, without changing focus:
-   `tmux split-window -h -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
-   Capture the returned pane ID. Wait for its shell to be ready, then send the
+3. Use tmux directly, and choose the pane the agent runs in:
+   - When the agent belongs in a tmux session or window made for this task,
+     list its panes:
+     `tmux list-panes -s -t "$target" -F '#{pane_id} #{pane_current_command}'`.
+     A single pane that runs an idle shell is the agent's place: launch there,
+     so the tmux session holds the agent and no leftover shell.
+   - Otherwise target the caller's `$TMUX_PANE`, or an explicit pane supplied
+     by the user. If neither exists, ask for a target pane. Split that pane
+     side by side, without changing focus:
+     `tmux split-window -h -d -P -F '#{pane_id}' -t "$target_pane" -c "$directory"`.
+
+   Capture the pane ID. Wait for its shell to be ready, then send the
    quoted launch command with one leading space, so shell history skips it:
    `tmux send-keys -l -t "$pane_id" " $launch_command"`. Submit with
    `tmux send-keys -t "$pane_id" Enter`. Use the pane ID for all
