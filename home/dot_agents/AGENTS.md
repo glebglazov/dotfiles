@@ -105,9 +105,13 @@ your own. Each simulator you make costs about 3 GB, and the ones agents left
 behind once took 50 GB. `ios-sim` finds them for you:
 
 - `ios-sim run iphone -- <cmd>` (or `ipad`) boots the simulator and runs
-  `<cmd>` with `SIMULATOR_UDID` set. If another agent's run is using the
-  simulator, it waits, so parallel worktrees can share one.
-- `ios-sim udid iphone` prints the UDID, for a `-destination "id=…"`.
+  `<cmd>` with `SIMULATOR_UDID` set. Run every command that uses the
+  simulator this way, `xcodebuild -destination "id=$SIMULATOR_UDID"` too.
+- The first `run` claims the simulator for your session. Other agents wait
+  until you run `ios-sim release iphone`, your session ends, or 10 minutes
+  pass after your last `run`. Release it when you finish with it.
+- `ios-sim udid iphone` only prints the UDID. A command that uses it outside
+  `ios-sim run` can collide with another agent's run.
 
 If a check really needs another device or OS, make that simulator, delete it
 when you finish, and tell me about it. If `ios-sim` reports a simulator is

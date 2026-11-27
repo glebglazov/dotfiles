@@ -1,7 +1,9 @@
 #!/bin/bash
 # ios-sim: the two iOS simulators agents share, and a cleanup that keeps only them.
 #   ios-sim udid iphone|ipad            print the UDID; fail if it is missing (never creates)
-#   ios-sim run  iphone|ipad -- CMD...  boot it, run CMD with SIMULATOR_UDID set, one CMD at a time per device
+#   ios-sim run  iphone|ipad -- CMD...  claim it, boot it, run CMD with SIMULATOR_UDID set, one CMD at a time per device
+#   ios-sim claim iphone|ipad           wait until no other agent holds it, then hold it for 10 minutes
+#   ios-sim release iphone|ipad         stop holding it, so the next agent can start
 #   ios-sim cleanup                     show what goes and the disk it frees, ask, then delete
 set -euo pipefail
 
@@ -10,6 +12,8 @@ IPHONE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-17"
 IPAD_NAME="iPad Pro 11-inch (M5)"
 IPAD_TYPE="com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M5-12GB"
 DEVICES_DIR="$HOME/Library/Developer/CoreSimulator/Devices"
+LEASE_SECONDS=600
+CLAIM_TIMEOUT=3600
 
 latest_runtime() {
   xcrun simctl list runtimes -j | jq -r '[.runtimes[] | select(.platform=="iOS" and .isAvailable)]
@@ -39,14 +43,72 @@ cmd_udid() {
   echo "$u"
 }
 
+# A session is many shell calls (build, install, launch, screenshot), and another agent must not
+# take the simulator between them. The lease names the agent process that owns the session. It
+# ends when that process exits, when the owner releases it, or 10 minutes after its last run.
+lease_file() { echo "/tmp/ios-sim-$1.lease"; }
+run_lock() { echo "/tmp/ios-sim-$1.lock"; }
+
+owner_pid() { # the agent process above this shell; the calling shell when no agent is found
+  local p=$PPID comm
+  while [ "$p" -gt 1 ]; do
+    comm=$(ps -o comm= -p "$p" 2>/dev/null) || break
+    case "${comm##*/}" in claude|codex|amp|opencode|pi|cursor-agent) echo "$p"; return ;; esac
+    p=$(ps -o ppid= -p "$p" | tr -d ' ')
+  done
+  echo "$PPID"
+}
+
+# Runs under the lease guard lock, so two agents cannot both see the lease free.
+# Exit 0: the lease is now ours until now+LEASE_SECONDS. Exit 3: another agent holds it.
+lease_take() {
+  local u=$1 me=$2 f pid until now
+  f=$(lease_file "$u"); now=$(date +%s)
+  if read -r pid until 2>/dev/null <"$f" && [ "$pid" != "$me" ] && ps -p "$pid" >/dev/null 2>&1; then
+    # A run that outlasts the lease still holds the simulator.
+    if [ "$now" -lt "$until" ] || ! lockf -t 0 "$(run_lock "$u")" true 2>/dev/null; then
+      echo "$pid $until"; exit 3
+    fi
+  fi
+  echo "$me $((now + LEASE_SECONDS))" >"$f"
+}
+
+lease_claim() { # udid -> returns when the lease is ours; fails after CLAIM_TIMEOUT
+  local u=$1 me start holder rc waiting=""
+  me=$(owner_pid); start=$(date +%s)
+  while :; do
+    rc=0; holder=$(lockf -k -t 30 "$(lease_file "$u").guard" "$0" __lease-take "$u" "$me") || rc=$?
+    [ "$rc" -eq 0 ] && return 0
+    [ "$rc" -ne 3 ] && { echo "ios-sim: could not read the lease $(lease_file "$u")" >&2; exit 1; }
+    if [ $(( $(date +%s) - start )) -ge "$CLAIM_TIMEOUT" ]; then
+      echo "ios-sim: gave up after ${CLAIM_TIMEOUT}s; process ${holder%% *} still holds $u" >&2; exit 1
+    fi
+    [ -z "$waiting" ] && { echo "ios-sim: process ${holder%% *} holds $u, waiting" >&2; waiting=1; }
+    sleep 5
+  done
+}
+
+cmd_claim() { lease_claim "$(cmd_udid "$1")"; }
+
+cmd_release() {
+  local u f pid until
+  u=$(cmd_udid "$1"); f=$(lease_file "$u")
+  if read -r pid until 2>/dev/null <"$f" && [ "$pid" = "$(owner_pid)" ]; then rm -f "$f"; fi
+}
+
 cmd_run() {
   local kind=$1; shift
   if [ "${1:-}" = "--" ]; then shift; fi
-  local u; u=$(cmd_udid "$kind")
+  local u rc=0; u=$(cmd_udid "$kind")
+  lease_claim "$u"
   xcrun simctl bootstatus "$u" -b >/dev/null
-  # lockf holds the lock while CMD runs and drops it when CMD exits, so a crashed run leaves no stale lock.
-  echo "ios-sim: running on $u (this waits while another run holds it)" >&2
-  SIMULATOR_UDID="$u" exec lockf -t 3600 "/tmp/ios-sim-$u.lock" "$@"
+  # lockf holds the lock while CMD runs and drops it when CMD exits, so a crashed run leaves no
+  # stale lock. It also keeps parallel subagents of one owner from running at the same time.
+  SIMULATOR_UDID="$u" lockf -t "$CLAIM_TIMEOUT" "$(run_lock "$u")" "$@" || rc=$?
+  # The 10 minutes count from the end of the last run. Do not wait: if another agent took the
+  # simulator after CMD ended, it is theirs now.
+  lockf -k -t 30 "$(lease_file "$u").guard" "$0" __lease-take "$u" "$(owner_pid)" >/dev/null 2>&1 || true
+  exit "$rc"
 }
 
 kb_of() { du -sk "$1" 2>/dev/null | cut -f1 || echo 0; }
@@ -100,6 +162,9 @@ cmd_cleanup() {
 case "${1:-}" in
   udid)    cmd_udid "${2:?kind: iphone or ipad}" ;;
   run)     shift; cmd_run "$@" ;;
+  claim)   cmd_claim "${2:?kind: iphone or ipad}" ;;
+  release) cmd_release "${2:?kind: iphone or ipad}" ;;
+  __lease-take) lease_take "$2" "$3" ;;
   cleanup) cmd_cleanup ;;
-  *) sed -n '2,5p' "$0"; exit 2 ;;
+  *) sed -n '2,7p' "$0"; exit 2 ;;
 esac
