@@ -40,6 +40,7 @@ tree-sitter = '0.26'
 "npm:openai" = "latest"
 "npm:impeccable" = 'latest'
 "npm:@mermaid-js/mermaid-cli" = 'latest'
+"npm:obsidian-headless" = 'latest'
 {{- range dig "mise" (list) $private }}
 {{- if kindIs "string" . }}
 "{{ . }}" = 'latest'

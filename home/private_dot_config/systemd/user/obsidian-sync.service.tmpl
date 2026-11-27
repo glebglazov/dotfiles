@@ -1,0 +1,12 @@
+[Unit]
+Description=Obsidian Sync (headless) for {{ .obsidianVaultPath }}
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart={{ .chezmoi.homeDir }}/.local/share/mise/shims/ob sync --continuous --path {{ .obsidianVaultPath | replace "~" .chezmoi.homeDir }}
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target
