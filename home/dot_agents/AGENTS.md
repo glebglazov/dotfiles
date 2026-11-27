@@ -97,6 +97,16 @@ I keep work I want to do later on a project as Tasks in my Obsidian vault,
   "<Project>"`, run from the vault root.
 - When I ask what is planned for a project, read its open Tasks there.
 
+## Reminders
+
+When I ask you to remind me of something, add it to Todoist with `td`, whenever
+I take part in the work: a call, a talk, a review I do. Work goes to **Работа**,
+personal to **Личное**. Give it a due date, and a time only when I name one.
+Put the link to its source (Slack, PR, mail) in the task.
+
+A membr schedule is only for work an agent does alone at a time. It is never a
+reminder for me. If `td` fails, tell me, and put the reminder nowhere else.
+
 ## iOS simulators
 
 I keep two simulators on the latest iOS, `iPhone 17` and
