@@ -1,0 +1,17 @@
+#!/bin/zsh
+# membr with the hub on Codex models. The hub reads the model variables only
+# when it starts, so a hub that runs on other models stops first. Plain membr
+# keeps the Codex hub until `membr server stop`.
+
+export MEMBR_CHAT=codex:gpt-6.2-astra:medium
+export MEMBR_COMPRESSION=codex:gpt-6-luna:medium
+
+plist="$HOME/Library/LaunchAgents/dev.membr.serve.plist"
+installed() { plutil -extract "EnvironmentVariables.$1" raw -o - "$plist" 2>/dev/null }
+
+if membr server status 2>/dev/null | grep -q '^membr: the server runs' &&
+    [[ "$(installed MEMBR_CHAT)" != "$MEMBR_CHAT" || "$(installed MEMBR_COMPRESSION)" != "$MEMBR_COMPRESSION" ]]; then
+    membr server stop || exit
+fi
+
+exec membr "$@"
