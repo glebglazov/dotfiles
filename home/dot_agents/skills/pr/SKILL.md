@@ -1,6 +1,6 @@
 ---
 name: pr
-description: "Use when writing a PR body."
+description: "Use when writing a PR body. Links the debrief page of the work where the reviewers can open it."
 metadata:
   credits:
     skill: show-me
@@ -9,36 +9,91 @@ metadata:
     url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
 ---
 
-Use this template for writing the PR body:
+# pr
 
-```markdown
-## Summary
+A PR body by `template.md`, in two layers:
 
-<diagram, diff-sketch, or tree>
+- The **part in view** is what a reviewer acts on before the merge. Keep it
+  under about 2,500 bytes.
+- The **record** is the rest: rejected options, new concepts, the evidence
+  output, other findings. It goes to the **debrief** of the work, the page
+  that the `debrief` skill made, when that page can be published. When it
+  cannot, the record goes into a closed `<details>` at the end of the body.
 
-## Evidence
+The two layers never repeat each other. The one exception is Evidence: the
+part in view has one line per check, and the record has the output.
 
-- **Before:** <screenshot/output/failing test run>
-  **After:** <screenshot/output/passing test run>
+## Steps
 
-## Merge Danger
+1. **Find the debrief.** Look in the Lavish folder of the current directory,
+   `~/.local/share/lavish-axi/<dir-hash>/`, where `<dir-hash>` is
+   `printf '%s' "$PWD" | shasum -a 256 | cut -c1-12`. The debrief is the page
+   whose header starts with "Debrief" and that describes the work of this PR.
+   When more than one page matches, use the newest. Done when you have the
+   page, or you know there is none.
+2. **Collect.** With a debrief, take its asked items and their status, the
+   differences, the evidence, the rollback and what is not done. With none,
+   do steps 1 and 2 of the `debrief` skill, and do not write the page. Done
+   when each part of `template.md` has its source, or nothing applies to it.
+3. **Publish it.** With a debrief, from the repository, run
+   `scripts/share-debrief <page>` from this skill's directory. It picks the
+   host from the owner and visibility of the repository, publishes the page,
+   and prints one Markdown line. Exit status 3 means a private personal
+   repository, which has no host. Done when you have the line, or you know
+   the page cannot be shared: no page, exit 3, or an error.
+4. **Write the body.** Write it by `template.md` to a new temporary file, and
+   print its path. With the line, put it first and leave out the record.
+   Without it, put the record in the closed `<details>`. Write the
+   [axes](#axes), the [decisions](#decisions), the [views](#views) and the
+   [evidence](#evidence) by the rules below, in the user's domain language
+   from `GLOSSARY.md` or `CONTEXT.md`. When the part in view grows past
+   about 2,500 bytes, move detail into the record. Run the text through
+   `pstack:unslop`. Done when the body has each heading of `template.md`,
+   word for word, and `None.` where nothing applies.
 
-**Door:** <one-way or two-way>
+## Axes
 
-<optional: description>
+The axes line marks the risk of the merge:
 
-**Blast Radius:** <one-word description>
+- 🚪 **Door:** `one-way` or `two-way`. You can walk back through a two-way
+  door, but not a one-way door. Destructive actions and hard-to-reverse
+  decisions are one-way.
+- 💥 **Blast radius:** one or two words for the scope of the impact, such as
+  layout, consumers, deploy, data. Consider every way the change reaches
+  users and other code.
+- 🔒 **Security:** `none`, or what the change touches: authentication,
+  secrets, personal data, permissions.
+- ⚠️ **High-risk item:** only when the change touches one, such as a change
+  to a UX flow, a migration or the connect path.
 
-<optional: potential ramifications of merge>
+Colour each value with GitHub math: green for the safe value, red for a value
+that raises the risk, and red for the ⚠️ part:
+
+```
+🚪 $\color{green}\textsf{two-way}$ · 💥 $\color{red}\textsf{large}$ · 🔒 $\color{green}\textsf{none}$
 ```
 
-## Sections
+The ↩️ line under it says how to undo the change, and what does not come back
+after it.
 
-Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
+## Decisions
 
-### Summary
+List each decision that changes the current state: a new approach, a change
+to an existing one, a move away from the existing design. Leave out
+boilerplate that follows a pattern the code already uses many times. Mark
+each by who made it:
 
-Pick the smallest view that makes the key point clear.
+- **you:** the human made or approved it, in the planning page, in chat, or
+  in an answer to a question.
+- **agent:** no human made or approved it. These are the asked items done
+  differently and what no item asked. Give each its reason.
+
+## Views
+
+Pick the smallest view that makes the key point clear for "What changed".
+Place each view next to the short text it supports. Keep only the calls,
+files, props, states and boundaries the reviewer needs. One view is usual;
+use two when the change has two points.
 
 - Show logic or an algorithm as pseudocode:
 
@@ -60,7 +115,8 @@ submitForm
   navigateToSession
 ```
 
-- Show UI structure as a component tree, including state and module boundaries that matter:
+- Show UI structure as a component tree, including state and module
+  boundaries that matter:
 
 ```text
 <SessionPage> (apps/example/src/routes/session.tsx)
@@ -78,7 +134,7 @@ src/
 └── transport/      # sends API requests
 ```
 
-- Show component interaction, control flow, or data flow with Mermaid:
+- Show component interaction, control flow or data flow with Mermaid:
 
 ```mermaid
 sequenceDiagram
@@ -90,46 +146,9 @@ sequenceDiagram
     Daemon-->>UI: stream result
 ```
 
-- Use `diff` when the point is what changes and the surrounding shape already exists. Match the diff shape to the topic.
-
-For a component change:
-
-```diff
- <SessionPage>
-   useSessionEvents()
-   <SessionToolbar>
-+    <RunSkillButton />
-   <SessionTimeline>
-+    <SkillResultCard />
-```
-
-For a file-layout change:
-
-```diff
- src/
- ├── commands/
-+│   └── show-me.ts       # expands the slash command
- ├── sessions/
--└── transport.ts
-+└── transport/
-+    ├── client.ts
-+    └── stream.ts
-```
-
-For a call-tree or call-stack change:
-
-```diff
- submitForm
-   createSession
-     persistPrompt
-+    expandSkillMention
-     launchAgent
--  navigateToSession
-+  navigateToSession
-+    subscribeToEvents
-```
-
-For a state or control-flow change:
+- Use `diff` when the point is what changes and the surrounding shape already
+  exists. Match the diff shape to the topic: a component tree, a file tree, a
+  call tree, or a state or control flow:
 
 ```diff
  on(save)
@@ -140,31 +159,14 @@ For a state or control-flow change:
 +  invalidate cache
 ```
 
-- Show the whole block when most of it is new, when omitted context would hide ownership or order, or when the user needs a copyable target shape:
+- Show the whole block when most of it is new, when omitted context would
+  hide ownership or order, or when the reviewer needs a copyable target shape.
 
-```ts
-function expandSkill(command: string): string {
-  const skillName = command.slice(1);
-  return `use the ${skillName} skill`;
-}
-```
+When an axis is red, show the change as before and after.
 
-#### Guidance
+## Evidence
 
-Place each visual next to the short text it supports. Keep only the calls, files, props, states, and boundaries needed to answer the user's current question or the options to resolve the current discussion point.
-
-You may use one of these, you may use several, it is unlikely you will use all of them. Use your judgement and don't overwhelm the user.
-
-### Evidence
-
-Concrete evidence that the change works. Show a before and after.
-
-Screenshots are S-tier - when the environment is set up for it and the change is visual.
-
-Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
-
-### Merge Danger
-
-Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
-
-The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.
+Show concrete evidence that the change works, before and after. A screenshot
+is S-tier, when the environment is set up for it and the change is visual.
+Execution is A-tier: test results and console output. Name the exact test
+that failed before and passes now. Say what did not run.

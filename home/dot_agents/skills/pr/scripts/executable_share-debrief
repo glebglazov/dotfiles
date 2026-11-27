@@ -6,8 +6,8 @@
 #   - work (a Tripledot owner): a Harmony version, behind the Harmony login.
 #   - personal and public: a commit on the `debriefs` branch, served through
 #     raw.githack and pinned to that commit.
-#   - personal and private: no host this script can use alone. It prints the
-#     `lavish-axi share --private` command for the user to run, and exits 3.
+#   - personal and private: no host keeps a private page without a third
+#     party. It exits 3, and the PR body carries the record itself.
 set -euo pipefail
 
 [ $# -eq 1 ] && [ -f "$1" ] || { echo "usage: share-debrief <debrief.html>" >&2; exit 2; }
@@ -37,13 +37,7 @@ case $owner in
     ;;
   *)
     if [ "$visibility" != PUBLIC ]; then
-      shareable=${page%.html}.share.html
-      cp "$tmp/index.html" "$shareable"
-      cat >&2 <<EOF
-$owner/$repo is private, and no host keeps a private personal page without a third party.
-Run this yourself, then give the reviewer the URL and, apart from it, the password:
-  LAVISH_AXI_TELEMETRY=0 npx -y lavish-axi@0.1.96 share "$shareable" --private
-EOF
+      echo "$owner/$repo is private, and no host keeps a private personal page without a third party." >&2
       exit 3
     fi
     # Commit the page on the `debriefs` branch with plumbing, so the working

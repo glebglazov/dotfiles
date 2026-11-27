@@ -38,7 +38,9 @@ translated quotations. Preserve code, commands and identifiers exactly.
    first: did the work do what was asked, and what differs. Then one section
    per layer: what was asked against the result, as a table of asked items,
    each with the words of its source quoted, its status and `file:line`; each
-   difference, with its reason; the evidence; what no item asked. Write 2–3
+   difference, with its reason; the evidence; what no item asked; the options
+   not taken, and why; the glossary and ADR changes; how to roll the work
+   back, and what does not come back. Write 2–3
    prediction questions about what changed, the ones a reviewer must answer
    before a merge. Done when each
    section has one claim as its heading and one view from the core's Views,
