@@ -1,6 +1,7 @@
 **Debrief:** <url>
-🚪 <door> · 💥 <blast radius> · 🔒 <security>[ · ⚠️ <high-risk item>]
-↩️ <how to undo it, and what does not come back>
+🚪 <door> · 💥 <blast radius> · 🔒 <security> · 🔬 <verification>[ · ⚠️ <high-risk item>][ · ↩️ reversible]
+[↩️ <how to undo it, and what does not come back>]
+**Merge:** <✅ rather safe | 👀 look first: <reason>>
 
 <2–3 sentences, before any heading: the problem in the user's terms, what
 changes, and what the human decided.>

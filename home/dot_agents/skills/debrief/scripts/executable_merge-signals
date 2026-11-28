@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""Usage: merge-signals [--base <ref>]
+
+Run it from the repository of the change. It prints, as JSON, the facts of the
+change that a command can measure, so the merge assessment of the `debrief`
+skill (which `pr` shows) starts from the same facts on every run:
+
+  size       files and lines changed since the merge base
+  sensitive  changed paths that match a sensitive pattern, with its kind
+  tests      changed source paths and changed test paths
+  checks     the PR's CI checks, from `gh pr checks`
+  coverage   changed lines that a coverage report covers, when there is one
+  owners     CODEOWNERS of each changed path, and the author's past commits
+
+The diff runs from the merge base with the default branch to HEAD: the
+commits that become the PR. Uncommitted changes and untracked files do not
+count. The sensitive patterns are the defaults
+below, plus `~/.config/merge-signals/<owner>/<repo>.toml` when it exists:
+
+  [[sensitive]]
+  kind = "payments"
+  paths = ["app/services/payments/*", "app/models/charge.rb"]
+
+A pattern is an fnmatch glob on the path from the repository root; `*`
+also matches `/`.
+"""
+import argparse
+import fnmatch
+import json
+import os
+import re
+import subprocess
+import sys
+import tomllib
+from datetime import datetime, timezone
+from pathlib import Path
+
+GENERIC = {
+    "ci": [".github/workflows/*", ".gitlab-ci.yml", ".circleci/*", "Jenkinsfile"],
+    "infra": ["Dockerfile", "*/Dockerfile", "docker-compose*.yml", "*.tf", "*.tfvars", "k8s/*", "helm/*", "deploy/*"],
+    "dependency": ["package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lock", "bun.lockb",
+                   "Cargo.lock", "go.sum", "poetry.lock", "uv.lock", "Pipfile.lock", "mix.lock", "Gemfile.lock"],
+    "secrets": [".env", ".env.*", "*credentials*", "*secrets*"],
+    "migration": ["migrations/*", "*/migrations/*"],
+}
+RAILS = {
+    "migration": ["db/migrate/*", "db/schema.rb", "db/structure.sql", "db/*_schema.rb", "db/*/migrate/*"],
+    "config": ["config/*"],
+    "auth": ["app/controllers/*session*", "app/policies/*", "config/initializers/devise.rb"],
+}
+TEST_PATH = re.compile(r"(^|/)(test|tests|spec|specs|__tests__)/|(_test|_spec|\.test|\.spec)\.[a-z]+$|(^|/)test_[^/]+\.py$")
+DOC_PATH = re.compile(r"\.(md|mdx|txt|rst|adoc)$|(^|/)docs?/")
+
+
+def git(*args, check=True):
+    out = subprocess.run(["git", *args], capture_output=True, text=True)
+    if check and out.returncode != 0:
+        sys.exit(f"git {' '.join(args)}: {out.stderr.strip()}")
+    return out.stdout
+
+
+def merge_base(base):
+    if base is None:
+        head = git("symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD", check=False).strip()
+        candidates = [head] if head else []
+        candidates += ["origin/main", "origin/master", "main", "master"]
+        base = next((c for c in candidates if git("rev-parse", "--verify", "--quiet", c, check=False).strip()), None)
+        if base is None:
+            sys.exit("merge-signals: no default branch found; pass --base <ref>")
+    return base, git("merge-base", base, "HEAD").strip()
+
+
+def changed_files(mb):
+    files = []
+    for line in git("diff", "--numstat", "-M", mb, "HEAD").splitlines():
+        added, deleted, path = line.split("\t", 2)
+        if " => " in path:  # a rename: keep the new path
+            path = re.sub(r"\{[^}]* => ([^}]*)\}", r"\1", path) if "{" in path else path.split(" => ")[1]
+            path = path.replace("//", "/")
+        files.append({"path": path,
+                      "added": 0 if added == "-" else int(added),
+                      "deleted": 0 if deleted == "-" else int(deleted)})
+    return files
+
+
+def added_lines(mb):
+    """Line numbers each file has at HEAD, for lines the commits added or edited."""
+    lines, path = {}, None
+    for line in git("diff", "-U0", "--no-color", "-M", mb, "HEAD").splitlines():
+        if line.startswith("+++ "):
+            path = None if line == "+++ /dev/null" else line[6:]
+        elif line.startswith("@@") and path:
+            m = re.match(r"@@ -\S+ \+(\d+)(?:,(\d+))? @@", line)
+            start, count = int(m.group(1)), int(m.group(2) or 1)
+            lines.setdefault(path, []).extend(range(start, start + count))
+    return lines
+
+
+def repo_slug():
+    url = git("remote", "get-url", "origin", check=False).strip()
+    m = re.search(r"[:/]([^/:]+)/([^/]+?)(\.git)?$", url)
+    return (m.group(1), m.group(2)) if m else (None, None)
+
+
+def patterns(root):
+    """The kind → globs table: the defaults, the framework's own, then the local file."""
+    table = {k: list(v) for k, v in GENERIC.items()}
+    frameworks = []
+    if (root / "Gemfile").exists() and (root / "config" / "application.rb").exists():
+        frameworks.append("rails")
+        for k, v in RAILS.items():
+            table.setdefault(k, []).extend(v)
+    owner, repo = repo_slug()
+    local = Path.home() / ".config" / "merge-signals" / f"{owner}" / f"{repo}.toml" if owner else None
+    if local and local.exists():
+        for entry in tomllib.loads(local.read_text()).get("sensitive", []):
+            table.setdefault(entry["kind"], []).extend(entry["paths"])
+    else:
+        local = None
+    return table, frameworks, str(local) if local else None
+
+
+def sensitive(paths, table):
+    hits = []
+    for path in paths:
+        kinds = sorted(k for k, globs in table.items() if any(fnmatch.fnmatchcase(path, g) for g in globs))
+        if kinds:
+            hits.append({"path": path, "kinds": kinds})
+    return hits
+
+
+def checks():
+    try:
+        out = subprocess.run(["gh", "pr", "checks", "--json", "name,bucket"], capture_output=True, text=True)
+    except FileNotFoundError:
+        return {"state": "unknown", "detail": "gh is not installed"}
+    if out.returncode not in (0, 8):  # 8: some checks are pending
+        msg = out.stderr.strip()
+        return {"state": "no-pr" if "no pull requests found" in msg else "unknown", "detail": msg or None}
+    runs = json.loads(out.stdout or "[]")
+    if not runs:
+        return {"state": "none"}
+    buckets = {r["bucket"] for r in runs}
+    state = next((s for s in ("fail", "cancel", "pending") if s in buckets), "pass")
+    return {"state": state, "total": len(runs),
+            "not_passing": [f'{r["name"]}: {r["bucket"]}' for r in runs if r["bucket"] not in ("pass", "skipping")]}
+
+
+def coverage(root, changed):
+    """Changed lines that the newest coverage report (lcov or SimpleCov) covers."""
+    reports = [p for p in (root / "coverage" / "lcov.info", root / "coverage" / ".resultset.json") if p.exists()]
+    if not reports:
+        return None
+    report = max(reports, key=lambda p: p.stat().st_mtime)
+    hits = {}  # path from the root → {line: count}
+    if report.suffix == ".info":
+        path = None
+        for line in report.read_text().splitlines():
+            if line.startswith("SF:"):
+                path = os.path.relpath(Path(line[3:]).resolve(), root) if os.path.isabs(line[3:]) else line[3:]
+                hits.setdefault(path, {})
+            elif line.startswith("DA:") and path:
+                n, count = line[3:].split(",")[:2]
+                hits[path][int(n)] = int(count)
+    else:
+        for suite in json.loads(report.read_text()).values():
+            for abs_path, data in suite.get("coverage", {}).items():
+                counts = data["lines"] if isinstance(data, dict) else data
+                path = os.path.relpath(abs_path, root)
+                for i, c in enumerate(counts, start=1):
+                    if c is not None:
+                        hits.setdefault(path, {})[i] = max(c, hits.get(path, {}).get(i, 0))
+    relevant = uncovered = 0
+    missed = {}
+    for path, lines in changed.items():
+        if path not in hits:
+            continue
+        for n in lines:
+            if n in hits[path]:
+                relevant += 1
+                if hits[path][n] == 0:
+                    uncovered += 1
+                    missed.setdefault(path, []).append(n)
+    return {"report": str(report.relative_to(root)),
+            "report_time": datetime.fromtimestamp(report.stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
+            "changed_lines_measured": relevant, "uncovered": uncovered, "uncovered_lines": missed,
+            "files_not_in_report": sorted(p for p in changed if p not in hits and not TEST_PATH.search(p))}
+
+
+def owners(root, paths, mb):
+    rules = []
+    for loc in (".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"):
+        f = root / loc
+        if f.exists():
+            for line in f.read_text().splitlines():
+                parts = line.split("#", 1)[0].split()
+                if len(parts) >= 2:
+                    rules.append((parts[0], parts[1:]))
+            break
+
+    def owner_of(path):
+        found = None
+        for pattern, who in rules:  # the last matching rule wins, as in GitHub
+            p = pattern.lstrip("/")
+            if p.endswith("/"):
+                p += "*"
+            if fnmatch.fnmatchcase(path, p) or ("/" not in pattern.rstrip("/") and fnmatch.fnmatchcase(Path(path).name, p)):
+                found = who
+        return found
+
+    email = git("config", "user.email", check=False).strip()
+    out = []
+    for path in paths:
+        past = git("log", "--format=%H", f"--author={email}", mb, "--", path, check=False).split() if email else []
+        out.append({"path": path, "codeowners": owner_of(path) if rules else None, "author_past_commits": len(past)})
+    return {"codeowners_file": bool(rules), "paths": out}
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--base", help="the branch the PR merges into (default: origin's default branch)")
+    args = ap.parse_args()
+
+    root = Path(git("rev-parse", "--show-toplevel").strip())
+    os.chdir(root)
+    base, mb = merge_base(args.base)
+    files = changed_files(mb)
+    paths = [f["path"] for f in files]
+    table, frameworks, local = patterns(root)
+    tests = [p for p in paths if TEST_PATH.search(p)]
+    source = [p for p in paths if p not in tests and not DOC_PATH.search(p)]
+
+    print(json.dumps({
+        "base": base,
+        "merge_base": mb,
+        "size": {"files": len(files), "added": sum(f["added"] for f in files),
+                 "deleted": sum(f["deleted"] for f in files)},
+        "patterns": {"frameworks": frameworks, "local_file": local},
+        "sensitive": sensitive(paths, table),
+        "tests": {"source": source, "test": tests},
+        "checks": checks(),
+        "coverage": coverage(root, added_lines(mb)),
+        "owners": owners(root, paths, mb),
+    }, indent=2))
+
+
+if __name__ == "__main__":
+    main()

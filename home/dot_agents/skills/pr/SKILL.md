@@ -32,9 +32,10 @@ part in view has one line per check, and the record has the output.
    When more than one page matches, use the newest. Done when you have the
    page, or you know there is none.
 2. **Collect.** With a debrief, take its asked items and their status, the
-   differences, the evidence, the rollback and what is not done. With none,
-   do steps 1 and 2 of the `debrief` skill, and do not write the page. Done
-   when each part of `template.md` has its source, or nothing applies to it.
+   differences, the evidence, the rollback, what is not done and its merge
+   assessment. With none, do steps 1 and 2 of the `debrief` skill, and do not
+   write the page. Done when each part of `template.md` has its source, or
+   nothing applies to it.
 3. **Publish it.** With a debrief, from the repository, run
    `scripts/share-debrief <page>` from this skill's directory. It picks the
    host from the owner and visibility of the repository, publishes the page,
@@ -53,28 +54,29 @@ part in view has one line per check, and the record has the output.
 
 ## Axes
 
-The axes line marks the risk of the merge:
-
-- 🚪 **Door:** `one-way` or `two-way`. You can walk back through a two-way
-  door, but not a one-way door. Destructive actions and hard-to-reverse
-  decisions are one-way.
-- 💥 **Blast radius:** one or two words for the scope of the impact, such as
-  layout, consumers, deploy, data. Consider every way the change reaches
-  users and other code.
-- 🔒 **Security:** `none`, or what the change touches: authentication,
-  secrets, personal data, permissions.
-- ⚠️ **High-risk item:** only when the change touches one, such as a change
-  to a UX flow, a migration or the connect path.
+The axes line and the **Merge:** line show the merge assessment of the
+change, by the `debrief` skill's Merge assessment rules
+(`../debrief/SKILL.md`): 🚪 door, 💥 blast radius, 🔒 security,
+🔬 verification, ⚠️ high-risk item, ↩️ reversible, and the verdict. Copy
+the verdict word for word.
 
 Colour each value with GitHub math: green for the safe value, red for a value
 that raises the risk, and red for the ⚠️ part:
 
 ```
-🚪 $\color{green}\textsf{two-way}$ · 💥 $\color{red}\textsf{large}$ · 🔒 $\color{green}\textsf{none}$
+🚪 $\color{green}\textsf{two-way}$ · 💥 $\color{red}\textsf{large}$ · 🔒 $\color{green}\textsf{none}$ · 🔬 $\color{green}\textsf{verified}$
 ```
 
-The ↩️ line under it says how to undo the change, and what does not come back
-after it.
+When a revert undoes all of the change, end the axes line with a green
+`↩️ reversible`:
+
+```
+🚪 $\color{green}\textsf{two-way}$ · 💥 $\color{green}\textsf{layout}$ · 🔒 $\color{green}\textsf{none}$ · 🔬 $\color{green}\textsf{verified}$ · ↩️ $\color{green}\textsf{reversible}$
+```
+
+Otherwise, put a ↩️ line under the axes line. It says how to undo the change,
+and what does not come back after it. List the verdict's other reasons in
+"What is left".
 
 ## Decisions
 
