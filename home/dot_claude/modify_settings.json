@@ -29,14 +29,10 @@ printf '%s' "$input" | jq --arg pstack_marketplace "$HOME/.claude/pstack-marketp
     | .enabledPlugins = {
         "skill-creator@claude-plugins-official": true,
         "swift-lsp@claude-plugins-official": true,
-        "pstack@pstack-claude": true,
-        "cook@cook": true
+        "pstack@pstack-claude": true
       }
     | .extraKnownMarketplaces["pstack-claude"] = {
         "source": {"source": "file", "path": $pstack_marketplace}
-      }
-    | .extraKnownMarketplaces["cook"] = {
-        "source": {"source": "github", "repo": "ykaratkou/cook"}
       }
     | .permissions.deny = [
         "EnterPlanMode",
